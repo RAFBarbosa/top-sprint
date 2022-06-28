@@ -1,24 +1,32 @@
 import { DefaultUi, Player, Youtube } from "@vime/react";
 import { CaretRight, DiscordLogo, FileArrowDown, Lightning } from "phosphor-react";
-
 import '@vime/core/themes/default.css';
 import { useGetLessonBySlugQuery } from "../graphql/generated";
+import { Footer } from "./Footer";
+import { useEffect, useState } from "react";
 
 interface VideoProps {
     lessonSlug: string;
 }
 
-export function Video(props: VideoProps) {
+export function Video({ lessonSlug }: VideoProps) {
+    const [showVideo, setShowVideo] = useState(!!lessonSlug);
+
     const { data } = useGetLessonBySlugQuery({
         variables: {
-            slug: props.lessonSlug,
+            slug: lessonSlug,
         },
-        fetchPolicy: "no-cache"
+        /* fetchPolicy: "no-cache" */
     })
+
+    useEffect(() => {
+        setShowVideo(false);
+        setTimeout(() => setShowVideo(true), 100);
+    }, [lessonSlug])
 
     if (!data || !data.lesson) {
         return (
-            <div className="flex-1">
+            <div className="flex flex-1 items-center justify-center">
                 <p>Carregando...</p>
             </div>
         )
@@ -27,11 +35,15 @@ export function Video(props: VideoProps) {
     return (
         <div className="flex-1">
             <div className="bg-black flex justify-center">
-                <div className="h-full w-full max-w[1100px] m-h-[60vh] aspect-video">
-                    <Player>
-                        <Youtube videoId={data.lesson.videoId} />
-                        <DefaultUi />
-                    </Player>
+                <div className="h-full w-full max-w-[1100px] max-h-[60vh] aspect-video">
+                    {
+                        showVideo && (
+                            <Player>
+                                <Youtube videoId={data.lesson.videoId} />
+                                <DefaultUi />
+                            </Player>
+                        )
+                    }
                 </div>
             </div>
 
@@ -113,6 +125,7 @@ export function Video(props: VideoProps) {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     )
 }
