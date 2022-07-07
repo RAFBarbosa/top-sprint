@@ -20,7 +20,7 @@ interface Lessons {
     lessons: {
         slug: string;
         availableAt: string;
-    }[]
+    }[];
 }
 
 export function Event() {
@@ -39,7 +39,7 @@ export function Event() {
                 navigate(`/event/lesson/${slug}`);
             }
         }
-    }, [data])
+    }, [data]);
 
     function handleToggleMenu() {
         setShowModal(!showModal);
@@ -48,8 +48,6 @@ export function Event() {
     return (
         <div className="flex flex-col">
             <Header
-                width={167}
-                height={23.78}
                 open={showModal}
                 toggleMenu={handleToggleMenu}
             />

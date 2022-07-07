@@ -6,14 +6,13 @@ import { useCreateSubscriberMutation } from "../graphql/generated";
 import CodeMockup from '/src/assets/code-mockup.png';
 import { ReactLogo } from "../components/ReactLogo";
 
-
 export function Subscribe() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
 
-    const [createSubscriber, { loading }] = useCreateSubscriberMutation()
+    const [createSubscriber, { loading }] = useCreateSubscriberMutation();
 
     async function handleSubscribe(event: FormEvent) {
         event.preventDefault();
@@ -21,17 +20,17 @@ export function Subscribe() {
         await createSubscriber({
             variables: {
                 name,
-                email,
+                email
             }
         })
 
-        navigate('/event')
+        navigate('/event');
     }
 
     return (
         // CONTAINER
         <div className="min-h-screen bg-blur bg-no-repeat bg-cover flex flex-col items-center">
-            {/* REACT LOGO */}
+            {/* REACT LOGO BG */}
             <div className="absolute mt-[10px] scale-50 md:scale-100">
                 <ReactLogo />
             </div>
@@ -44,7 +43,10 @@ export function Subscribe() {
                     <Logo />
 
                     <h1 className="mt-6 md:mt-8 text-[30px] mx-6 md:text-[40px] md:mx-0 text-center md:text-left leading-tight">
-                        Construa uma <strong className="text-blue-500">aplicação completa</strong>, do zero, com <strong className="text-blue-500">React JS</strong>
+                        Construa uma
+                        <strong className="text-blue-500"> aplicação completa</strong>
+                        , do zero, com
+                        <strong className="text-blue-500"> React JS</strong>
                     </h1>
                     <p className="mt-6 mx-6 text-[14px] text-center md:ml-0 md:text-left text-gray-200 leading-relaxed">
                         Em apenas uma semana você vai dominar na prática uma das tecnologias mais utilizadas e com alta demanda para acessar as melhores oportunidades do mercado.
@@ -59,13 +61,13 @@ export function Subscribe() {
 
                     <form onSubmit={handleSubscribe} className="flex flex-col gap-2 w-full">
                         <input
-                            className="bg-gray-900 rounded px-5 h-14 hover:outline hover:outline-1 outline-green-300 focus:outline focus:outline-green-300 required valid:text-white-700"
+                            className="required bg-gray-900 rounded px-5 h-14 hover:outline hover:outline-1 outline-green-300 focus:outline focus:outline-green-300 valid:text-white-700"
                             type="text"
                             placeholder="Seu nome completo"
                             onChange={event => setName(event.target.value)}
                         />
                         <input
-                            className="bg-gray-900 rounded px-5 h-14 hover:outline hover:outline-1 outline-green-300 focus:outline focus:outline-green-300 required valid:text-white-700"
+                            className="required:border-red-500 bg-gray-900 rounded px-5 h-14 hover:outline hover:outline-1 outline-green-300 focus:outline focus:outline-green-300 valid:text-white-700"
                             type="text"
                             placeholder="Digite seu e-mail"
                             onChange={event => setEmail(event.target.value)}
@@ -77,15 +79,19 @@ export function Subscribe() {
                         >
                             Garantir minha vaga
                         </button>
+                        {/* <button type="button" className="bg-indigo-500 uppercase py-4 rounded font-bold text-sm hover:bg-green-700 transition-colors disabled:opacity-50" disabled>
+                        <div className="motion-reduce:hidden animate-spin"></div>
+                            Processing...
+                        </button> */}
                     </form>
                 </div>
             </div>
 
             {/* IMAGE CODE */}
-            <img src={CodeMockup} className="z-10 mt-10 md:mt-0" alt="" />
+            <img src={CodeMockup} className="z-10" alt="" />
 
             {/* FOOTER */}
-            <div className="w-full bg-gray-700">
+            <div className="w-full bg-gray-900">
                 <Footer />
             </div>
         </div>

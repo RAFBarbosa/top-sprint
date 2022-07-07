@@ -1,10 +1,10 @@
 import { useState, useEffect, ButtonHTMLAttributes } from 'react';
 
-interface IProps extends ButtonHTMLAttributes<HTMLButtonElement>{
+interface ModalProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     open: boolean;
 }
 
-export function Menu({ open, ...rest }: IProps) {
+export function Menu({ open, ...rest }: ModalProps) {
     const [isOpened, setIsOpened] = useState(false);
 
     useEffect(() => {
