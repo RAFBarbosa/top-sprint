@@ -1,7 +1,7 @@
 export function Logo() {
     return (
         <svg
-            className="md:w-[237px] md:h-[33.71px] flex self-center"
+            className="md:w-[237px] md:h-[33.71px] flex self-center sm:self-start"
             xmlns="http://www.w3.org/2000/svg"
             width="167px"
             height="23.76px"
