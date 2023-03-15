@@ -61,13 +61,13 @@ export function Subscribe() {
 
                     <form onSubmit={handleSubscribe} className="flex flex-col gap-2 w-full">
                         <input
-                            className="required required:border-red-500 text-base bg-gray-900 rounded px-5 h-14 hover:outline hover:outline-1 outline-green-300 focus:outline focus:outline-green-300 valid:text-white-700"
+                            className="required required:border-red-500 text-base bg-gray-900 rounded px-5 h-14 outline-green-300 focus:outline focus:outline-green-300 valid:text-white-700"
                             type="text"
                             placeholder="Seu nome completo"
                             onChange={event => setName(event.target.value)}
                         />
                         <input
-                            className="required required:border-red-500 bg-gray-900 rounded px-5 h-14 hover:outline hover:outline-1 outline-green-300 focus:outline focus:outline-green-300 valid:text-white-700"
+                            className="required required:border-red-500 bg-gray-900 rounded px-5 h-14 outline-green-300 focus:outline focus:outline-green-300 valid:text-white-700"
                             type="text"
                             placeholder="Digite seu e-mail"
                             onChange={event => setEmail(event.target.value)}
