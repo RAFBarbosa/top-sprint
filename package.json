@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc && vite build",
+		"vercel-build": "npm install --legacy-peer-deps && npm run build",
 		"preview": "vite preview",
 		"codegen": "graphql-codegen"
 	},
