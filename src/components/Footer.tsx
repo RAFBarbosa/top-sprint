@@ -6,7 +6,7 @@ export function Footer() {
             <div className="flex gap-4 flex-col items-center md:gap-6 md:flex-row md:flex-start">
                 {/* <img src={LogoRocket} alt="Logo Rocketseat" /> */}
                 <span className="text-sm md:text-base">
-                    Liga Top Sprint - Todos os direitos reservados
+                    Top Sprint League - Todos os direitos reservados
                 </span>
             </div>
             <a
