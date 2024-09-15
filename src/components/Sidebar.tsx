@@ -21,7 +21,7 @@ export function Sidebar() {
                             name={driver.name}
                             team={driver.team}
                             driverNumber={driver.driverNumber}
-                            photo={driver.photo}
+                            photo={driver.photo || null}
                         />
                     ))
                 ) : (
