@@ -1,0 +1,12 @@
+query GetTeamStandings {
+	teamStandings(stage: PUBLISHED) {
+		id
+		season
+		round
+		photo {
+			id
+			url
+			fileName
+		}
+	}
+}

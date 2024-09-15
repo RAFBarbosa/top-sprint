@@ -1,0 +1,11 @@
+query GetHallsOfFame {
+	hallsOfFame(stage: PUBLISHED) {
+		id
+		season
+		photo {
+			id
+			url
+			fileName
+		}
+	}
+}

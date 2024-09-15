@@ -1,0 +1,11 @@
+mutation CreateDriverStanding(
+	$season: String!
+	$round: String!
+	$photo: AssetCreateOneInlineInput!
+) {
+	createDriverStanding(
+		data: { season: $season, round: $round, photo: $photo }
+	) {
+		id
+	}
+}

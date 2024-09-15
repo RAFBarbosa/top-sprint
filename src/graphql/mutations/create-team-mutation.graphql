@@ -1,0 +1,9 @@
+mutation CreateTeam(
+	$name: String!
+	$team: String!
+	$photo: AssetCreateOneInlineInput!
+) {
+	createTeam(data: { name: $name, team: $team, photo: $photo }) {
+		id
+	}
+}
