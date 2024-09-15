@@ -1,0 +1,13 @@
+query GetDrivers {
+	drivers(stage: PUBLISHED) {
+		id
+		name
+		driverNumber
+		team
+		photo {
+			id
+			url
+			fileName
+		}
+	}
+}

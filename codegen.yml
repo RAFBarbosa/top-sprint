@@ -1,17 +1,15 @@
-schema: https://api-us-west-2.graphcms.com/v2/cl4nr8cfu0lww01xp3vkehlgj/master
+schema: https://us-west-2.cdn.hygraph.com/content/cm12mnmvz09v707n5el5f552n/master
 
 documents: "./src/graphql/**/*.graphql"
 
 generates:
-  ./src/graphql/generated.ts:
-    plugins:
-      - typescript
-      - typescript-operations
-      - typescript-react-apollo
-    config:
-      reactApolloVersion: 3
-      withHooks: true
-      withHOC: false
-      withComponent: false
-
-  
+    ./src/graphql/generated.ts:
+        plugins:
+            - typescript
+            - typescript-operations
+            - typescript-react-apollo
+        config:
+            reactApolloVersion: 3
+            withHooks: true
+            withHOC: false
+            withComponent: false

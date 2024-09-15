@@ -1,0 +1,12 @@
+query GetTeams {
+	teams(stage: PUBLISHED) {
+		id
+		name
+		team
+		photo {
+			id
+			url
+			fileName
+		}
+	}
+}
