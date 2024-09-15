@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Teams } from "../components/Teams";
 import { Header } from "../components/Header";
-import { AddDriver } from "../components/AddDriver";
 import { HallsOfFame } from "../components/HallsOfFame";
 import { Footer } from "../components/Footer";
 
