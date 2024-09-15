@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Modal } from "../components/Modal";
-import { Sidebar } from "../components/Sidebar";
+import { Teams } from "../components/Teams";
 import { Video } from "../components/Video";
 
 const GET_FIRST_DRIVER = gql`
@@ -56,14 +56,14 @@ export function Event() {
                         : <div className="flex-1"></div>
                     } */}
                     <div className="hidden lg:flex">
-                        <Sidebar />
+                        <Teams />
                     </div>
                 </main>
             </div>
 
             {showModal && (
                 <Modal>
-                    <Sidebar />
+                    <Teams />
                 </Modal>
             )}
         </div>

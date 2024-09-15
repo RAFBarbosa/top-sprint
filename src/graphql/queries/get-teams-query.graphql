@@ -4,9 +4,7 @@ query GetTeams {
 		name
 		team
 		photo {
-			id
 			url
-			fileName
 		}
 	}
 }
