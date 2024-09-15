@@ -1,0 +1,17 @@
+mutation CreateDriver(
+	$name: String!
+	$team: String!
+	$driverNumber: String!
+	$photo: AssetCreateOneInlineInput!
+) {
+	createDriver(
+		data: {
+			name: $name
+			team: $team
+			driverNumber: $driverNumber
+			photo: $photo
+		}
+	) {
+		id
+	}
+}

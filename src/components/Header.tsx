@@ -12,8 +12,8 @@ export function Header({ open = false, toggleMenu }: ModalProps) {
             <div className="p-4 md:py-5 px-6 flex w-full justify-between lg:justify-center bg-gray-700 border-b border-gray-600">
                 <Logo />
 
-                <div className="flex lg:hidden items-center text-sm gap-2">
-                    Aulas
+                <div className="flex items-center text-sm gap-2">
+                    MENU
                     <Menu open={open} onClick={toggleMenu} />
                 </div>
             </div>

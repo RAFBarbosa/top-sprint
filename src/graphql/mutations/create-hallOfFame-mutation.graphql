@@ -1,0 +1,8 @@
+mutation CreateHallOfFame(
+	$season: String!
+	$photo: AssetCreateOneInlineInput!
+) {
+	createHallOfFame(data: { season: $season, photo: $photo }) {
+		id
+	}
+}
