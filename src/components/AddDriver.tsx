@@ -1,13 +1,19 @@
 import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateDriverMutation } from "../graphql/generated";
-import GenericDriver from '/src/assets/logosemfundo.png';
-import { ReactLogo } from "./ReactLogo";
-import { Sidebar } from "./Sidebar";
+
+// Mock upload function to simulate file handling
+async function uploadFile(file: File) {
+    // Replace this with actual file upload logic
+    // Simulate returning a handle and fileName
+    return {
+        handle: "cm12uk2e66xo208lunw8ztjh7",
+        fileName: file.name
+    };
+}
 
 export function AddDriver() {
     const navigate = useNavigate();
-
     const [name, setName] = useState('');
     const [team, setTeam] = useState('');
     const [driverNumber, setDriverNumber] = useState('');
@@ -15,18 +21,34 @@ export function AddDriver() {
 
     const [createDriver, { loading }] = useCreateDriverMutation();
 
-    // Default image path or identifier
-    const defaultPhoto = { create: { file: { url: '/src/assets/logosemfundo.png' } } };
-
-    console.log(defaultPhoto)
+    const defaultPhoto = {
+        create: {
+            file: {
+                fileName: "logosemfundo.png",  // Default image fileName
+                handle: "cm12uk2e66xo208lunw8ztjh7"       // Default image handle
+            }
+        }
+    };
 
     async function handleSubscribe(event: FormEvent) {
         event.preventDefault();
 
-        // Handle file upload and obtain the URL or identifier
-        const photoInput = photo
-            ? { create: { file: photo } }
-            : defaultPhoto;
+        let photoInput;
+
+        if (photo) {
+            // Handle file upload and get handle/fileName
+            const { handle, fileName } = await uploadFile(photo);
+            photoInput = {
+                create: {
+                    file: {
+                        fileName,
+                        handle
+                    }
+                }
+            };
+        } else {
+            photoInput = defaultPhoto;
+        }
 
         await createDriver({
             variables: {

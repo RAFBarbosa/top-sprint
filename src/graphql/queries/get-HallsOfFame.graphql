@@ -3,9 +3,7 @@ query GetHallsOfFame {
 		id
 		season
 		photo {
-			id
 			url
-			fileName
 		}
 	}
 }

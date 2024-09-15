@@ -8773,7 +8773,7 @@ export type CreateTeamStandingMutation = { __typename?: 'Mutation', createTeamSt
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, photo?: { __typename?: 'Asset', id: string, url: string, fileName: string } | null }> };
+export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetDriverStandingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8783,7 +8783,7 @@ export type GetDriverStandingsQuery = { __typename?: 'Query', driverStandings: A
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, driverNumber?: string | null, team?: string | null, photo?: { __typename?: 'Asset', id: string, url: string, fileName: string } | null }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, driverNumber?: string | null, team?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetLessonBySlugQueryVariables = Exact<{
   slug?: InputMaybe<Scalars['String']>;
@@ -8805,7 +8805,7 @@ export type GetTeamStandingsQuery = { __typename?: 'Query', teamStandings: Array
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: string, name?: string | null, team?: string | null, photo?: { __typename?: 'Asset', id: string, url: string, fileName: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: string, name?: string | null, team?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 
 export const CreateDriverDocument = gql`
@@ -8991,9 +8991,7 @@ export const GetHallsOfFameDocument = gql`
     id
     season
     photo {
-      id
       url
-      fileName
     }
   }
 }
@@ -9074,9 +9072,7 @@ export const GetDriversDocument = gql`
     driverNumber
     team
     photo {
-      id
       url
-      fileName
     }
   }
 }
@@ -9236,9 +9232,7 @@ export const GetTeamsDocument = gql`
     name
     team
     photo {
-      id
       url
-      fileName
     }
   }
 }

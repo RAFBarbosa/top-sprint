@@ -3,6 +3,31 @@
 @tailwind utilities;
 
 body {
-    @apply bg-gray-900 text-gray-100;
-    -webkit-font-smoothing: antialiased;
+	@apply bg-gray-900 text-gray-100;
+	-webkit-font-smoothing: antialiased;
+}
+
+.slick-prev,
+.slick-next {
+	@apply w-10 h-10 z-10;
+}
+
+.slick-prev {
+	@apply left-1;
+}
+
+.slick-next {
+	@apply right-1;
+}
+
+.slick-prev::before,
+.slick-next::before {
+	font-size: 2.5rem;
+}
+
+@media (max-width: 600px) {
+	.slick-prev,
+	.slick-next {
+		display: none !important;
+	}
 }

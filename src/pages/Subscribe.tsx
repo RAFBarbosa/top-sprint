@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Sidebar } from "../components/Sidebar";
+import { Teams } from "../components/Teams";
 import { Header } from "../components/Header";
 import { AddDriver } from "../components/AddDriver";
+import { HallsOfFame } from "../components/HallsOfFame";
+import { Footer } from "../components/Footer";
 
 export function Subscribe() {
 
@@ -23,9 +25,17 @@ export function Subscribe() {
 
             {/* CONTENT */}
             <div className="z-10 w-full max-w-[1216px] flex flex-col md:flex-row items-center justify-between mt-10 md:mt-20 mx-auto">
-                <Sidebar />
-                <AddDriver />
+                <Teams />
+                {/* <AddDriver /> */}
 
+            </div>
+            <div className="z-10 w-full max-w-[1216px] flex flex-col md:flex-row items-center justify-between my-10 md:mt-20 mx-auto">
+                <HallsOfFame />
+                {/* <AddDriver /> */}
+
+            </div>
+            <div className="w-full bg-gray-900">
+                <Footer />
             </div>
         </div >
     )
