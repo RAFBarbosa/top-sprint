@@ -1,0 +1,10 @@
+query GetStandings {
+	standings(orderBy: round_DESC) {
+		id
+		photo {
+			url
+		}
+		round
+		season
+	}
+}
