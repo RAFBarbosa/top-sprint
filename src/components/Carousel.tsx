@@ -5,15 +5,17 @@ import 'slick-carousel/slick/slick-theme.css';
 
 interface CarouselProps {
     children: React.ReactNode;
+    slidesToShow?: number;
+    slidesToScroll?: number;
 }
 
-const Carousel: React.FC<CarouselProps> = ({ children }) => {
+const Carousel: React.FC<CarouselProps> = ({ slidesToShow = 3, slidesToScroll = 3, children }) => {
     const settings = {
-        dots: true,
+        // dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 3,
+        slidesToShow,
+        slidesToScroll,
         adaptiveHeight: true,
         nextArrow: <div className="slick-arrow slick-next hidden md:flex">→</div>,
         prevArrow: <div className="slick-arrow slick-prev hidden md:flex">←</div>,
@@ -24,7 +26,7 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
                     slidesToShow: 2,
                     slidesToScroll: 2,
                     infinite: true,
-                    dots: true,
+                    // dots: true,
                 },
             },
             {
