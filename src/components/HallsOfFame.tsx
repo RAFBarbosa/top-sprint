@@ -28,6 +28,18 @@ export function HallsOfFame() {
                     <p>No drivers available</p>
                 )}
             </Carousel>
+
+            <div className="w-full p-6">
+                <strong className="font-bold text-base block">Prêmios</strong>
+
+                <span>Os ganhadores do campeonato serão recompensados com:
+
+                    Troféus para Primeiro, Segundo e Terceiro lugar de pilotos.
+
+                    Medalhas para ambos os campeões de contrutores.
+
+                    O envio deverá ser pago pelos donos dos prêmios.</span>
+            </div>
         </aside>
     );
 }
