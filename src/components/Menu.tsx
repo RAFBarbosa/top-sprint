@@ -1,50 +1,67 @@
-import { useState, useEffect, ButtonHTMLAttributes } from 'react';
+import { useState } from "react";
 
-interface ModalProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    open: boolean;
-}
+const menuItems = [
+	{ id: "home", label: "Home" },
+	{ id: "regras", label: "Regras" },
+	{ id: "pontuacao", label: "Pontuação" },
+	{ id: "campeoes", label: "Mural dos Campeões" },
+	{ id: "calendario", label: "Calendário" },
+	{ id: "equipes", label: "Equipes e Pilotos" },
+	{ id: "classificacao", label: "Classificação" },
+	{ id: "tickets", label: "Tickets" },
+];
 
-export function Menu({ open, ...rest }: ModalProps) {
-    const [isOpened, setIsOpened] = useState(false);
+export function Menu() {
+	const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        setIsOpened(open);
-    }, [open])
+	const handleLinkClick = () => {
+		setIsOpen(false);
+	};
 
-    return (
-        <button {...rest}>
-            {isOpened
-                ? <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    fill="none"
-                    viewBox="0 0 32 32"
-                >
-                    <path
-                        stroke="#81D8F7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 8l15.556 15.556M8 24L23.556 8.444"
-                    ></path>
-                </svg>
-                : <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    fill="none"
-                    viewBox="0 0 32 32"
-                >
-                    <path
-                        stroke="#81D8F7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 16h22M5 8h22M5 24h22"
-                    ></path>
-                </svg>
-            }
-        </button>
-    )
+	return (
+		<div>
+			<button
+				className="fixed top-4 right-4 z-50 text-4xl focus:outline-none md:hidden"
+				onClick={() => setIsOpen(!isOpen)}
+			>
+				{isOpen ? "✖" : "☰"}
+			</button>
+
+			<div
+				className={`fixed top-0 right-0 h-full bg-gray-700 border-l border-gray-600 p-6 transition-transform duration-300 transform ${
+					isOpen ? "translate-x-0" : "translate-x-full"
+				} md:hidden w-64 z-40`}
+			>
+				{/* Menu Items */}
+				<div className="mt-12">
+					<ul className="space-y-4">
+						{menuItems.map((item) => (
+							<li key={item.id}>
+								<a
+									href={`#${item.id}`}
+									className="text-lg hover:text-gray-300"
+									onClick={handleLinkClick}
+								>
+									<strong>{item.label}</strong>
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
+
+			{/* For larger screens, the menu is always visible */}
+			<div className="hidden md:flex md:justify-end md:items-center md:space-x-6 p-4">
+				{menuItems.map((item) => (
+					<a
+						key={item.id}
+						href={`#${item.id}`}
+						className="text-lg hover:text-gray-300"
+					>
+						<strong>{item.label}</strong>
+					</a>
+				))}
+			</div>
+		</div>
+	);
 }
