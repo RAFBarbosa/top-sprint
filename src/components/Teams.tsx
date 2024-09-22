@@ -6,12 +6,20 @@ import { Team } from "./Team";
 export function Teams() {
 	const { data, error, loading } = useGetTeamsQuery();
 
-	if (loading) return <div>Carregando...</div>;
-	if (error) return <div>Erro: {error.message}</div>;
+	if (loading)
+		return (
+			<div className="text-f1-silver text-center py-6">Carregando...</div>
+		);
+	if (error)
+		return (
+			<div className="text-red-500 text-center py-6">
+				Erro: {error.message}
+			</div>
+		);
 
 	return (
-		<aside className="w-full bg-gray-700 p-6 border-l border-gray-600">
-			<span className="font-bold text-4xl pb-6 mb-6 border-b border-gray-500 block">
+		<aside className="w-full bg-f1-carbon py-8 rounded-lg">
+			<span className="block text-f1-red text-2xl font-bold text-center mb-6">
 				Equipes e Pilotos
 			</span>
 
@@ -26,7 +34,9 @@ export function Teams() {
 						/>
 					))
 				) : (
-					<p>No drivers available</p>
+					<p className="text-f1-silver text-center">
+						No drivers available
+					</p>
 				)}
 			</Carousel>
 		</aside>

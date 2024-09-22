@@ -1,0 +1,8 @@
+query GetBanners {
+	banners(stage: PUBLISHED) {
+		id
+		photo {
+			url
+		}
+	}
+}

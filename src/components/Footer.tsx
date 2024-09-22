@@ -1,18 +1,20 @@
-import LogoRocket from "/src/assets/logo-rocket.png";
+import { Link } from "react-router-dom";
+import { Logo } from "./Logo";
 
 export function Footer() {
 	return (
-		<div className="flex w-auto mx-6 md:mx-8 py-4 border-t text-gray-300 border-gray-500 items-center justify-between flex-col md:flex-row text-center">
-			<div className="flex gap-4 flex-col items-center md:gap-6 md:flex-row md:flex-start">
-				{/* <img src={LogoRocket} alt="Logo Rocketseat" /> */}
-				<span className="text-sm md:text-base">
+		<div className="">
+			<div className="">
+				<div className="w-[60px]">
+					<Link to="/">
+						<Logo />
+					</Link>
+				</div>
+				<span className="">
 					Top Sprint League - Todos os direitos reservados
 				</span>
 			</div>
-			<a
-				className="text-sm md:text-base mt-6 hover:text-gray-100 transition-colors md:mt-0"
-				href=""
-			>
+			<a className="" href="">
 				Políticas de privacidade
 			</a>
 		</div>
