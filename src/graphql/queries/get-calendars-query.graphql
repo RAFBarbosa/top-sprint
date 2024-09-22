@@ -1,0 +1,9 @@
+query GetCalendars {
+	calendars(stage: PUBLISHED) {
+		id
+		season
+		photo {
+			url
+		}
+	}
+}

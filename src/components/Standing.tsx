@@ -6,9 +6,11 @@ interface StandingProps {
 
 export function Standing(props: StandingProps) {
 	return (
-		<div className="group mx-2">
-			<strong className="text-xl">{props.season}</strong>
-			<div className="flex space-x-2">
+		<div className="bg-f1-carbon p-4 rounded-lg shadow-md">
+			<strong className="text-f1-red text-lg font-bold block mb-2">
+				{props.season}
+			</strong>
+			<div className="md:flex md:space-x-4">
 				{props.photos.map((photo, index) => (
 					<img
 						key={index}
@@ -16,11 +18,13 @@ export function Standing(props: StandingProps) {
 						alt={`${props.season} ${props.round} photo ${
 							index + 1
 						}`}
-						className="w-1/2 h-auto object-contain my-2"
+						className="md:w-1/2 h-auto object-contain rounded-lg shadow-lg"
 					/>
 				))}
 			</div>
-			<span className="text-xl">{props.round}</span>
+			<span className="text-f1-silver text-sm block mt-2">
+				{props.round}
+			</span>
 		</div>
 	);
 }

@@ -7,20 +7,22 @@ interface CarouselProps {
 	children: React.ReactNode;
 	slidesToShow?: number;
 	slidesToScroll?: number;
+	autoplay?: boolean;
 }
 
 const Carousel: React.FC<CarouselProps> = ({
 	slidesToShow = 3,
 	slidesToScroll = 3,
+	autoplay = true,
 	children,
 }) => {
 	const settings = {
-		// dots: true,
 		infinite: true,
 		speed: 500,
+		adaptiveHeight: true,
+		autoplay,
 		slidesToShow,
 		slidesToScroll,
-		adaptiveHeight: true,
 		nextArrow: (
 			<div className="slick-arrow slick-next hidden md:flex">→</div>
 		),
@@ -34,7 +36,6 @@ const Carousel: React.FC<CarouselProps> = ({
 					slidesToShow: 2,
 					slidesToScroll: 2,
 					infinite: true,
-					// dots: true,
 				},
 			},
 			{
