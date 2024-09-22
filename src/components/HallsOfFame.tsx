@@ -1,7 +1,7 @@
 import { useGetHallsOfFameQuery } from "../graphql/generated";
 import Carousel from "./Carousel";
-import GenericLogo from "/src/assets/logosemfundo.png";
 import { HallOfFame } from "./HallofFame";
+import GenericLogo from "/src/assets/logosemfundo.png";
 
 export function HallsOfFame() {
 	const { data, error, loading } = useGetHallsOfFameQuery();
