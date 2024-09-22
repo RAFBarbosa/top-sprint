@@ -1,17 +1,17 @@
-interface HallOfFameProps {
+interface CalendarProps {
 	season: string;
 	photo: { url: string };
 }
 
-export function HallOfFame(props: HallOfFameProps) {
+export function Calendar(props: CalendarProps) {
 	return (
-		<div className="">
+		<div className="w-full">
+			<strong className="">{props.season}</strong>
 			<img
 				src={props.photo?.url}
 				alt={`${props.season} photo`}
 				className="shadow-lg"
 			/>
-			<span className="">{props.season}</span>
 		</div>
 	);
 }

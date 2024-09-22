@@ -5,7 +5,10 @@ import Car4Bg from "/src/assets/car4-bg.png";
 
 export function Rules() {
 	return (
-		<aside className="w-full bg-gray-700 p-8 border-l border-gray-600 ">
+		<aside
+			id="regras"
+			className="w-full bg-gray-100 p-8 border-l border-gray-600 "
+		>
 			<span className="font-bold text-4xl pb-6 mb-8 border-b border-gray-600 block">
 				Regras
 			</span>
@@ -124,26 +127,26 @@ export function Rules() {
 						<div>
 							<p className="mt-4">
 								As penalidades para corridas serão:
-								<ul className="list-disc list-inside ml-4">
-									<li>
-										<strong>-2 pontos</strong>: Quando o
-										piloto atrasar outro piloto (rodar,
-										tirar da pista) sem danos ou com dano
-										mínimo (verde claro).
-									</li>
-									<li>
-										<strong>-4 pontos</strong>: Quando o
-										piloto causar danos (amarelo ou maior)
-										que forcem o piloto a ir ao pit.
-									</li>
-									<li>
-										<strong>-8 pontos</strong>: Quando o
-										piloto der NC (não completar) no carro
-										do outro piloto ou múltiplos carros com
-										danos.
-									</li>
-								</ul>
 							</p>
+						</div>
+						<div>
+							<ul className="list-disc list-inside ml-4">
+								<li>
+									<strong>-2 pontos</strong>: Quando o piloto
+									atrasar outro piloto (rodar, tirar da pista)
+									sem danos ou com dano mínimo (verde claro).
+								</li>
+								<li>
+									<strong>-4 pontos</strong>: Quando o piloto
+									causar danos (amarelo ou maior) que forcem o
+									piloto a ir ao pit.
+								</li>
+								<li>
+									<strong>-8 pontos</strong>: Quando o piloto
+									der NC (não completar) no carro do outro
+									piloto ou múltiplos carros com danos.
+								</li>
+							</ul>
 						</div>
 					</div>
 
@@ -229,6 +232,22 @@ export function Rules() {
 						alt="Car 4"
 					/>
 				</div>
+			</div>
+			<div>
+				<p>
+					corrida 1 - 25 pontos 2 - 22 pontos 3 - 20 pontos 4 - 18
+					pontos 5 - 16 pontos 6 - 15 pontos 7 - 14 pontos 8 - 13
+					pontos 9 - 12 pontos 10 - 11 pontos 11 - 10 pontos 12 - 9
+					pontos 13 - 8 pontos 14 - 7 pontos 15 - 6 pontos 16 - 5
+					pontos 17 - 4 pontos 18 - 3 pontos 19 - 2 pontos 20 - 1
+					ponto sprint 1 - 16 pontos 2 - 14 pontos 3 - 12 pontos 4 -
+					11 pontos 5 - 10 pontos 6 - 9 pontos 7 - 8 pontos 8 - 7
+					pontos 9 - 6 pontos 10 - 5 pontos 11 - 4 pontos 12 - 3
+					pontos 13 - 2 pontos 14 - 1 pontos 15 - Sem pontos 16 - Sem
+					pontos 17 - Sem pontos 18 - Sem pontos 19 - Sem pontos 20 -
+					Sem pontos bônus Melhor volta: 2 pontos Pole: 2 pontos
+					Presença por Corrida: 1 ponto
+				</p>
 			</div>
 		</aside>
 	);
