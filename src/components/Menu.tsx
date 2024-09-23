@@ -4,7 +4,7 @@ import { Logo } from "./Logo";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
-	{ id: "/regras", label: "Regras" },
+	{ id: "/regras", label: "Regras e Formato" },
 	// { id: "/pontuacao", label: "Pontuação" },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
 	// { id: "/calendario", label: "Calendário" },
@@ -18,65 +18,74 @@ const menuItems = [
 	// { id: "/arquivo", label: "Arquivo" },
 ];
 
+const smoothScrolling = () => {
+	window.scrollTo({
+		top: 0,
+		behavior: "smooth",
+	});
+};
+
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
+		smoothScrolling();
 	};
 
 	return (
-		<div className="flex items-center md:justify-center h-full gap-x-10">
-			<div className="w-[40px] z-50">
-				<Link to="/">
+		<div className="flex items-center md:justify-center h-full gap-x-10 text-white">
+			<button className="w-[40px] z-50">
+				<Link to="/" onClick={handleLinkClick}>
 					<Logo />
 				</Link>
-			</div>
+			</button>
 			<button
-				className="fixed top-2 right-2 z-50 text-3xl focus:outline-none md:hidden px-2"
+				className="fixed top-2 right-2 text-3xl focus:outline-none md:hidden px-2 z-50"
 				onClick={() => setIsOpen(!isOpen)}
 			>
 				{isOpen ? "✖" : "☰"}
 			</button>
 
 			<div
-				className={`fixed top-[52px] right-0 -z-50 bg-f1-red px-2 py-6 transition-transform duration-300 transform ${
-					isOpen ? "translate-y-0" : "translate-y-[-320px]"
-				} md:hidden w-full -z-50`}
+				className={`fixed top-0 right-0 bg-f1-red px-2 py-6 transition-transform duration-300 transform ${
+					isOpen ? "translate-y-[56px]" : "translate-y-[-320px]"
+				} md:hidden w-full z-40`}
 			>
-				<div>
-					<ul className="space-y-2">
-						{menuItems.map((item) => (
-							<li
-								key={item.id}
-								className="border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2"
-							>
-								{item.external ? (
-									<a
-										href={item.id}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-lg"
-										onClick={handleLinkClick}
-									>
-										<span>{item.label}</span>
-									</a>
-								) : (
-									<Link
-										to={item.id}
-										className="text-lg"
-										onClick={handleLinkClick}
-									>
-										<span>{item.label}</span>
-									</Link>
-								)}
-								<span className="material-symbols-outlined text-sm">
-									arrow_forward_ios
-								</span>
-							</li>
-						))}
-					</ul>
-				</div>
+				<ul className="space-y-2">
+					{menuItems.map((item) => (
+						<li
+							key={item.id}
+							className="border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2"
+						>
+							{item.external ? (
+								<a
+									href={item.id}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-lg w-full flex justify-between items-center py-2 px-2"
+									onClick={handleLinkClick}
+								>
+									<span>{item.label}</span>
+									<span className="material-symbols-outlined text-sm">
+										arrow_forward_ios
+									</span>
+								</a>
+							) : (
+								<Link
+									to={item.id}
+									className="text-lg w-full flex justify-between items-center py-2 px-2"
+									onClick={handleLinkClick}
+								>
+									<span>{item.label}</span>
+									<span className="material-symbols-outlined text-sm">
+										arrow_forward_ios
+									</span>
+								</Link>
+							)}
+						</li>
+					))}
+				</ul>
 			</div>
 
 			{/* For larger screens */}
@@ -95,6 +104,7 @@ export function Menu() {
 						) : (
 							<Link
 								to={item.id}
+								onClick={handleLinkClick}
 								className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300"
 							>
 								<span>{item.label}</span>
