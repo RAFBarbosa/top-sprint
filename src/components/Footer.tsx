@@ -3,8 +3,8 @@ import { Logo } from "./Logo";
 
 export function Footer() {
 	return (
-		<footer className="bg-f1-carbon py-6 text-white">
-			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto px-3">
+		<footer className="bg-f1-carbon p-6 text-white">
+			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto">
 				<div className="flex flex-row items-center gap-2">
 					<div className="md:w-[60px] w-[40px]">
 						<Logo />
