@@ -10,22 +10,24 @@ export function Calendars() {
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
-		<aside className="md:w-1/2">
-			<span className="">Calendario</span>
+		<aside className="md:w-1/2 flex flex-col">
+			{/* <span className="">Calendario</span> */}
 
 			{/* <Carousel> */}
-			{data?.calendars && data.calendars.length > 0 ? (
-				data.calendars.map((data) => (
-					<Calendar
-						key={data.id}
-						season={data.season || ""}
-						photo={data.photo || { url: GenericLogo }}
-					/>
-				))
-			) : (
-				<p>No calendar available</p>
-			)}
-			{/* </Carousel> */}
+			<div className="self-center">
+				{data?.calendars && data.calendars.length > 0 ? (
+					data.calendars.map((data) => (
+						<Calendar
+							key={data.id}
+							season={data.season || ""}
+							photo={data.photo || { url: GenericLogo }}
+						/>
+					))
+				) : (
+					<p>No calendar available</p>
+				)}
+				{/* </Carousel> */}
+			</div>
 		</aside>
 	);
 }

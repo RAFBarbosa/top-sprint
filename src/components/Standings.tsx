@@ -18,31 +18,32 @@ export function Standings() {
 		);
 
 	return (
-		<aside className="bg-f1-black py-8">
-			<span className="block text-f1-red text-2xl font-bold text-center mb-6">
+		<aside className="bg-gradient-to-r from-f1-carbon via-f1-silver to-f1-carbon py-10 flex flex-col">
+			<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center mb-10">
 				Classificação
-			</span>
-
-			<Carousel slidesToShow={1} slidesToScroll={1} autoplay={false}>
-				{data?.standings && data.standings.length > 0 ? (
-					data.standings.map((data) => (
-						<Standing
-							key={data.id}
-							season={data.season || ""}
-							round={data.round || ""}
-							photos={
-								data.photo.length > 0
-									? data.photo.map((p) => p.url)
-									: [GenericLogo]
-							}
-						/>
-					))
-				) : (
-					<p className="text-f1-silver text-center">
-						No drivers available
-					</p>
-				)}
-			</Carousel>
+			</h2>
+			<div className="w-full md:max-w-screen-xl px-3 md:px-0 mx-auto">
+				<Carousel slidesToShow={1} slidesToScroll={1} autoplay={false}>
+					{data?.standings && data.standings.length > 0 ? (
+						data.standings.map((data) => (
+							<Standing
+								key={data.id}
+								season={data.season || ""}
+								round={data.round || ""}
+								photos={
+									data.photo.length > 0
+										? data.photo.map((p) => p.url)
+										: [GenericLogo]
+								}
+							/>
+						))
+					) : (
+						<p className="text-white text-center">
+							No drivers available
+						</p>
+					)}
+				</Carousel>
+			</div>
 		</aside>
 	);
 }
