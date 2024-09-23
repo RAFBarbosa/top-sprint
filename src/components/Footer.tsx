@@ -5,11 +5,9 @@ export function Footer() {
 	return (
 		<footer className="bg-f1-carbon py-6 text-white">
 			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto px-3">
-				<div className="flex flex-col md:flex-row items-center gap-2">
-					<div className="w-[60px]">
-						<Link to="/">
-							<Logo />
-						</Link>
+				<div className="flex flex-row items-center gap-2">
+					<div className="md:w-[60px] w-[40px]">
+						<Logo />
 					</div>
 					<p className="font-light text-sm">
 						Top Sprint League - Todos os direitos reservados
