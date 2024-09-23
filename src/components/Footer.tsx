@@ -3,7 +3,7 @@ import { Logo } from "./Logo";
 
 export function Footer() {
 	return (
-		<div className="">
+		<div className="bg-f1-carbon">
 			<div className="">
 				<div className="w-[60px]">
 					<Link to="/">
