@@ -18,27 +18,33 @@ export function Teams() {
 		);
 
 	return (
-		<aside className="w-full py-10">
+		<aside className="py-10 w-full">
 			<div className="max-w-screen-xl px-3 md:px-0 mx-auto">
-				<h2 className=" font-bold text-4xl mb-4">Equipes e Pilotos</h2>
-				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4">
-					<Carousel>
-						{data?.teams && data.teams.length > 0 ? (
-							data.teams.map((data) => (
-								<Team
-									key={data.id}
-									name={data.name || ""}
-									team={data.team || ""}
-									photo={data.photo || { url: GenericLogo }}
-								/>
-							))
-						) : (
-							<p className="text-white text-center">
-								No drivers available
-							</p>
-						)}
-					</Carousel>
-				</div>
+				<fieldset className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4">
+					<legend className="font-bold text-4xl pr-4 relative">
+						Equipes e Pilotos
+					</legend>
+					<div className="md:max-w-[1268px] max-w-sm">
+						<Carousel>
+							{data?.teams && data.teams.length > 0 ? (
+								data.teams.map((data) => (
+									<Team
+										key={data.id}
+										name={data.name || ""}
+										team={data.team || ""}
+										photo={
+											data.photo || { url: GenericLogo }
+										}
+									/>
+								))
+							) : (
+								<p className="text-white text-center">
+									No drivers available
+								</p>
+							)}
+						</Carousel>
+					</div>
+				</fieldset>
 			</div>
 		</aside>
 	);

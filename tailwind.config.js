@@ -18,6 +18,7 @@ module.exports = {
 				"f1-silver": "#38383f",
 				"f1-carbon": "#15151e",
 				"f1-text": "#15151e",
+				whatsapp: "#4dc247",
 				// green: {
 				// 	300: "#00B37E",
 				// 	500: "#00875F",
