@@ -46,7 +46,7 @@ export function Menu() {
 				</Link>
 			</button>
 			<button
-				className="text-3xl md:hidden mx-2 z-50 w-[25px] h-[50px]"
+				className="text-3xl md:hidden mx-2 z-50 w-[25px] h-[50px] text-white"
 				onClick={() => setIsOpen(!isOpen)}
 			>
 				{isOpen ? "✖" : "☰"}
