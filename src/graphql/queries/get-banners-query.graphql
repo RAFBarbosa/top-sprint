@@ -2,6 +2,7 @@ query GetBanners {
 	banners(stage: PUBLISHED) {
 		id
 		title
+		link
 		photo {
 			url
 		}
