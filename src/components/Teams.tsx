@@ -19,12 +19,12 @@ export function Teams() {
 
 	return (
 		<aside className="py-10 w-full">
-			<div className="max-w-screen-xl px-3 md:px-0 mx-auto">
-				<fieldset className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4">
+			<div className="max-w-screen-xl md:px-0 mx-auto px-3">
+				<fieldset className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4 w-full">
 					<legend className="font-bold text-4xl pr-4 relative">
 						Equipes e Pilotos
 					</legend>
-					<div className="md:max-w-[1268px] max-w-sm">
+					<div className="md:max-w-[1268px] max-w-[342px]">
 						<Carousel>
 							{data?.teams && data.teams.length > 0 ? (
 								data.teams.map((data) => (

@@ -15,7 +15,7 @@ export function Team(props: TeamProps) {
 			<img
 				src={props.photo?.url}
 				alt={`${props.name} photo`}
-				className="w-full h-auto rounded-lg shadow-lg"
+				className="w-full h-auto object-contain rounded-lg shadow-lg"
 			/>
 			{/* </div> */}
 		</div>
