@@ -6,7 +6,7 @@ interface StandingProps {
 
 export function Standing(props: StandingProps) {
 	return (
-		<div className="mb-2 md:p-0">
+		<div className="">
 			{/* <strong className="text-f1-red text-lg font-bold block mb-2">
 				{props.season}
 			</strong> */}
