@@ -7,21 +7,39 @@ export function Rules() {
 	return (
 		<aside
 			id="regras"
-			className="w-full bg-gray-100 p-8 border-l border-gray-600 "
+			className="max-w-screen-xl mx-auto px-3 leading-snug"
 		>
-			<span className="font-bold text-4xl pb-6 mb-8 border-b border-gray-600 block">
-				Regras
-			</span>
-			<div className="space-y-8 ">
-				<div className="flex flex-col md:flex-row items-start gap-8">
+			<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
+			<div className="w-full mb-10">
+				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
+					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide">
+						Regras e Formato
+					</h1>
+				</div>
+				<div className="p-3 w-full h-auto bg-f1-silver bg-cover bg-opacity-5 border-0 rounded-xl tracking-normal">
+					As regras utilizadas serão baseadas no{" "}
+					<a
+						href="https://downloads.f1esports.com/Rules/2022/F1_Esports_Series_Participants_Handbook_v1.5.pdf"
+						target="_blank"
+						className="text-f1-red font-bold underline"
+					>
+						manual oficial
+					</a>
+					.
+				</div>
+			</div>
+			<div className="space-y-8">
+				<div className="flex flex-col md:flex-row items-start mb-6">
 					<div className="w-full md:w-1/2 space-y-4">
-						<strong className="text-3xl mb-4">Formato</strong>
-						<p className="font-bold">
-							O campeonato utilizará F1 24.<br></br> As corridas
-							acontecerão todas as quarta-feiras às 22h.
-						</p>
+						<div className="font-bold text-xl">
+							<p>O campeonato utilizará F1 24.</p>
+							<p>
+								As corridas acontecerão todas as quartas-feiras
+								às 22h.
+							</p>
+						</div>
 						<p>
-							Os dias de corridas serão divididos em duas etapas:
+							Os dias de corrida serão divididos em duas etapas:
 						</p>
 						<div className="space-y-2">
 							<strong className="block text-xl">
@@ -31,14 +49,14 @@ export function Rules() {
 								<li>Grid: Posição no campeonato invertido*</li>
 								<li>Duração: 5 Voltas</li>
 								<li>
-									Contexto: A sprint é uma corrida para dar
-									chance a quem está mais atrás no campeonato,
-									e é a corrida onde os jogadores podem
-									arriscar mais nas ultrapassagens.
+									A sprint é uma corrida para dar chance a
+									quem está mais atrás no campeonato, onde os
+									jogadores podem arriscar mais nas
+									ultrapassagens.
 								</li>
 							</ul>
-							<span className="italic text-gray-300">
-								*Na primeira corrida da temporada será
+							<span className="italic text-f1-silver">
+								*Na primeira corrida da temporada, haverá uma
 								qualificatória de uma volta para definir o grid
 								da Sprint.
 							</span>
@@ -54,54 +72,120 @@ export function Rules() {
 									A qualificatória de uma volta dá a chance de
 									até os melhores errarem e ficarem para trás.
 									Na corrida, a ideia é ser conservador nas
-									ultrapassagens, se você é melhor do que o
-									piloto à sua frente você eventualmente irá
-									passá-lo durante a corrida de 35%.
+									ultrapassagens. Se você for melhor do que o
+									piloto à sua frente, eventualmente o
+									ultrapassará durante a corrida de 35%.
 								</li>
 							</ul>
-							<p className="italic">
-								"Ninguém vence a corrida na primeira curva mas
-								pode perder."
+							<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
+								"Ninguém vence a corrida na primeira curva, mas
+								pode perdê-la."
 							</p>
 						</div>
 					</div>
-					<img
-						className="hidden md:block w-full md:w-1/2 mt-6 md:mt-0 md:ml-8  shadow-lg"
-						src={Car1Bg}
-						alt="Car 1"
-					/>
+					<figure className="hidden md:block w-full md:w-1/2">
+						<img
+							className="shadow-lg border-b-8 border-f1-red "
+							src={Car1Bg}
+							alt="Car 1"
+						/>
+						<figcaption className="italic text-right text-f1-silver border-b-2 border-r-2 mt-3 border-f1-lightSilver rounded-br-xl p-3 ">
+							"Ninguém vence a corrida na primeira curva, mas pode
+							perdê-la."
+						</figcaption>
+					</figure>
 				</div>
 
-				<div className="flex flex-col md:flex-row-reverse items-start bg-gray-600 p-6 shadow-lg">
-					<div className="w-full md:w-1/2 space-y-4 ">
-						<strong className="text-3xl">Pilotos Reservas</strong>
-						<p>
-							Se houverem pilotos reservas durante o campeonato,
-							eles não irão contar pontos para o piloto que estão
-							substituindo, assim como para a equipe de
-							construtores. A pontuação para os demais pilotos irá
-							ignorar a existência do piloto reserva.
-						</p>
-						<p>
-							Ex: o piloto reserva ficou em primeiro e um titular
-							em segundo - o piloto titular terá a pontuação de
-							primeiro. O mesmo serve para Pole e Volta Rápida.
-						</p>
+				<div>
+					<div className="w-full h-auto relative mb-6">
+						<div className="border-t-8 border-r-8 border-b-8 border-f1-purple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
+							<div className="font-bold md:text-4xl text-3xl pr-4 absolute left-0 bg-white -top-[30px] mt-3">
+								Configuração da Corrida
+							</div>
+							<div className="w-full flex flex-col md:flex-row-reverse">
+								<div className="space-y-2 mb-3 md:w-1/2">
+									<p>
+										<strong>Desempenho:</strong> os pilotos
+										correrão com os carros definidos antes
+										do campeonato e com o desempenho igual.
+									</p>
+									<p>
+										<strong>Assistências:</strong> Todas
+										assistências liberadas exceto
+										assistência de direção, assistência de
+										entrada e saída dos boxes e assistências
+										de DRS e ERS.
+									</p>
+									<p>
+										<strong>Lobby:</strong> As configurações
+										para o lobby estão descritas abaixo:
+									</p>
+									<ul className="list-disc ml-5 space-y-1">
+										<li>Dificuldade da IA: 50%</li>
+										<li>Dano: Completo</li>
+										<li>Clima: Dinâmico</li>
+										<li>Safety Car: Ligado e Reduzido</li>
+										<li>Regras e Bandeiras: Ligado</li>
+										<li>Corte de curvas: Rígido</li>
+										<li>
+											Volta de apresentação: Desligado
+										</li>
+										<li>Largada: Manual</li>
+										<li>Regra de Parque Fechado: Ligado</li>
+									</ul>
+								</div>
+								<figure className="md:block w-full md:w-1/2 pr-3">
+									<img
+										className="w-full h-auto shadow-lg rounded-lg mb-3"
+										src={Car4Bg}
+										alt="Car 4"
+									/>
+								</figure>
+							</div>
+						</div>
 					</div>
-					<img
-						className="w-full md:w-1/2 mt-6 md:mt-0 md:mr-8  shadow-lg"
-						src={Car2Bg}
-						alt="Car 2"
-					/>
-				</div>
 
+					<div className="w-full h-auto relative mb-6">
+						<div className="border-t-8 border-r-8 border-b-8 border-f1-red rounded-tr-3xl rounded-br-3xl pt-8 w-full">
+							<div className="font-bold md:text-4xl text-3xl pr-4 absolute left-0 bg-white -top-[30px] mt-3">
+								Pilotos Reservas
+							</div>
+							<div className="w-full flex flex-col md:flex-row">
+								<div className="space-y-2 mb-3 md:w-1/2">
+									<p>
+										Se houverem pilotos reservas durante o
+										campeonato, eles não irão contar pontos
+										para o piloto que estão substituindo,
+										assim como para a equipe de
+										construtores. A pontuação para os demais
+										pilotos irá ignorar a existência do
+										piloto reserva.
+									</p>
+									<p>
+										Ex: o piloto reserva ficou em primeiro e
+										um titular em segundo - o piloto titular
+										terá a pontuação de primeiro. O mesmo
+										serve para Pole e Volta Rápida.
+									</p>
+								</div>
+								<figure className="md:block w-full md:w-1/2 pr-3">
+									<img
+										className="w-full h-auto shadow-lg rounded-lg mb-3"
+										src={Car2Bg}
+										alt="Car 2"
+									/>
+								</figure>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div className="flex flex-col md:flex-row items-start gap-8">
 					<div className="w-full md:w-1/2 space-y-4">
 						<strong className="text-3xl">Penalidades</strong>
 						<p className="mt-2">
 							É esperado que todos os pilotos da{" "}
 							<strong>Top Sprint</strong> corram de forma justa,
-							deixando espaço para dividir curvas e se atendo às
+							deixando espaço para dividir curvas e atendo-se às
 							regras. Porém, haverá incidentes, e mesmo que não
 							haja a intenção, estes incidentes podem prejudicar a
 							corrida do rival. Por isso, as penalidades serão
@@ -117,11 +201,11 @@ export function Rules() {
 									Tickets poderão ser abertos para remoção de
 									penalidades por bug do jogo.{" "}
 								</strong>
-								Haverão três juízes independentes, que não
+								Haverá três juízes independentes, que não
 								estiveram envolvidos no incidente, para realizar
-								a análise. Os juízes irão provar o motivo das
-								penalidades com base em regras factuais, e
-								revisões podem ser requisitadas.
+								a análise. Os juízes justificarão as penalidades
+								com base em regras fatuais, e revisões podem ser
+								requisitadas.
 							</p>
 						</div>
 						<div>
@@ -192,45 +276,6 @@ export function Rules() {
 							</span>
 						</div>
 					</div>
-				</div>
-
-				<div className="flex flex-col md:flex-row-reverse items-start bg-gray-600 p-6  shadow-lg">
-					<div className="w-full md:w-1/2 space-y-4">
-						<strong className="text-3xl">
-							Configuração da Corrida
-						</strong>
-						<p>
-							<strong>Desempenho:</strong> os pilotos correrão com
-							os carros definidos antes do campeonato e com o
-							desempenho igual.
-						</p>
-						<p>
-							<strong>Assistências:</strong> Todas assistências
-							liberadas exceto assistência de direção, assistência
-							de entrada e saída dos boxes e assistências de DRS e
-							ERS.
-						</p>
-						<p>
-							<strong>Lobby:</strong> As configurações para o
-							lobby estão descritas abaixo:
-						</p>
-						<ul className="list-disc ml-5 space-y-1">
-							<li>Dificuldade da IA: 50%</li>
-							<li>Dano: Completo</li>
-							<li>Clima: Dinâmico</li>
-							<li>Safety Car: Ligado e Reduzido</li>
-							<li>Regras e Bandeiras: Ligado</li>
-							<li>Corte de curvas: Rígido</li>
-							<li>Volta de apresentação: Desligado</li>
-							<li>Largada: Manual</li>
-							<li>Regra de Parque Fechado: Ligado</li>
-						</ul>
-					</div>
-					<img
-						className="w-full md:w-1/2 mt-6 md:mt-0 md:mr-8  shadow-lg"
-						src={Car4Bg}
-						alt="Car 4"
-					/>
 				</div>
 			</div>
 			<div>
