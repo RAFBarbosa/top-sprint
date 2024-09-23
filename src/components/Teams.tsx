@@ -24,7 +24,7 @@ export function Teams() {
 					<legend className="font-bold text-4xl pr-4 relative">
 						Equipes e Pilotos
 					</legend>
-					<div className="md:max-w-[1272px] max-w-[350px] mx-auto">
+					<div className="md:max-w-[1272px] max-w-[350px] mx-auto group">
 						<Carousel>
 							{data?.teams && data.teams.length > 0 ? (
 								data.teams.map((data) => (

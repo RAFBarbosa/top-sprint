@@ -34,14 +34,19 @@ export function Menu() {
 	};
 
 	return (
-		<div className="flex items-center md:justify-center h-full gap-x-10 text-white">
-			<button className="w-[40px] z-50">
+		<div className="flex items-center justify-center h-full md:gap-x-10 text-white">
+			<button className="w-[40px] z-50 left-0 mx-2 absolute md:relative">
 				<Link to="/" onClick={handleLinkClick}>
 					<Logo />
 				</Link>
 			</button>
+			<button className="font-f1Title text-lg md:hidden z-50">
+				<Link to="/" onClick={handleLinkClick}>
+					Top Gear
+				</Link>
+			</button>
 			<button
-				className="fixed top-2 right-2 text-3xl focus:outline-none md:hidden px-2 z-50"
+				className="fixed top-2 right-2 text-3xl md:hidden mx-2 z-50"
 				onClick={() => setIsOpen(!isOpen)}
 			>
 				{isOpen ? "✖" : "☰"}
@@ -53,31 +58,31 @@ export function Menu() {
 				} md:hidden w-full z-40`}
 			>
 				<ul className="space-y-2">
-					{menuItems.map((item) => (
+					{menuItems.map((data) => (
 						<li
-							key={item.id}
+							key={data.id}
 							className="border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2"
 						>
-							{item.external ? (
+							{data.external ? (
 								<a
-									href={item.id}
+									href={data.id}
 									target="_blank"
 									rel="noopener noreferrer"
 									className="text-lg w-full flex justify-between items-center py-2 px-2"
 									onClick={handleLinkClick}
 								>
-									<span>{item.label}</span>
+									<span>{data.label}</span>
 									<span className="material-symbols-outlined text-sm">
 										arrow_forward_ios
 									</span>
 								</a>
 							) : (
 								<Link
-									to={item.id}
+									to={data.id}
 									className="text-lg w-full flex justify-between items-center py-2 px-2"
 									onClick={handleLinkClick}
 								>
-									<span>{item.label}</span>
+									<span>{data.label}</span>
 									<span className="material-symbols-outlined text-sm">
 										arrow_forward_ios
 									</span>
@@ -90,24 +95,24 @@ export function Menu() {
 
 			{/* For larger screens */}
 			<div className="hidden md:flex h-full my-2 items-center">
-				{menuItems.map((item) => (
-					<React.Fragment key={item.id}>
-						{item.external ? (
+				{menuItems.map((data) => (
+					<React.Fragment key={data.id}>
+						{data.external ? (
 							<a
-								href={item.id}
+								href={data.id}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300"
 							>
-								<span>{item.label}</span>
+								<span>{data.label}</span>
 							</a>
 						) : (
 							<Link
-								to={item.id}
+								to={data.id}
 								onClick={handleLinkClick}
 								className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300"
 							>
-								<span>{item.label}</span>
+								<span>{data.label}</span>
 							</Link>
 						)}
 					</React.Fragment>
