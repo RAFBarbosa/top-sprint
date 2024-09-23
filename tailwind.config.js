@@ -8,8 +8,9 @@ module.exports = {
 				divider: "url(/src/assets/divider.png)",
 			},
 			fontFamily: {
-				sans: "Roboto, sans-serif",
+				// sans: "Roboto, sans-serif",
 				f1: ["Titillium Web", "sans-serif"],
+				f1Title: ["Formula1-Regular", "sans-serif"],
 			},
 			colors: {
 				"f1-red": "#e10600",

@@ -24,10 +24,10 @@ const Carousel: React.FC<CarouselProps> = ({
 		slidesToShow,
 		slidesToScroll,
 		nextArrow: (
-			<div className="slick-arrow slick-next hidden md:flex">→</div>
+			<div className="slick-arrow slick-next hidden md:block">→</div>
 		),
 		prevArrow: (
-			<div className="slick-arrow slick-prev hidden md:flex">←</div>
+			<div className="slick-arrow slick-prev hidden md:block">←</div>
 		),
 		responsive: [
 			{
@@ -51,7 +51,7 @@ const Carousel: React.FC<CarouselProps> = ({
 	return (
 		<Slider {...settings}>
 			{React.Children.map(children, (child) => (
-				<div className="carousel-slide">{child}</div>
+				<div>{child}</div>
 			))}
 		</Slider>
 	);

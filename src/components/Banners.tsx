@@ -10,11 +10,11 @@ export function Banners() {
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
-		<aside className="w-full md:w-1/2 border-t-8 border-r-8 border-f1-red rounded-tr-3xl">
-			<p className="md:text-3xl text-xl font-bold my-4">
+		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl">
+			<p className="text-3xl font-bold my-4">
 				Venha fazer parte da Top Sprint
 			</p>
-			<div className="pr-4">
+			<div className="pr-2 pb-4 md:pb-0">
 				{/* <Carousel> */}
 				{data?.banners && data.banners.length > 0 ? (
 					data.banners.map((data) => (
@@ -28,6 +28,7 @@ export function Banners() {
 				)}
 				{/* </Carousel> */}
 			</div>
+			<div className="md:hidden h-2 bg-divider bg-cover opacity-5"></div>
 		</aside>
 	);
 }
