@@ -34,28 +34,29 @@ export function Menu() {
 	};
 
 	return (
-		<div className="flex items-center justify-center h-full md:gap-x-10 text-white">
-			<button className="w-[40px] z-50 left-0 mx-2 absolute md:relative">
+		<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10 text-white">
+			<button className="w-[40px] z-50">
 				<Link to="/" onClick={handleLinkClick}>
 					<Logo />
 				</Link>
 			</button>
-			<button className="text-xl uppercase font-semibold md:hidden z-50">
+			<button className="text-xl font-semibold md:hidden z-50">
 				<Link to="/" onClick={handleLinkClick}>
 					Liga Top Sprint
 				</Link>
 			</button>
 			<button
-				className="fixed top-2 right-2 text-3xl md:hidden mx-2 z-50"
+				className="text-3xl md:hidden mx-2 z-50 w-[25px] h-[50px]"
 				onClick={() => setIsOpen(!isOpen)}
 			>
 				{isOpen ? "✖" : "☰"}
 			</button>
+			<div className="md:hidden absolute bg-f1-red w-full h-full z-40"></div>
 
 			<div
 				className={`fixed top-0 right-0 bg-f1-red px-2 py-6 transition-transform duration-300 transform ${
 					isOpen ? "translate-y-[56px]" : "translate-y-[-320px]"
-				} md:hidden w-full z-40`}
+				} md:hidden w-full z-30`}
 			>
 				<ul className="space-y-2">
 					{menuItems.map((data) => (
