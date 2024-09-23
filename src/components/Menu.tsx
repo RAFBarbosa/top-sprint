@@ -35,7 +35,7 @@ export function Menu() {
 
 	return (
 		<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10 text-white">
-			<button className="w-[40px] z-50">
+			<button className="w-[40px] z-50 ml-3 md:ml-0">
 				<Link to="/" onClick={handleLinkClick}>
 					<Logo />
 				</Link>
@@ -46,7 +46,7 @@ export function Menu() {
 				</Link>
 			</button>
 			<button
-				className="text-3xl md:hidden mx-2 z-50 w-[25px] h-[50px] text-white"
+				className="text-3xl md:hidden z-50 w-[25px] h-[50px] mr-3 md:mr-0"
 				onClick={() => setIsOpen(!isOpen)}
 			>
 				{isOpen ? "✖" : "☰"}

@@ -18,8 +18,8 @@ export function Teams() {
 		);
 
 	return (
-		<aside className="py-10">
-			<div className="md:max-w-screen-xl md:px-0 mx-auto px-3">
+		<aside className="py-10 px-3">
+			<div className="md:max-w-screen-xl md:px-0 mx-auto">
 				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4 relative">
 					<div className="font-bold text-4xl pr-4 absolute bg-white -top-[28px]">
 						Equipes e Pilotos
