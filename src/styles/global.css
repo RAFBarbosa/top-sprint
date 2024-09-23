@@ -4,7 +4,7 @@
 
 @font-face {
 	font-family: "Formula1-Regular";
-	src: url("/public/fonts/formula1-wide.ttf") format("truetype");
+	src: url("/src/assets/fonts/formula1wide.ttf") format("truetype");
 }
 
 html {
