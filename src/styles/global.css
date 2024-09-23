@@ -41,3 +41,12 @@ body {
 		display: none !important;
 	}
 }
+
+.whatsapp-ico {
+	fill: white;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.whatsapp-ico:hover {
+	box-shadow: 2px 2px 11px rgba(148, 146, 146, 0.7);
+}
