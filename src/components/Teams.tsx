@@ -20,31 +20,27 @@ export function Teams() {
 	return (
 		<aside className="py-10">
 			<div className="md:max-w-screen-xl md:px-0 mx-auto px-3">
-				<fieldset className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4">
-					<legend className="font-bold text-4xl pr-4 relative">
+				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4 relative">
+					<div className="font-bold text-4xl pr-4 absolute bg-white -top-[28px]">
 						Equipes e Pilotos
-					</legend>
-					<div className="md:max-w-[1272px] max-w-[350px] mx-auto group">
-						<Carousel>
-							{data?.teams && data.teams.length > 0 ? (
-								data.teams.map((data) => (
-									<Team
-										key={data.id}
-										name={data.name || ""}
-										team={data.team || ""}
-										photo={
-											data.photo || { url: GenericLogo }
-										}
-									/>
-								))
-							) : (
-								<p className="text-white text-center">
-									No drivers available
-								</p>
-							)}
-						</Carousel>
 					</div>
-				</fieldset>
+					<Carousel>
+						{data?.teams && data.teams.length > 0 ? (
+							data.teams.map((data) => (
+								<Team
+									key={data.id}
+									name={data.name || ""}
+									team={data.team || ""}
+									photo={data.photo || { url: GenericLogo }}
+								/>
+							))
+						) : (
+							<p className="text-white text-center">
+								No drivers available
+							</p>
+						)}
+					</Carousel>
+				</div>
 			</div>
 		</aside>
 	);
