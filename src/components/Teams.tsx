@@ -18,10 +18,10 @@ export function Teams() {
 		);
 
 	return (
-		<aside className="py-10">
+		<aside className="w-full py-10">
 			<div className="max-w-screen-xl px-3 md:px-0 mx-auto">
 				<h2 className=" font-bold text-4xl mb-4">Equipes e Pilotos</h2>
-				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl">
+				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4">
 					<Carousel>
 						{data?.teams && data.teams.length > 0 ? (
 							data.teams.map((data) => (
