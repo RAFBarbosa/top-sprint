@@ -3,7 +3,7 @@ import { Logo } from "./Logo";
 
 export function Footer() {
 	return (
-		<div className="bg-f1-carbon py-6 text-white">
+		<footer className="bg-f1-carbon py-6 text-white">
 			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto px-3">
 				<div className="flex flex-col md:flex-row items-center gap-2">
 					<div className="w-[60px]">
@@ -33,6 +33,6 @@ export function Footer() {
 					Entre em contato e participe da proxima temporada
 				</a>
 			</div>
-		</div>
+		</footer>
 	);
 }
