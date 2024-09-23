@@ -40,9 +40,9 @@ export function Menu() {
 					<Logo />
 				</Link>
 			</button>
-			<button className="font-f1Title text-lg md:hidden z-50">
+			<button className="text-xl uppercase font-semibold md:hidden z-50">
 				<Link to="/" onClick={handleLinkClick}>
-					Top Gear
+					Liga Top Sprint
 				</Link>
 			</button>
 			<button
