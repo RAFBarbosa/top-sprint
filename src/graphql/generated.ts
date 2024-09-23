@@ -887,6 +887,7 @@ export type Banner = Entity & Node & {
   scheduledIn: Array<ScheduledOperation>;
   /** System stage field */
   stage: Stage;
+  title?: Maybe<Scalars['String']>;
   /** The time the document was updated */
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
@@ -963,6 +964,7 @@ export type BannerConnection = {
 export type BannerCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
+  title?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
 
@@ -1057,6 +1059,25 @@ export type BannerManyWhereInput = {
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
+  title?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  title_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  title_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  title_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  title_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  title_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  title_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  title_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  title_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  title_starts_with?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1082,12 +1103,15 @@ export enum BannerOrderByInput {
   IdDesc = 'id_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
+  TitleAsc = 'title_ASC',
+  TitleDesc = 'title_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
   UpdatedAtDesc = 'updatedAt_DESC'
 }
 
 export type BannerUpdateInput = {
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 export type BannerUpdateManyInlineInput = {
@@ -1108,8 +1132,7 @@ export type BannerUpdateManyInlineInput = {
 };
 
 export type BannerUpdateManyInput = {
-  /** No fields in updateMany data input */
-  _?: InputMaybe<Scalars['String']>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 export type BannerUpdateManyWithNestedWhereInput = {
@@ -1229,6 +1252,25 @@ export type BannerWhereInput = {
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
+  title?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  title_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  title_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  title_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  title_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  title_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  title_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  title_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  title_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  title_starts_with?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -7104,7 +7146,7 @@ export type CreateHallOfFameMutation = { __typename?: 'Mutation', createHallOfFa
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7208,6 +7250,7 @@ export const GetBannersDocument = gql`
     query GetBanners {
   banners(stage: PUBLISHED) {
     id
+    title
     photo {
       url
     }
