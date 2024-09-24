@@ -18,7 +18,8 @@ export function Standings() {
 		);
 
 	return (
-		<aside className="bg-gradient-to-r from-f1-carbon via-f1-silver to-f1-carbon py-10 flex flex-col">
+		// <aside className="bg-gradient-to-r from-f1-carbon via-f1-silver to-f1-carbon py-10 flex flex-col">
+		<aside className="bg-f1-carbon py-10 flex flex-col">
 			<div className="px-3 w-full md:max-w-screen-xl mx-auto">
 				<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center mb-10">
 					Classificação
