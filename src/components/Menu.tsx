@@ -47,7 +47,11 @@ export function Menu() {
 				className="text-3xl md:hidden z-50 w-[40px] h-[50px] mr-3 md:mr-0"
 				onClick={() => setIsOpen(!isOpen)}
 			>
-				{isOpen ? "✖" : "☰"}
+				{isOpen ? (
+					<CloseIcon fontSize="large" />
+				) : (
+					<MenuIcon fontSize="large" />
+				)}
 			</button>
 			<div className="md:hidden absolute bg-f1-red w-full h-full z-40"></div>
 
