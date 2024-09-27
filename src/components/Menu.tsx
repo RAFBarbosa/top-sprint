@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
+import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
