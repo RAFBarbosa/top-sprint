@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
-import { Menu as MenuIcon, Close as CloseIcon } from "@mui/icons-material";
+import {
+	Menu as MenuIcon,
+	Close as CloseIcon,
+	ArrowForwardIos as MenuArrow,
+} from "@mui/icons-material";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
@@ -80,7 +84,7 @@ export function Menu() {
 								>
 									<span>{data.label}</span>
 									<span className="material-symbols-outlined text-sm">
-										arrow_forward_ios
+										<MenuArrow fontSize="small" />
 									</span>
 								</a>
 							) : (
@@ -90,9 +94,7 @@ export function Menu() {
 									onClick={handleLinkClick}
 								>
 									<span>{data.label}</span>
-									<span className="material-symbols-outlined text-sm">
-										arrow_forward_ios
-									</span>
+									<MenuArrow fontSize="small" />
 								</Link>
 							)}
 						</li>
