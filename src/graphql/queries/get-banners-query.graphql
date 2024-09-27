@@ -1,8 +1,8 @@
 query GetBanners {
-	banners(stage: PUBLISHED) {
+	banners(orderBy: publishedAt_ASC) {
 		id
-		title
 		link
+		title
 		photo {
 			url
 		}

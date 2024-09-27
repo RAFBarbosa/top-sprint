@@ -18,7 +18,7 @@ const Carousel: React.FC<CarouselProps> = ({
 }) => {
 	const settings = {
 		infinite: true,
-		speed: 500,
+		speed: 750,
 		adaptiveHeight: true,
 		autoplay,
 		slidesToShow,
@@ -30,14 +30,6 @@ const Carousel: React.FC<CarouselProps> = ({
 			<div className="slick-arrow slick-prev hidden md:block">←</div>
 		),
 		responsive: [
-			{
-				breakpoint: 1024,
-				settings: {
-					slidesToShow: 2,
-					slidesToScroll: 2,
-					infinite: true,
-				},
-			},
 			{
 				breakpoint: 600,
 				settings: {

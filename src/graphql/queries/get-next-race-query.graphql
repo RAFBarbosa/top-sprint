@@ -1,0 +1,7 @@
+query GetNextRace {
+	races(orderBy: date_ASC) {
+		id
+		date
+		track
+	}
+}

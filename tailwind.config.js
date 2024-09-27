@@ -14,6 +14,7 @@ module.exports = {
 				"f1-red": "#e10600",
 				"f1-black": "#000000",
 				"f1-silver": "#38383f",
+				"f1-bg-silver": "#ededed",
 				"f1-lightSilver": "#d0d0d2",
 				"f1-carbon": "#15151e",
 				"f1-text": "#15151e",

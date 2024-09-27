@@ -10,7 +10,7 @@ export function Standing(props: StandingProps) {
 			{/* <strong className="text-f1-red text-lg font-bold block mb-2">
 				{props.season}
 			</strong> */}
-			<div className="md:flex md:space-x-4">
+			<div className="md:flex md:gap-x-4">
 				{props.photos.map((photo, index) => (
 					<img
 						key={index}
