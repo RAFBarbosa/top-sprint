@@ -10,33 +10,52 @@ export function HallsOfFame() {
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
-		<aside className="w-full">
-			<div>
-				<span className="">Mural dos Campeões</span>
+		<aside className="mt-8">
+			<div className="w-full max-w-screen-xl mx-auto px-3">
+				<div className="mb-8">
+					<h1 className="font-semibold text-4xl md:text-6xl tracking-wide mb-6">
+						Mural dos Campeões
+					</h1>
 
-				<Carousel>
-					{data?.hallsOfFame && data.hallsOfFame.length > 0 ? (
-						data.hallsOfFame.map((data) => (
-							<HallOfFame
-								key={data.id}
-								season={data.season || ""}
-								photo={data.photo || { url: GenericLogo }}
-							/>
-						))
-					) : (
-						<p>No drivers available</p>
-					)}
-				</Carousel>
+					<Carousel>
+						{data?.hallsOfFame && data.hallsOfFame.length > 0 ? (
+							data.hallsOfFame.map((data) => (
+								<HallOfFame
+									key={data.id}
+									season={data.season || ""}
+									photo={data.photo || { url: GenericLogo }}
+								/>
+							))
+						) : (
+							<p>No drivers available</p>
+						)}
+					</Carousel>
+				</div>
 			</div>
-			<div className="">
-				<strong className="">Prêmios</strong>
+			<div className="w-full bg-f1-silver text-white py-8">
+				<div className="max-w-screen-xl mx-auto px-3">
+					<div className="border-t-8 border-r-8 border-f1-red rounded-tr-3xl pt-3 mb-6">
+						<h2 className="font-bold text-3xl md:text-4xl">
+							Prêmios
+						</h2>
+					</div>
+					<div className="pr-3">
+						<p className="mb-2">
+							Os ganhadores do campeonato serão recompensados com:
+						</p>
+						<ul className="list-disc ml-5 mb-2">
+							<li>
+								Troféus para Primeiro, Segundo e Terceiro lugar
+								de pilotos.
+							</li>
+							<li>
+								Medalhas para ambos os campeões de contrutores.
+							</li>
+						</ul>
 
-				<span>
-					Os ganhadores do campeonato serão recompensados com: Troféus
-					para Primeiro, Segundo e Terceiro lugar de pilotos. Medalhas
-					para ambos os campeões de contrutores. O envio deverá ser
-					pago pelos donos dos prêmios.
-				</span>
+						<p>O envio deverá ser pago pelos donos dos prêmios.</p>
+					</div>
+				</div>
 			</div>
 		</aside>
 	);

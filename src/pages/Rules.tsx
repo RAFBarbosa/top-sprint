@@ -6,8 +6,8 @@ import Car4Bg from "/src/assets/car4-bg.png";
 export function Rules() {
 	return (
 		<aside id="regras" className="mx-auto leading-snug">
-			<div className="h-16 bg-divider bg-cover my-4 opacity-5 max-w-screen-xl px-3 mx-auto"></div>
-			<div className="w-full mb-10 max-w-screen-xl px-3 mx-auto">
+			<div className="w-full mb-8 max-w-screen-xl px-3 mx-auto">
+				<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
 					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide">
 						Regras e Formato
@@ -25,7 +25,7 @@ export function Rules() {
 					.
 				</div>
 			</div>
-			<div className="flex flex-col md:flex-row items-start mb-8 max-w-screen-xl px-3 mx-auto">
+			<div className="flex flex-col md:flex-row items-start mb-10 max-w-screen-xl px-3 mx-auto">
 				<div className="w-full md:w-1/2 space-y-4 px-3">
 					<div className="font-bold text-xl">
 						<p>O campeonato utilizará F1 24.</p>
@@ -48,11 +48,11 @@ export function Rules() {
 								podem arriscar mais nas ultrapassagens.
 							</li>
 						</ul>
-						<span className="italic text-f1-silver">
+						<p className="italic text-f1-silver">
 							*Na primeira corrida da temporada, haverá uma
 							qualificatória de uma volta para definir o grid da
 							Sprint.
-						</span>
+						</p>
 					</div>
 					<div className="space-y-2">
 						<strong className="block text-xl">
@@ -89,176 +89,221 @@ export function Rules() {
 				</figure>
 			</div>
 
-			<div>
-				<div className="w-full h-auto relative mb-8 max-w-screen-xl px-3 mx-auto">
-					<div className="border-t-8 border-r-8 border-b-8 border-f1-purple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
-						<div className="font-bold md:text-4xl text-3xl pr-4 absolute bg-white -top-[30px] mt-3">
-							Configuração da Corrida
-						</div>
-						<div className="w-full flex flex-col md:flex-row-reverse">
-							<div className="space-y-2 mb-3 md:w-1/2 pr-4">
-								<p>
-									<strong>Desempenho:</strong> os pilotos
-									correrão com os carros definidos antes do
-									campeonato e com o desempenho igual.
-								</p>
-								<p>
-									<strong>Assistências:</strong> Todas
-									assistências liberadas exceto assistência de
-									direção, assistência de entrada e saída dos
-									boxes e assistências de DRS e ERS.
-								</p>
-								<p>
-									<strong>Lobby:</strong> As configurações
-									para o lobby estão descritas abaixo:
-								</p>
-								<div className="md:flex md:space-x-10">
-									<ul className="list-disc ml-5">
-										<li>Dificuldade da IA: 50%</li>
-										<li>Dano: Completo</li>
-										<li>Clima: Dinâmico</li>
-										<li>Safety Car: Ligado e Reduzido</li>
-										<li>Regras e Bandeiras: Ligado</li>
-									</ul>
-									<ul className="list-disc ml-5">
-										<li>Corte de curvas: Rígido</li>
-										<li>
-											Volta de apresentação: Desligado
-										</li>
-										<li>Largada: Manual</li>
-										<li>Regra de Parque Fechado: Ligado</li>
-									</ul>
-								</div>
-							</div>
-							<figure className="md:block w-full md:w-1/2 pr-3">
-								<img
-									className="w-full h-auto shadow-lg rounded-lg mb-3"
-									src={Car4Bg}
-									alt="Car 4"
-								/>
-							</figure>
-						</div>
+			<div className="w-full h-auto relative mb-8 max-w-screen-xl px-3 mx-auto">
+				<div className="border-t-8 border-r-8 border-b-8 border-f1-purple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
+					<div className="font-bold md:text-4xl text-3xl pr-4 absolute bg-white -top-[30px] mt-3">
+						Configuração da Corrida
 					</div>
-				</div>
-
-				<div className="w-full h-auto relative mb-8 max-w-screen-xl px-3 mx-auto">
-					<div className="border-t-8 border-r-8 border-b-8 border-f1-red rounded-tr-3xl rounded-br-3xl pt-8 w-full">
-						<div className="font-bold md:text-4xl text-3xl pr-4 absolute bg-white -top-[30px] mt-3">
-							Pilotos Reservas
-						</div>
-						<div className="w-full flex flex-col md:flex-row">
-							<div className="space-y-2 mb-3 md:w-1/2 pr-4">
-								<p>
-									Se houverem pilotos reservas durante o
-									campeonato, eles não irão contar pontos para
-									o piloto que estão substituindo, assim como
-									para a equipe de construtores. A pontuação
-									para os demais pilotos irá ignorar a
-									existência do piloto reserva.
-								</p>
-								<p>
-									Ex: o piloto reserva ficou em primeiro e um
-									titular em segundo - o piloto titular terá a
-									pontuação de primeiro. O mesmo serve para
-									Pole e Volta Rápida.
-								</p>
+					<div className="w-full flex flex-col md:flex-row-reverse">
+						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
+							<p>
+								<strong>Desempenho:</strong> os pilotos correrão
+								com os carros definidos antes do campeonato e
+								com o desempenho igual.
+							</p>
+							<p>
+								<strong>Assistências:</strong> Todas
+								assistências liberadas exceto assistência de
+								direção, assistência de entrada e saída dos
+								boxes e assistências de DRS e ERS.
+							</p>
+							<p>
+								<strong>Lobby:</strong> As configurações para o
+								lobby estão descritas abaixo:
+							</p>
+							<div className="md:flex md:space-x-10">
+								<ul className="list-disc ml-5">
+									<li>Dificuldade da IA: 50%</li>
+									<li>Dano: Completo</li>
+									<li>Clima: Dinâmico</li>
+									<li>Safety Car: Ligado e Reduzido</li>
+									<li>Regras e Bandeiras: Ligado</li>
+								</ul>
+								<ul className="list-disc ml-5">
+									<li>Corte de curvas: Rígido</li>
+									<li>Volta de apresentação: Desligado</li>
+									<li>Largada: Manual</li>
+									<li>Regra de Parque Fechado: Ligado</li>
+								</ul>
 							</div>
-							<figure className="md:block w-full md:w-1/2 pr-3">
-								<img
-									className="w-full h-auto shadow-lg rounded-lg mb-3"
-									src={Car2Bg}
-									alt="Car 2"
-								/>
-							</figure>
 						</div>
+						<figure className="md:block w-full md:w-1/2 pr-3">
+							<img
+								className="w-full h-auto shadow-lg rounded-lg mb-3"
+								src={Car4Bg}
+								alt="Car 4"
+							/>
+						</figure>
 					</div>
 				</div>
 			</div>
 
-			<div className="mb-8 p-6 border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl bg-f1-carbon text-white">
-				<div className=" max-w-screen-xl px-3 mx-auto">
-					<h2 className="font-bold text-3xl mb-4">
-						Pontuação do Campeonato
-					</h2>
-					<div className="flex flex-col md:flex-row gap-8">
-						<div className="w-full md:w-1/2">
-							<strong className="block text-xl mb-2">
-								Corrida Principal:
-							</strong>
-							<ul className="list-disc list-inside ml-4 space-y-1">
-								{[
-									"1 - 25 pontos",
-									"2 - 22 pontos",
-									"3 - 20 pontos",
-									"4 - 18 pontos",
-									"5 - 16 pontos",
-									"6 - 15 pontos",
-									"7 - 14 pontos",
-									"8 - 13 pontos",
-									"9 - 12 pontos",
-									"10 - 11 pontos",
-									"11 - 10 pontos",
-									"12 - 9 pontos",
-									"13 - 8 pontos",
-									"14 - 7 pontos",
-									"15 - 6 pontos",
-									"16 - 5 pontos",
-									"17 - 4 pontos",
-									"18 - 3 pontos",
-									"19 - 2 pontos",
-									"20 - 1 ponto",
-								].map((item, index) => (
-									<li key={index}>{item}</li>
-								))}
-							</ul>
-						</div>
-
-						<div className="w-full md:w-1/2">
-							<strong className="block text-xl mb-2">
-								Sprint:
-							</strong>
-							<ul className="list-disc list-inside ml-4 space-y-1">
-								{[
-									"1 - 16 pontos",
-									"2 - 14 pontos",
-									"3 - 12 pontos",
-									"4 - 11 pontos",
-									"5 - 10 pontos",
-									"6 - 9 pontos",
-									"7 - 8 pontos",
-									"8 - 7 pontos",
-									"9 - 6 pontos",
-									"10 - 5 pontos",
-									"11 - 4 pontos",
-									"12 - 3 pontos",
-									"13 - 2 pontos",
-									"14 - 1 ponto",
-									"15-20 - Sem pontos",
-								].map((item, index) => (
-									<li key={index}>{item}</li>
-								))}
-							</ul>
-						</div>
+			<div className="w-full h-auto relative mb-8 max-w-screen-xl px-3 mx-auto">
+				<div className="border-t-8 border-r-8 border-b-8 border-f1-red rounded-tr-3xl rounded-br-3xl pt-8 w-full">
+					<div className="font-bold md:text-4xl text-3xl pr-4 absolute bg-white -top-[30px] mt-3">
+						Pilotos Reservas
 					</div>
+					<div className="w-full flex flex-col md:flex-row">
+						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
+							<p>
+								Se houverem pilotos reservas durante o
+								campeonato, eles não irão contar pontos para o
+								piloto que estão substituindo, assim como para a
+								equipe de construtores. A pontuação para os
+								demais pilotos irá ignorar a existência do
+								piloto reserva.
+							</p>
+							<p>
+								Ex: o piloto reserva ficou em primeiro e um
+								titular em segundo - o piloto titular terá a
+								pontuação de primeiro. O mesmo serve para Pole e
+								Volta Rápida.
+							</p>
+						</div>
+						<figure className="md:block w-full md:w-1/2 pr-3">
+							<img
+								className="w-full h-auto shadow-lg rounded-lg mb-3"
+								src={Car2Bg}
+								alt="Car 2"
+							/>
+						</figure>
+					</div>
+				</div>
+			</div>
 
-					<div className="mt-4">
-						<ul className="list-disc list-inside ml-4">
-							<li>
-								<strong>Melhor volta:</strong> 2 pontos
-							</li>
-							<li>
-								<strong>Pole position:</strong> 2 pontos
-							</li>
-							<li>
-								<strong>Presença por corrida:</strong> 1 ponto
-							</li>
-						</ul>
+			<div className="mb-8 pt-8 pb-2 bg-f1-bg-silver">
+				<div className="w-full h-auto relative max-w-screen-xl px-3 mx-auto">
+					<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 mb-6">
+						<h2 className="font-bold text-3xl md:text-4xl">
+							Pontuação
+						</h2>
+					</div>
+					<div className="flex flex-col justify-center max-w-screen-md mx-auto mb-4">
+						<div className="">
+							<table className="min-w-full text-left">
+								<thead>
+									<tr className="border-b border-b-white">
+										<th className="px-4 pb-4 uppercase">
+											Posição
+										</th>
+										<th className="px-4 pb-4 uppercase">
+											Corrida Principal
+										</th>
+										<th className="px-4 pb-4 uppercase">
+											Sprint
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{[
+										"1",
+										"2",
+										"3",
+										"4",
+										"5",
+										"6",
+										"7",
+										"8",
+										"9",
+										"10",
+										"11",
+										"12",
+										"13",
+										"14",
+										"15",
+										"16",
+										"17",
+										"18",
+										"19",
+										"20",
+									].map((position, index) => (
+										<tr
+											key={index}
+											className=" even:bg-white odd:bg-f1-bg-silver"
+										>
+											<td className="px-4 py-4">
+												{position}
+											</td>
+											<td className="px-4 py-4">
+												{
+													[
+														"25 pontos",
+														"22 pontos",
+														"20 pontos",
+														"18 pontos",
+														"16 pontos",
+														"15 pontos",
+														"14 pontos",
+														"13 pontos",
+														"12 pontos",
+														"11 pontos",
+														"10 pontos",
+														"9 pontos",
+														"8 pontos",
+														"7 pontos",
+														"6 pontos",
+														"5 pontos",
+														"4 pontos",
+														"3 pontos",
+														"2 pontos",
+														"1 ponto",
+													][index]
+												}
+											</td>
+											<td className="px-4 py-4">
+												{
+													[
+														"16 pontos",
+														"14 pontos",
+														"12 pontos",
+														"11 pontos",
+														"10 pontos",
+														"9 pontos",
+														"8 pontos",
+														"7 pontos",
+														"6 pontos",
+														"5 pontos",
+														"4 pontos",
+														"3 pontos",
+														"2 pontos",
+														"1 ponto",
+														"0 pontos",
+														"0 pontos",
+														"0 pontos",
+														"0 pontos",
+														"0 pontos",
+														"0 pontos",
+													][index]
+												}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+						<div className="px-4 mt-4">
+							<p className="mb-2 font-bold text-xl">
+								Pontos extra
+							</p>
+							<div className="md:flex md:gap-x-6 space-y-1 md:space-y-0">
+								<p>
+									<strong>Melhor volta:</strong> 2 pontos
+								</p>
+								<p>
+									<strong>Pole position:</strong> 2 pontos
+								</p>
+								<p>
+									<strong>Presença por corrida:</strong> 1
+									ponto
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div className="mb-8 max-w-screen-xl px-3 mx-auto">
-				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 mb-3">
+				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-3 mb-6">
 					<h1 className="font-bold text-3xl md:text-4xl">
 						Penalidades
 					</h1>
@@ -285,7 +330,7 @@ export function Rules() {
 							<p>
 								<strong>
 									Tickets poderão ser abertos para remoção de
-									penalidades por bug do jogo.{" "}
+									penalidades por bug do jogo.
 								</strong>
 							</p>
 							<p>
@@ -328,11 +373,11 @@ export function Rules() {
 							</strong>
 						</p>
 						<div className="space-y-2 flex flex-col">
-							<p>
+							<strong>
 								Penalidades adicionais (até 5 pontos) podem ser
-								aplicadas se houver intenção de causar o
-								incidente.
-							</p>
+								aplicadas se houver intenção/imprudência de
+								causar o incidente.
+							</strong>
 							<p>
 								Se um piloto reserva causar NC em um carro
 								titular, o titular poderá abrir uma análise de

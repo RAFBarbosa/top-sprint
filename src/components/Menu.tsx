@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
 	{ id: "/regras", label: "Regras e Formato" },
-	// { id: "/pontuacao", label: "Pontuação" },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
-	// { id: "/calendario", label: "Calendário" },
-	// { id: "/equipes", label: "Equipes e Pilotos" },
-	// { id: "/classificacao", label: "Classificação" },
 	{
 		id: "https://docs.google.com/forms/d/e/1FAIpQLSfHN50Fhz16wKABFaKlBa-iLFSeDVENnuZyZ7pK40qXJkL5Nw/viewform",
 		label: "Tickets",
@@ -27,6 +23,7 @@ const smoothScrolling = () => {
 
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
+	const location = useLocation(); // Get current path
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
@@ -46,7 +43,7 @@ export function Menu() {
 				</Link>
 			</button>
 			<button
-				className="text-3xl md:hidden z-50 w-[25px] h-[50px] mr-3 md:mr-0"
+				className="text-3xl md:hidden z-50 w-[40px] h-[50px] mr-3 md:mr-0"
 				onClick={() => setIsOpen(!isOpen)}
 			>
 				{isOpen ? "✖" : "☰"}
@@ -62,7 +59,11 @@ export function Menu() {
 					{menuItems.map((data) => (
 						<li
 							key={data.id}
-							className="border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2"
+							className={`border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2 ${
+								location.pathname === data.id
+									? "border-b-1 border-r-1"
+									: ""
+							}`}
 						>
 							{data.external ? (
 								<a
@@ -103,7 +104,11 @@ export function Menu() {
 								href={data.id}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300"
+								className={`text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 ${
+									location.pathname === data.id
+										? "bg-f1-carbon"
+										: ""
+								}`}
 							>
 								<span>{data.label}</span>
 							</a>
@@ -111,7 +116,11 @@ export function Menu() {
 							<Link
 								to={data.id}
 								onClick={handleLinkClick}
-								className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300"
+								className={`text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 ${
+									location.pathname === data.id
+										? "bg-f1-carbon"
+										: ""
+								}`}
 							>
 								<span>{data.label}</span>
 							</Link>
