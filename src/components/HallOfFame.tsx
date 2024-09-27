@@ -5,13 +5,13 @@ interface HallOfFameProps {
 
 export function HallOfFame(props: HallOfFameProps) {
 	return (
-		<div className="">
+		<div className="mr-3">
+			{/* <span className="">{props.season}</span> */}
 			<img
 				src={props.photo?.url}
 				alt={`${props.season} photo`}
-				className="shadow-lg"
+				className="w-full h-auto object-cover rounded-lg"
 			/>
-			<span className="">{props.season}</span>
 		</div>
 	);
 }
