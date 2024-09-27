@@ -61,7 +61,7 @@ export function Menu() {
 							key={data.id}
 							className={`border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2 ${
 								location.pathname === data.id
-									? "border-b-1 border-r-1"
+									? "border-b border-r"
 									: ""
 							}`}
 						>
