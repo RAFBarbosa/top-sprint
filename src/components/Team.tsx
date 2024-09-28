@@ -16,7 +16,7 @@ export function Team(props: TeamProps) {
 
 	return (
 		<div
-			className={`mr-3 relative ${
+			className={`mr-3 relative h-[410px] mt-2${
 				loading ? "bg-gray-300" : "" // Apply background color while loading
 			}`}
 		>
@@ -24,7 +24,7 @@ export function Team(props: TeamProps) {
 				<Skeleton
 					variant="rounded"
 					width="100%"
-					height={410} // You can adjust the height as per the layout
+					height="100%" // You can adjust the height as per the layout
 					className="absolute top-0 left-0"
 				/>
 			)}
