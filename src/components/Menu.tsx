@@ -28,7 +28,7 @@ const smoothScrolling = () => {
 
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
-	const location = useLocation(); // Get current path
+	const location = useLocation();
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
