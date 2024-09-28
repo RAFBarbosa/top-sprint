@@ -25,7 +25,7 @@ export function Team(props: TeamProps) {
 					variant="rounded"
 					width="100%"
 					height={410} // You can adjust the height as per the layout
-					className="absolute top-0 left-0 w-full h-full"
+					className="absolute top-0 left-0"
 				/>
 			)}
 			<img
