@@ -27,7 +27,7 @@ export function Team(props: TeamProps) {
 			<img
 				src={props.photo?.url}
 				alt={`${props.name} photo`}
-				className={`w-full h-auto object-cover rounded-lg shadow-lg mt-3 absolute ${
+				className={`w-full h-auto object-cover rounded-lg shadow-lg mt-3 ${
 					loading ? "hidden" : "block"
 				}`}
 				onLoad={handleImageLoad}
