@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Skeleton } from "@mui/material";
+import { useState } from "react";
 
 interface TeamProps {
 	name: string;
@@ -8,30 +8,31 @@ interface TeamProps {
 }
 
 export function Team(props: TeamProps) {
-	const [loaded, setLoaded] = useState(false); // Track whether the image is loaded
+	const [loading, setLoading] = useState(true); // Track loading state
 
 	const handleImageLoad = () => {
-		setLoaded(true); // Set to true when the image has finished loading
+		setLoading(false); // Set loading to false when the image has loaded
 	};
 
 	return (
 		<div
 			className={`mr-3 w-full h-auto rounded-lg shadow-lg mt-3 relative ${
-				loaded ? "" : "bg-gray-300" // Set background color while loading
+				loading ? "bg-gray-300" : "" // Apply background color while loading
 			}`}
 		>
-			{!loaded && (
+			{loading && (
 				<Skeleton
-					variant="rectangular"
+					variant="rounded"
 					width="100%"
-					className="rounded-lg"
+					height={410} // You can adjust the height as per the layout
+					className="absolute top-0 left-0 w-full h-full"
 				/>
 			)}
 			<img
 				src={props.photo?.url}
 				alt={`${props.name} photo`}
-				className={`w-full h-auto object-cover rounded-lg transition-opacity duration-500 ${
-					loaded ? "opacity-100" : "opacity-0" // Smooth transition to visible image
+				className={`w-full h-auto object-cover rounded-lg shadow-lg transition-opacity duration-500 ${
+					loading ? "opacity-0" : "opacity-100" // Smooth transition from loading to visible
 				}`}
 				onLoad={handleImageLoad} // Trigger image load event
 			/>
