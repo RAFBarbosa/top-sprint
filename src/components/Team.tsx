@@ -24,7 +24,6 @@ export function Team(props: TeamProps) {
 				<Skeleton
 					variant="rectangular"
 					width="100%"
-					height={200} // Adjust height as needed
 					className="rounded-lg"
 				/>
 			)}
