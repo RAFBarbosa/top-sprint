@@ -39,6 +39,7 @@ export type Asset = Entity & Node & {
   documentInStages: Array<Asset>;
   /** The file name */
   fileName: Scalars['String'];
+  flagRace: Array<Race>;
   /** The file handle */
   handle: Scalars['String'];
   /** The height of the file */
@@ -98,6 +99,20 @@ export type AssetDocumentInStagesArgs = {
   includeCurrent?: Scalars['Boolean'];
   inheritLocale?: Scalars['Boolean'];
   stages?: Array<Stage>;
+};
+
+
+/** Asset system model */
+export type AssetFlagRaceArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<RaceOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RaceWhereInput>;
 };
 
 
@@ -264,6 +279,7 @@ export type AssetConnection = {
 export type AssetCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   fileName: Scalars['String'];
+  flagRace?: InputMaybe<RaceCreateManyInlineInput>;
   handle: Scalars['String'];
   height?: InputMaybe<Scalars['Float']>;
   /** Inline mutations for managing document localizations excluding the default locale */
@@ -355,6 +371,9 @@ export type AssetManyWhereInput = {
   documentInStages_every?: InputMaybe<AssetWhereStageInput>;
   documentInStages_none?: InputMaybe<AssetWhereStageInput>;
   documentInStages_some?: InputMaybe<AssetWhereStageInput>;
+  flagRace_every?: InputMaybe<RaceWhereInput>;
+  flagRace_none?: InputMaybe<RaceWhereInput>;
+  flagRace_some?: InputMaybe<RaceWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -483,6 +502,7 @@ export type AssetTransformationInput = {
 
 export type AssetUpdateInput = {
   fileName?: InputMaybe<Scalars['String']>;
+  flagRace?: InputMaybe<RaceUpdateManyInlineInput>;
   handle?: InputMaybe<Scalars['String']>;
   height?: InputMaybe<Scalars['Float']>;
   /** Manage document localizations */
@@ -671,6 +691,9 @@ export type AssetWhereInput = {
   fileName_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   fileName_starts_with?: InputMaybe<Scalars['String']>;
+  flagRace_every?: InputMaybe<RaceWhereInput>;
+  flagRace_none?: InputMaybe<RaceWhereInput>;
+  flagRace_some?: InputMaybe<RaceWhereInput>;
   handle?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   handle_contains?: InputMaybe<Scalars['String']>;
@@ -4866,6 +4889,7 @@ export type Race = Entity & Node & {
   date?: Maybe<Scalars['DateTime']>;
   /** Get the document in other stages */
   documentInStages: Array<Race>;
+  flag?: Maybe<Asset>;
   /** List of Race versions */
   history: Array<Version>;
   /** The unique identifier */
@@ -4895,6 +4919,12 @@ export type RaceDocumentInStagesArgs = {
   includeCurrent?: Scalars['Boolean'];
   inheritLocale?: Scalars['Boolean'];
   stages?: Array<Stage>;
+};
+
+
+export type RaceFlagArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
 };
 
 
@@ -4948,6 +4978,7 @@ export type RaceConnection = {
 export type RaceCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   date?: InputMaybe<Scalars['DateTime']>;
+  flag?: InputMaybe<AssetCreateOneInlineInput>;
   track?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
@@ -5019,6 +5050,7 @@ export type RaceManyWhereInput = {
   documentInStages_every?: InputMaybe<RaceWhereStageInput>;
   documentInStages_none?: InputMaybe<RaceWhereStageInput>;
   documentInStages_some?: InputMaybe<RaceWhereStageInput>;
+  flag?: InputMaybe<AssetWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -5111,6 +5143,7 @@ export enum RaceOrderByInput {
 
 export type RaceUpdateInput = {
   date?: InputMaybe<Scalars['DateTime']>;
+  flag?: InputMaybe<AssetUpdateOneInlineInput>;
   track?: InputMaybe<Scalars['String']>;
 };
 
@@ -5229,6 +5262,7 @@ export type RaceWhereInput = {
   documentInStages_every?: InputMaybe<RaceWhereStageInput>;
   documentInStages_none?: InputMaybe<RaceWhereStageInput>;
   documentInStages_some?: InputMaybe<RaceWhereStageInput>;
+  flag?: InputMaybe<AssetWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -7885,7 +7919,7 @@ export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ _
 export type GetNextRaceQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNextRaceQuery = { __typename?: 'Query', races: Array<{ __typename?: 'Race', id: string, date?: any | null, track?: string | null }> };
+export type GetNextRaceQuery = { __typename?: 'Query', races: Array<{ __typename?: 'Race', id: string, date?: any | null, track?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStandingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8127,10 +8161,13 @@ export type GetHallsOfFameLazyQueryHookResult = ReturnType<typeof useGetHallsOfF
 export type GetHallsOfFameQueryResult = Apollo.QueryResult<GetHallsOfFameQuery, GetHallsOfFameQueryVariables>;
 export const GetNextRaceDocument = gql`
     query GetNextRace {
-  races(orderBy: date_ASC) {
+  races(last: 1) {
     id
     date
     track
+    flag {
+      url
+    }
   }
 }
     `;

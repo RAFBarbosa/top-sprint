@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Menu } from "./Menu";
+import { NextRaces } from "./NextRaces";
 
 export function Header() {
 	return (
@@ -9,7 +10,7 @@ export function Header() {
 				<Menu />
 			</div>
 			<div className="bg-f1-black p-16 mt-[56px] md:mt-[74px]">
-				{/* countdown */}
+				<NextRaces />
 			</div>
 		</header>
 	);

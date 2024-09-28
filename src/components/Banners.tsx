@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 export function Banners() {
 	const { data, error, loading } = useGetBannersQuery();
 
-	// if (loading) return <div>Carregando banners</div>;
+	if (loading) return <div>Carregando...</div>;
 	if (error) return <div>Erro: {error.message}</div>;
 
 	// const [loadingSkeleton, setLoading] = useState(true);

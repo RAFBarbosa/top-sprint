@@ -1,5 +1,5 @@
 query GetNextRace {
-	races(orderBy: date_ASC) {
+	races(orderBy: date_ASC, first: 1, where: { date_gt: $currentDate }) {
 		id
 		date
 		track
