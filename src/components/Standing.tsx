@@ -18,7 +18,7 @@ export function Standing(props: StandingProps) {
 						alt={`${props.season} ${props.round} photo ${
 							index + 1
 						}`}
-						className="md:w-1/2 h-auto object-contain rounded-lg shadow-lg mb-2"
+						className="md:w-1/2 h-auto object-contain rounded-lg shadow-lg mb-2 bg-inherit"
 					/>
 				))}
 			</div>
