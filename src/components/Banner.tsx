@@ -1,5 +1,3 @@
-import Skeleton from "react-loading-skeleton";
-
 interface BannerProps {
 	link: string;
 	title: string;
