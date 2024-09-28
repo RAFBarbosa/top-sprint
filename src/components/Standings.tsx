@@ -12,13 +12,13 @@ const loadingSkeleton = () => {
 					<Skeleton
 						animation="wave"
 						variant="rounded"
-						height={450}
+						height={410}
 						sx={{ width: "100%" }}
 					/>
 					<Skeleton
 						animation="wave"
 						variant="rounded"
-						height={450}
+						height={410}
 						sx={{ width: "100%" }}
 					/>
 				</div>
