@@ -2,14 +2,27 @@ import { useGetTeamsQuery } from "../graphql/generated";
 import Carousel from "./Carousel";
 import GenericLogo from "/src/assets/logosemfundo.png";
 import { Team } from "./Team";
+import { Skeleton } from "@mui/material";
+
+const loadingSkeleton = () => {
+	return (
+		<div className="px-3 w-full md:max-w-screen-xl mx-auto">
+			<div className="my-4">
+				<Skeleton
+					animation="wave"
+					variant="rounded"
+					height={350}
+					sx={{ width: "100%" }}
+				/>
+			</div>
+		</div>
+	);
+};
 
 export function Teams() {
 	const { data, error, loading } = useGetTeamsQuery();
 
-	if (loading)
-		return (
-			<div className="text-f1-silver text-center py-6">Carregando...</div>
-		);
+	if (loading) return loadingSkeleton();
 	if (error)
 		return (
 			<div className="text-red-500 text-center py-6">
