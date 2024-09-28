@@ -16,7 +16,7 @@ export function Team(props: TeamProps) {
 
 	return (
 		<div
-			className={`mr-3 ${
+			className={`mr-3 relative ${
 				loading ? "bg-gray-300" : "" // Apply background color while loading
 			}`}
 		>
