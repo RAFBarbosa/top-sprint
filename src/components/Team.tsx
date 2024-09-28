@@ -1,3 +1,6 @@
+import { Skeleton } from "@mui/material";
+import { useState } from "react";
+
 interface TeamProps {
 	name: string;
 	team: string;
@@ -5,19 +8,25 @@ interface TeamProps {
 }
 
 export function Team(props: TeamProps) {
+	const [loading, setLoading] = useState(true);
+
+	const handleImageLoad = () => {
+		setLoading(false);
+	};
+
 	return (
 		<div className="mr-3">
-			{/* <div className=""> */}
-			{/* <h3 className="block text-f1-red text-xl font-bold mb-2">
-				{props.team}
-			</h3> */}
-			{/* <span className="block text-f1-silver text-lg">{props.name}</span> */}
+			{loading && (
+				<Skeleton variant="rounded" width="100%" height={200} />
+			)}
 			<img
 				src={props.photo?.url}
 				alt={`${props.name} photo`}
-				className="w-full h-auto object-cover rounded-lg shadow-lg mt-3"
+				className={`w-full h-auto object-cover rounded-lg shadow-lg mt-3 ${
+					loading ? "hidden" : "block"
+				}`}
+				onLoad={handleImageLoad}
 			/>
-			{/* </div> */}
 		</div>
 	);
 }
