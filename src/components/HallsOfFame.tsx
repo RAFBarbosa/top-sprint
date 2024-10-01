@@ -32,7 +32,7 @@ export function HallsOfFame() {
 					</Carousel>
 				</div>
 			</div>
-			<div className="w-full bg-f1-silver text-w`hi`te py-8">
+			<div className="w-full bg-f1-silver text-white py-8">
 				<div className="max-w-screen-xl mx-auto px-3">
 					<div className="border-t-8 border-r-8 border-f1-red rounded-tr-3xl pt-3 mb-6">
 						<h2 className="font-bold text-3xl md:text-4xl">
