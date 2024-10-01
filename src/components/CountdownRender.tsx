@@ -5,6 +5,7 @@ export const CountdownRenderer: CountdownRendererFn = ({
 	days,
 	hours,
 	minutes,
+	seconds,
 	completed,
 }) => {
 	if (completed) {
@@ -41,10 +42,13 @@ export const CountdownRenderer: CountdownRendererFn = ({
 						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
 
 						<div className="flex flex-col items-center px-3">
-							<span className="font-bold text-4xl">
+							<span className="font-bold text-4xl flex">
 								{minutes < 10 ? "0" + minutes : minutes}
+								<span className="font-bold text-xs mt-1 ml-1">
+									{seconds < 10 ? "0" + seconds : seconds}
+								</span>
 							</span>
-							<p className="text-sm tracking-tight -mt-1">
+							<p className="text-sm tracking-tight -mt-1 -ml-4">
 								{minutes == 1 ? "MIN" : "MINS"}
 							</p>
 						</div>
