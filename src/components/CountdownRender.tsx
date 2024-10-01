@@ -16,8 +16,8 @@ export const CountdownRenderer: CountdownRendererFn = ({
 					<span className="font-bold uppercase text-center">
 						Sprint e Corrida
 					</span>
-					<hr className="my-1 border-t border-gray-300 ml-2 mr-4 opacity-50" />
-					<div className="flex w-full justify-center divide-x divide-f1-lightSilver divide-opacity-50 mt-2">
+					<hr className="my-1 border-t border-f1-lightSilver ml-2 mr-4 opacity-50" />
+					<div className="flex w-full justify-center mt-1">
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
 								{days < 10 ? "0" + days : days}
@@ -26,6 +26,10 @@ export const CountdownRenderer: CountdownRendererFn = ({
 								{days == 1 ? "DIA" : "DIAS"}
 							</p>
 						</div>
+
+						{/* Short divider */}
+						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
+
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
 								{hours < 10 ? "0" + hours : hours}
@@ -34,6 +38,10 @@ export const CountdownRenderer: CountdownRendererFn = ({
 								{hours == 1 ? "HR" : "HRS"}
 							</p>
 						</div>
+
+						{/* Short divider */}
+						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
+
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
 								{minutes < 10 ? "0" + minutes : minutes}
@@ -44,7 +52,7 @@ export const CountdownRenderer: CountdownRendererFn = ({
 						</div>
 					</div>
 				</div>
-				<div className="w-[90px] h-auto">
+				<div className="w-[90px] h-auto mr-1">
 					<img src={Watch} alt="Relogio" />
 				</div>
 			</div>
