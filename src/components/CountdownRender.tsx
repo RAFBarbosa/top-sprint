@@ -27,7 +27,6 @@ export const CountdownRenderer: CountdownRendererFn = ({
 							</p>
 						</div>
 
-						{/* Short divider */}
 						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
 
 						<div className="flex flex-col items-center px-3">
@@ -39,7 +38,6 @@ export const CountdownRenderer: CountdownRendererFn = ({
 							</p>
 						</div>
 
-						{/* Short divider */}
 						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
 
 						<div className="flex flex-col items-center px-3">
