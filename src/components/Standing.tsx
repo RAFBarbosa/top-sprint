@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 interface StandingProps {
 	season: string;
 	round: string;
@@ -5,6 +7,12 @@ interface StandingProps {
 }
 
 export function Standing(props: StandingProps) {
+	const [loading, setLoading] = useState(true);
+
+	const handleImageLoad = () => {
+		setLoading(false);
+	};
+
 	return (
 		<div className="">
 			{/* <strong className="text-f1-red text-lg font-bold block mb-2">
