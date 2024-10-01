@@ -1,6 +1,7 @@
 import { CountdownRendererFn } from "react-countdown";
+import Watch from "/src/assets/casio.png";
 
-const CountdownRenderer: CountdownRendererFn = ({
+export const CountdownRenderer: CountdownRendererFn = ({
 	days,
 	hours,
 	minutes,
@@ -10,15 +11,41 @@ const CountdownRenderer: CountdownRendererFn = ({
 		return <span>Race is on!</span>;
 	} else {
 		return (
-			<div className="text-lg">
-				<div>
-					<span className="font-bold">{days}</span> DIAS
+			<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[500px] flex justify-between items-center">
+				<div className="flex flex-col w-full">
+					<span className="font-bold uppercase text-center">
+						Sprint e Corrida
+					</span>
+					<hr className="my-1 border-t border-gray-300 ml-2 mr-4 opacity-50" />
+					<div className="flex w-full justify-center divide-x divide-f1-lightSilver divide-opacity-50 mt-2">
+						<div className="flex flex-col items-center px-3">
+							<span className="font-bold text-4xl">
+								{days < 10 ? "0" + days : days}
+							</span>
+							<p className="text-sm tracking-tight -mt-1">
+								{days == 1 ? "DIA" : "DIAS"}
+							</p>
+						</div>
+						<div className="flex flex-col items-center px-3">
+							<span className="font-bold text-4xl">
+								{hours < 10 ? "0" + hours : hours}
+							</span>
+							<p className="text-sm tracking-tight -mt-1">
+								{hours == 1 ? "HR" : "HRS"}
+							</p>
+						</div>
+						<div className="flex flex-col items-center px-3">
+							<span className="font-bold text-4xl">
+								{minutes < 10 ? "0" + minutes : minutes}
+							</span>
+							<p className="text-sm tracking-tight -mt-1">
+								{minutes == 1 ? "MIN" : "MINS"}
+							</p>
+						</div>
+					</div>
 				</div>
-				<div>
-					<span className="font-bold">{hours}</span> HRS
-				</div>
-				<div>
-					<span className="font-bold">{minutes}</span> MINS
+				<div className="w-[90px] h-auto">
+					<img src={Watch} alt="Relogio" />
 				</div>
 			</div>
 		);

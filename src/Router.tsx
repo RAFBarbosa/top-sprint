@@ -9,11 +9,6 @@ export function Router() {
 			<Route path="/" element={<Home />} />
 			<Route path="/regras" element={<Rules />} />
 			<Route path="/campeoes" element={<Champions />} />
-			{/* <Route path="/pontuacao" element={<Rules />} />
-			<Route path="/calendario" element={<Rules />} />
-			<Route path="/equipes" element={<Rules />} />
-			<Route path="/classificacao" element={<Rules />} />
-			<Route path="/tickets" element={<Rules />} /> */}
 		</Routes>
 	);
 }

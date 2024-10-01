@@ -16,7 +16,7 @@ export function Team(props: TeamProps) {
 
 	return (
 		<div
-			className={`mr-3 relative h-[410px] mt-2${
+			className={`mr-3 relative h-auto mt-2${
 				loading ? "bg-f1-lightSilver" : ""
 			}`}
 		>
