@@ -34,7 +34,7 @@ export function NextRace(props: NextRaceProps) {
 							className="rounded-md"
 						/>
 					</div>
-					<p className="text-xl md:text-2xl font-bold uppercase pt-2 border-t w-full md:mr-3 tracking-wider border-opacity-50">
+					<p className="text-xl md:text-2xl font-bold uppercase pt-2 border-t w-full md:mr-3 tracking-wider border-opacity-50 text-justify">
 						{props.track}
 					</p>
 				</div>
