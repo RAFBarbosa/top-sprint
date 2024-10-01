@@ -19,6 +19,7 @@ module.exports = {
 				"f1-carbon": "#15151e",
 				"f1-text": "#15151e",
 				"f1-purple": "#581c87",
+				rolex: "#006341",
 				whatsapp: "#4dc247",
 			},
 		},

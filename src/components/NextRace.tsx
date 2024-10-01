@@ -1,37 +1,13 @@
-import Countdown, { CountdownRendererFn } from "react-countdown";
+import Countdown from "react-countdown";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CountdownRenderer } from "./CountdownRender";
 
 interface NextRaceProps {
 	track: string;
 	date: Date;
 	flag: { url: string };
 }
-
-const countdownRenderer: CountdownRendererFn = ({
-	days,
-	hours,
-	minutes,
-	completed,
-}) => {
-	if (completed) {
-		return <span>Race is on!</span>;
-	} else {
-		return (
-			<div className="text-lg">
-				<div>
-					<span className="font-bold">{days}</span> DIAS
-				</div>
-				<div>
-					<span className="font-bold">{hours}</span> HRS
-				</div>
-				<div>
-					<span className="font-bold">{minutes}</span> MINS
-				</div>
-			</div>
-		);
-	}
-};
 
 export function NextRace(props: NextRaceProps) {
 	const formattedDate = format(new Date(props.date), "dd 'de' MMMM", {
@@ -45,23 +21,25 @@ export function NextRace(props: NextRaceProps) {
 	const formattedDateCapitalized = `${dayPart} de ${capitalizedMonth}`;
 
 	return (
-		<div className="text-white md:flex justify-between max-w-screen-xl px-3 mx-auto">
-			<div className="flex flex-col">
-				<div className="block text-lg mb-2">
+		<div className="text-white md:flex justify-between max-w-screen-xl p-4 mx-auto tracking-wide">
+			<div className="flex flex-col w-full">
+				<div className="text-lg mb-2 font-bold">
 					{formattedDateCapitalized}
 				</div>
-				<div className="flex items-center">
-					<img
-						src={props.flag?.url}
-						alt={`${props.track} flag`}
-						className="w-[57px] h-auto object-cover rounded-lg shadow-lg mt-3"
-					/>
-					<p className="text-xl font-bold uppercase">
-						{props.track}{" "}
+				<div className="flex">
+					<div className="border-r border-t rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none mr-3 border-opacity-50">
+						<img
+							src={props.flag?.url}
+							alt={`${props.track} flag`}
+							className="rounded-md"
+						/>
+					</div>
+					<p className="text-xl md:text-2xl font-bold uppercase pt-2 border-t w-full md:mr-3 tracking-wider border-opacity-50">
+						{props.track}
 					</p>
 				</div>
 			</div>
-			<Countdown date={props.date} renderer={countdownRenderer} />
+			<Countdown date={props.date} renderer={CountdownRenderer} />
 		</div>
 	);
 }

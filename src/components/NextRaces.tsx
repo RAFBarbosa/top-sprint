@@ -28,7 +28,7 @@ export function NextRaces() {
 					/>
 				))
 			) : (
-				<p className="text-white text-center">No drivers available</p>
+				<p className="text-white text-center">No races available</p>
 			)}
 		</div>
 	);
