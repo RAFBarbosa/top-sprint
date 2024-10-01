@@ -1,7 +1,11 @@
 query GetNextRace {
-	races(orderBy: date_ASC, first: 1, where: { date_gt: $currentDate }) {
+	races(orderBy: date_DESC, first: 1, stage: PUBLISHED) {
 		id
 		date
+		link
+		flag {
+			url
+		}
 		track
 	}
 }
