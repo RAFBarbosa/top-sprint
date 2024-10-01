@@ -6,6 +6,7 @@ import { CountdownRenderer } from "./CountdownRender";
 interface NextRaceProps {
 	track: string;
 	date: Date;
+	link: string;
 	flag: { url: string };
 }
 
@@ -31,7 +32,7 @@ export function NextRace(props: NextRaceProps) {
 						<img
 							src={props.flag?.url}
 							alt={`${props.track} flag`}
-							className="rounded-md"
+							className="rounded-md w-[57px] h-[32px]"
 						/>
 					</div>
 					<p className="text-xl md:text-2xl font-bold uppercase pt-2 border-t w-full md:mr-3 tracking-wider border-opacity-50 text-justify">
@@ -39,7 +40,12 @@ export function NextRace(props: NextRaceProps) {
 					</p>
 				</div>
 			</div>
-			<Countdown date={props.date} renderer={CountdownRenderer} />
+			<Countdown
+				date={props.date}
+				renderer={(countdownProps) => (
+					<CountdownRenderer {...countdownProps} link={props.link} />
+				)}
+			/>
 		</div>
 	);
 }
