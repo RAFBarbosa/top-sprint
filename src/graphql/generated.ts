@@ -4894,6 +4894,7 @@ export type Race = Entity & Node & {
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
+  link?: Maybe<Scalars['String']>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** User that last published this document */
@@ -4979,6 +4980,7 @@ export type RaceCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   date?: InputMaybe<Scalars['DateTime']>;
   flag?: InputMaybe<AssetCreateOneInlineInput>;
+  link?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
@@ -5070,6 +5072,25 @@ export type RaceManyWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  link?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  link_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  link_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  link_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  link_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  link_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  link_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  link_starts_with?: InputMaybe<Scalars['String']>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -5133,6 +5154,8 @@ export enum RaceOrderByInput {
   DateDesc = 'date_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
+  LinkAsc = 'link_ASC',
+  LinkDesc = 'link_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   TrackAsc = 'track_ASC',
@@ -5144,6 +5167,7 @@ export enum RaceOrderByInput {
 export type RaceUpdateInput = {
   date?: InputMaybe<Scalars['DateTime']>;
   flag?: InputMaybe<AssetUpdateOneInlineInput>;
+  link?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
 };
 
@@ -5166,6 +5190,7 @@ export type RaceUpdateManyInlineInput = {
 
 export type RaceUpdateManyInput = {
   date?: InputMaybe<Scalars['DateTime']>;
+  link?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
 };
 
@@ -5282,6 +5307,25 @@ export type RaceWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  link?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  link_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  link_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  link_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  link_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  link_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  link_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  link_starts_with?: InputMaybe<Scalars['String']>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -7919,7 +7963,7 @@ export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ _
 export type GetNextRaceQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetNextRaceQuery = { __typename?: 'Query', races: Array<{ __typename?: 'Race', id: string, date?: any | null, track?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetNextRaceQuery = { __typename?: 'Query', races: Array<{ __typename?: 'Race', id: string, date?: any | null, link?: string | null, track?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStandingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8161,13 +8205,14 @@ export type GetHallsOfFameLazyQueryHookResult = ReturnType<typeof useGetHallsOfF
 export type GetHallsOfFameQueryResult = Apollo.QueryResult<GetHallsOfFameQuery, GetHallsOfFameQueryVariables>;
 export const GetNextRaceDocument = gql`
     query GetNextRace {
-  races(last: 1) {
+  races(orderBy: date_DESC, first: 1, stage: PUBLISHED) {
     id
     date
-    track
+    link
     flag {
       url
     }
+    track
   }
 }
     `;

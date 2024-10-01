@@ -24,6 +24,7 @@ export function NextRaces() {
 						key={data.id}
 						track={data.track || ""}
 						date={data.date || ""}
+						link={data.link || ""}
 						flag={data.flag || { url: GenericLogo }}
 					/>
 				))

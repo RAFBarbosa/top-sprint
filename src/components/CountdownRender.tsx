@@ -1,18 +1,48 @@
 import { CountdownRendererFn } from "react-countdown";
 import Watch from "/src/assets/casio.png";
 
-export const CountdownRenderer: CountdownRendererFn = ({
+interface CountdownRendererProps {
+	days: number;
+	hours: number;
+	minutes: number;
+	seconds: number;
+	completed: boolean;
+	link?: string;
+}
+
+export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
 	days,
 	hours,
 	minutes,
 	seconds,
 	completed,
+	link,
 }) => {
 	if (completed) {
-		return <span>Race is on!</span>;
+		return (
+			<a href={link} className="hover:opacity-90">
+				<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center">
+					<div className="flex flex-col w-full">
+						<span className="font-bold uppercase text-center">
+							Sprint e Corrida
+						</span>
+						<hr className="my-1 border-t border-f1-lightSilver ml-2 mr-4 opacity-50" />
+						<div className="flex flex-col w-full justify-center mt-1">
+							<span className="font-bold text-2xl a">
+								Corrida ao vivo!
+							</span>
+							<p className="text-sm">Clique para assistir</p>
+						</div>
+					</div>
+					<div className="w-[90px] h-auto mr-1">
+						<img src={Watch} alt="Relogio" />
+					</div>
+				</div>
+			</a>
+		);
 	} else {
 		return (
-			<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[500px] flex justify-between items-center">
+			<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center">
 				<div className="flex flex-col w-full">
 					<span className="font-bold uppercase text-center">
 						Sprint e Corrida
