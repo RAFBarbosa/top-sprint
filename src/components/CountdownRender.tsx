@@ -20,7 +20,7 @@ export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
 }) => {
 	if (completed) {
 		return (
-			<a href={link} className="hover:opacity-90">
+			<a href={link} target="_blank" className="hover:opacity-90">
 				<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center">
 					<div className="flex flex-col w-full">
 						<span className="font-bold uppercase text-center">

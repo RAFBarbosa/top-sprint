@@ -1,6 +1,5 @@
 import Car1Bg from "/src/assets/car1-bg.png";
 import Car2Bg from "/src/assets/car2-bg.png";
-import Car3Bg from "/src/assets/car3-bg.png";
 import Car4Bg from "/src/assets/car4-bg.png";
 
 export function Rules() {
