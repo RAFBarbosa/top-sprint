@@ -1,12 +1,28 @@
+import { Skeleton } from "@mui/material";
 import { useGetHallsOfFameQuery } from "../graphql/generated";
 import Carousel from "./Carousel";
 import { HallOfFame } from "./HallOfFame";
 import GenericLogo from "/src/assets/logosemfundo.png";
 
+const loadingSkeleton = () => {
+	return (
+		<div className="px-3 w-full md:max-w-screen-xl mx-auto">
+			<div className="my-4">
+				<Skeleton
+					animation="wave"
+					variant="rounded"
+					height={350}
+					sx={{ width: "100%" }}
+				/>
+			</div>
+		</div>
+	);
+};
+
 export function HallsOfFame() {
 	const { data, error, loading } = useGetHallsOfFameQuery();
 
-	if (loading) return <div>Carregando...</div>;
+	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
