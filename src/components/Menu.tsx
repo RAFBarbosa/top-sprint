@@ -37,7 +37,7 @@ export function Menu() {
 
 	return (
 		<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10 text-white">
-			<button className="w-[70px] z-50 ml-3 md:ml-0">
+			<button className="w-[50px] md:w-[70px] z-50 ml-3 md:ml-0">
 				<Link to="/" onClick={handleLinkClick}>
 					<Logo />
 				</Link>
