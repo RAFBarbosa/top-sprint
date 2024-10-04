@@ -1,5 +1,6 @@
 interface BannerProps {
 	link: string;
+	category: string;
 	title: string;
 	photo: { url: string };
 }
@@ -13,7 +14,7 @@ export function Banner(props: BannerProps) {
 				rel="noopener noreferrer"
 			>
 				<div className="text-sm font-bold mt-2 text-f1-red uppercase">
-					Assista a corrida
+					{props.category}
 				</div>
 				<div className="group-hover:underline">
 					<div className="text-3xl md:text-4xl font-bold mb-4 leading-8">
