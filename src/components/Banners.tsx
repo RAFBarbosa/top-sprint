@@ -35,6 +35,7 @@ export function Banners() {
 						<Banner
 							key={data.id}
 							link={data.link || ""}
+							category={data.category || ""}
 							title={data.title || ""}
 							photo={data.photo || { url: GenericLogo }}
 						/>
