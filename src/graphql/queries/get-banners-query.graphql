@@ -2,6 +2,7 @@ query GetBanners {
 	banners(orderBy: publishedAt_ASC) {
 		id
 		link
+		category
 		title
 		photo {
 			url
