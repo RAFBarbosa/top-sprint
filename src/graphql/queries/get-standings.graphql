@@ -1,5 +1,5 @@
 query GetStandings {
-	standings(orderBy: round_DESC) {
+	standings(last: 1) {
 		id
 		photo {
 			url
