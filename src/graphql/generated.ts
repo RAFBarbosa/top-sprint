@@ -8290,7 +8290,7 @@ export type GetNextRaceLazyQueryHookResult = ReturnType<typeof useGetNextRaceLaz
 export type GetNextRaceQueryResult = Apollo.QueryResult<GetNextRaceQuery, GetNextRaceQueryVariables>;
 export const GetStandingsDocument = gql`
     query GetStandings {
-  standings(orderBy: round_DESC) {
+  standings(last: 1) {
     id
     photo {
       url

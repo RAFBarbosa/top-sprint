@@ -45,26 +45,26 @@ export function Standings() {
 				<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center mb-10">
 					Classificação
 				</h2>
-				<Carousel slidesToShow={1} slidesToScroll={1} autoplay={false}>
-					{data?.standings && data.standings.length > 0 ? (
-						data.standings.map((data) => (
-							<Standing
-								key={data.id}
-								season={data.season || ""}
-								round={data.round || ""}
-								photos={
-									data.photo.length > 0
-										? data.photo.map((p) => p.url)
-										: [GenericLogo]
-								}
-							/>
-						))
-					) : (
-						<p className="text-white text-center">
-							No drivers available
-						</p>
-					)}
-				</Carousel>
+				{/* <Carousel slidesToShow={1} slidesToScroll={1} autoplay={false}> */}
+				{data?.standings && data.standings.length > 0 ? (
+					data.standings.map((data) => (
+						<Standing
+							key={data.id}
+							season={data.season || ""}
+							round={data.round || ""}
+							photos={
+								data.photo.length > 0
+									? data.photo.map((p) => p.url)
+									: [GenericLogo]
+							}
+						/>
+					))
+				) : (
+					<p className="text-white text-center">
+						No drivers available
+					</p>
+				)}
+				{/* </Carousel> */}
 			</div>
 		</aside>
 	);
