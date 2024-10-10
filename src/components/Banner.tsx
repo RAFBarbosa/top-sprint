@@ -24,7 +24,7 @@ export function Banner(props: BannerProps) {
 						<img
 							src={props.photo?.url}
 							alt={`${props.photo} photo`}
-							className="shadow-lg transform transition-transform duration-150 group-hover:scale-110"
+							className="shadow-lg w-full transform transition-transform duration-150 group-hover:scale-110"
 						/>
 					</div>
 				</div>
