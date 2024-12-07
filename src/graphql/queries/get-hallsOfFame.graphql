@@ -1,5 +1,5 @@
 query GetHallsOfFame {
-	hallsOfFame(stage: PUBLISHED) {
+	hallsOfFame(orderBy: publishedAt_DESC) {
 		id
 		season
 		photo {

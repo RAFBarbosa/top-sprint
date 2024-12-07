@@ -1,6 +1,6 @@
-import Car1Bg from "/src/assets/car1-bg.png";
-import Car2Bg from "/src/assets/car2-bg.png";
-import Car4Bg from "/src/assets/car4-bg.png";
+import Car1Bg from "/src/assets/img/car1-bg.png";
+import Car2Bg from "/src/assets/img/car2-bg.png";
+import Car4Bg from "/src/assets/img/car4-bg.png";
 
 export function Rules() {
 	return (
@@ -12,7 +12,7 @@ export function Rules() {
 						Regras e Formato
 					</h1>
 				</div>
-				<div className="p-3 w-full h-auto bg-f1-silver bg-cover bg-opacity-5 border-0 rounded-xl tracking-normal">
+				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 border-0 rounded-xl tracking-normal">
 					As regras utilizadas serão baseadas no{" "}
 					<a
 						href="https://downloads.f1esports.com/Rules/2022/F1_Esports_Series_Participants_Handbook_v1.5.pdf"

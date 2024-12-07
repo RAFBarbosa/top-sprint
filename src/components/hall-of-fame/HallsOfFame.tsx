@@ -1,8 +1,7 @@
 import { Skeleton } from "@mui/material";
-import { useGetHallsOfFameQuery } from "../graphql/generated";
-import Carousel from "./Carousel";
+import Carousel from "../utils/Carousel"; // Assuming you have a Carousel component
 import { HallOfFame } from "./HallOfFame";
-import GenericLogo from "/src/assets/logosemfundo.png";
+import { useGetHallsOfFameQuery } from "../../graphql/generated";
 
 const loadingSkeleton = () => {
 	return (
@@ -33,19 +32,46 @@ export function HallsOfFame() {
 						Mural dos Campeões
 					</h1>
 
-					<Carousel>
-						{data?.hallsOfFame && data.hallsOfFame.length > 0 ? (
-							data.hallsOfFame.map((data) => (
-								<HallOfFame
-									key={data.id}
-									season={data.season || ""}
-									photo={data.photo || { url: GenericLogo }}
-								/>
-							))
-						) : (
-							<p>No drivers available</p>
-						)}
-					</Carousel>
+					{/* Loop through hallsOfFame and generate a carousel for each item */}
+					{data?.hallsOfFame && data.hallsOfFame.length > 0 ? (
+						data.hallsOfFame.map((data) => {
+							const numOfPhotos = data.photo.length;
+
+							// Logic to determine slidesToShow and autoplay
+							const slidesToShow =
+								numOfPhotos >= 3 ? 3 : numOfPhotos;
+							const autoplay = numOfPhotos > 1; // Enable autoplay if more than 1 image
+
+							return (
+								<div key={data.id} className="mb-8">
+									{/* Display the season as the title for each carousel */}
+									<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
+									<h2 className="font-semibold text-2xl md:text-3xl tracking-wide mb-4">
+										{data.season}
+									</h2>
+
+									<div className="w-full h-3 bg-f1-carbon my-4"></div>
+
+									{/* Carousel */}
+									<Carousel
+										slidesToShow={slidesToShow}
+										autoplay={autoplay}
+									>
+										{/* Loop through the photos and create a slide for each one */}
+										{data.photo.map((photo, index) => (
+											<HallOfFame
+												key={`${data.id}-${index}`}
+												season={data.season || ""}
+												photo={photo}
+											/>
+										))}
+									</Carousel>
+								</div>
+							);
+						})
+					) : (
+						<p>No champions available</p>
+					)}
 				</div>
 			</div>
 			<div className="w-full bg-f1-silver text-white py-8">
