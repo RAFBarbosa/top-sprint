@@ -1,23 +1,21 @@
-import { useGetTeamsQuery } from "../graphql/generated";
-import Carousel from "./Carousel";
-import GenericLogo from "/src/assets/logosemfundo.png";
+import { useGetTeamsQuery } from "../../graphql/generated";
+import Carousel from "../utils/Carousel";
+import GenericLogo from "/src/assets/img/white-logo.png";
 import { Team } from "./Team";
 import { Skeleton } from "@mui/material";
 
-const loadingSkeleton = () => {
-	return (
-		<div className="px-3 w-full md:max-w-screen-xl mx-auto">
-			<div className="my-4">
-				<Skeleton
-					animation="wave"
-					variant="rounded"
-					height={350}
-					sx={{ width: "100%" }}
-				/>
-			</div>
+const loadingSkeleton = () => (
+	<div className="px-3 w-full md:max-w-screen-xl mx-auto">
+		<div className="my-4">
+			<Skeleton
+				animation="wave"
+				variant="rounded"
+				height={350}
+				sx={{ width: "100%" }}
+			/>
 		</div>
-	);
-};
+	</div>
+);
 
 export function Teams() {
 	const { data, error, loading } = useGetTeamsQuery();
@@ -37,14 +35,13 @@ export function Teams() {
 					<div className="font-bold text-4xl pr-4 absolute bg-white -top-[28px]">
 						Equipes e Pilotos
 					</div>
-					<Carousel>
+					<Carousel slidesToShowDesktop={1} slidesToShowMobile={1}>
 						{data?.teams && data.teams.length > 0 ? (
-							data.teams.map((data) => (
+							data.teams.map((team) => (
 								<Team
-									key={data.id}
-									name={data.name || ""}
-									team={data.team || ""}
-									photo={data.photo || { url: GenericLogo }}
+									key={team.id}
+									name={team.name || ""}
+									photo={team.photo || { url: GenericLogo }}
 								/>
 							))
 						) : (

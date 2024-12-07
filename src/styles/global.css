@@ -1,10 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @font-face {
 	font-family: "Formula1-Regular";
-	src: url("/src/assets/fonts/formula1wide.ttf") format("truetype");
+	src: url("/src/assets/font/formula1wide.ttf") format("truetype");
 }
 
 html {
@@ -17,24 +15,37 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
+/* Base styles for arrows */
 .slick-prev,
 .slick-next {
-	@apply w-10 h-10 z-10;
+	@apply w-10 h-10 z-10 absolute top-1/2 transform -translate-y-1/2;
+	transition: opacity 0.3s ease; /* Smooth transition for hover effect */
 }
 
+/* Positioning arrows */
 .slick-prev {
-	@apply left-1;
+	@apply left-3; /* Move the left arrow to the left */
 }
 
 .slick-next {
-	@apply right-1;
+	@apply right-3; /* Move the right arrow to the right */
 }
 
+/* Style for the arrow icons */
 .slick-prev::before,
 .slick-next::before {
-	font-size: 2.5rem;
+	font-size: 2.7rem;
+	opacity: 100%;
+	color: var(--color-f1-red);
 }
 
+/* Hover effect to make arrows 90% opaque */
+.slick-prev:hover::before,
+.slick-next:hover::before {
+	opacity: 0.8;
+}
+
+/* Hide arrows on mobile (max-width 600px) */
 @media (max-width: 600px) {
 	.slick-prev,
 	.slick-next {
@@ -49,4 +60,22 @@ body {
 
 .whatsapp-ico:hover {
 	box-shadow: 2px 2px 11px rgba(148, 146, 146, 0.7);
+}
+
+@theme {
+	--font-f1: "Titillium Web", "sans-serif";
+	--font-f1Title: "Formula1-Regular", "sans-serif";
+
+	--color-f1-red: #eb1c24;
+	--color-f1-black: #000000;
+	--color-f1-silver: #38383f;
+	--color-f1-bg-silver: #ededed;
+	--color-f1-lightSilver: #dcdada;
+	--color-f1-carbon: #15151e;
+	--color-f1-text: #15151e;
+	--color-f1-purple: #581c87;
+	--color-rolex: #006341;
+	--color-whatsapp: #4dc247;
+
+	--background-image-divider: url(./src/assets/img/divider.png);
 }

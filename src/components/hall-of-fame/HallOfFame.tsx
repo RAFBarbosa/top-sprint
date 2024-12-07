@@ -1,13 +1,12 @@
 import { Skeleton } from "@mui/material";
 import { useState } from "react";
 
-interface TeamProps {
-	name: string;
-	team: string;
+interface HallOfFameProps {
+	season: string;
 	photo: { url: string };
 }
 
-export function Team(props: TeamProps) {
+export function HallOfFame(props: HallOfFameProps) {
 	const [loading, setLoading] = useState(true);
 
 	const handleImageLoad = () => {
@@ -16,9 +15,9 @@ export function Team(props: TeamProps) {
 
 	return (
 		<div
-			className={`mr-3 relative h-auto mt-2${
+			className={`relative mt-2 ${
 				loading ? "bg-f1-lightSilver" : ""
-			}`}
+			} flex justify-center items-center`}
 		>
 			{loading && (
 				<Skeleton
@@ -29,9 +28,9 @@ export function Team(props: TeamProps) {
 				/>
 			)}
 			<img
-				src={props.photo?.url}
-				alt={`${props.name} photo`}
-				className={`w-full h-auto object-cover rounded-lg shadow-lg transition-opacity duration-500 ${
+				src={props.photo.url}
+				alt={`${props.season} photo`}
+				className={`w-full h-auto object-contain rounded-lg shadow-lg transition-opacity duration-500 ${
 					loading ? "opacity-0" : "opacity-100"
 				}`}
 				onLoad={handleImageLoad}

@@ -1,5 +1,5 @@
-import { useGetBannersQuery } from "../graphql/generated";
-import GenericLogo from "/src/assets/logosemfundo.png";
+import { useGetBannersQuery } from "../../graphql/generated";
+import GenericLogo from "/src/assets/img/white-logo.png";
 import { Banner } from "./Banner";
 import { Skeleton } from "@mui/material";
 
