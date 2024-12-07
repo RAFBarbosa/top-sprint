@@ -1,7 +1,7 @@
-import { Teams } from "../components/Teams";
-import { Standings } from "../components/Standings";
-import { Calendars } from "../components/Calendars";
-import { Banners } from "../components/Banners";
+import { Teams } from "../components/teams/Teams";
+import { Standings } from "../components/standings/Standings";
+import { Calendars } from "../components/news/Calendars";
+import { Banners } from "../components/news/Banners";
 
 export function Home() {
 	return (

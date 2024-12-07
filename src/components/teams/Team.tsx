@@ -1,12 +1,12 @@
 import { Skeleton } from "@mui/material";
 import { useState } from "react";
 
-interface HallOfFameProps {
-	season: string;
+interface TeamProps {
+	name: string;
 	photo: { url: string };
 }
 
-export function HallOfFame(props: HallOfFameProps) {
+export function Team(props: TeamProps) {
 	const [loading, setLoading] = useState(true);
 
 	const handleImageLoad = () => {
@@ -15,7 +15,7 @@ export function HallOfFame(props: HallOfFameProps) {
 
 	return (
 		<div
-			className={`mr-3 relative h-auto mt-2${
+			className={`mr-3 relative h-auto mt-2 ${
 				loading ? "bg-f1-lightSilver" : ""
 			}`}
 		>
@@ -29,7 +29,7 @@ export function HallOfFame(props: HallOfFameProps) {
 			)}
 			<img
 				src={props.photo?.url}
-				alt={`${props.season} photo`}
+				alt={`${props.name} photo`}
 				className={`w-full h-auto object-cover rounded-lg shadow-lg transition-opacity duration-500 ${
 					loading ? "opacity-0" : "opacity-100"
 				}`}

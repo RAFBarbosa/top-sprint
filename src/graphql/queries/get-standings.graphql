@@ -1,10 +1,26 @@
-query GetStandings {
-	standings(last: 1) {
+query GetTeams {
+	drivers(stage: PUBLISHED) {
+		id
+		name
+		number
+		team {
+			name
+			color {
+				hex
+			}
+		}
+		photo {
+			url
+		}
+	}
+	teams(stage: PUBLISHED) {
+		color {
+			hex
+		}
+		name
 		id
 		photo {
 			url
 		}
-		round
-		season
 	}
 }

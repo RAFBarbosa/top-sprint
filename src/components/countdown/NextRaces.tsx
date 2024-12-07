@@ -1,5 +1,5 @@
-import { useGetNextRaceQuery } from "../graphql/generated";
-import GenericLogo from "/src/assets/logosemfundo.png";
+import { useGetNextRaceQuery } from "../../graphql/generated";
+import GenericLogo from "/src/assets/img/white-logo.png";
 import { NextRace } from "./NextRace";
 import { Skeleton } from "@mui/material";
 

@@ -1,7 +1,5 @@
-import { Link } from "react-router-dom";
-import { Logo } from "./Logo";
 import { Menu } from "./Menu";
-import { NextRaces } from "./NextRaces";
+import { NextRaces } from "../countdown/NextRaces";
 
 export function Header() {
 	return (

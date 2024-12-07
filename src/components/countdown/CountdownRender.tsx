@@ -1,5 +1,5 @@
 import { CountdownRendererFn } from "react-countdown";
-import Watch from "/src/assets/casio.png";
+import Watch from "/src/assets/img/casio.png";
 
 interface CountdownRendererProps {
 	days: number;

@@ -1,4 +1,4 @@
-import { HallsOfFame } from "../components/HallsOfFame";
+import { HallsOfFame } from "../components/hall-of-fame/HallsOfFame";
 
 export function Champions() {
 	return (
