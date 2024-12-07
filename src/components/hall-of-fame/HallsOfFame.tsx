@@ -53,10 +53,7 @@ export function HallsOfFame() {
 									<div className="w-full h-3 bg-f1-carbon my-4"></div>
 
 									{/* Carousel */}
-									<Carousel
-										slidesToShow={slidesToShow}
-										autoplay={autoplay}
-									>
+									<Carousel>
 										{/* Loop through the photos and create a slide for each one */}
 										{data.photo.map((photo, index) => (
 											<HallOfFame

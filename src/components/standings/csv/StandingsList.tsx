@@ -7,10 +7,10 @@ interface StandingsListProps {
 	data: {
 		name: string;
 		[key: string]: string;
-		photo?: string;
-		teamColor?: string;
-		teamName?: string;
-		teamDrivers?: string[];
+		photo: string;
+		teamColor: string;
+		teamName: string;
+		teamDrivers: string;
 	}[];
 	valueKey: string;
 	valueLabel: string;
@@ -32,12 +32,7 @@ const StandingsList: React.FC<StandingsListProps> = ({
 				Classificação {title}
 			</h2>
 
-			<Podium
-				topThree={topThree}
-				valueKey={valueKey}
-				valueLabel={valueLabel}
-				activeTab={activeTab}
-			/>
+			<Podium topThree={topThree} activeTab={activeTab} />
 
 			<ul className="flex flex-col gap-y-[4px]">
 				{data.map((item, index) => (
@@ -50,7 +45,7 @@ const StandingsList: React.FC<StandingsListProps> = ({
 							photo={item.photo || ""}
 							teamName={item.teamName || ""}
 							teamColor={item.teamColor || ""}
-							teamDrivers={item.drivers || []}
+							teamDrivers={item.drivers || ""}
 							activeTab={activeTab}
 						/>
 					</li>

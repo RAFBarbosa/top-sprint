@@ -57,7 +57,7 @@ const DataLoader: React.FC<DataLoaderProps> = ({ data }) => {
 					...team,
 					photo: teamFromData?.photo?.url || "",
 					teamColor: teamFromData?.color?.hex || "",
-					drivers: teamDrivers,
+					drivers: teamDrivers || "",
 				};
 			});
 
