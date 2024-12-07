@@ -5,7 +5,7 @@ interface PodiumCardProps {
 	name: string;
 	photo: string;
 	teamColor?: string;
-	teamDrivers?: string[];
+	teamDrivers?: string;
 	activeTab: "drivers" | "teams";
 }
 
@@ -30,7 +30,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 					position === 1
 						? isDrivers
 							? "mb-12"
-							: "mb-12 ml-15"
+							: "mb-16 ml-15 text-3xl"
 						: "mb-7"
 				}`}
 				style={{ color: teamColor }}
@@ -71,7 +71,11 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 							: "font-bold uppercase text-2xl text-center"
 					}`}
 				>
-					{isDrivers ? firstName : teamDrivers?.join(" / ")}{" "}
+					{isDrivers
+						? firstName
+						: Array.isArray(teamDrivers)
+						? teamDrivers.join(" / ")
+						: teamDrivers || "No drivers"}
 				</span>
 				{secondName && (
 					<span
