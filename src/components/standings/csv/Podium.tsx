@@ -6,7 +6,7 @@ interface PodiumProps {
 		name: string;
 		photo: string;
 		teamColor: string;
-		teamDrivers?: string[];
+		teamDrivers: string;
 		[key: string]: string;
 	}[];
 	activeTab: "drivers" | "teams";
@@ -55,7 +55,7 @@ const Podium: React.FC<PodiumProps> = ({ topThree, activeTab }) => {
 							photo={topThree[0].photo}
 							teamColor={topThree[0].teamColor}
 							position={1}
-							teamDrivers={topThree[0].drivers || []}
+							teamDrivers={topThree[0].drivers || ""}
 							activeTab={activeTab}
 						/>
 					</div>

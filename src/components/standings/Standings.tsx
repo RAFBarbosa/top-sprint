@@ -32,7 +32,7 @@ export function Standings() {
 	if (error)
 		return (
 			<div className="text-red-500 text-center py-6">
-				Erro: {error.message}
+				{error?.message || "An error occurred"}
 			</div>
 		);
 

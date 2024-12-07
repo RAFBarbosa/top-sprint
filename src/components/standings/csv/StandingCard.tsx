@@ -7,7 +7,7 @@ interface StandingCardProps {
 	photo: string;
 	teamName?: string;
 	teamColor?: string;
-	teamDrivers?: string[];
+	teamDrivers?: string;
 	valueKey: string;
 	valueLabel: string;
 	activeTab: "drivers" | "teams";
@@ -81,8 +81,13 @@ const StandingCard: React.FC<StandingCardProps> = ({
 								</span>
 							)}
 						</div>
+
 						<span className="md:ml-2 font-regular text-sm">
-							{isDrivers ? teamName : teamDrivers?.join(" / ")}{" "}
+							{isDrivers
+								? teamName
+								: Array.isArray(teamDrivers)
+								? teamDrivers.join(" / ")
+								: teamDrivers || "No drivers"}
 						</span>
 					</div>
 				</div>
