@@ -33,6 +33,14 @@ export function Rules() {
 							22h.
 						</p>
 					</div>
+					<p>
+						A <strong>Top Sprint</strong> inclui{" "}
+						<strong>corridas Sprint</strong> e de{" "}
+						<strong>desempenho realista</strong>, ambas com o
+						objetivo de criar oportunidades para quem está atrás no
+						campeonato, oferecendo mais emoção nas disputas por
+						posições e pontos.
+					</p>
 					<p>Os dias de corrida serão divididos em duas etapas:</p>
 					<div className="space-y-2">
 						<strong className="block text-xl">
@@ -41,34 +49,21 @@ export function Rules() {
 						<ul className="list-disc ml-5 space-y-1">
 							<li>Grid: Posição no campeonato invertido*</li>
 							<li>Duração: 5 Voltas</li>
-							<li>
-								A sprint é uma corrida para dar chance a quem
-								está mais atrás no campeonato, onde os jogadores
-								podem arriscar mais nas ultrapassagens.
-							</li>
 						</ul>
-						<p className="italic text-f1-silver">
-							*Na primeira corrida da temporada, haverá uma
-							qualificatória de uma volta para definir o grid da
-							Sprint.
-						</p>
 					</div>
 					<div className="space-y-2">
 						<strong className="block text-xl">
 							Segunda Etapa (Corrida):
 						</strong>
 						<ul className="list-disc ml-5 space-y-1">
-							<li>Grid: Qualificatória de 1 volta.</li>
-							<li>Duração: 35% do circuito. </li>
-							<li>
-								A qualificatória de uma volta dá a chance de até
-								os melhores errarem e ficarem para trás. Na
-								corrida, a ideia é ser conservador nas
-								ultrapassagens. Se você for melhor do que o
-								piloto à sua frente, eventualmente o
-								ultrapassará durante a corrida de 35%.
-							</li>
+							<li>Grid: Qualificatória Curta (18 minutos)</li>
+							<li>Duração: 35% do circuito</li>
 						</ul>
+						<p className="italic text-f1-silver">
+							* Na primeira corrida da temporada e nos dias de
+							desempenho realista, haverá uma qualificatória de
+							uma volta para definir o grid da Sprint.
+						</p>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
 							perdê-la."
@@ -96,9 +91,16 @@ export function Rules() {
 					<div className="w-full flex flex-col md:flex-row-reverse">
 						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
 							<p>
-								<strong>Desempenho:</strong> os pilotos correrão
-								com os carros definidos antes do campeonato e
-								com o desempenho igual.
+								<strong>Desempenho:</strong> Os pilotos
+								utilizarão os carros definidos antes do
+								campeonato e com desempenho igual em 7 das 9
+								corridas. Duas corridas serão selecionadas para
+								terem desempenho realista. A distribuição dos
+								carros será realizada conforme a tabela do
+								campeonato da etapa anterior, atribuindo-se o
+								pior carro ao piloto que estiver em primeiro
+								lugar e o melhor carro ao piloto que estiver em
+								último, e assim sucessivamente.
 							</p>
 							<p>
 								<strong>Assistências:</strong> Todas
