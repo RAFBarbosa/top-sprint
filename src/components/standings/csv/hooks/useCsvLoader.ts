@@ -13,7 +13,9 @@ const useCsvLoader = () => {
 	useEffect(() => {
 		const loadCsv = async () => {
 			try {
-				const response = await fetch("src/assets/csv/data.csv");
+				const response = await fetch(
+					"../../../../src/assets/csv/data.csv"
+				);
 				const csvText = await response.text();
 
 				Papa.parse<string[]>(csvText, {

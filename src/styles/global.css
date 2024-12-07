@@ -77,5 +77,5 @@ body {
 	--color-rolex: #006341;
 	--color-whatsapp: #4dc247;
 
-	--background-image-divider: url(./src/assets/img/divider.png);
+	--background-image-divider: url(../src/assets/img/divider.png);
 }
