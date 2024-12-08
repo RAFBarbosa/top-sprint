@@ -26,7 +26,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 	return (
 		<div className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[340px]">
 			<div
-				className={`ml-4 text-2xl font-f1Title hidden md:block ${
+				className={`ml-5 text-2xl font-f1Title hidden md:block ${
 					position === 1
 						? isDrivers
 							? "mb-12"
@@ -47,7 +47,9 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 				src={photo}
 				alt={`${name} foto`}
 				className={`absolute w-full h-auto ${
-					isDrivers ? "right-[-25px]" : ""
+					isDrivers
+						? `right-[-25px] ${position === 1 ? "top-0" : ""}`
+						: ""
 				}`}
 			/>
 
@@ -55,7 +57,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 				className={`absolute bottom-0 bg-white w-full -z-10 rounded-2xl ${
 					position === 1
 						? isDrivers
-							? "h-[calc(55%+30px)]"
+							? "h-[calc(55%+20px)]"
 							: "h-full"
 						: "h-[55%]"
 				}`}
