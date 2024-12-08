@@ -13,7 +13,7 @@ const useCsvLoader = () => {
 	useEffect(() => {
 		const loadCsv = async () => {
 			try {
-				const response = await fetch("/csv/data.csv");
+				const response = await fetch("./data.csv");
 				const csvText = await response.text();
 
 				Papa.parse<string[]>(csvText, {
