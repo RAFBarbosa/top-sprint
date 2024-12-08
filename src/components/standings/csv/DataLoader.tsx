@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import StandingsList from "./StandingsList";
-import useCsvLoader from "../../hooks/useCsvLoader";
-import TabSwitch from "./TabSwitch";
+import useCsvLoader from "./hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
 
 const normalizeString = (str: string | undefined | null) => {
@@ -24,7 +23,6 @@ const DataLoader: React.FC<DataLoaderProps> = ({
 	setActiveTab,
 }) => {
 	const { teams, drivers } = useCsvLoader();
-	// const [activeTab, setActiveTab] = useState<"drivers" | "teams">("drivers");
 	const [enhancedDrivers, setEnhancedDrivers] = useState<any[]>([]);
 	const [enhancedTeams, setEnhancedTeams] = useState<any[]>([]);
 
