@@ -34,7 +34,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 	return (
 		<div className="tracking-wide">
 			<div
-				className={`flex justify-around p-4 items-center ${
+				className={`flex justify-around p-4 items-center relative ${
 					isFirst
 						? `bg-f1-silver text-white rounded-md md:bg-white md:text-f1-text h-32 md:h-auto ${
 								!isDrivers ? "items-end" : ""
@@ -99,19 +99,23 @@ const StandingCard: React.FC<StandingCardProps> = ({
 				>
 					<span className="font-bold">{valueKey}</span> {valueLabel}
 				</div>
-			</div>
 
-			{/* {isFirst ? (
-				<img
-					src={photo}
-					alt={`${name} foto`}
-					className={`absolute w-full h-auto ${
-						isDrivers ? "right-[-25px]" : ""
-					}`}
-				/>
-			) : (
-				""
-			)} */}
+				{isFirst ? (
+					<img
+						src={photo}
+						alt={`${name} foto`}
+						className={`absolute w-full h-auto ${
+							isDrivers
+								? `right-[-25px] ${
+										position === 1 ? "top-0" : ""
+								  }`
+								: ""
+						}`}
+					/>
+				) : (
+					""
+				)}
+			</div>
 		</div>
 	);
 };
