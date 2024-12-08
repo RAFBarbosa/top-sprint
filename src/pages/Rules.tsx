@@ -160,6 +160,13 @@ export function Rules() {
 								pontuação de primeiro. O mesmo serve para Pole e
 								Volta Rápida.
 							</p>
+							<p>
+								Se um piloto reserva causar NC em um carro
+								titular, o titular poderá abrir uma análise de
+								incidente para reaver a pontuação mínima (último
+								lugar) daquela corrida, conforme a ordem dos
+								incidentes.
+							</p>
 						</div>
 						<figure className="md:block w-full md:w-1/2 pr-3">
 							<img
@@ -379,18 +386,20 @@ export function Rules() {
 								aplicadas se houver intenção/imprudência de
 								causar o incidente.
 							</strong>
-							<p>
-								Se um piloto reserva causar NC em um carro
-								titular, o titular poderá abrir uma análise de
-								incidente para reaver a pontuação mínima (último
-								lugar) daquela corrida, conforme a ordem dos
-								incidentes.
-							</p>
+
 							<p>
 								Os juízes podem aplicar penalidades com base na
 								gravação oficial, mesmo que os pilotos
 								envolvidos não tenham aberto um ticket, se a
 								culpa for inquestionável.
+							</p>
+							<p>
+								De forma geral, as penalidades serão dadas
+								através de redução de pontos no campeonato. Em
+								casos excepcionais, onde uma penalidade de 5 ou
+								10 segundos seja mais justa para incidentes nas
+								voltas finais da corrida, ela poderá ser
+								aplicada.
 							</p>
 
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
