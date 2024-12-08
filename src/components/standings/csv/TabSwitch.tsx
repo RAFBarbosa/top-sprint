@@ -10,7 +10,7 @@ const TabSwitch: React.FC<TabSwitchProps> = ({ activeTab, setActiveTab }) => (
 		<button
 			className={`cursor-pointer tracking-wider px-5 ${
 				activeTab === "drivers"
-					? "underline decoration-f1-red decoration-3"
+					? "underline decoration-f1-red decoration-4"
 					: "no-underline"
 			}`}
 			onClick={() => setActiveTab("drivers")}
@@ -21,7 +21,7 @@ const TabSwitch: React.FC<TabSwitchProps> = ({ activeTab, setActiveTab }) => (
 		<button
 			className={`cursor-pointer tracking-wider px-5 ${
 				activeTab === "teams"
-					? "underline decoration-f1-red decoration-3"
+					? "underline decoration-f1-red decoration-4"
 					: "no-underline"
 			}`}
 			onClick={() => setActiveTab("teams")}
