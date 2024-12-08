@@ -14,11 +14,17 @@ const normalizeString = (str: string | undefined | null) => {
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
+	activeTab: "drivers" | "teams";
+	setActiveTab: React.Dispatch<React.SetStateAction<"drivers" | "teams">>;
 }
 
-const DataLoader: React.FC<DataLoaderProps> = ({ data }) => {
+const DataLoader: React.FC<DataLoaderProps> = ({
+	data,
+	activeTab,
+	setActiveTab,
+}) => {
 	const { teams, drivers } = useCsvLoader();
-	const [activeTab, setActiveTab] = useState<"drivers" | "teams">("drivers");
+	// const [activeTab, setActiveTab] = useState<"drivers" | "teams">("drivers");
 	const [enhancedDrivers, setEnhancedDrivers] = useState<any[]>([]);
 	const [enhancedTeams, setEnhancedTeams] = useState<any[]>([]);
 
@@ -67,29 +73,25 @@ const DataLoader: React.FC<DataLoaderProps> = ({ data }) => {
 	}, [data, drivers, teams]);
 
 	return (
-		<div>
-			<TabSwitch activeTab={activeTab} setActiveTab={setActiveTab} />
-
-			<div className="max-w-[950px] w-full mx-auto">
-				{activeTab === "drivers" && (
-					<StandingsList
-						title="Pilotos"
-						data={enhancedDrivers}
-						valueKey="pts"
-						valueLabel="PTS"
-						activeTab={activeTab}
-					/>
-				)}
-				{activeTab === "teams" && (
-					<StandingsList
-						title="Equipes"
-						data={enhancedTeams}
-						valueKey="pts"
-						valueLabel="PTS"
-						activeTab={activeTab}
-					/>
-				)}
-			</div>
+		<div className="max-w-[950px] w-full mx-auto ">
+			{activeTab === "drivers" && (
+				<StandingsList
+					title="Pilotos"
+					data={enhancedDrivers}
+					valueKey="pts"
+					valueLabel="PTS"
+					activeTab={activeTab}
+				/>
+			)}
+			{activeTab === "teams" && (
+				<StandingsList
+					title="Equipes"
+					data={enhancedTeams}
+					valueKey="pts"
+					valueLabel="PTS"
+					activeTab={activeTab}
+				/>
+			)}
 		</div>
 	);
 };
