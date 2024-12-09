@@ -32,20 +32,20 @@ const StandingCard: React.FC<StandingCardProps> = ({
 	const isFirst = position === 1;
 
 	return (
-		<div className="tracking-wide">
+		<div className="tracking-wide overflow-hidden">
 			<div
 				className={`flex justify-around p-4 items-center relative ${
 					isFirst
 						? `bg-f1-silver text-white rounded-md md:bg-white md:text-f1-text h-32 md:h-auto ${
-								!isDrivers ? "items-end" : ""
+								!isDrivers && ""
 						  }`
 						: "bg-white rounded-md"
 				} `}
 			>
-				<div className="flex items-center flex-grow">
+				<div className="flex items-center flex-grow z-30 h-full ">
 					<span
 						className={`font-bold md:text-lg ${
-							isFirst ? "text-xl" : ""
+							isFirst && "text-xl"
 						}`}
 					>
 						{position}
@@ -55,16 +55,22 @@ const StandingCard: React.FC<StandingCardProps> = ({
 						style={{ backgroundColor: teamColor }}
 					></span>
 					<div
-						className={`flex flex-col md:flex-row text-lg items-baseline ${
-							isFirst ? "text-xl" : ""
+						className={`flex flex-col md:flex-row items-baseline md:text-lg h-full justify-between ${
+							isFirst ? "text-3xl leading-8" : "text-lg"
 						}`}
 					>
-						<div>
+						<div
+							className={`${
+								isDrivers &&
+								isFirst &&
+								"flex flex-col md:flex-row"
+							}`}
+						>
 							<span
 								className={`${
 									isDrivers
 										? secondName
-											? "font-semibold"
+											? "font-regular"
 											: "font-bold uppercase"
 										: "font-bold"
 								}`}
@@ -73,16 +79,16 @@ const StandingCard: React.FC<StandingCardProps> = ({
 							</span>
 							{secondName && (
 								<span
-									className={`font-bold ${
-										isDrivers ? "uppercase" : ""
-									} ml-1`}
+									className={`font-bold md:ml-1 ${
+										isDrivers ? "uppercase" : "ml-1"
+									} ${!isFirst && "ml-1"}`}
 								>
 									{secondName}
 								</span>
 							)}
 						</div>
 
-						<span className="md:ml-2 font-regular text-sm">
+						<span className="md:ml-2 text-sm opacity-80">
 							{isDrivers
 								? teamName
 								: Array.isArray(teamDrivers)
@@ -93,27 +99,31 @@ const StandingCard: React.FC<StandingCardProps> = ({
 				</div>
 
 				<div
-					className={`bg-f1-bg-silver rounded-xl px-2 text-f1-text ${
-						isFirst ? "self-end" : ""
+					className={`bg-f1-bg-silver rounded-xl px-2 text-f1-text z-30 ${
+						isFirst && "self-end"
+					}
 					}`}
 				>
 					<span className="font-bold">{valueKey}</span> {valueLabel}
 				</div>
 
-				{isFirst ? (
-					<img
-						src={photo}
-						alt={`${name} foto`}
-						className={`absolute w-full h-auto ${
-							isDrivers
-								? `right-[-25px] ${
-										position === 1 ? "top-0" : ""
-								  }`
-								: ""
-						}`}
-					/>
-				) : (
-					""
+				{isFirst && (
+					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
+						<img
+							src={photo}
+							alt={`${name} foto`}
+							className={` ${
+								isDrivers
+									? "w-[145%] h-[145%] object-cover transform translate-y-17"
+									: "w-[150%] h-[150%] object-cover transform translate-y-10 translate-x-13"
+							}`}
+						/>
+						<div
+							className={`bg-f1-silver w-6/8 h-8 absolute rounded-tl-lg top-0 left-0 ${
+								isDrivers ? "hidden" : "block"
+							}`}
+						></div>
+					</div>
 				)}
 			</div>
 		</div>

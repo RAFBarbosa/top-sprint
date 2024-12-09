@@ -69,9 +69,8 @@ export function Menu() {
 						<li
 							key={data.id}
 							className={`border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2 ${
-								location.pathname === data.id
-									? "border-b border-r"
-									: ""
+								location.pathname === data.id &&
+								"border-b border-r"
 							}`}
 						>
 							{data.external ? (
@@ -112,9 +111,8 @@ export function Menu() {
 								target="_blank"
 								rel="noopener noreferrer"
 								className={`text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 ${
-									location.pathname === data.id
-										? "bg-f1-carbon"
-										: ""
+									location.pathname === data.id &&
+									"bg-f1-carbon"
 								}`}
 							>
 								<span>{data.label}</span>
@@ -124,9 +122,8 @@ export function Menu() {
 								to={data.id}
 								onClick={handleLinkClick}
 								className={`text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 ${
-									location.pathname === data.id
-										? "bg-f1-carbon"
-										: ""
+									location.pathname === data.id &&
+									"bg-f1-carbon"
 								}`}
 							>
 								<span>{data.label}</span>
