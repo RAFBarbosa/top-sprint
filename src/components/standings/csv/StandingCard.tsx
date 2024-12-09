@@ -134,10 +134,10 @@ const StandingCard: React.FC<StandingCardProps> = ({
 							{/* Silver Background Div */}
 							{!isDrivers && (
 								<div
-									className="absolute bg-f1-silver rounded-tl-lg"
+									className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
 									style={{
 										width: "60%", // Adjust this to fit desired coverage
-										height: "29.9%", // Adjust this to fit desired coverage
+										height: "30%", // Adjust this to fit desired coverage
 										top: 0, // Position relative to top of the image
 										left: 40, // Position relative to left of the image
 									}}
