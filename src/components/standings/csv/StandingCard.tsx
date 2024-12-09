@@ -116,8 +116,8 @@ const StandingCard: React.FC<StandingCardProps> = ({
 							style={{
 								objectFit: "cover",
 								width: isDrivers
-									? "100%" // Image width on drivers
-									: "150%", // Teams section width
+									? "auto" // Image width on drivers
+									: "100%", // Teams section width
 								height: isDrivers ? "100%" : "100%", // Teams height
 								maxWidth: "100%", // Prevent image from overflowing horizontally
 								maxHeight: "100%", // Prevent image from overflowing vertically
