@@ -63,6 +63,8 @@ body {
 }
 
 @theme {
+	--breakpoint-md: 950px;
+
 	--font-f1: "Titillium Web", "sans-serif";
 	--font-f1Title: "Formula1-Regular", "sans-serif";
 

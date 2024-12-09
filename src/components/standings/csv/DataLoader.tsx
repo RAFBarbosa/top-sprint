@@ -71,7 +71,7 @@ const DataLoader: React.FC<DataLoaderProps> = ({
 	}, [data, drivers, teams]);
 
 	return (
-		<div className="max-w-[950px] w-full mx-auto ">
+		<div className="max-w-[950px] w-full mx-auto">
 			{activeTab === "drivers" && (
 				<StandingsList
 					title="Pilotos"
