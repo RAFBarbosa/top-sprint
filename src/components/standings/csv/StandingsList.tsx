@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import StandingCard from "./StandingCard";
 import Podium from "./Podium";
 
@@ -24,6 +24,14 @@ const StandingsList: React.FC<StandingsListProps> = ({
 	valueLabel,
 	activeTab,
 }) => {
+	// Set the initial active card to 1 (the first card)
+	const [activeCard, setActiveCard] = useState<number | null>(1);
+
+	const handleCardClick = (index: number) => {
+		// If the clicked card is already active, set it to null (inactive)
+		setActiveCard((prev) => (prev === index ? null : index));
+	};
+
 	const topThree = data.slice(0, 3);
 
 	return (
@@ -47,6 +55,8 @@ const StandingsList: React.FC<StandingsListProps> = ({
 							teamColor={item.teamColor || ""}
 							teamDrivers={item.drivers || ""}
 							activeTab={activeTab}
+							isActive={activeCard === index + 1}
+							onClick={() => handleCardClick(index + 1)}
 						/>
 					</li>
 				))}

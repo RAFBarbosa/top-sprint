@@ -11,6 +11,8 @@ interface StandingCardProps {
 	valueKey: string;
 	valueLabel: string;
 	activeTab: "drivers" | "teams";
+	isActive: boolean;
+	onClick: () => void;
 }
 
 const StandingCard: React.FC<StandingCardProps> = ({
@@ -23,29 +25,32 @@ const StandingCard: React.FC<StandingCardProps> = ({
 	valueKey,
 	valueLabel,
 	activeTab,
+	isActive,
+	onClick,
 }) => {
 	const nameParts = name.split(" ");
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
 	const isDrivers = activeTab === "drivers";
-	const isFirst = position === 1;
 
 	return (
-		<div className="tracking-wide overflow-hidden">
+		<button
+			onClick={onClick}
+			className="tracking-wide overflow-hidden w-full cursor-pointer"
+		>
+			{/* <div className="tracking-wide overflow-hidden"> */}
 			<div
 				className={`flex justify-around p-4 items-center relative ${
-					isFirst
-						? `bg-f1-silver text-white rounded-md md:bg-white md:text-f1-text h-32 md:h-auto ${
-								!isDrivers && ""
-						  }`
+					isActive
+						? "bg-f1-silver text-white rounded-md md:bg-white md:text-f1-text h-32 md:h-auto"
 						: "bg-white rounded-md"
 				} `}
 			>
 				<div className="flex items-center flex-grow z-30 h-full ">
 					<span
 						className={`font-bold md:text-lg ${
-							isFirst && "text-xl"
+							isActive && "text-xl"
 						}`}
 					>
 						{position}
@@ -56,14 +61,14 @@ const StandingCard: React.FC<StandingCardProps> = ({
 					></span>
 					<div
 						className={`flex flex-col md:flex-row items-baseline md:text-lg h-full justify-between ${
-							isFirst ? "text-3xl leading-8" : "text-lg"
+							isActive ? "text-3xl leading-8" : "text-lg"
 						}`}
 					>
 						<div
 							className={`${
 								isDrivers &&
-								isFirst &&
-								"flex flex-col md:flex-row"
+								isActive &&
+								"flex flex-col md:flex-row items-start"
 							}`}
 						>
 							<span
@@ -82,7 +87,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 									className={`
 										font-bold md:ml-1 
 										${isDrivers ? "uppercase" : "ml-1"} 
-										${!isFirst && "ml-1"}`}
+										${!isActive && "ml-1"}`}
 								>
 									{secondName}
 								</span>
@@ -101,7 +106,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 
 				<div
 					className={`bg-f1-bg-silver rounded-xl px-2 text-f1-text z-30 ${
-						isFirst && "self-end"
+						isActive && "self-end"
 					}
 					}`}
 				>
@@ -109,7 +114,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 					{valueKey === "1" ? "PT" : valueLabel}
 				</div>
 
-				{isFirst && (
+				{isActive && (
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
 						{/* Image Container */}
 						<div className="relative w-full h-full">
@@ -147,7 +152,8 @@ const StandingCard: React.FC<StandingCardProps> = ({
 					</div>
 				)}
 			</div>
-		</div>
+			{/* </div> */}
+		</button>
 	);
 };
 
