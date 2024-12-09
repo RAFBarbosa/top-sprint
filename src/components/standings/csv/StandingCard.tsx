@@ -129,7 +129,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 						/>
 
 						<div
-							className={`bg-f1-silver w-6/8 h-9.5 absolute rounded-tl-lg top-0 left-0 ${
+							className={`bg-f1-silver w-6/8 h-9 absolute rounded-tl-lg top-0 left-0 ${
 								isDrivers ? "hidden" : "block"
 							}`}
 						></div>
