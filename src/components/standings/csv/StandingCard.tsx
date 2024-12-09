@@ -113,11 +113,11 @@ const StandingCard: React.FC<StandingCardProps> = ({
 						<img
 							src={photo}
 							alt={`${name} foto`}
-							className={` ${
+							className={`${
 								isDrivers
-									? "w-[145%] h-[145%] object-cover transform translate-y-17"
-									: "w-[150%] h-[150%] object-cover transform translate-y-10 translate-x-13"
-							}`}
+									? "w-[125%] h-auto md:w-[145%] md:h-[145%] object-cover transform translate-y-17"
+									: "w-[150%] h-auto md:w-[150%] md:h-[150%] object-cover transform translate-y-10 translate-x-13"
+							} max-w-full max-h-full`}
 						/>
 						<div
 							className={`bg-f1-silver w-6/8 h-7.5 absolute rounded-tl-lg top-0 left-0 ${
