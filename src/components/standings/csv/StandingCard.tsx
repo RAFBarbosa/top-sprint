@@ -114,14 +114,16 @@ const StandingCard: React.FC<StandingCardProps> = ({
 							src={photo}
 							alt={`${name} foto`}
 							className={`
-        object-cover 
-        ${
-			isDrivers
-				? "w-[120%] h-auto translate-x-[5%] translate-y-[10%]" // Adjust for Drivers
-				: "w-full h-auto translate-x-0 translate-y-0"
-		} // Teams: full width without distortion
-        max-w-full max-h-full
-      `}
+    object-cover
+    max-w-full max-h-full
+    ${
+		isDrivers
+			? "w-[120%] h-auto translate-x-[5%] translate-y-[10%]"
+			: "w-[100%] h-auto translate-x-0 translate-y-0"
+	}
+    sm:w-[100%] sm:h-auto sm:max-w-full sm:max-h-full
+    md:w-[120%] md:h-auto md:max-w-full md:max-h-full
+  `}
 						/>
 						<div
 							className={`bg-f1-silver w-6/8 h-7.5 absolute rounded-tl-lg top-0 left-0 ${
