@@ -104,7 +104,8 @@ const StandingCard: React.FC<StandingCardProps> = ({
 					}
 					}`}
 				>
-					<span className="font-bold">{valueKey}</span> {valueLabel}
+					<span className="font-bold">{valueKey}</span>{" "}
+					{valueKey === "1" ? "PT" : valueLabel}
 				</div>
 
 				{isFirst && (
