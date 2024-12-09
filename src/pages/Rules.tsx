@@ -418,10 +418,11 @@ export function Rules() {
 								através de redução de pontos no campeonato.{" "}
 								<strong>
 									Em casos excepcionais, onde uma penalidade
-									de 5 ou 10 segundos
-								</strong>{" "}
-								seja mais justa para incidentes nas voltas
-								finais da corrida, ela poderá ser aplicada.
+									de 5 ou 10 segundos seja mais justa para
+									incidentes nas voltas finais da corrida, ela
+									poderá ser aplicada
+								</strong>
+								.
 							</p>
 
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
