@@ -56,8 +56,10 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 				alt={`${name} foto`}
 				className={`absolute object-cover max-w-none ${
 					isDrivers
-						? "bottom-0 right-0 h-[clamp(70%,90%,80%)] w-auto translate-x-[8%] translate-y-[5%]"
-						: "bottom-0 left-1/2 h-[clamp(100%,110%,120%)] w-auto transform -translate-x-1/2 -translate-y-4"
+						? `bottom-0 right-0 ${
+								position === 1 ? "h-[330px]" : "h-[280px]"
+						  } w-auto translate-x-[20px] translate-y-[10px]`
+						: `top-1/2 left-1/2 h-[360px] w-auto transform -translate-x-1/2 translate-y-[-52%]`
 				}`}
 			/>
 
