@@ -19,7 +19,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 }) => {
 	const nameParts = name.split(" ");
 	const firstName = nameParts[0];
-	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+	const secondName = nameParts.length > 1 && nameParts.slice(1).join(" ");
 
 	const isDrivers = activeTab === "drivers";
 
@@ -43,13 +43,21 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 				style={{ backgroundColor: teamColor }}
 			></div>
 
-			<img
+			{/* <img
 				src={photo}
 				alt={`${name} foto`}
 				className={`absolute w-full h-auto ${
+					isDrivers && `right-[-25px] ${position === 1 && "top-0"}`
+				}`}
+			/> */}
+
+			<img
+				src={photo}
+				alt={`${name} foto`}
+				className={`absolute object-cover max-w-none ${
 					isDrivers
-						? `right-[-25px] ${position === 1 ? "top-0" : ""}`
-						: ""
+						? "bottom-0 right-0 h-[90%] w-auto translate-x-[8%] translate-y-[5%]"
+						: "bottom-0 top-0 left-1/2 h-[110%] w-auto transform -translate-x-1/2 -translate-y-4"
 				}`}
 			/>
 
@@ -79,10 +87,10 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 						? teamDrivers.join(" / ")
 						: teamDrivers || "No drivers"}
 				</span>
-				{secondName && (
+				{secondName && isDrivers && (
 					<span
 						className={`font-bold ${
-							isDrivers ? "uppercase text-2xl" : ""
+							isDrivers && "uppercase text-2xl"
 						}`}
 					>
 						{secondName}
