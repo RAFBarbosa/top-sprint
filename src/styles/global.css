@@ -63,7 +63,6 @@ body {
 }
 
 @theme {
-	--breakpoint-smd:  
 	--breakpoint-md: 950px;
 
 	--font-f1: "Titillium Web", "sans-serif";
