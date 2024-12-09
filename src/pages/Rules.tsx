@@ -387,19 +387,41 @@ export function Rules() {
 								causar o incidente.
 							</strong>
 
+							<strong>
+								Incidentes envolvendo múltiplos carros:
+							</strong>
+
 							<p>
+								Se qualquer um dos pilotos atrás do carro que
+								está liderando não possuir direito a linha
+								(seguindo as regras do manual oficial),
+								geralmente ele deverá ceder a posição ou será
+								predominantemente culpado pelo incidente.
+							</p>
+
+							<p>
+								Considerando a regra acima, os pilotos que estão
+								executando a ultrapassagem precisam se
+								certificar de que é segura e que não vai forçar
+								de forma desnecessária que mais de dois carros
+								dividam a curva.
+							</p>
+
+							<strong>
 								Os juízes podem aplicar penalidades com base na
 								gravação oficial, mesmo que os pilotos
 								envolvidos não tenham aberto um ticket, se a
 								culpa for inquestionável.
-							</p>
+							</strong>
 							<p>
 								De forma geral, as penalidades serão dadas
-								através de redução de pontos no campeonato. Em
-								casos excepcionais, onde uma penalidade de 5 ou
-								10 segundos seja mais justa para incidentes nas
-								voltas finais da corrida, ela poderá ser
-								aplicada.
+								através de redução de pontos no campeonato.{" "}
+								<strong>
+									Em casos excepcionais, onde uma penalidade
+									de 5 ou 10 segundos
+								</strong>{" "}
+								seja mais justa para incidentes nas voltas
+								finais da corrida, ela poderá ser aplicada.
 							</p>
 
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
