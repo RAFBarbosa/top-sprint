@@ -113,27 +113,12 @@ const StandingCard: React.FC<StandingCardProps> = ({
 						<img
 							src={photo}
 							alt={`${name} foto`}
-							style={{
-								objectFit: "cover",
-								width: isDrivers
-									? position === 1
-										? "auto"
-										: "100%" // Image width on drivers
-									: "100%", // Teams section width
-								height: isDrivers
-									? position === 1
-										? "90%" // Smaller image for the first driver
-										: "auto"
-									: "100%", // Teams height
-								maxWidth: "100%", // Prevent image from overflowing horizontally
-								maxHeight: "100%", // Prevent image from overflowing vertically
-								transform:
-									isDrivers && position === 1
-										? "translateY(-10%)"
-										: "", // Slight adjustment for first driver
-							}}
+							className={` ${
+								isDrivers
+									? "w-[145%] max-h-[145%] object-cover transform translate-y-17"
+									: "w-[150%] max-h-[150%] object-cover transform translate-y-10 translate-x-13"
+							}`}
 						/>
-
 						<div
 							className={`bg-f1-silver w-6/8 h-7.5 absolute rounded-tl-lg top-0 left-0 ${
 								isDrivers ? "hidden" : "block"
