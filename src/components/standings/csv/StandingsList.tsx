@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import StandingCard from "./StandingCard";
 import Podium from "./Podium";
+import GenericLogo from "/src/assets/img/white-logo.png";
 
 interface StandingsListProps {
 	title: string;
@@ -24,11 +25,9 @@ const StandingsList: React.FC<StandingsListProps> = ({
 	valueLabel,
 	activeTab,
 }) => {
-	// Set the initial active card to 1 (the first card)
 	const [activeCard, setActiveCard] = useState<number | null>(1);
 
 	const handleCardClick = (index: number) => {
-		// If the clicked card is already active, set it to null (inactive)
 		setActiveCard((prev) => (prev === index ? null : index));
 	};
 
@@ -50,7 +49,7 @@ const StandingsList: React.FC<StandingsListProps> = ({
 							position={index + 1}
 							valueKey={item[valueKey]}
 							valueLabel={valueLabel}
-							photo={item.photo || ""}
+							photo={item.photo || GenericLogo}
 							teamName={item.teamName || ""}
 							teamColor={item.teamColor || ""}
 							teamDrivers={item.drivers || ""}
