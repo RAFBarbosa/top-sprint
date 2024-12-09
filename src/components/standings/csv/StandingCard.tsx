@@ -37,7 +37,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 	return (
 		<button
 			onClick={onClick}
-			className="tracking-wide overflow-hidden w-full cursor-pointer md:pointer-events-none"
+			className="tracking-wide overflow-hidden w-full cursor-pointer pointer-events-none transition-all duration-300"
 		>
 			{/* <div className="tracking-wide overflow-hidden"> */}
 			<div
@@ -94,7 +94,12 @@ const StandingCard: React.FC<StandingCardProps> = ({
 							)}
 						</div>
 
-						<span className="md:ml-2 text-sm opacity-80">
+						<span
+							className={`md:ml-2 text-sm font-light ${
+								isActive &&
+								"bg-f1-silver rounded-lg pr-1 md:bg-transparent"
+							}`}
+						>
 							{isDrivers
 								? teamName
 								: Array.isArray(teamDrivers)
