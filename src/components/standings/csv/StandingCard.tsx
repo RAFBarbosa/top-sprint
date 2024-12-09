@@ -79,9 +79,10 @@ const StandingCard: React.FC<StandingCardProps> = ({
 							</span>
 							{secondName && (
 								<span
-									className={`font-bold md:ml-1 ${
-										isDrivers ? "uppercase" : "ml-1"
-									} ${!isFirst && "ml-1"}`}
+									className={`
+										font-bold md:ml-1 
+										${isDrivers ? "uppercase" : "ml-1"} 
+										${!isFirst && "ml-1"}`}
 								>
 									{secondName}
 								</span>
@@ -118,7 +119,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 								width: isDrivers
 									? "auto" // Image width on drivers
 									: "100%", // Teams section width
-								height: isDrivers ? "130%" : "150%", // Teams height
+								height: isDrivers ? "130%" : "140%", // Teams height
 								maxWidth: "100%", // Prevent image from overflowing horizontally
 								maxHeight: "150%", // Prevent image from overflowing vertically
 								transform: isDrivers
@@ -128,7 +129,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 						/>
 
 						<div
-							className={`bg-f1-silver w-6/8 h-7.5 absolute rounded-tl-lg top-0 left-0 ${
+							className={`bg-f1-silver w-6/8 h-9.5 absolute rounded-tl-lg top-0 left-0 ${
 								isDrivers ? "hidden" : "block"
 							}`}
 						></div>
