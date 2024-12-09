@@ -24,7 +24,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 	const isDrivers = activeTab === "drivers";
 
 	return (
-		<div className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[340px]">
+		<div className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px]">
 			<div
 				className={`ml-5 text-2xl font-f1Title hidden md:block ${
 					position === 1
@@ -59,7 +59,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 						? `bottom-0 right-0 ${
 								position === 1 ? "h-[330px]" : "h-[280px]"
 						  } w-auto translate-x-[20px] translate-y-[10px]`
-						: `top-1/2 left-1/2 h-[360px] w-auto transform -translate-x-1/2 translate-y-[-52%]`
+						: `top-1/2 left-1/2 h-[350px] w-auto transform -translate-x-[51%] translate-y-[-50%]`
 				}`}
 			/>
 
