@@ -111,28 +111,39 @@ const StandingCard: React.FC<StandingCardProps> = ({
 
 				{isFirst && (
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
-						<img
-							src={photo}
-							alt={`${name} foto`}
-							style={{
-								objectFit: "cover",
-								width: isDrivers
-									? "auto" // Image width on drivers
-									: "100%", // Teams section width
-								height: isDrivers ? "130%" : "140%", // Teams height
-								maxWidth: "100%", // Prevent image from overflowing horizontally
-								maxHeight: "150%", // Prevent image from overflowing vertically
-								transform: isDrivers
-									? "translateY(30%)"
-									: "translateY(21.5%) translateX(15%)", // Slight adjustment for first driver
-							}}
-						/>
+						{/* Image Container */}
+						<div className="relative w-full h-full">
+							{/* The Image */}
+							<img
+								src={photo}
+								alt={`${name} foto`}
+								style={{
+									objectFit: "cover",
+									width: isDrivers
+										? "auto" // Image width for drivers
+										: "100%", // Teams section width
+									height: isDrivers ? "130%" : "140%", // Teams section height
+									maxWidth: "100%", // Prevent overflow horizontally
+									maxHeight: "150%", // Prevent overflow vertically
+									transform: isDrivers
+										? "translateY(7%)"
+										: "translateY(-6%) translateX(15%)", // Adjustment for driver and teams
+								}}
+							/>
 
-						<div
-							className={`bg-f1-silver w-6/8 h-9 absolute rounded-tl-lg top-0 left-0 ${
-								isDrivers ? "hidden" : "block"
-							}`}
-						></div>
+							{/* Silver Background Div */}
+							{!isDrivers && (
+								<div
+									className="absolute bg-f1-silver rounded-tl-lg"
+									style={{
+										width: "60%", // Adjust this to fit desired coverage
+										height: "29.9%", // Adjust this to fit desired coverage
+										top: 0, // Position relative to top of the image
+										left: 40, // Position relative to left of the image
+									}}
+								></div>
+							)}
+						</div>
 					</div>
 				)}
 			</div>
