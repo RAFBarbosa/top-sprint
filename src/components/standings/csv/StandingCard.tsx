@@ -37,7 +37,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 	return (
 		<button
 			onClick={onClick}
-			className="tracking-wide overflow-hidden w-full cursor-pointer pointer-events-none transition-all duration-300"
+			className="tracking-wide overflow-hidden w-full pointer-events-none transition-all duration-300"
 		>
 			{/* <div className="tracking-wide overflow-hidden"> */}
 			<div
