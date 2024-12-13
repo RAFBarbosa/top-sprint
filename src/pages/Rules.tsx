@@ -295,10 +295,16 @@ export function Rules() {
 							</p>
 							<div className="md:flex md:gap-x-6 space-y-1 md:space-y-0">
 								<p>
-									<strong>Melhor volta:</strong> 2 pontos
+									<strong>
+										Melhor volta na corrida principal:
+									</strong>{" "}
+									2 pontos
 								</p>
 								<p>
-									<strong>Pole position:</strong> 2 pontos
+									<strong>
+										Pole position na corrida principal:
+									</strong>{" "}
+									2 pontos
 								</p>
 								<p>
 									<strong>Presença por corrida:</strong> 1
