@@ -1,7 +1,7 @@
 import { Skeleton } from "@mui/material";
 import { useGetTeamsQuery } from "../../graphql/generated";
 import DataLoader from "./csv/DataLoader";
-import TabSwitch from "./csv/TabSwitch";
+import { TabSwitch } from "./csv/TabSwitch";
 import { useState } from "react";
 
 const loadingSkeleton = () => {
@@ -50,11 +50,7 @@ export function Standings() {
 			</div>
 
 			<div className="px-3 w-full md:max-w-screen-xl mx-auto z-10">
-				<DataLoader
-					data={data}
-					activeTab={activeTab}
-					setActiveTab={setActiveTab}
-				/>
+				<DataLoader data={data} activeTab={activeTab} />
 			</div>
 		</aside>
 	);
