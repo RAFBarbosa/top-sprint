@@ -1,4 +1,3 @@
-import { CountdownRendererFn } from "react-countdown";
 import Watch from "/src/assets/img/casio.png";
 
 interface CountdownRendererProps {
@@ -10,17 +9,10 @@ interface CountdownRendererProps {
 	link?: string;
 }
 
-export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
-	days,
-	hours,
-	minutes,
-	seconds,
-	completed,
-	link,
-}) => {
-	if (completed) {
+export function CountdownRenderer(props: CountdownRendererProps) {
+	if (props.completed) {
 		return (
-			<a href={link} target="_blank" className="hover:opacity-90">
+			<a href={props.link} target="_blank" className="hover:opacity-90">
 				<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center">
 					<div className="flex flex-col w-full">
 						<span className="font-bold uppercase text-center">
@@ -51,10 +43,12 @@ export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
 					<div className="flex w-full justify-center mt-1">
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
-								{days < 10 ? "0" + days : days}
+								{props.days < 10
+									? "0" + props.days
+									: props.days}
 							</span>
 							<p className="text-sm tracking-tight -mt-1">
-								{days == 1 ? "DIA" : "DIAS"}
+								{props.days == 1 ? "DIA" : "DIAS"}
 							</p>
 						</div>
 
@@ -62,10 +56,12 @@ export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
 
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
-								{hours < 10 ? "0" + hours : hours}
+								{props.hours < 10
+									? "0" + props.hours
+									: props.hours}
 							</span>
 							<p className="text-sm tracking-tight -mt-1">
-								{hours == 1 ? "HR" : "HRS"}
+								{props.hours == 1 ? "HR" : "HRS"}
 							</p>
 						</div>
 
@@ -73,13 +69,17 @@ export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
 
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl flex">
-								{minutes < 10 ? "0" + minutes : minutes}
+								{props.minutes < 10
+									? "0" + props.minutes
+									: props.minutes}
 								<span className="font-bold text-xs mt-1 ml-1">
-									{seconds < 10 ? "0" + seconds : seconds}
+									{props.seconds < 10
+										? "0" + props.seconds
+										: props.seconds}
 								</span>
 							</span>
 							<p className="text-sm tracking-tight -mt-1 -ml-4">
-								{minutes == 1 ? "MIN" : "MINS"}
+								{props.minutes == 1 ? "MIN" : "MINS"}
 							</p>
 						</div>
 					</div>
@@ -90,4 +90,4 @@ export const CountdownRenderer: React.FC<CountdownRendererProps> = ({
 			</div>
 		);
 	}
-};
+}
