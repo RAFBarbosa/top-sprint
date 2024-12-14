@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Papa from "papaparse";
 
-// Custom hook to load and parse CSV data
 const useCsvLoader = () => {
 	const [teams, setTeams] = useState<{ name: string; pts: string }[]>([]);
 	const [drivers, setDrivers] = useState<{ name: string; pts: string }[]>([]);

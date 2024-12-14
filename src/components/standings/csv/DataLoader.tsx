@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import StandingsList from "./StandingsList";
+import { StandingsList } from "./StandingsList";
 import useCsvLoader from "../../hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
 
@@ -14,23 +14,18 @@ const normalizeString = (str: string | undefined | null) => {
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
 	activeTab: "drivers" | "teams";
-	setActiveTab: React.Dispatch<React.SetStateAction<"drivers" | "teams">>;
 }
 
-const DataLoader: React.FC<DataLoaderProps> = ({
-	data,
-	activeTab,
-	setActiveTab,
-}) => {
+export function DataLoader(props: DataLoaderProps) {
 	const { teams, drivers } = useCsvLoader();
 	const [enhancedDrivers, setEnhancedDrivers] = useState<any[]>([]);
 	const [enhancedTeams, setEnhancedTeams] = useState<any[]>([]);
 
 	useEffect(() => {
-		if (data && drivers && teams) {
+		if (props.data && drivers && teams) {
 			// Enhance drivers data with team info
 			const enhancedDriversData = drivers.map((driver) => {
-				const driverFromData = data.drivers.find(
+				const driverFromData = props.data?.drivers.find(
 					(driverFromData) =>
 						normalizeString(driverFromData.name) ===
 						normalizeString(driver.name)
@@ -46,7 +41,7 @@ const DataLoader: React.FC<DataLoaderProps> = ({
 
 			// Enhance teams data with drivers assigned to each team
 			const enhancedTeamsData = teams.map((team) => {
-				const teamFromData = data.teams.find(
+				const teamFromData = props.data?.teams.find(
 					(teamFromData) =>
 						normalizeString(teamFromData.name) ===
 						normalizeString(team.name)
@@ -68,30 +63,30 @@ const DataLoader: React.FC<DataLoaderProps> = ({
 			setEnhancedDrivers(enhancedDriversData);
 			setEnhancedTeams(enhancedTeamsData);
 		}
-	}, [data, drivers, teams]);
+	}, [props.data, drivers, teams]);
 
 	return (
 		<div className="max-w-[950px] w-full mx-auto">
-			{activeTab === "drivers" && (
+			{props.activeTab === "drivers" && (
 				<StandingsList
 					title="Pilotos"
 					data={enhancedDrivers}
 					valueKey="pts"
 					valueLabel="PTS"
-					activeTab={activeTab}
+					activeTab={props.activeTab}
 				/>
 			)}
-			{activeTab === "teams" && (
+			{props.activeTab === "teams" && (
 				<StandingsList
 					title="Equipes"
 					data={enhancedTeams}
 					valueKey="pts"
 					valueLabel="PTS"
-					activeTab={activeTab}
+					activeTab={props.activeTab}
 				/>
 			)}
 		</div>
 	);
-};
+}
 
 export default DataLoader;

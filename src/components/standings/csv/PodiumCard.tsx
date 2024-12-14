@@ -1,5 +1,3 @@
-import React from "react";
-
 interface PodiumCardProps {
 	position: number;
 	name: string;
@@ -9,38 +7,31 @@ interface PodiumCardProps {
 	activeTab: "drivers" | "teams";
 }
 
-const PodiumCard: React.FC<PodiumCardProps> = ({
-	position,
-	name,
-	photo,
-	teamColor,
-	teamDrivers,
-	activeTab,
-}) => {
-	const nameParts = name.split(" ");
+export function PodiumCard(props: PodiumCardProps) {
+	const nameParts = props.name.split(" ");
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 && nameParts.slice(1).join(" ");
 
-	const isDrivers = activeTab === "drivers";
+	const isDrivers = props.activeTab === "drivers";
 
 	return (
 		<div className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px]">
 			<div
 				className={`ml-5 text-2xl font-f1Title hidden md:block ${
-					position === 1
+					props.position === 1
 						? isDrivers
 							? "mb-12"
 							: "mb-16 ml-15 text-3xl"
 						: "mb-7"
 				}`}
-				style={{ color: teamColor }}
+				style={{ color: props.teamColor }}
 			>
-				{position}
+				{props.position}
 			</div>
 
 			<div
 				className="w-full h-2 hidden md:block"
-				style={{ backgroundColor: teamColor }}
+				style={{ backgroundColor: props.teamColor }}
 			></div>
 
 			{/* <img
@@ -52,12 +43,12 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 			/> */}
 
 			<img
-				src={photo}
-				alt={`${name} foto`}
+				src={props.photo}
+				alt={`${props.name} foto`}
 				className={`absolute object-cover max-w-none ${
 					isDrivers
 						? `bottom-0 right-0 ${
-								position === 1 ? "h-[330px]" : "h-[280px]"
+								props.position === 1 ? "h-[330px]" : "h-[280px]"
 						  } w-auto translate-x-[20px] translate-y-[10px]`
 						: `top-1/2 left-1/2 h-[350px] w-auto transform -translate-x-[51%] translate-y-[-50%]`
 				}`}
@@ -65,7 +56,7 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 
 			<div
 				className={`absolute bottom-0 bg-white w-full -z-10 rounded-2xl ${
-					position === 1
+					props.position === 1
 						? isDrivers
 							? "h-[calc(55%+20px)]"
 							: "h-full"
@@ -85,9 +76,9 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 				>
 					{isDrivers
 						? firstName
-						: Array.isArray(teamDrivers)
-						? teamDrivers.join(" / ")
-						: teamDrivers || "No drivers"}
+						: Array.isArray(props.teamDrivers)
+						? props.teamDrivers.join(" / ")
+						: props.teamDrivers || "No drivers"}
 				</span>
 				{secondName && isDrivers && (
 					<span
@@ -101,6 +92,4 @@ const PodiumCard: React.FC<PodiumCardProps> = ({
 			</div>
 		</div>
 	);
-};
-
-export default PodiumCard;
+}

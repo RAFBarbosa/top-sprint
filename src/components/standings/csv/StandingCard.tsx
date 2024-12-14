@@ -1,6 +1,3 @@
-import React from "react";
-
-// Define the prop types
 interface StandingCardProps {
 	position: number;
 	name: string;
@@ -15,34 +12,22 @@ interface StandingCardProps {
 	onClick: () => void;
 }
 
-const StandingCard: React.FC<StandingCardProps> = ({
-	position,
-	name,
-	photo,
-	teamName,
-	teamColor,
-	teamDrivers,
-	valueKey,
-	valueLabel,
-	activeTab,
-	isActive,
-	onClick,
-}) => {
-	const nameParts = name.split(" ");
+export function StandingCard(props: StandingCardProps) {
+	const nameParts = props.name.split(" ");
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
-	const isDrivers = activeTab === "drivers";
+	const isDrivers = props.activeTab === "drivers";
 
 	return (
 		<button
-			onClick={onClick}
+			onClick={props.onClick}
 			className="tracking-wide overflow-hidden w-full pointer-events-none transition-all duration-300"
 		>
 			{/* <div className="tracking-wide overflow-hidden"> */}
 			<div
 				className={`flex justify-around p-4 items-center relative ${
-					isActive
+					props.isActive
 						? "bg-f1-silver text-white rounded-md md:bg-white md:text-f1-text h-32 md:h-auto"
 						: "bg-white rounded-md"
 				} `}
@@ -50,24 +35,24 @@ const StandingCard: React.FC<StandingCardProps> = ({
 				<div className="flex items-center flex-grow z-30 h-full ">
 					<span
 						className={`font-bold md:text-lg ${
-							isActive && "text-xl"
+							props.isActive && "text-xl"
 						}`}
 					>
-						{position}
+						{props.position}
 					</span>
 					<span
 						className="mx-2 w-1 self-stretch"
-						style={{ backgroundColor: teamColor }}
+						style={{ backgroundColor: props.teamColor }}
 					></span>
 					<div
 						className={`flex flex-col md:flex-row items-baseline md:text-lg h-full justify-between ${
-							isActive ? "text-3xl leading-8" : "text-lg"
+							props.isActive ? "text-3xl leading-8" : "text-lg"
 						}`}
 					>
 						<div
 							className={`${
 								isDrivers &&
-								isActive &&
+								props.isActive &&
 								"flex flex-col md:flex-row items-start"
 							}`}
 						>
@@ -87,7 +72,7 @@ const StandingCard: React.FC<StandingCardProps> = ({
 									className={`
 										font-bold md:ml-1 
 										${isDrivers ? "uppercase" : "ml-1"} 
-										${!isActive && "ml-1"}`}
+										${!props.isActive && "ml-1"}`}
 								>
 									{secondName}
 								</span>
@@ -96,60 +81,55 @@ const StandingCard: React.FC<StandingCardProps> = ({
 
 						<span
 							className={`md:ml-2 text-sm font-light ${
-								isActive &&
+								props.isActive &&
 								"bg-f1-silver rounded-lg pr-1 md:bg-transparent"
 							}`}
 						>
 							{isDrivers
-								? teamName
-								: Array.isArray(teamDrivers)
-								? teamDrivers.join(" / ")
-								: teamDrivers || "No drivers"}
+								? props.teamName
+								: Array.isArray(props.teamDrivers)
+								? props.teamDrivers.join(" / ")
+								: props.teamDrivers || "No drivers"}
 						</span>
 					</div>
 				</div>
 
 				<div
 					className={`bg-f1-bg-silver rounded-xl px-2 text-f1-text z-30 ${
-						isActive && "self-end"
+						props.isActive && "self-end"
 					}
 					}`}
 				>
-					<span className="font-bold">{valueKey}</span>{" "}
-					{valueKey === "1" ? "PT" : valueLabel}
+					<span className="font-bold">{props.valueKey}</span>{" "}
+					{props.valueKey === "1" ? "PT" : props.valueLabel}
 				</div>
 
-				{isActive && (
+				{props.isActive && (
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
-						{/* Image Container */}
 						<div className="relative w-full h-full">
-							{/* The Image */}
 							<img
-								src={photo}
-								alt={`${name} foto`}
+								src={props.photo}
+								alt={`${props.name} foto`}
 								style={{
 									objectFit: "cover",
-									width: isDrivers
-										? "auto" // Image width for drivers
-										: "100%", // Teams section width
-									height: isDrivers ? "130%" : "140%", // Teams section height
-									maxWidth: "100%", // Prevent overflow horizontally
-									maxHeight: "150%", // Prevent overflow vertically
+									width: isDrivers ? "auto" : "100%",
+									height: isDrivers ? "130%" : "140%",
+									maxWidth: "100%",
+									maxHeight: "150%",
 									transform: isDrivers
 										? "translateY(7%)"
-										: "translateY(-6%) translateX(15%)", // Adjustment for driver and teams
+										: "translateY(-6%) translateX(15%)",
 								}}
 							/>
 
-							{/* Silver Background Div */}
 							{!isDrivers && (
 								<div
 									className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
 									style={{
-										width: "60%", // Adjust this to fit desired coverage
-										height: "30%", // Adjust this to fit desired coverage
-										top: 0, // Position relative to top of the image
-										left: 40, // Position relative to left of the image
+										width: "60%",
+										height: "30%",
+										top: 0,
+										left: 40,
 									}}
 								></div>
 							)}
@@ -160,6 +140,4 @@ const StandingCard: React.FC<StandingCardProps> = ({
 			{/* </div> */}
 		</button>
 	);
-};
-
-export default StandingCard;
+}
