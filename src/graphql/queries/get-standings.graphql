@@ -1,8 +1,11 @@
 query GetTeams {
-	drivers(stage: PUBLISHED) {
+	drivers(stage: PUBLISHED, where: { fullTime: true }) {
 		id
 		name
 		number
+		stream
+		city
+		equipment
 		team {
 			name
 			color {

@@ -1,3 +1,5 @@
+import useNavigateToDriver from "../../hooks/useNavigateToDriver";
+
 interface PodiumCardProps {
 	position: number;
 	name: string;
@@ -14,8 +16,19 @@ export function PodiumCard(props: PodiumCardProps) {
 
 	const isDrivers = props.activeTab === "drivers";
 
+	const navigateToDriver = useNavigateToDriver();
+
+	console.log(navigateToDriver);
+
+	const handleDriverClick = () => {
+		navigateToDriver(props.name);
+	};
+
 	return (
-		<div className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px]">
+		<div
+			onClick={handleDriverClick}
+			className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px] cursor-pointer transition-translate duration-200 hover:-translate-y-1"
+		>
 			<div
 				className={`ml-5 text-2xl font-f1Title hidden md:block ${
 					props.position === 1
