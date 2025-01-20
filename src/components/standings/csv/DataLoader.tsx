@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { StandingsList } from "./StandingsList";
 import useCsvLoader from "../../hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";

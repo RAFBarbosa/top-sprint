@@ -1,22 +1,24 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import {
 	Menu as MenuIcon,
 	Close as CloseIcon,
 	ArrowForwardIos as MenuArrow,
 } from "@mui/icons-material";
+import { useEnhancedCards } from "../hooks/useEnhancedCards";
+import useNavigateToDriver from "../hooks/useNavigateToDriver";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
 	{ id: "/regras", label: "Regras e Formato" },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
+	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 	{
 		id: "https://docs.google.com/forms/d/e/1FAIpQLSfHN50Fhz16wKABFaKlBa-iLFSeDVENnuZyZ7pK40qXJkL5Nw/viewform",
 		label: "Tickets",
 		external: true,
 	},
-	// { id: "/arquivo", label: "Arquivo" },
 ];
 
 const smoothScrolling = () => {
@@ -28,11 +30,30 @@ const smoothScrolling = () => {
 
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [drivers, setDrivers] = useState<string[]>([]);
 	const location = useLocation();
+	const navigateToDriver = useNavigateToDriver();
+
+	const enhancedDrivers = useEnhancedCards();
+
+	useEffect(() => {
+		if (enhancedDrivers && enhancedDrivers.length > 0) {
+			const driverNames = enhancedDrivers.map((driver) => driver.name);
+			setDrivers(driverNames);
+		}
+	}, [enhancedDrivers]);
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
+		setIsDropdownOpen(false);
 		smoothScrolling();
+	};
+
+	const handleDriverClick = (driverName: string) => {
+		setIsOpen(false);
+		setIsDropdownOpen(false);
+		navigateToDriver(driverName);
 	};
 
 	return (
@@ -82,10 +103,37 @@ export function Menu() {
 									onClick={handleLinkClick}
 								>
 									<span>{data.label}</span>
-									<span className="material-symbols-outlined text-sm">
-										<MenuArrow fontSize="small" />
-									</span>
+									<span className="material-symbols-outlined text-sm"></span>
 								</a>
+							) : data.isDropdown ? (
+								<div>
+									<button
+										className="text-lg w-full flex justify-between items-center py-2 px-2"
+										onClick={() =>
+											setIsDropdownOpen(!isDropdownOpen)
+										}
+									>
+										<span>{data.label}</span>
+										<MenuArrow className="ml-2 rotate-90" />
+									</button>
+									{isDropdownOpen && (
+										<ul className="ml-4 mt-2 space-y-1">
+											{drivers.map((driver) => (
+												<li
+													key={driver}
+													className="text-sm hover:underline cursor-pointer"
+													onClick={() =>
+														handleDriverClick(
+															driver
+														)
+													}
+												>
+													{driver}
+												</li>
+											))}
+										</ul>
+									)}
+								</div>
 							) : (
 								<Link
 									to={data.id}
@@ -117,6 +165,33 @@ export function Menu() {
 							>
 								<span>{data.label}</span>
 							</a>
+						) : data.isDropdown ? (
+							<div
+								key={data.id}
+								className={`relative h-full cursor-pointer group ${
+									location.pathname.startsWith("/pilotos")
+										? "bg-f1-carbon"
+										: ""
+								}`}
+							>
+								<a className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300">
+									<span>{data.label}</span>
+									<MenuArrow className="ml-2 rotate-90" />
+								</a>
+								<ul className="absolute bg-white text-black shadow-md rounded w-40 z-50 hidden group-hover:block">
+									{drivers.map((driver) => (
+										<li
+											key={driver}
+											className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+											onClick={() =>
+												handleDriverClick(driver)
+											}
+										>
+											{driver}
+										</li>
+									))}
+								</ul>
+							</div>
 						) : (
 							<Link
 								to={data.id}

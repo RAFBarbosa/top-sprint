@@ -1,0 +1,5 @@
+# mutation useUploadCSV($file: Upload!, $csvId: ID!) {
+# 	uploadAsset(csv: $file) {
+# 		id
+# 	}
+# }
