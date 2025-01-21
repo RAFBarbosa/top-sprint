@@ -22,7 +22,7 @@ export function NextRace(props: NextRaceProps) {
 	const formattedDateCapitalized = `${dayPart} de ${capitalizedMonth}`;
 
 	return (
-		<div className="text-white md:flex justify-between max-w-screen-xl p-4 mx-auto tracking-wide">
+		<div className="text-white md:flex justify-between max-w-screen-xl px-3 py-4 mx-auto tracking-wide">
 			<div className="flex flex-col w-full">
 				<div className="text-lg mb-2 font-bold">
 					{formattedDateCapitalized}

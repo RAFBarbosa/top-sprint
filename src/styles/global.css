@@ -5,6 +5,27 @@
 	src: url("/src/assets/font/formula1wide.ttf") format("truetype");
 }
 
+@font-face {
+	font-family: "Titillium Web Local";
+	src: url("/src/assets/font/TitilliumWeb-Regular.ttf") format("truetype");
+	font-weight: 400;
+	font-style: regular;
+}
+
+@font-face {
+	font-family: "Titillium Web Local";
+	src: url("/src/assets/font/TitilliumWeb-SemiBold.ttf") format("truetype");
+	font-weight: 600;
+	font-style: semibold;
+}
+
+@font-face {
+	font-family: "Titillium Web Local";
+	src: url("/src/assets/font/TitilliumWeb-Bold.ttf") format("truetype");
+	font-weight: 700;
+	font-style: bold;
+}
+
 html {
 	scroll-behavior: smooth;
 }

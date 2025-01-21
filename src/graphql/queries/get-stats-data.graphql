@@ -1,0 +1,8 @@
+query GetStatsData {
+	datas(orderBy: publishedAt_DESC, first: 1) {
+		id
+		csv {
+			url
+		}
+	}
+}

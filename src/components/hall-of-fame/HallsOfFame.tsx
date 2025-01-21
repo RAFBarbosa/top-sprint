@@ -28,7 +28,7 @@ export function HallsOfFame() {
 		<aside className="mt-8">
 			<div className="w-full max-w-screen-xl mx-auto px-3">
 				<div className="mb-8">
-					<h1 className="font-semibold text-4xl md:text-6xl tracking-wide mb-6">
+					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
 						Mural dos Campeões
 					</h1>
 

@@ -1,3 +1,7 @@
+import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import useNavigateToDriver from "../../hooks/useNavigateToDriver";
+import useNormalizeString from "../../hooks/useNormalizeString";
+
 interface StandingCardProps {
 	position: number;
 	name: string;
@@ -16,21 +20,31 @@ export function StandingCard(props: StandingCardProps) {
 	const nameParts = props.name.split(" ");
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
-
 	const isDrivers = props.activeTab === "drivers";
+
+	const navigateToDriver = useNavigateToDriver();
+
+	const handleCardClick = () => {
+		if (isDrivers) {
+			navigateToDriver(useNormalizeString(props.name));
+		}
+	};
 
 	return (
 		<button
-			onClick={props.onClick}
-			className="tracking-wide overflow-hidden w-full pointer-events-none transition-all duration-300"
+			onClick={handleCardClick}
+			className="tracking-wide overflow-hidden w-full"
 		>
-			{/* <div className="tracking-wide overflow-hidden"> */}
+			{/* <div className="tracking-wide overflow-hidden"> pointer-events-none*/}
 			<div
-				className={`flex justify-around p-4 items-center relative ${
+				className={`flex p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
 					props.isActive
-						? "bg-f1-silver text-white rounded-md md:bg-white md:text-f1-text h-32 md:h-auto"
-						: "bg-white rounded-md"
-				} `}
+						? "bg-f1-silver text-white h-32 md:h-15"
+						: "bg-white"
+				} ${
+					isDrivers &&
+					"hover:bg-f1-silver hover:text-white cursor-pointer"
+				}`}
 			>
 				<div className="flex items-center flex-grow z-30 h-full ">
 					<span
@@ -46,7 +60,9 @@ export function StandingCard(props: StandingCardProps) {
 					></span>
 					<div
 						className={`flex flex-col md:flex-row items-baseline md:text-lg h-full justify-between ${
-							props.isActive ? "text-3xl leading-8" : "text-lg"
+							props.isActive
+								? "text-3xl leading-8 md:leading-7"
+								: "text-lg"
 						}`}
 					>
 						<div
@@ -96,7 +112,7 @@ export function StandingCard(props: StandingCardProps) {
 
 				<div
 					className={`bg-f1-bg-silver rounded-xl px-2 text-f1-text z-30 ${
-						props.isActive && "self-end"
+						props.isActive && "self-end md:self-center"
 					}
 					}`}
 				>
@@ -134,6 +150,17 @@ export function StandingCard(props: StandingCardProps) {
 								></div>
 							)}
 						</div>
+					</div>
+				)}
+				{isDrivers && (
+					<div
+						className={`ml-2 text-sm ${
+							props.isActive
+								? "text-white md:text-f1-red"
+								: "text-f1-red"
+						}`}
+					>
+						<MenuArrow fontSize="inherit" />
 					</div>
 				)}
 			</div>
