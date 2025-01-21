@@ -20,7 +20,6 @@ export function Profile() {
 				useNormalizeString(driver.name.toLowerCase()) ===
 				useNormalizeString(driverName?.toLowerCase())
 		);
-		// If no driver was found (index is -1), set the index to the last driver
 		setCurrentIndex(index >= 0 ? index : enhancedCards.length - 1);
 	}, [driverName, enhancedCards]);
 
@@ -46,10 +45,14 @@ export function Profile() {
 		currentIndex !== null ? enhancedCards[currentIndex] : null;
 
 	return (
-		<div id="profile" className="bg-f1-bg-silver py-8 w-full">
-			{currentIndex !== null && enhancedCards.length > 0 && (
-				<div className="max-w-screen-xl mx-auto px-3">
-					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between">
+		currentIndex !== null &&
+		enhancedCards.length > 0 && (
+			<aside
+				id="profile"
+				className="bg-f1-bg-silver py-8 flex flex-col grow"
+			>
+				<div>
+					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between px-3">
 						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-8 w-full">
 							Perfil do Piloto
 						</h1>
@@ -143,7 +146,7 @@ export function Profile() {
 							</button>
 						</div>
 					</div>
-					<div className="flex flex-col lg:flex-row-reverse max-w-screen-xl justify-around mx-auto md:rounded w-full px-3 bg-white gap-4 py-8">
+					<div className="flex justify-center items-center mx-auto w-full py-6 md:w-fit bg-white gap-4 md:rounded md:p-8">
 						<div className="flex flex-col md:flex-row rounded gap-6">
 							<div className="flex mx-auto">
 								{driverData ? (
@@ -269,7 +272,7 @@ export function Profile() {
 						</div>
 					</div>
 				</div>
-			)}
-		</div>
+			</aside>
+		)
 	);
 }
