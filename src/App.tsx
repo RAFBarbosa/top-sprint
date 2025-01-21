@@ -7,7 +7,7 @@ import { Router } from "./Router";
 
 function App() {
 	return (
-		<div>
+		<div className="flex flex-col min-h-screen">
 			<ApolloProvider client={client}>
 				<BrowserRouter>
 					<Header />
