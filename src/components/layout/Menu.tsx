@@ -90,7 +90,7 @@ export function Menu() {
 
 			<div
 				className={`fixed top-0 right-0 bg-f1-red px-2 py-6 transition-transform duration-300 transform ${
-					isOpen ? "translate-y-[56px]" : "translate-y-[-320px]"
+					isOpen ? "translate-y-[56px]" : "translate-y-[-330px]"
 				} md:hidden w-full z-30`}
 			>
 				<ul className="space-y-2">
