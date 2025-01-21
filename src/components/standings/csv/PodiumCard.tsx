@@ -1,3 +1,6 @@
+import useNormalizeString from "../../hooks/useNormalizeString";
+import useNavigateToDriver from "../../hooks/useNavigateToDriver";
+
 interface PodiumCardProps {
 	position: number;
 	name: string;
@@ -14,8 +17,19 @@ export function PodiumCard(props: PodiumCardProps) {
 
 	const isDrivers = props.activeTab === "drivers";
 
+	const navigateToDriver = useNavigateToDriver();
+
+	const handleDriverClick = () => {
+		isDrivers && navigateToDriver(useNormalizeString(props.name));
+	};
+
 	return (
-		<div className="relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px]">
+		<div
+			onClick={handleDriverClick}
+			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px] transition-translate duration-200 ${
+				isDrivers && "hover:-translate-y-1 cursor-pointer"
+			}`}
+		>
 			<div
 				className={`ml-5 text-2xl font-f1Title hidden md:block ${
 					props.position === 1

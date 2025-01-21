@@ -6,17 +6,20 @@ import {
 	Close as CloseIcon,
 	ArrowForwardIos as MenuArrow,
 } from "@mui/icons-material";
+import { useEnhancedCards } from "../hooks/useEnhancedCards";
+import useNavigateToDriver from "../hooks/useNavigateToDriver";
+import useNormalizeString from "../hooks/useNormalizeString";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
 	{ id: "/regras", label: "Regras e Formato" },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
+	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 	{
 		id: "https://docs.google.com/forms/d/e/1FAIpQLSfHN50Fhz16wKABFaKlBa-iLFSeDVENnuZyZ7pK40qXJkL5Nw/viewform",
 		label: "Tickets",
 		external: true,
 	},
-	// { id: "/arquivo", label: "Arquivo" },
 ];
 
 const smoothScrolling = () => {
@@ -28,11 +31,35 @@ const smoothScrolling = () => {
 
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const location = useLocation();
+	const navigateToDriver = useNavigateToDriver();
+
+	const enhancedDrivers = useEnhancedCards();
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
+		setIsDropdownOpen(false);
 		smoothScrolling();
+	};
+
+	const handleDriverClick = (driverName: string) => {
+		setIsOpen(false);
+		setIsDropdownOpen(false);
+		navigateToDriver(useNormalizeString(driverName));
+	};
+
+	const handleAllDriversClick = () => {
+		setIsOpen(false);
+		setIsDropdownOpen(false);
+		navigateToDriver("");
+	};
+
+	const splitDriverName = (name: string) => {
+		const nameParts = name.split(" ");
+		const firstName = nameParts[0];
+		const secondName = nameParts.slice(1).join(" ");
+		return { firstName, secondName };
 	};
 
 	return (
@@ -42,6 +69,8 @@ export function Menu() {
 					<Logo />
 				</Link>
 			</button>
+
+			{/* Mobile */}
 			<button className="text-xl font-semibold md:hidden z-50">
 				<Link to="/" onClick={handleLinkClick}>
 					Liga Top Sprint
@@ -68,9 +97,12 @@ export function Menu() {
 					{menuItems.map((data) => (
 						<li
 							key={data.id}
-							className={`border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2 ${
-								location.pathname === data.id &&
-								"border-b border-r"
+							className={`border-b border-r border-white rounded-br-lg py-2 flex justify-between px-2 ${
+								location.pathname === data.id ||
+								(location.pathname.startsWith("/pilotos") &&
+									data.id.startsWith("/pilotos"))
+									? "border-b-2 border-r-2"
+									: ""
 							}`}
 						>
 							{data.external ? (
@@ -82,9 +114,7 @@ export function Menu() {
 									onClick={handleLinkClick}
 								>
 									<span>{data.label}</span>
-									<span className="material-symbols-outlined text-sm">
-										<MenuArrow fontSize="small" />
-									</span>
+									<span className="material-symbols-outlined text-sm"></span>
 								</a>
 							) : (
 								<Link
@@ -101,8 +131,8 @@ export function Menu() {
 				</ul>
 			</div>
 
-			{/* For larger screens */}
-			<div className="hidden md:flex h-full my-2 items-center">
+			{/* Larger screens */}
+			<div className="hidden md:flex h-full my-2 items-center ">
 				{menuItems.map((data) => (
 					<React.Fragment key={data.id}>
 						{data.external ? (
@@ -117,6 +147,102 @@ export function Menu() {
 							>
 								<span>{data.label}</span>
 							</a>
+						) : data.isDropdown ? (
+							<div
+								key={data.id}
+								className={`relative h-full group ${
+									location.pathname.startsWith("/pilotos") &&
+									"bg-f1-carbon"
+								}`}
+							>
+								<a
+									onClick={() => handleAllDriversClick()}
+									className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 cursor-pointer"
+								>
+									<span>{data.label}</span>
+									<MenuArrow
+										className="ml-2 rotate-90"
+										fontSize="small"
+									/>
+								</a>
+								<div className="fixed left-0 z-50 hidden group-hover:flex w-full py-8 bg-f1-carbon ">
+									<ul className="z-50 hidden group-hover:grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 w-full px-4 max-w-screen-xl mx-auto">
+										{enhancedDrivers.map((driver) => {
+											const { firstName, secondName } =
+												splitDriverName(driver.name);
+											return (
+												<li
+													key={driver.name}
+													className="border-b-1 border-r-1 border-white rounded-br-lg py-2 flex justify-between items-center cursor-pointer text-sm transition-colors duration-200"
+													style={{
+														borderColor:
+															useNormalizeString(
+																location.pathname
+															) ===
+															useNormalizeString(
+																`/pilotos/${driver.name}`
+															)
+																? driver.teamColor
+																: "white",
+													}}
+													onMouseEnter={(e) => {
+														e.currentTarget.style.borderColor =
+															driver.teamColor;
+													}}
+													onMouseLeave={(e) => {
+														if (
+															useNormalizeString(
+																location.pathname
+															) !==
+															useNormalizeString(
+																`/pilotos/${driver.name}`
+															)
+														) {
+															e.currentTarget.style.borderColor =
+																"white";
+														}
+													}}
+													onClick={() =>
+														handleDriverClick(
+															driver.name
+														)
+													}
+												>
+													<div className="flex items-center">
+														<span
+															className="ml-1 mr-2 w-1 self-stretch"
+															style={{
+																backgroundColor:
+																	driver.teamColor,
+															}}
+														></span>
+														<span>
+															<span
+																className={
+																	secondName
+																		? ""
+																		: "font-bold uppercase"
+																}
+															>
+																{firstName}
+															</span>
+															{secondName && (
+																<span className="font-bold ml-1 uppercase">
+																	{secondName}
+																</span>
+															)}
+														</span>
+													</div>
+													<MenuArrow
+														fontSize="inherit"
+														className="mr-2"
+													/>
+												</li>
+											);
+										})}
+									</ul>
+								</div>
+							</div>
 						) : (
 							<Link
 								to={data.id}
