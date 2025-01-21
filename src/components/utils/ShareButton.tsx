@@ -1,6 +1,6 @@
 import React from "react";
 import { toPng } from "html-to-image";
-import ShareIcon from "@mui/icons-material/Share";
+import IosShareIcon from "@mui/icons-material/IosShare";
 
 interface ShareButtonProps {
 	cardRef: React.RefObject<HTMLDivElement>;
@@ -55,11 +55,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 			onClick={handleShareImage}
 			className="px-4 py-2 bg-f1-red text-white rounded w-full md:w-auto mx-auto hover:bg-transparent cursor-pointer border-2 border-f1-red hover:text-f1-text transition-colors duration-200 flex justify-center items-center gap-2"
 		>
-			<div className="text-xs uppercase font-semibold flex items-center gap-2">
+			<div className="text-xs uppercase font-semibold flex items-center gap-1">
+				<IosShareIcon fontSize="small" />
 				<span>Compartilhe esse card </span>{" "}
-				<span>
-					<ShareIcon fontSize="small" />
-				</span>
 			</div>
 		</button>
 	);

@@ -69,6 +69,8 @@ export function Menu() {
 					<Logo />
 				</Link>
 			</button>
+
+			{/* Mobile */}
 			<button className="text-xl font-semibold md:hidden z-50">
 				<Link to="/" onClick={handleLinkClick}>
 					Liga Top Sprint
@@ -96,8 +98,11 @@ export function Menu() {
 						<li
 							key={data.id}
 							className={`border-b border-r border-white rounded-br-lg py-2 flex justify-between px-2 ${
-								location.pathname === data.id &&
-								"border-b-2 border-r-2"
+								location.pathname === data.id ||
+								(location.pathname.startsWith("/pilotos") &&
+									data.id.startsWith("/pilotos"))
+									? "border-b-2 border-r-2"
+									: ""
 							}`}
 						>
 							{data.external ? (
@@ -126,7 +131,7 @@ export function Menu() {
 				</ul>
 			</div>
 
-			{/* For larger screens */}
+			{/* Larger screens */}
 			<div className="hidden md:flex h-full my-2 items-center ">
 				{menuItems.map((data) => (
 					<React.Fragment key={data.id}>
