@@ -76,10 +76,9 @@ const Drivers: React.FC = () => {
 											</span>
 											{secondName && (
 												<span
-													className={`font-semibold md:ml-1 ${
-														secondName
-															? "uppercase"
-															: "ml-1"
+													className={`font-semibold ml-1 ${
+														secondName &&
+														"uppercase"
 													}`}
 												>
 													{secondName}
