@@ -79,11 +79,11 @@ interface ShareButtonProps {
 const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 	const [fontsLoaded, setFontsLoaded] = useState(false);
 
-	// Use document.fonts.ready to ensure fonts are loaded
+	// Wait for fonts to load
 	useEffect(() => {
 		const loadFonts = async () => {
 			try {
-				// Wait for the fonts to be loaded
+				// This waits for all the fonts to be loaded before proceeding
 				await document.fonts.ready;
 				setFontsLoaded(true); // Mark fonts as loaded
 			} catch (error) {
@@ -94,24 +94,48 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 		loadFonts();
 	}, []);
 
-	const handleShareImage = async () => {
-		// Only generate the image after fonts are loaded
-		if (cardRef.current && fontsLoaded) {
+	// The buildPng workaround to retry and ensure the image size is large enough
+	const buildPng = async () => {
+		const element = cardRef.current;
+
+		if (!element) {
+			console.error("Card element not found");
+			return "";
+		}
+
+		let dataUrl = "";
+		const minDataLength = 2000000; // 2MB minimum size
+		let i = 0;
+		const maxAttempts = 10;
+
+		while (dataUrl.length < minDataLength && i < maxAttempts) {
 			try {
-				const dataUrl = await toPng(cardRef.current, {
+				dataUrl = await toPng(element, {
 					cacheBust: true,
 					quality: 1,
-					filter: (node) => {
-						if (
-							node.tagName === "DIV" &&
-							node.classList.contains("rounded-xl")
-						) {
-							node.style.backgroundColor = "transparent";
-						}
-						return true;
-					},
 				});
+				i += 1;
+			} catch (error) {
+				console.error("Error generating PNG image:", error);
+				break;
+			}
+		}
 
+		return dataUrl;
+	};
+
+	const handleShareImage = async () => {
+		// Ensure fonts are loaded
+		if (cardRef.current && fontsLoaded) {
+			try {
+				const dataUrl = await buildPng();
+
+				if (!dataUrl) {
+					console.error("Failed to generate a valid image");
+					return;
+				}
+
+				// Convert to blob and share
 				const blob = await fetch(dataUrl).then((res) => res.blob());
 				const file = new File([blob], `${data.name}_card.png`, {
 					type: blob.type,
