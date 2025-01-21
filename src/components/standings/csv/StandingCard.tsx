@@ -1,5 +1,6 @@
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
+import useNormalizeString from "../../hooks/useNormalizeString";
 
 interface StandingCardProps {
 	position: number;
@@ -25,22 +26,25 @@ export function StandingCard(props: StandingCardProps) {
 
 	const handleCardClick = () => {
 		if (isDrivers) {
-			navigateToDriver(props.name);
+			navigateToDriver(useNormalizeString(props.name));
 		}
 	};
 
 	return (
 		<button
 			onClick={handleCardClick}
-			className="tracking-wide overflow-hidden w-full cursor-pointer"
+			className="tracking-wide overflow-hidden w-full"
 		>
 			{/* <div className="tracking-wide overflow-hidden"> pointer-events-none*/}
 			<div
-				className={`flex p-4 items-center relative rounded-md md:bg-white md:text-f1-text hover:bg-f1-silver hover:text-white transition-colors duration-200 cursor-pointer ${
+				className={`flex p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
 					props.isActive
 						? "bg-f1-silver text-white h-32 md:h-15"
 						: "bg-white"
-				} `}
+				} ${
+					isDrivers &&
+					"hover:bg-f1-silver hover:text-white cursor-pointer"
+				}`}
 			>
 				<div className="flex items-center flex-grow z-30 h-full ">
 					<span

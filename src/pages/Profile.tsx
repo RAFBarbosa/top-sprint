@@ -1,18 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PlayerCard from "../components/utils/PlayerCard";
+import ShareButton from "../components/utils/ShareButton";
 import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import useNormalizeString from "../components/hooks/useNormalizeString";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
 	const enhancedCards = useEnhancedCards();
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+	const cardRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const index = enhancedCards.findIndex(
-			(driver) => driver.name.toLowerCase() === driverName?.toLowerCase()
+			(driver) =>
+				useNormalizeString(driver.name.toLowerCase()) ===
+				useNormalizeString(driverName?.toLowerCase())
 		);
 		setCurrentIndex(index);
 	}, [driverName, enhancedCards]);
@@ -20,14 +25,18 @@ export function Profile() {
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
 			const prevDriver = enhancedCards[currentIndex - 1];
-			navigate(`/pilotos/${prevDriver.name.toLowerCase()}`);
+			navigate(
+				`/pilotos/${useNormalizeString(prevDriver.name.toLowerCase())}`
+			);
 		}
 	};
 
 	const handleNextClick = () => {
 		if (currentIndex !== null && currentIndex < enhancedCards.length - 1) {
 			const nextDriver = enhancedCards[currentIndex + 1];
-			navigate(`/pilotos/${nextDriver.name.toLowerCase()}`);
+			navigate(
+				`/pilotos/${useNormalizeString(nextDriver.name.toLowerCase())}`
+			);
 		}
 	};
 
@@ -35,9 +44,9 @@ export function Profile() {
 		currentIndex !== null ? enhancedCards[currentIndex] : null;
 
 	return (
-		<div id="profile" className="bg-f1-lightSilver py-10">
-			<div className="bg-white flex flex-col max-w-screen-xl px-3 md:mx-auto py-5 rounded">
-				<div className="flex justify-between w-full mb-4">
+		<div id="profile" className="bg-f1-lightSilver py-10 w-full">
+			<div className="flex flex-col lg:flex-row-reverse max-w-screen-xl justify-around mx-auto md:rounded w-full px-3 bg-white gap-4 py-8">
+				<div className="flex flex-col justify-between">
 					<button
 						onClick={handlePrevClick}
 						disabled={currentIndex === null || currentIndex === 0}
@@ -56,16 +65,16 @@ export function Profile() {
 						<MenuArrow />
 					</button>
 				</div>
-				<div className="bg-white md:flex max-w-screen-xl px-3 md:mx-auto py-5 rounded">
-					<div className="pr-10">
+				<div className="flex flex-col md:flex-row rounded gap-6">
+					<div className="flex mx-auto">
 						{driverData ? (
-							<PlayerCard data={driverData} />
+							<PlayerCard ref={cardRef} data={driverData} />
 						) : (
 							<p>Driver not found</p>
 						)}
 					</div>
-					<div className="flex flex-col justify-between w-full">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+					<div className="flex flex-col justify-between">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 pt-6 md:pt-0 leading-3 md:leading-4">
 							{driverData?.city && (
 								<>
 									<p className="font-bold">Cidade</p>
@@ -83,7 +92,7 @@ export function Profile() {
 							{driverData?.stats?.totalWins && (
 								<>
 									<p className="font-bold">
-										Vitorias em Corridas
+										Vitórias em Corridas
 									</p>
 									<p>{driverData.stats.totalWins}</p>
 								</>
@@ -91,14 +100,14 @@ export function Profile() {
 							{driverData?.stats?.totalSprintWins && (
 								<>
 									<p className="font-bold">
-										Vitorias em Sprint
+										Vitórias em Sprint
 									</p>
 									<p>{driverData.stats.totalSprintWins}</p>
 								</>
 							)}
 							{driverData?.stats?.totalPodiums && (
 								<>
-									<p className="font-bold">Podios</p>
+									<p className="font-bold">Pódios</p>
 									<p>{driverData.stats.totalPodiums}</p>
 								</>
 							)}
@@ -110,7 +119,7 @@ export function Profile() {
 							)}
 							{driverData?.stats?.fastestLaps && (
 								<>
-									<p className="font-bold">Voltas Rapidas</p>
+									<p className="font-bold">Voltas Rápidas</p>
 									<p>{driverData.stats.fastestLaps}</p>
 								</>
 							)}
@@ -122,7 +131,7 @@ export function Profile() {
 							)}
 							{driverData?.stats?.totalPart && (
 								<>
-									<p className="font-bold">Participacoes</p>
+									<p className="font-bold">Participações</p>
 									<p>{driverData.stats.totalPart}</p>
 								</>
 							)}
@@ -138,6 +147,9 @@ export function Profile() {
 									<p>{driverData.stream}</p>
 								</>
 							)}
+						</div>
+						<div className="md:self-start self-center group order-first md:order-last">
+							<ShareButton cardRef={cardRef} data={driverData} />
 						</div>
 						{/* <div>mais stats</div> */}
 					</div>
