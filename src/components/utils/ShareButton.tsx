@@ -12,31 +12,61 @@ interface ShareButtonProps {
 
 const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 	const handleShareImage = async () => {
+		// Ensure cardRef.current is not null
 		if (cardRef.current) {
 			try {
-				const dataUrl = await toPng(cardRef.current, {
-					cacheBust: true,
-					quality: 1,
-					filter: (node) => {
-						if (
-							node.tagName === "DIV" &&
-							node.classList.contains("rounded-xl")
-						) {
-							node.style.backgroundColor = "transparent";
-						}
-						return true;
-					},
-				});
+				// Function to build the PNG with retry logic
+				const buildPng = async () => {
+					const element = cardRef.current; // Now, TypeScript knows element is not null
+					let dataUrl = "";
+					const minDataLength = 2000000; // Minimum length of the data URL to be valid
+					let i = 0;
+					const maxAttempts = 10; // Maximum number of retries
 
+					// Retry generating the image until it meets the length requirement or we hit the max attempts
+					while (dataUrl.length < minDataLength && i < maxAttempts) {
+						// Check if element is not null before passing to toPng
+						if (element) {
+							dataUrl = await toPng(element, {
+								cacheBust: true,
+								quality: 1,
+								filter: (node) => {
+									// Make background transparent for certain elements (optional)
+									if (
+										node.tagName === "DIV" &&
+										node.classList.contains("rounded-xl")
+									) {
+										node.style.backgroundColor =
+											"transparent";
+									}
+									return true;
+								},
+							});
+						}
+						i += 1;
+					}
+
+					return dataUrl;
+				};
+
+				const dataUrl = await buildPng();
+
+				if (dataUrl.length < 2000000) {
+					console.error("Image generation failed or was incomplete.");
+					return;
+				}
+
+				// Convert the dataUrl to a Blob and then a File
 				const blob = await fetch(dataUrl).then((res) => res.blob());
 				const file = new File([blob], `${data.name}_card.png`, {
 					type: blob.type,
 				});
 
+				// Check if the Web Share API is available and share the image
 				if (navigator.share) {
 					await navigator.share({
 						title: `${data.name} Card`,
-						text: `Olha o card do piloto ${data.name} da Liga Top Sprint! Será que ${data.rating} ta justo?`,
+						text: `Olha o card do piloto ${data.name} da Liga Top Sprint! Será que ${data.rating} tá justo?`,
 						files: [file],
 					});
 				} else {
