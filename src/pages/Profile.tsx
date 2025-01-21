@@ -5,6 +5,7 @@ import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import useNormalizeString from "../components/hooks/useNormalizeString";
+import LiveTvIcon from "@mui/icons-material/LiveTv";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
@@ -19,7 +20,8 @@ export function Profile() {
 				useNormalizeString(driver.name.toLowerCase()) ===
 				useNormalizeString(driverName?.toLowerCase())
 		);
-		setCurrentIndex(index);
+		// If no driver was found (index is -1), set the index to the last driver
+		setCurrentIndex(index >= 0 ? index : enhancedCards.length - 1);
 	}, [driverName, enhancedCards]);
 
 	const handlePrevClick = () => {
@@ -44,117 +46,230 @@ export function Profile() {
 		currentIndex !== null ? enhancedCards[currentIndex] : null;
 
 	return (
-		<div id="profile" className="bg-f1-lightSilver py-10 w-full">
-			<div className="flex flex-col lg:flex-row-reverse max-w-screen-xl justify-around mx-auto md:rounded w-full px-3 bg-white gap-4 py-8">
-				<div className="flex flex-col justify-between">
-					<button
-						onClick={handlePrevClick}
-						disabled={currentIndex === null || currentIndex === 0}
-						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l cursor-pointer"
-					>
-						<MenuArrow className="rotate-180" />
-					</button>
-					<button
-						onClick={handleNextClick}
-						disabled={
-							currentIndex === null ||
-							currentIndex === enhancedCards.length - 1
-						}
-						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r cursor-pointer"
-					>
-						<MenuArrow />
-					</button>
-				</div>
-				<div className="flex flex-col md:flex-row rounded gap-6">
-					<div className="flex mx-auto">
-						{driverData ? (
-							<PlayerCard ref={cardRef} data={driverData} />
-						) : (
-							<p>Driver not found</p>
-						)}
-					</div>
-					<div className="flex flex-col justify-between">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 pt-6 md:pt-0 leading-3 md:leading-4">
-							{driverData?.city && (
-								<>
-									<p className="font-bold">Cidade</p>
-									<p>{driverData.city}</p>
-								</>
-							)}
-							{driverData?.stats?.championships && (
-								<>
-									<p className="font-bold">
-										Campeonatos Vencidos
+		<div id="profile" className="bg-f1-bg-silver py-8 w-full">
+			{currentIndex !== null && enhancedCards.length > 0 && (
+				<div className="max-w-screen-xl mx-auto px-3">
+					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between">
+						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-8 w-full">
+							Perfil do Piloto
+						</h1>
+						<div className="flex justify-between gap-1 h-25 mt-2 md:mt-0 sm:ml-2">
+							{/* Previous Button */}
+							<button
+								onClick={handlePrevClick}
+								disabled={
+									currentIndex === null || currentIndex === 0
+								}
+								className={`bg-f1-lightSilver text-f1-text font-bold px-2 rounded-l border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
+									currentIndex === null || currentIndex === 0
+										? "opacity-50 cursor-not-allowed"
+										: "hover:opacity-80 cursor-pointer"
+								}`}
+								style={{
+									borderColor: `${
+										currentIndex > 0
+											? enhancedCards[currentIndex - 1]
+													.teamColor
+											: ""
+									}`,
+								}}
+							>
+								<div className="pt-2 flex items-center justify-around">
+									<p className="text-sm uppercase space-y-2  flex flex-col items-center">
+										<span>Anterior</span>
+										<MenuArrow className="rotate-180" />
 									</p>
-									<p>{driverData.stats.championships}</p>
-								</>
-							)}
-							{driverData?.stats?.totalWins && (
-								<>
-									<p className="font-bold">
-										Vitórias em Corridas
+									<div className="flex items-center">
+										<div
+											className="w-22 h-22 bg-cover translate-y-[10px] scale-120"
+											style={{
+												backgroundImage: `url(${
+													currentIndex > 0
+														? enhancedCards[
+																currentIndex - 1
+														  ].photo
+														: ""
+												})`,
+											}}
+										/>
+									</div>
+								</div>
+							</button>
+
+							{/* Next Button */}
+							<button
+								onClick={handleNextClick}
+								disabled={
+									currentIndex === null ||
+									currentIndex === enhancedCards.length - 1
+								}
+								className={`bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
+									currentIndex === null ||
+									currentIndex === enhancedCards.length - 1
+										? "opacity-50 cursor-not-allowed"
+										: "hover:opacity-80 cursor-pointer"
+								}`}
+								style={{
+									borderColor: `${
+										currentIndex < enhancedCards.length - 1
+											? enhancedCards[currentIndex + 1]
+													.teamColor
+											: ""
+									}`,
+								}}
+							>
+								<div className="pt-2 flex items-center justify-around">
+									<div className="flex items-center">
+										<div
+											className="w-22 h-22 bg-cover translate-y-[10px] scale-120"
+											style={{
+												backgroundImage: `url(${
+													enhancedCards[
+														currentIndex + 1
+													]
+														? enhancedCards[
+																currentIndex + 1
+														  ].photo
+														: ""
+												})`,
+											}}
+										/>
+									</div>
+									<p className="text-sm tracking uppercase space-y-2 flex flex-col items-center">
+										<span>Próximo</span>
+										<MenuArrow />
 									</p>
-									<p>{driverData.stats.totalWins}</p>
-								</>
-							)}
-							{driverData?.stats?.totalSprintWins && (
-								<>
-									<p className="font-bold">
-										Vitórias em Sprint
-									</p>
-									<p>{driverData.stats.totalSprintWins}</p>
-								</>
-							)}
-							{driverData?.stats?.totalPodiums && (
-								<>
-									<p className="font-bold">Pódios</p>
-									<p>{driverData.stats.totalPodiums}</p>
-								</>
-							)}
-							{driverData?.stats?.poles && (
-								<>
-									<p className="font-bold">Poles</p>
-									<p>{driverData.stats.poles}</p>
-								</>
-							)}
-							{driverData?.stats?.fastestLaps && (
-								<>
-									<p className="font-bold">Voltas Rápidas</p>
-									<p>{driverData.stats.fastestLaps}</p>
-								</>
-							)}
-							{driverData?.stats?.totalPoints && (
-								<>
-									<p className="font-bold">Pontos</p>
-									<p>{driverData.stats.totalPoints}</p>
-								</>
-							)}
-							{driverData?.stats?.totalPart && (
-								<>
-									<p className="font-bold">Participações</p>
-									<p>{driverData.stats.totalPart}</p>
-								</>
-							)}
-							{driverData?.equipment && (
-								<>
-									<p className="font-bold">Equipamento</p>
-									<p>{driverData.equipment}</p>
-								</>
-							)}
-							{driverData?.stream && (
-								<>
-									<p className="font-bold">Stream</p>
-									<p>{driverData.stream}</p>
-								</>
-							)}
+								</div>
+							</button>
 						</div>
-						<div className="md:self-start self-center group order-first md:order-last">
-							<ShareButton cardRef={cardRef} data={driverData} />
+					</div>
+					<div className="flex flex-col lg:flex-row-reverse max-w-screen-xl justify-around mx-auto md:rounded w-full px-3 bg-white gap-4 py-8">
+						<div className="flex flex-col md:flex-row rounded gap-6">
+							<div className="flex mx-auto">
+								{driverData ? (
+									<PlayerCard
+										ref={cardRef}
+										data={driverData}
+									/>
+								) : (
+									<p>Driver not found</p>
+								)}
+							</div>
+							<div className="flex flex-col justify-between">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 pt-6 md:pt-0 leading-3 md:leading-4">
+									{driverData?.city && (
+										<>
+											<p className="font-bold">Cidade</p>
+											<p>{driverData.city}</p>
+										</>
+									)}
+									{driverData?.stats?.championships && (
+										<>
+											<p className="font-bold">
+												Campeonatos Vencidos
+											</p>
+											<p>
+												{driverData.stats.championships}
+											</p>
+										</>
+									)}
+									{driverData?.stats?.totalWins && (
+										<>
+											<p className="font-bold">
+												Vitórias em Corridas
+											</p>
+											<p>{driverData.stats.totalWins}</p>
+										</>
+									)}
+									{driverData?.stats?.totalSprintWins && (
+										<>
+											<p className="font-bold">
+												Vitórias em Sprint
+											</p>
+											<p>
+												{
+													driverData.stats
+														.totalSprintWins
+												}
+											</p>
+										</>
+									)}
+									{driverData?.stats?.totalPodiums && (
+										<>
+											<p className="font-bold">Pódios</p>
+											<p>
+												{driverData.stats.totalPodiums}
+											</p>
+										</>
+									)}
+									{driverData?.stats?.poles && (
+										<>
+											<p className="font-bold">Poles</p>
+											<p>{driverData.stats.poles}</p>
+										</>
+									)}
+									{driverData?.stats?.fastestLaps && (
+										<>
+											<p className="font-bold">
+												Voltas Rápidas
+											</p>
+											<p>
+												{driverData.stats.fastestLaps}
+											</p>
+										</>
+									)}
+									{driverData?.stats?.totalPoints && (
+										<>
+											<p className="font-bold">Pontos</p>
+											<p>
+												{driverData.stats.totalPoints}
+											</p>
+										</>
+									)}
+									{driverData?.stats?.totalPart && (
+										<>
+											<p className="font-bold">
+												Participações
+											</p>
+											<p>{driverData.stats.totalPart}</p>
+										</>
+									)}
+									{driverData?.equipment && (
+										<>
+											<p className="font-bold">
+												Equipamento
+											</p>
+											<p>{driverData.equipment}</p>
+										</>
+									)}
+									{driverData?.stream && (
+										<>
+											<a
+												href={`${driverData.stream}`}
+												target="_blank"
+												className="text-f1-red hover:opacity-90 transition-all duration-200"
+											>
+												<div className="flex items-center gap-2">
+													<p className="font-bold">
+														Stream
+													</p>
+													<LiveTvIcon fontSize="small" />
+												</div>
+											</a>
+										</>
+									)}
+								</div>
+								<div className="md:self-start self-center group order-first md:order-last">
+									<ShareButton
+										cardRef={cardRef}
+										data={driverData}
+									/>
+								</div>
+							</div>
 						</div>
-						{/* <div>mais stats</div> */}
 					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 }

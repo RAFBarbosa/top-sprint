@@ -12,7 +12,7 @@ export function Rules() {
 						Regras e Formato
 					</h1>
 				</div>
-				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 border-0 rounded-xl tracking-normal">
+				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
 					As regras utilizadas serão baseadas no{" "}
 					<a
 						href="https://downloads.f1esports.com/Rules/2022/F1_Esports_Series_Participants_Handbook_v1.5.pdf"

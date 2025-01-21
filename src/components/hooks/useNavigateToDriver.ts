@@ -4,7 +4,6 @@ const useNavigateToDriver = () => {
 	const navigate = useNavigate();
 
 	const navigateToDriver = (driverName: string) => {
-		console.log(driverName);
 		navigate(`/pilotos/${driverName.toLowerCase()}`);
 	};
 
