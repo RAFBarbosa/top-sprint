@@ -57,9 +57,14 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					<div className={`top-0 left-0 rounded-lg`}>
 						<div
 							className={`absolute top-0 left-0 w-full h-full z-35`}
-							style={{
-								boxShadow: `inset 0 0 2px 3px rgba(0, 0, 0, 0.4)`,
-							}}
+							style={
+								{
+									boxShadow:
+										"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
+									"-webkit-box-shadow":
+										"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)", // webkit fallback
+								} as React.CSSProperties // Explicit cast here
+							}
 						/>
 					</div>
 
