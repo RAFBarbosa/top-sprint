@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 import {
 	Menu as MenuIcon,
@@ -8,6 +8,7 @@ import {
 } from "@mui/icons-material";
 import { useEnhancedCards } from "../hooks/useEnhancedCards";
 import useNavigateToDriver from "../hooks/useNavigateToDriver";
+import useNormalizeString from "../hooks/useNormalizeString";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
@@ -31,18 +32,10 @@ const smoothScrolling = () => {
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const [drivers, setDrivers] = useState<string[]>([]);
 	const location = useLocation();
 	const navigateToDriver = useNavigateToDriver();
 
 	const enhancedDrivers = useEnhancedCards();
-
-	useEffect(() => {
-		if (enhancedDrivers && enhancedDrivers.length > 0) {
-			const driverNames = enhancedDrivers.map((driver) => driver.name);
-			setDrivers(driverNames);
-		}
-	}, [enhancedDrivers]);
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
@@ -53,7 +46,20 @@ export function Menu() {
 	const handleDriverClick = (driverName: string) => {
 		setIsOpen(false);
 		setIsDropdownOpen(false);
-		navigateToDriver(driverName);
+		navigateToDriver(useNormalizeString(driverName));
+	};
+
+	const handleAllDriversClick = () => {
+		setIsOpen(false);
+		setIsDropdownOpen(false);
+		navigateToDriver("");
+	};
+
+	const splitDriverName = (name: string) => {
+		const nameParts = name.split(" ");
+		const firstName = nameParts[0];
+		const secondName = nameParts.slice(1).join(" ");
+		return { firstName, secondName };
 	};
 
 	return (
@@ -89,9 +95,9 @@ export function Menu() {
 					{menuItems.map((data) => (
 						<li
 							key={data.id}
-							className={`border-b-[0.5px] border-r-[0.5px] border-white rounded-br-lg py-2 flex justify-between px-2 ${
+							className={`border-b border-r border-white rounded-br-lg py-2 flex justify-between px-2 ${
 								location.pathname === data.id &&
-								"border-b border-r"
+								"border-b-2 border-r-2"
 							}`}
 						>
 							{data.external ? (
@@ -105,35 +111,6 @@ export function Menu() {
 									<span>{data.label}</span>
 									<span className="material-symbols-outlined text-sm"></span>
 								</a>
-							) : data.isDropdown ? (
-								<div>
-									<button
-										className="text-lg w-full flex justify-between items-center py-2 px-2"
-										onClick={() =>
-											setIsDropdownOpen(!isDropdownOpen)
-										}
-									>
-										<span>{data.label}</span>
-										<MenuArrow className="ml-2 rotate-90" />
-									</button>
-									{isDropdownOpen && (
-										<ul className="ml-4 mt-2 space-y-1">
-											{drivers.map((driver) => (
-												<li
-													key={driver}
-													className="text-sm hover:underline cursor-pointer"
-													onClick={() =>
-														handleDriverClick(
-															driver
-														)
-													}
-												>
-													{driver}
-												</li>
-											))}
-										</ul>
-									)}
-								</div>
 							) : (
 								<Link
 									to={data.id}
@@ -150,7 +127,7 @@ export function Menu() {
 			</div>
 
 			{/* For larger screens */}
-			<div className="hidden md:flex h-full my-2 items-center">
+			<div className="hidden md:flex h-full my-2 items-center ">
 				{menuItems.map((data) => (
 					<React.Fragment key={data.id}>
 						{data.external ? (
@@ -168,29 +145,98 @@ export function Menu() {
 						) : data.isDropdown ? (
 							<div
 								key={data.id}
-								className={`relative h-full cursor-pointer group ${
-									location.pathname.startsWith("/pilotos")
-										? "bg-f1-carbon"
-										: ""
+								className={`relative h-full group ${
+									location.pathname.startsWith("/pilotos") &&
+									"bg-f1-carbon"
 								}`}
 							>
-								<a className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300">
+								<a
+									onClick={() => handleAllDriversClick()}
+									className="text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 cursor-pointer"
+								>
 									<span>{data.label}</span>
-									<MenuArrow className="ml-2 rotate-90" />
+									<MenuArrow
+										className="ml-2 rotate-90"
+										fontSize="small"
+									/>
 								</a>
-								<ul className="absolute bg-white text-black shadow-md rounded w-40 z-50 hidden group-hover:block">
-									{drivers.map((driver) => (
-										<li
-											key={driver}
-											className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-											onClick={() =>
-												handleDriverClick(driver)
-											}
-										>
-											{driver}
-										</li>
-									))}
-								</ul>
+								<div className="fixed left-0 z-50 hidden group-hover:flex w-full py-8 bg-f1-carbon ">
+									<ul className="z-50 hidden group-hover:grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-3 w-full px-4 max-w-screen-xl mx-auto">
+										{enhancedDrivers.map((driver) => {
+											const { firstName, secondName } =
+												splitDriverName(driver.name);
+											return (
+												<li
+													key={driver.name}
+													className="border-b-1 border-r-1 border-white rounded-br-lg py-2 flex justify-between items-center cursor-pointer text-sm transition-colors duration-200"
+													style={{
+														borderColor:
+															useNormalizeString(
+																location.pathname
+															) ===
+															useNormalizeString(
+																`/pilotos/${driver.name}`
+															)
+																? driver.teamColor
+																: "white",
+													}}
+													onMouseEnter={(e) => {
+														e.currentTarget.style.borderColor =
+															driver.teamColor;
+													}}
+													onMouseLeave={(e) => {
+														if (
+															useNormalizeString(
+																location.pathname
+															) !==
+															useNormalizeString(
+																`/pilotos/${driver.name}`
+															)
+														) {
+															e.currentTarget.style.borderColor =
+																"white";
+														}
+													}}
+													onClick={() =>
+														handleDriverClick(
+															driver.name
+														)
+													}
+												>
+													<div className="flex items-center">
+														<span
+															className="ml-1 mr-2 w-1 self-stretch"
+															style={{
+																backgroundColor:
+																	driver.teamColor,
+															}}
+														></span>
+														<span>
+															<span
+																className={
+																	secondName
+																		? ""
+																		: "font-bold uppercase"
+																}
+															>
+																{firstName}
+															</span>
+															{secondName && (
+																<span className="font-bold ml-1 uppercase">
+																	{secondName}
+																</span>
+															)}
+														</span>
+													</div>
+													<MenuArrow
+														fontSize="inherit"
+														className="mr-2"
+													/>
+												</li>
+											);
+										})}
+									</ul>
+								</div>
 							</div>
 						) : (
 							<Link

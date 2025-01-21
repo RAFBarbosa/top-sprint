@@ -2,14 +2,7 @@ import { useState, useEffect } from "react";
 import { StandingsList } from "./StandingsList";
 import useCsvLoader from "../../hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
-
-const normalizeString = (str: string | undefined | null) => {
-	if (typeof str !== "string") return "";
-	return str
-		.toLowerCase()
-		.replace(/[^a-z0-9\s]/g, "")
-		.trim();
-};
+import useNormalizeString from "../../hooks/useNormalizeString";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
@@ -23,12 +16,11 @@ export function DataLoader(props: DataLoaderProps) {
 
 	useEffect(() => {
 		if (props.data && drivers && teams) {
-			// Enhance drivers data with team info
 			const enhancedDriversData = drivers.map((driver) => {
 				const driverFromData = props.data?.drivers.find(
 					(driverFromData) =>
-						normalizeString(driverFromData.name) ===
-						normalizeString(driver.name)
+						useNormalizeString(driverFromData.name) ===
+						useNormalizeString(driver.name)
 				);
 				return {
 					...driver,
@@ -39,12 +31,11 @@ export function DataLoader(props: DataLoaderProps) {
 				};
 			});
 
-			// Enhance teams data with drivers assigned to each team
 			const enhancedTeamsData = teams.map((team) => {
 				const teamFromData = props.data?.teams.find(
 					(teamFromData) =>
-						normalizeString(teamFromData.name) ===
-						normalizeString(team.name)
+						useNormalizeString(teamFromData.name) ===
+						useNormalizeString(team.name)
 				);
 
 				// Get the driver names assigned to the team
