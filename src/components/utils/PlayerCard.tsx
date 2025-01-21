@@ -41,9 +41,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 				className="text-white tracking-wider overflow-hidden w-[340px] h-[440px] rounded-lg p-[10px]"
 				style={{
 					fontFamily: `'Titillium Web Local', sans-serif`,
-					// boxShadow: `inset 0 0 2px 2px rgba(0, 0, 0, 0.1)`,
-					boxShadow: `rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px`,
 					background: `${borderColor}`,
+					position: "relative", // Ensure container is relative for pseudo-element positioning
 				}}
 			>
 				<div className="bg-black relative w-full h-full flex flex-col justify-between">
@@ -54,17 +53,30 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						alt={`${bgCard}'s photo`}
 					/>
 
-					{/* Borders */}
-					<div className={`top-0 left-0 rounded-lg`}>
-						<div
-							className={`absolute top-0 left-0 w-full h-full z-35`}
-							style={{
-								boxShadow:
-									"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
-								WebkitBoxShadow:
-									"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
-							}}
-						/>
+					{/* Driver stats and other content */}
+					<div
+						className={`absolute top-0 left-0 w-full h-full z-35`}
+						style={{
+							position: "relative", // Ensure pseudo-element is positioned correctly
+						}}
+					>
+						{/* Pseudo-element for shadow */}
+						<style>
+							{`
+                div::before {
+                  content: "";
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  background: rgba(0, 0, 0, 0);
+                  box-shadow: inset 0 0 2px 3px rgba(0, 0, 0, 0.4);
+                  -webkit-box-shadow: inset 0 0 2px 3px rgba(0, 0, 0, 0.4);
+                  z-index: 35;
+                }
+              `}
+						</style>
 					</div>
 
 					{/* Driver stats */}
@@ -144,7 +156,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							style={{ backgroundColor: data.teamColor }}
 						></div>
 
-						{/* Team name and tsl logo */}
+						{/* Team name and logo */}
 						<div className="flex items-start justify-between">
 							<p className="font-regular text-xl">
 								{data.teamName}
