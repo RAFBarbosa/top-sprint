@@ -41,7 +41,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 				className="text-white tracking-wider overflow-hidden w-[340px] h-[440px] rounded-lg p-[10px]"
 				style={{
 					fontFamily: `'Titillium Web Local', sans-serif`,
-					boxShadow: `inset 0 0 2px 2px rgba(0, 0, 0, 0.1)`,
+					// boxShadow: `inset 0 0 2px 2px rgba(0, 0, 0, 0.1)`,
+					boxShadow: `rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px`,
 					background: `${borderColor}`,
 				}}
 			>
@@ -57,14 +58,12 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					<div className={`top-0 left-0 rounded-lg`}>
 						<div
 							className={`absolute top-0 left-0 w-full h-full z-35`}
-							style={
-								{
-									boxShadow:
-										"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
-									"-webkit-box-shadow":
-										"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)", // webkit fallback
-								} as React.CSSProperties // Explicit cast here
-							}
+							style={{
+								boxShadow:
+									"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
+								WebkitBoxShadow:
+									"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
+							}}
 						/>
 					</div>
 
