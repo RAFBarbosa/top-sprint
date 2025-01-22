@@ -58,6 +58,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 		return dataUrl;
 	};
 
+	const removeWWW = (url: string) => {
+		return url.replace(/^https?:\/\/(www\.)/, "https://");
+	};
+
 	const handleShareImage = async () => {
 		// Ensure fonts are loaded
 		if (cardRef.current && fontsLoaded) {
@@ -75,7 +79,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 					type: blob.type,
 				});
 
-				const currentPath = `${window.location.origin}${window.location.pathname}`;
+				const fullUrl = `${window.location.origin}${window.location.pathname}`;
+
+				const currentPath = removeWWW(fullUrl);
 
 				if (navigator.share) {
 					await navigator.share({
