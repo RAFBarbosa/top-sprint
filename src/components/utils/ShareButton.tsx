@@ -75,7 +75,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 					type: blob.type,
 				});
 
-				const currentPath = window.location.pathname;
+				const currentPath = `${window.location.origin}${window.location.pathname}`;
 
 				if (navigator.share) {
 					await navigator.share({
