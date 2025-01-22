@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { Router } from "./Router";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
 	return (
@@ -12,6 +13,7 @@ function App() {
 				<BrowserRouter>
 					<Header />
 					<Router />
+					<Analytics />
 					<Footer />
 				</BrowserRouter>
 			</ApolloProvider>
