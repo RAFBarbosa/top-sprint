@@ -58,7 +58,7 @@ export function StandingsList(props: StandingsListProps) {
 						className="px-4 py-2 bg-f1-red text-white rounded w-full md:w-auto mx-auto hover:bg-transparent cursor-pointer border-2 border-f1-red hover:text-f1-text transition-colors duration-200 flex justify-center items-center gap-2"
 					>
 						<div className="text-xs uppercase font-semibold flex items-center gap-2">
-							Ver Classificacao Completa{" "}
+							Ver Classificação Completa
 							<MenuArrow fontSize="inherit" />
 						</div>
 					</button>
