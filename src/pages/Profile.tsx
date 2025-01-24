@@ -26,18 +26,14 @@ export function Profile() {
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
 			const prevDriver = enhancedCards[currentIndex - 1];
-			navigate(
-				`/pilotos/${useNormalizeString(prevDriver.name.toLowerCase())}`
-			);
+			navigate(`/pilotos/${useNormalizeString(prevDriver.name)}`);
 		}
 	};
 
 	const handleNextClick = () => {
 		if (currentIndex !== null && currentIndex < enhancedCards.length - 1) {
 			const nextDriver = enhancedCards[currentIndex + 1];
-			navigate(
-				`/pilotos/${useNormalizeString(nextDriver.name.toLowerCase())}`
-			);
+			navigate(`/pilotos/${useNormalizeString(nextDriver.name)}`);
 		}
 	};
 
