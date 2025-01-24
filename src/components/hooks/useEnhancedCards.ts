@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import useCsvLoader from "./useCsvLoader";
 import { useGetTeamsQuery } from "../../graphql/generated";
-
-const normalizeString = (str: string | undefined | null) => {
-	if (typeof str !== "string") return "";
-	return str
-		.toLowerCase()
-		.replace(/[^a-z0-9\s]/g, "")
-		.trim();
-};
+import useNormalizeString from "./useNormalizeString";
 
 export function useEnhancedCards() {
 	const { data } = useGetTeamsQuery();
@@ -21,15 +14,15 @@ export function useEnhancedCards() {
 				.map((card) => {
 					const driverFromData = data?.drivers.find(
 						(driverFromData) =>
-							normalizeString(driverFromData.name) ===
-							normalizeString(card.name)
+							useNormalizeString(driverFromData.name) ===
+							useNormalizeString(card.name)
 					);
 					if (!driverFromData) return null;
 
 					const driverStats = stats.find(
 						(stat) =>
-							normalizeString(stat.name) ===
-							normalizeString(card.name)
+							useNormalizeString(stat.name) ===
+							useNormalizeString(card.name)
 					);
 
 					return {
