@@ -22,6 +22,7 @@ const useCsvLoader = () => {
 			pace: string;
 			experience: string;
 			rating: string;
+			prevRating: string;
 		}[]
 	>([]);
 	const [stats, setStats] = useState<
@@ -119,6 +120,7 @@ const useCsvLoader = () => {
 								pace: row[12] || "N/A",
 								experience: row[13] || "N/A",
 								rating: row[14] || "N/A",
+								prevRating: row[15] || "N/A",
 							}))
 							.filter(
 								(item) =>
@@ -128,26 +130,27 @@ const useCsvLoader = () => {
 									item.awareness !== "N/A" &&
 									item.pace !== "N/A" &&
 									item.experience !== "N/A" &&
-									item.rating !== "N/A"
+									item.rating !== "N/A" &&
+									item.prevRating !== "N/A"
 							);
 
 						const statsData = validRows
 							.slice(1)
 							.map((row) => ({
-								name: row[15] || "N/A",
-								championships: row[44] || "N/A",
+								name: row[16] || "N/A",
+								championships: row[45] || "N/A",
 								totalPart: row[20] || "N/A",
-								totalPoints: row[23] || "N/A",
-								pointsPerDay: row[24] || "N/A",
-								raceFinishedPercentage: row[28] || "N/A",
-								poles: row[31] || "N/A",
-								fastestLaps: row[34] || "N/A",
-								totalWins: row[37] || "N/A",
-								totalSprintWins: row[40] || "N/A",
-								totalPodiums: row[43] || "N/A",
-								totalPointsNoBonus: row[50] || "N/A",
-								totalPointsPerDayNoBonus: row[51] || "N/A",
-								powerRanking: row[55] || "N/A",
+								totalPoints: row[24] || "N/A",
+								pointsPerDay: row[25] || "N/A",
+								raceFinishedPercentage: row[29] || "N/A",
+								poles: row[32] || "N/A",
+								fastestLaps: row[35] || "N/A",
+								totalWins: row[38] || "N/A",
+								totalSprintWins: row[41] || "N/A",
+								totalPodiums: row[44] || "N/A",
+								totalPointsNoBonus: row[51] || "N/A",
+								totalPointsPerDayNoBonus: row[52] || "N/A",
+								powerRanking: row[56] || "N/A",
 							}))
 							.filter(
 								(item) =>

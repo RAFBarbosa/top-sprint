@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import bgCard from "/src/assets/img/bg-card.jpg";
 import Logo from "/src/assets/img/logo.png";
+import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 
 interface PlayerCardProps {
 	data: {
@@ -11,6 +12,7 @@ interface PlayerCardProps {
 		pace: string;
 		experience: string;
 		rating: string;
+		prevRating: string;
 		photo: string;
 		teamColor: string;
 		teamName: string;
@@ -76,7 +78,36 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						></div>
 						<span className="flex flex-col mb-4 leading-3 z-30">
 							<p>Nota Geral</p>
-							<p className="text-5xl font-bold">{data.rating}</p>
+
+							<div className="flex items-center">
+								<p className="text-5xl font-bold">
+									{data.rating}
+								</p>
+								{data.rating !== data.prevRating && (
+									<span
+										className={`
+											${data.rating > data.prevRating ? "text-green-500" : "text-red-500"}`}
+									>
+										{data.rating > data.prevRating ? (
+											<MenuArrow
+												className="rotate-270"
+												fontSize="medium"
+											/>
+										) : (
+											<MenuArrow
+												className="rotate-90"
+												fontSize="medium"
+											/>
+										)}
+									</span>
+								)}
+							</div>
+						</span>
+						<span className="flex gap-1 items-baseline z-30 ">
+							<p className="font-bold text-2xl">
+								{data.experience}
+							</p>
+							<p>Experiência TSL</p>
 						</span>
 						<span className="flex gap-1 items-baseline z-30 ">
 							<p className="font-bold text-2xl">
@@ -84,12 +115,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							</p>
 							<p>Pilotagem</p>
 						</span>
-						<span className="flex gap-1 items-baseline z-30 ">
-							<p className="font-bold text-2xl">
-								{data.experience}
-							</p>
-							<p>Experiência</p>
-						</span>
+
 						<span className="flex gap-1 items-baseline z-30">
 							<p className="font-bold text-2xl">
 								{data.awareness}
