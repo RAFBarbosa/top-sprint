@@ -16,7 +16,7 @@ export function Footer() {
 				<a
 					href="https://chat.whatsapp.com/EitAZ6kSIVVDkK4I0pfsIV"
 					target="_blank"
-					className="flex flex-col md:flex-row items-center gap-2 md:mb-0"
+					className="flex flex-col md:flex-row items-center gap-2 md:mb-0 text-center"
 				>
 					<svg
 						viewBox="0 0 32 32"
@@ -27,6 +27,7 @@ export function Footer() {
 							fillRule="evenodd"
 						></path>
 					</svg>
+					<p className="flex justify-center text-center"></p>
 					Entre em contato e participe da próxima temporada
 				</a>
 			</div>
