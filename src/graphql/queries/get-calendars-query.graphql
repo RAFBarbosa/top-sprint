@@ -1,14 +1,11 @@
 query GetCalendars {
 	calendars(stage: PUBLISHED, orderBy: round_ASC) {
 		id
-		round
 		track
+		round
 		description
 		date
 		link
-		photo {
-			url
-		}
 		flag {
 			url
 		}
