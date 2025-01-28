@@ -28,8 +28,8 @@ export function Banners() {
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
-		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl">
-			<div className="pr-2 pb-4 md:pb-0">
+		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col justify-between">
+			<div className="pr-2 sticky top-20 z-10">
 				{data?.banners && data.banners.length > 0 ? (
 					data.banners.map((data) => (
 						<Banner
@@ -44,7 +44,7 @@ export function Banners() {
 					<p>Sem banners para carregar</p>
 				)}
 			</div>
-			<div className="md:hidden h-2 bg-divider bg-cover opacity-10 mr-2"></div>
+			<div className="md:h-full h-2 bg-divider bg-cover opacity-10 mr-2 md:mr-5 mt-4"></div>
 		</aside>
 	);
 }

@@ -1,8 +1,15 @@
 query GetCalendars {
-	calendars(stage: PUBLISHED) {
+	calendars(stage: PUBLISHED, orderBy: round_ASC) {
 		id
-		season
+		round
+		track
+		description
+		date
+		link
 		photo {
+			url
+		}
+		flag {
 			url
 		}
 	}
