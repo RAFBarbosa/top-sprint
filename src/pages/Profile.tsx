@@ -49,7 +49,7 @@ export function Profile() {
 			>
 				<div>
 					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between px-3">
-						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-8 w-full">
+						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full">
 							Perfil do Piloto
 						</h1>
 						<div className="flex justify-between gap-1 h-25 mt-2 md:mt-0 sm:ml-2">
@@ -74,7 +74,7 @@ export function Profile() {
 								}}
 							>
 								<div className="pt-2 flex items-center justify-around">
-									<p className="text-sm uppercase space-y-2  flex flex-col items-center">
+									<p className="text-sm uppercase space-y-2 flex flex-col items-center">
 										<span>Anterior</span>
 										<MenuArrow className="rotate-180" />
 									</p>
@@ -155,7 +155,7 @@ export function Profile() {
 								)}
 							</div>
 							<div className="flex flex-col justify-between">
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 pt-6 md:pt-0 leading-3 md:leading-4">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-y-2 pt-6 md:pt-0 ">
 									{driverData?.city && (
 										<>
 											<p className="font-bold">Cidade</p>
@@ -164,7 +164,7 @@ export function Profile() {
 									)}
 									{driverData?.stats?.championships && (
 										<>
-											<p className="font-bold">
+											<p className="font-bold mt-2 md:mt-0">
 												Campeonatos Vencidos
 											</p>
 											<p>
@@ -174,7 +174,7 @@ export function Profile() {
 									)}
 									{driverData?.stats?.totalWins && (
 										<>
-											<p className="font-bold">
+											<p className="font-bold mt-2 md:mt-0">
 												Vitórias em Corridas
 											</p>
 											<p>{driverData.stats.totalWins}</p>
@@ -182,7 +182,7 @@ export function Profile() {
 									)}
 									{driverData?.stats?.totalSprintWins && (
 										<>
-											<p className="font-bold">
+											<p className="font-bold mt-2 md:mt-0">
 												Vitórias em Sprint
 											</p>
 											<p>
@@ -195,7 +195,9 @@ export function Profile() {
 									)}
 									{driverData?.stats?.totalPodiums && (
 										<>
-											<p className="font-bold">Pódios</p>
+											<p className="font-bold mt-2 md:mt-0">
+												Pódios
+											</p>
 											<p>
 												{driverData.stats.totalPodiums}
 											</p>
@@ -203,13 +205,15 @@ export function Profile() {
 									)}
 									{driverData?.stats?.poles && (
 										<>
-											<p className="font-bold">Poles</p>
+											<p className="font-bold mt-2 md:mt-0">
+												Poles
+											</p>
 											<p>{driverData.stats.poles}</p>
 										</>
 									)}
 									{driverData?.stats?.fastestLaps && (
 										<>
-											<p className="font-bold">
+											<p className="font-bold mt-2 md:mt-0">
 												Voltas Rápidas
 											</p>
 											<p>
@@ -219,7 +223,9 @@ export function Profile() {
 									)}
 									{driverData?.stats?.totalPoints && (
 										<>
-											<p className="font-bold">Pontos</p>
+											<p className="font-bold mt-2 md:mt-0">
+												Pontos
+											</p>
 											<p>
 												{driverData.stats.totalPoints}
 											</p>
@@ -227,7 +233,7 @@ export function Profile() {
 									)}
 									{driverData?.stats?.totalPart && (
 										<>
-											<p className="font-bold">
+											<p className="font-bold mt-2 md:mt-0">
 												Participações
 											</p>
 											<p>{driverData.stats.totalPart}</p>
@@ -235,7 +241,7 @@ export function Profile() {
 									)}
 									{driverData?.equipment && (
 										<>
-											<p className="font-bold">
+											<p className="font-bold mt-2 md:mt-0">
 												Equipamento
 											</p>
 											<p>{driverData.equipment}</p>
@@ -248,7 +254,7 @@ export function Profile() {
 												target="_blank"
 												className="text-f1-red hover:opacity-90 transition-all duration-200"
 											>
-												<div className="flex items-center gap-2">
+												<div className="flex items-center gap-2 mt-2 md:mt-0">
 													<p className="font-bold">
 														Stream
 													</p>
