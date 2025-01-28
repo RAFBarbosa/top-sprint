@@ -57,7 +57,6 @@ export type Asset = Entity & Node & {
   /** The mime type of the file */
   mimeType?: Maybe<Scalars['String']>;
   photoBanner: Array<Banner>;
-  photoCalendar: Array<Calendar>;
   photoDriver: Array<Driver>;
   photoTeam: Array<Team>;
   photosHallOfFame: Array<HallOfFame>;
@@ -177,20 +176,6 @@ export type AssetPhotoBannerArgs = {
 
 
 /** Asset system model */
-export type AssetPhotoCalendarArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  last?: InputMaybe<Scalars['Int']>;
-  locales?: InputMaybe<Array<Locale>>;
-  orderBy?: InputMaybe<CalendarOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<CalendarWhereInput>;
-};
-
-
-/** Asset system model */
 export type AssetPhotoDriverArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -302,7 +287,6 @@ export type AssetCreateInput = {
   /** Inline mutations for managing document localizations excluding the default locale */
   localizations?: InputMaybe<AssetCreateLocalizationsInput>;
   photoBanner?: InputMaybe<BannerCreateManyInlineInput>;
-  photoCalendar?: InputMaybe<CalendarCreateManyInlineInput>;
   photoDriver?: InputMaybe<DriverCreateManyInlineInput>;
   photoTeam?: InputMaybe<TeamCreateManyInlineInput>;
   photosHallOfFame?: InputMaybe<HallOfFameCreateManyInlineInput>;
@@ -414,9 +398,6 @@ export type AssetManyWhereInput = {
   photoBanner_every?: InputMaybe<BannerWhereInput>;
   photoBanner_none?: InputMaybe<BannerWhereInput>;
   photoBanner_some?: InputMaybe<BannerWhereInput>;
-  photoCalendar_every?: InputMaybe<CalendarWhereInput>;
-  photoCalendar_none?: InputMaybe<CalendarWhereInput>;
-  photoCalendar_some?: InputMaybe<CalendarWhereInput>;
   photoDriver_every?: InputMaybe<DriverWhereInput>;
   photoDriver_none?: InputMaybe<DriverWhereInput>;
   photoDriver_some?: InputMaybe<DriverWhereInput>;
@@ -535,7 +516,6 @@ export type AssetUpdateInput = {
   /** Manage document localizations */
   localizations?: InputMaybe<AssetUpdateLocalizationsInput>;
   photoBanner?: InputMaybe<BannerUpdateManyInlineInput>;
-  photoCalendar?: InputMaybe<CalendarUpdateManyInlineInput>;
   photoDriver?: InputMaybe<DriverUpdateManyInlineInput>;
   photoTeam?: InputMaybe<TeamUpdateManyInlineInput>;
   photosHallOfFame?: InputMaybe<HallOfFameUpdateManyInlineInput>;
@@ -891,9 +871,6 @@ export type AssetWhereInput = {
   photoBanner_every?: InputMaybe<BannerWhereInput>;
   photoBanner_none?: InputMaybe<BannerWhereInput>;
   photoBanner_some?: InputMaybe<BannerWhereInput>;
-  photoCalendar_every?: InputMaybe<CalendarWhereInput>;
-  photoCalendar_none?: InputMaybe<CalendarWhereInput>;
-  photoCalendar_some?: InputMaybe<CalendarWhereInput>;
   photoDriver_every?: InputMaybe<DriverWhereInput>;
   photoDriver_none?: InputMaybe<DriverWhereInput>;
   photoDriver_some?: InputMaybe<DriverWhereInput>;
@@ -1562,14 +1539,12 @@ export type Calendar = Entity & Node & {
   /** The unique identifier */
   id: Scalars['ID'];
   link?: Maybe<Scalars['String']>;
-  photo?: Maybe<Asset>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** User that last published this document */
   publishedBy?: Maybe<User>;
   round?: Maybe<Scalars['String']>;
   scheduledIn: Array<ScheduledOperation>;
-  season?: Maybe<Scalars['String']>;
   /** System stage field */
   stage: Stage;
   track?: Maybe<Scalars['String']>;
@@ -1604,13 +1579,6 @@ export type CalendarHistoryArgs = {
   limit?: Scalars['Int'];
   skip?: Scalars['Int'];
   stageOverride?: InputMaybe<Stage>;
-};
-
-
-export type CalendarPhotoArgs = {
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  locales?: InputMaybe<Array<Locale>>;
-  where?: InputMaybe<AssetSingleRelationWhereInput>;
 };
 
 
@@ -1660,9 +1628,7 @@ export type CalendarCreateInput = {
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetCreateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
-  photo?: InputMaybe<AssetCreateOneInlineInput>;
   round?: InputMaybe<Scalars['String']>;
-  season?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
@@ -1792,7 +1758,6 @@ export type CalendarManyWhereInput = {
   link_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   link_starts_with?: InputMaybe<Scalars['String']>;
-  photo?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1831,25 +1796,6 @@ export type CalendarManyWhereInput = {
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
-  season?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  season_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  season_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  season_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  season_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  season_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  season_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  season_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  season_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  season_starts_with?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   track_contains?: InputMaybe<Scalars['String']>;
@@ -1902,8 +1848,6 @@ export enum CalendarOrderByInput {
   PublishedAtDesc = 'publishedAt_DESC',
   RoundAsc = 'round_ASC',
   RoundDesc = 'round_DESC',
-  SeasonAsc = 'season_ASC',
-  SeasonDesc = 'season_DESC',
   TrackAsc = 'track_ASC',
   TrackDesc = 'track_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
@@ -1915,9 +1859,7 @@ export type CalendarUpdateInput = {
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetUpdateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
-  photo?: InputMaybe<AssetUpdateOneInlineInput>;
   round?: InputMaybe<Scalars['String']>;
-  season?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
 };
 
@@ -1943,7 +1885,6 @@ export type CalendarUpdateManyInput = {
   description?: InputMaybe<Scalars['String']>;
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
-  season?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
 };
 
@@ -2098,7 +2039,6 @@ export type CalendarWhereInput = {
   link_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   link_starts_with?: InputMaybe<Scalars['String']>;
-  photo?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -2137,25 +2077,6 @@ export type CalendarWhereInput = {
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
-  season?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  season_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  season_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  season_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  season_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  season_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  season_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  season_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  season_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  season_starts_with?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   track_contains?: InputMaybe<Scalars['String']>;
@@ -8367,7 +8288,7 @@ export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typenam
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, round?: string | null, track?: string | null, description?: string | null, date?: any | null, link?: string | null, photo?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8434,14 +8355,11 @@ export const GetCalendarsDocument = gql`
     query GetCalendars {
   calendars(stage: PUBLISHED, orderBy: round_ASC) {
     id
-    round
     track
+    round
     description
     date
     link
-    photo {
-      url
-    }
     flag {
       url
     }
