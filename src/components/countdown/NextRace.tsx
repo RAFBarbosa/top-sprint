@@ -28,14 +28,14 @@ export function NextRace(props: NextRaceProps) {
 					{formattedDateCapitalized}
 				</div>
 				<div className="flex">
-					<div className="border-r border-t rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none mr-3 border-opacity-50">
+					<div className="border-r border-t rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none mr-3 border-white/50">
 						<img
 							src={props.flag?.url}
 							alt={`${props.track} flag`}
 							className="rounded-md min-w-[57px] min-h-[32px]"
 						/>
 					</div>
-					<p className="text-xl md:text-2xl font-bold uppercase pt-3 border-t w-full md:mr-3 tracking-wider border-opacity-50 text-justify">
+					<p className="text-xl md:text-2xl font-bold uppercase pt-3 border-t w-full md:mr-3 tracking-wider border-white/50 text-justify">
 						{props.track}
 					</p>
 				</div>
