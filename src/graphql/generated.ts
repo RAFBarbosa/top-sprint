@@ -40,6 +40,7 @@ export type Asset = Entity & Node & {
   documentInStages: Array<Asset>;
   /** The file name */
   fileName: Scalars['String'];
+  flagCalendar: Array<Calendar>;
   flagRace: Array<Race>;
   /** The file handle */
   handle: Scalars['String'];
@@ -115,6 +116,20 @@ export type AssetDocumentInStagesArgs = {
   includeCurrent?: Scalars['Boolean'];
   inheritLocale?: Scalars['Boolean'];
   stages?: Array<Stage>;
+};
+
+
+/** Asset system model */
+export type AssetFlagCalendarArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<CalendarOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<CalendarWhereInput>;
 };
 
 
@@ -282,6 +297,7 @@ export type AssetCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   csvData?: InputMaybe<DataCreateManyInlineInput>;
   fileName?: InputMaybe<Scalars['String']>;
+  flagCalendar?: InputMaybe<CalendarCreateManyInlineInput>;
   flagRace?: InputMaybe<RaceCreateManyInlineInput>;
   /** Inline mutations for managing document localizations excluding the default locale */
   localizations?: InputMaybe<AssetCreateLocalizationsInput>;
@@ -370,6 +386,9 @@ export type AssetManyWhereInput = {
   documentInStages_every?: InputMaybe<AssetWhereStageInput>;
   documentInStages_none?: InputMaybe<AssetWhereStageInput>;
   documentInStages_some?: InputMaybe<AssetWhereStageInput>;
+  flagCalendar_every?: InputMaybe<CalendarWhereInput>;
+  flagCalendar_none?: InputMaybe<CalendarWhereInput>;
+  flagCalendar_some?: InputMaybe<CalendarWhereInput>;
   flagRace_every?: InputMaybe<RaceWhereInput>;
   flagRace_none?: InputMaybe<RaceWhereInput>;
   flagRace_some?: InputMaybe<RaceWhereInput>;
@@ -511,6 +530,7 @@ export type AssetTransformationInput = {
 export type AssetUpdateInput = {
   csvData?: InputMaybe<DataUpdateManyInlineInput>;
   fileName?: InputMaybe<Scalars['String']>;
+  flagCalendar?: InputMaybe<CalendarUpdateManyInlineInput>;
   flagRace?: InputMaybe<RaceUpdateManyInlineInput>;
   /** Manage document localizations */
   localizations?: InputMaybe<AssetUpdateLocalizationsInput>;
@@ -790,6 +810,9 @@ export type AssetWhereInput = {
   fileName_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   fileName_starts_with?: InputMaybe<Scalars['String']>;
+  flagCalendar_every?: InputMaybe<CalendarWhereInput>;
+  flagCalendar_none?: InputMaybe<CalendarWhereInput>;
+  flagCalendar_some?: InputMaybe<CalendarWhereInput>;
   flagRace_every?: InputMaybe<RaceWhereInput>;
   flagRace_none?: InputMaybe<RaceWhereInput>;
   flagRace_some?: InputMaybe<RaceWhereInput>;
@@ -1529,21 +1552,27 @@ export type Calendar = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
+  date?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
   /** Get the document in other stages */
   documentInStages: Array<Calendar>;
+  flag?: Maybe<Asset>;
   /** List of Calendar versions */
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
+  link?: Maybe<Scalars['String']>;
   photo?: Maybe<Asset>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** User that last published this document */
   publishedBy?: Maybe<User>;
+  round?: Maybe<Scalars['String']>;
   scheduledIn: Array<ScheduledOperation>;
   season?: Maybe<Scalars['String']>;
   /** System stage field */
   stage: Stage;
+  track?: Maybe<Scalars['String']>;
   /** The time the document was updated */
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
@@ -1561,6 +1590,13 @@ export type CalendarDocumentInStagesArgs = {
   includeCurrent?: Scalars['Boolean'];
   inheritLocale?: Scalars['Boolean'];
   stages?: Array<Stage>;
+};
+
+
+export type CalendarFlagArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+  where?: InputMaybe<AssetSingleRelationWhereInput>;
 };
 
 
@@ -1620,8 +1656,14 @@ export type CalendarConnection = {
 
 export type CalendarCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  date?: InputMaybe<Scalars['DateTime']>;
+  description?: InputMaybe<Scalars['String']>;
+  flag?: InputMaybe<AssetCreateOneInlineInput>;
+  link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
+  round?: InputMaybe<Scalars['String']>;
   season?: InputMaybe<Scalars['String']>;
+  track?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
 
@@ -1674,9 +1716,44 @@ export type CalendarManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  date?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  date_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  date_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  date_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  date_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  date_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  date_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  date_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  description?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  description_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  description_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  description_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  description_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  description_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  description_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  description_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  description_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  description_starts_with?: InputMaybe<Scalars['String']>;
   documentInStages_every?: InputMaybe<CalendarWhereStageInput>;
   documentInStages_none?: InputMaybe<CalendarWhereStageInput>;
   documentInStages_some?: InputMaybe<CalendarWhereStageInput>;
+  flag?: InputMaybe<AssetWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -1696,6 +1773,25 @@ export type CalendarManyWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  link?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  link_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  link_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  link_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  link_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  link_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  link_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  link_starts_with?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
@@ -1713,6 +1809,25 @@ export type CalendarManyWhereInput = {
   /** All values that are not contained in given list. */
   publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   publishedBy?: InputMaybe<UserWhereInput>;
+  round?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  round_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  round_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  round_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  round_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  round_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  round_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  round_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  round_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  round_starts_with?: InputMaybe<Scalars['String']>;
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
@@ -1735,6 +1850,25 @@ export type CalendarManyWhereInput = {
   season_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   season_starts_with?: InputMaybe<Scalars['String']>;
+  track?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  track_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  track_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  track_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  track_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  track_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  track_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  track_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  track_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  track_starts_with?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1756,19 +1890,35 @@ export type CalendarManyWhereInput = {
 export enum CalendarOrderByInput {
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DateAsc = 'date_ASC',
+  DateDesc = 'date_DESC',
+  DescriptionAsc = 'description_ASC',
+  DescriptionDesc = 'description_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
+  LinkAsc = 'link_ASC',
+  LinkDesc = 'link_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
+  RoundAsc = 'round_ASC',
+  RoundDesc = 'round_DESC',
   SeasonAsc = 'season_ASC',
   SeasonDesc = 'season_DESC',
+  TrackAsc = 'track_ASC',
+  TrackDesc = 'track_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
   UpdatedAtDesc = 'updatedAt_DESC'
 }
 
 export type CalendarUpdateInput = {
+  date?: InputMaybe<Scalars['DateTime']>;
+  description?: InputMaybe<Scalars['String']>;
+  flag?: InputMaybe<AssetUpdateOneInlineInput>;
+  link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
+  round?: InputMaybe<Scalars['String']>;
   season?: InputMaybe<Scalars['String']>;
+  track?: InputMaybe<Scalars['String']>;
 };
 
 export type CalendarUpdateManyInlineInput = {
@@ -1789,7 +1939,12 @@ export type CalendarUpdateManyInlineInput = {
 };
 
 export type CalendarUpdateManyInput = {
+  date?: InputMaybe<Scalars['DateTime']>;
+  description?: InputMaybe<Scalars['String']>;
+  link?: InputMaybe<Scalars['String']>;
+  round?: InputMaybe<Scalars['String']>;
   season?: InputMaybe<Scalars['String']>;
+  track?: InputMaybe<Scalars['String']>;
 };
 
 export type CalendarUpdateManyWithNestedWhereInput = {
@@ -1867,9 +2022,44 @@ export type CalendarWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  date?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than the given value. */
+  date_gt?: InputMaybe<Scalars['DateTime']>;
+  /** All values greater than or equal the given value. */
+  date_gte?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are contained in given list. */
+  date_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  /** All values less than the given value. */
+  date_lt?: InputMaybe<Scalars['DateTime']>;
+  /** All values less than or equal the given value. */
+  date_lte?: InputMaybe<Scalars['DateTime']>;
+  /** Any other value that exists and is not equal to the given value. */
+  date_not?: InputMaybe<Scalars['DateTime']>;
+  /** All values that are not contained in given list. */
+  date_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  description?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  description_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  description_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  description_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  description_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  description_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  description_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  description_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  description_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  description_starts_with?: InputMaybe<Scalars['String']>;
   documentInStages_every?: InputMaybe<CalendarWhereStageInput>;
   documentInStages_none?: InputMaybe<CalendarWhereStageInput>;
   documentInStages_some?: InputMaybe<CalendarWhereStageInput>;
+  flag?: InputMaybe<AssetWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -1889,6 +2079,25 @@ export type CalendarWhereInput = {
   id_not_starts_with?: InputMaybe<Scalars['ID']>;
   /** All values starting with the given string. */
   id_starts_with?: InputMaybe<Scalars['ID']>;
+  link?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  link_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  link_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  link_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  link_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  link_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  link_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  link_starts_with?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
@@ -1906,6 +2115,25 @@ export type CalendarWhereInput = {
   /** All values that are not contained in given list. */
   publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   publishedBy?: InputMaybe<UserWhereInput>;
+  round?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  round_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  round_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  round_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  round_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  round_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  round_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  round_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  round_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  round_starts_with?: InputMaybe<Scalars['String']>;
   scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
   scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
@@ -1928,6 +2156,25 @@ export type CalendarWhereInput = {
   season_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   season_starts_with?: InputMaybe<Scalars['String']>;
+  track?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  track_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  track_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  track_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  track_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  track_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  track_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  track_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  track_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  track_starts_with?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -8120,7 +8367,7 @@ export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typenam
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, season?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, round?: string | null, track?: string | null, description?: string | null, date?: any | null, link?: string | null, photo?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8185,10 +8432,17 @@ export type GetBannersLazyQueryHookResult = ReturnType<typeof useGetBannersLazyQ
 export type GetBannersQueryResult = Apollo.QueryResult<GetBannersQuery, GetBannersQueryVariables>;
 export const GetCalendarsDocument = gql`
     query GetCalendars {
-  calendars(stage: PUBLISHED) {
+  calendars(stage: PUBLISHED, orderBy: round_ASC) {
     id
-    season
+    round
+    track
+    description
+    date
+    link
     photo {
+      url
+    }
+    flag {
       url
     }
   }

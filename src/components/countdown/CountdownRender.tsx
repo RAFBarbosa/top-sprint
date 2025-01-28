@@ -18,7 +18,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 						<span className="font-bold uppercase text-center">
 							Sprint e Corrida
 						</span>
-						<hr className="my-1 border-t border-f1-lightSilver ml-2 mr-4 opacity-50" />
+						<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
 						<div className="flex flex-col w-full justify-center mt-1">
 							<span className="font-bold text-2xl a">
 								Corrida ao vivo!
@@ -39,7 +39,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 					<span className="font-bold uppercase text-center">
 						Sprint e Corrida
 					</span>
-					<hr className="my-1 border-t border-f1-lightSilver ml-2 mr-4 opacity-50" />
+					<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
 					<div className="flex w-full justify-center mt-1">
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
@@ -52,7 +52,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 							</p>
 						</div>
 
-						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
+						<div className="self-center h-11 w-[1px] bg-white/50"></div>
 
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl">
@@ -65,7 +65,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 							</p>
 						</div>
 
-						<div className="self-center h-11 w-[1px] bg-f1-lightSilver opacity-50"></div>
+						<div className="self-center h-11 w-[1px] bg-white/50"></div>
 
 						<div className="flex flex-col items-center px-3">
 							<span className="font-bold text-4xl flex">
