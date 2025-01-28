@@ -23,23 +23,29 @@ export function Calendars() {
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
-		<aside className="md:w-1/2 flex">
-			{/* <span className="">Calendario</span> */}
+		<aside className="md:w-1/2">
+			<div className="mx-auto flex flex-col gap-6">
+				<span className="font-bold text-4xl border-b-10 pb-2">
+					Calendário
+				</span>
 
-			{/* <Carousel> */}
-			<div className="self-center md:w-[86%] mx-auto">
-				{data?.calendars && data.calendars.length > 0 ? (
-					data.calendars.map((data) => (
-						<Calendar
-							key={data.id}
-							season={data.season || ""}
-							photo={data.photo || { url: GenericLogo }}
-						/>
-					))
-				) : (
-					<p>No calendar available</p>
-				)}
-				{/* </Carousel> */}
+				<div className="flex flex-wrap gap-4 w-full justify-between">
+					{data?.calendars && data.calendars.length > 0 ? (
+						data.calendars.map((data) => (
+							<Calendar
+								key={data.id}
+								round={data.round || ""}
+								track={data.track || ""}
+								description={data.description || ""}
+								date={data.date || ""}
+								link={data.link || ""}
+								flag={data.flag || { url: GenericLogo }}
+							/>
+						))
+					) : (
+						<p>No calendar available</p>
+					)}
+				</div>
 			</div>
 		</aside>
 	);
