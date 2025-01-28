@@ -1,7 +1,21 @@
-import { useGetNextRaceQuery } from "../../graphql/generated";
+import { useEffect, useState } from "react";
+import { useGetCalendarsQuery } from "../../graphql/generated";
 import GenericLogo from "/src/assets/img/white-logo.png";
 import { NextRace } from "./NextRace";
 import { Skeleton } from "@mui/material";
+import { parseISO, addHours, isAfter } from "date-fns";
+
+interface Calendar {
+	id: string;
+	track?: string | null;
+	round?: string | null;
+	description?: string | null;
+	date?: string | null;
+	link?: string | null;
+	flag?: {
+		url: string;
+	} | null;
+}
 
 const loadingSkeleton = () => {
 	return (
@@ -31,7 +45,67 @@ const loadingSkeleton = () => {
 };
 
 export function NextRaces() {
-	const { data, error, loading } = useGetNextRaceQuery();
+	const { data, error, loading, refetch } = useGetCalendarsQuery();
+	const [nextRace, setNextRace] = useState<Calendar | null>(null);
+	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+
+	useEffect(() => {
+		if (data) {
+			const calendars = data?.calendars || [];
+			const currentDate = new Date();
+
+			const sortedCalendars = [...calendars].sort(
+				(a, b) =>
+					parseISO(a.date).getTime() - parseISO(b.date).getTime()
+			);
+
+			let activeRace = null;
+			let nextUpcomingRace = null;
+
+			for (const race of sortedCalendars) {
+				const raceStartTime = parseISO(race.date);
+				const raceEndTime = addHours(raceStartTime, 2);
+
+				if (
+					currentDate >= raceStartTime &&
+					currentDate <= raceEndTime
+				) {
+					activeRace = race;
+					break;
+				}
+
+				if (isAfter(raceStartTime, currentDate)) {
+					nextUpcomingRace = race;
+					break;
+				}
+			}
+
+			const raceToDisplay = activeRace || nextUpcomingRace;
+			setNextRace(raceToDisplay);
+
+			if (activeRace) {
+				const raceEndTime = addHours(parseISO(activeRace.date), 2);
+				const timeUntilEnd =
+					raceEndTime.getTime() - currentDate.getTime();
+
+				if (timeUntilEnd > 0) {
+					const timeoutId = setTimeout(() => {
+						refetch();
+					}, timeUntilEnd);
+
+					setTimeoutId(timeoutId);
+				}
+			}
+		}
+	}, [data, refetch]);
+
+	useEffect(() => {
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		};
+	}, [timeoutId]);
 
 	if (loading) return loadingSkeleton();
 	if (error)
@@ -43,20 +117,16 @@ export function NextRaces() {
 
 	return (
 		<div className="text-white">
-			{data?.races && data.races.length > 0 ? (
-				data.races.map((data) => (
-					<NextRace
-						key={data.id}
-						track={data.track || ""}
-						date={data.date || ""}
-						link={data.link || ""}
-						flag={data.flag || { url: GenericLogo }}
-					/>
-				))
+			{nextRace && nextRace.date ? (
+				<NextRace
+					key={nextRace.id}
+					track={nextRace.track || ""}
+					date={parseISO(nextRace.date)}
+					link={nextRace.link || ""}
+					flag={nextRace.flag || { url: GenericLogo }}
+				/>
 			) : (
-				<p className="text-white text-center">
-					Sem corridas encontradas
-				</p>
+				<p className="text-white text-center">Sem corridas futuras</p>
 			)}
 		</div>
 	);
