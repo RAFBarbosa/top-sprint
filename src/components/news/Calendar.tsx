@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import { addHours } from "date-fns";
 
 interface CalendarProps {
 	round: string;
@@ -12,6 +14,31 @@ interface CalendarProps {
 }
 
 export function Calendar(props: CalendarProps) {
+	const [isWithinTwoHours, setIsWithinTwoHours] = useState(false);
+	const [isFutureDate, setIsFutureDate] = useState(false);
+
+	useEffect(() => {
+		const eventStartTime = new Date(props.date);
+		const eventEndTime = addHours(eventStartTime, 2);
+		const currentTime = new Date();
+
+		if (currentTime >= eventStartTime && currentTime <= eventEndTime) {
+			setIsWithinTwoHours(true);
+			setIsFutureDate(false);
+
+			const timeUntilEnd = eventEndTime.getTime() - currentTime.getTime();
+			const timeoutId = setTimeout(() => {
+				setIsWithinTwoHours(false);
+				setIsFutureDate(currentTime > eventEndTime);
+			}, timeUntilEnd);
+
+			return () => clearTimeout(timeoutId);
+		} else {
+			setIsWithinTwoHours(false);
+			setIsFutureDate(currentTime < eventStartTime);
+		}
+	}, [props.date]);
+
 	const formattedDate = format(new Date(props.date), "dd '-' MMM", {
 		locale: ptBR,
 	});
@@ -23,12 +50,12 @@ export function Calendar(props: CalendarProps) {
 	const formattedDateCapitalized = `${dayPart} ${capitalizedMonth}`;
 
 	const isPastDate = new Date(props.date) < new Date();
-	const isFutureDate = new Date(props.date) > new Date();
+	const isPastTwoHours = isPastDate && !isWithinTwoHours;
 
 	return (
 		<div
 			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 w-full sm:w-[48%] ${
-				isPastDate && "opacity-60 hover:border-f1-red"
+				isPastTwoHours ? "opacity-60" : "opacity-100"
 			} ${isFutureDate ? "cursor-default" : "cursor-pointer"}`}
 		>
 			<a
@@ -36,7 +63,7 @@ export function Calendar(props: CalendarProps) {
 				target={isFutureDate ? undefined : "_blank"}
 				onClick={(e) => {
 					if (isFutureDate) {
-						e.preventDefault(); // Prevents navigation if the date is in the future
+						e.preventDefault();
 					}
 				}}
 				className={`${
@@ -78,9 +105,6 @@ export function Calendar(props: CalendarProps) {
 						className="rounded-md min-w-[57px] min-h-[32px] border border-f1-black/70 self-start md:mt-3"
 					/>
 				</div>
-				{/* <p className="text-xl md:text-2xl font-bold uppercase w-full tracking-wider text-justify">
-				{props.track}
-			</p> */}
 			</a>
 		</div>
 	);
