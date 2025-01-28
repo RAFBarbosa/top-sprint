@@ -49,7 +49,7 @@ export function Profile() {
 			>
 				<div>
 					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between px-3">
-						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-8 w-full">
+						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full">
 							Perfil do Piloto
 						</h1>
 						<div className="flex justify-between gap-1 h-25 mt-2 md:mt-0 sm:ml-2">
