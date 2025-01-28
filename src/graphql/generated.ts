@@ -8295,11 +8295,6 @@ export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, photo: Array<{ __typename?: 'Asset', url: string }> }> };
 
-export type GetNextRaceQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetNextRaceQuery = { __typename?: 'Query', races: Array<{ __typename?: 'Race', id: string, date?: any | null, link?: string | null, track?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
-
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8431,46 +8426,6 @@ export function useGetHallsOfFameLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetHallsOfFameQueryHookResult = ReturnType<typeof useGetHallsOfFameQuery>;
 export type GetHallsOfFameLazyQueryHookResult = ReturnType<typeof useGetHallsOfFameLazyQuery>;
 export type GetHallsOfFameQueryResult = Apollo.QueryResult<GetHallsOfFameQuery, GetHallsOfFameQueryVariables>;
-export const GetNextRaceDocument = gql`
-    query GetNextRace {
-  races(orderBy: date_DESC, first: 1, stage: PUBLISHED) {
-    id
-    date
-    link
-    flag {
-      url
-    }
-    track
-  }
-}
-    `;
-
-/**
- * __useGetNextRaceQuery__
- *
- * To run a query within a React component, call `useGetNextRaceQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetNextRaceQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetNextRaceQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetNextRaceQuery(baseOptions?: Apollo.QueryHookOptions<GetNextRaceQuery, GetNextRaceQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetNextRaceQuery, GetNextRaceQueryVariables>(GetNextRaceDocument, options);
-      }
-export function useGetNextRaceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetNextRaceQuery, GetNextRaceQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetNextRaceQuery, GetNextRaceQueryVariables>(GetNextRaceDocument, options);
-        }
-export type GetNextRaceQueryHookResult = ReturnType<typeof useGetNextRaceQuery>;
-export type GetNextRaceLazyQueryHookResult = ReturnType<typeof useGetNextRaceLazyQuery>;
-export type GetNextRaceQueryResult = Apollo.QueryResult<GetNextRaceQuery, GetNextRaceQueryVariables>;
 export const GetTeamsDocument = gql`
     query GetTeams {
   drivers(stage: PUBLISHED, where: {fullTime: true}) {
