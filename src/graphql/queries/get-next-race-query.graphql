@@ -1,11 +1,11 @@
-query GetNextRace {
-	races(orderBy: date_DESC, first: 1, stage: PUBLISHED) {
-		id
-		date
-		link
-		flag {
-			url
-		}
-		track
-	}
-}
+# query GetNextRace {
+# 	races(orderBy: date_DESC, first: 1, stage: PUBLISHED) {
+# 		id
+# 		date
+# 		link
+# 		flag {
+# 			url
+# 		}
+# 		track
+# 	}
+# }
