@@ -72,12 +72,12 @@ export function Calendar(props: CalendarProps) {
 					isFutureDate ? "cursor-default" : "cursor-pointer"
 				}`}
 			>
-				<div className="text-f1-red font-bold text-sm md:text-lg pr-2 absolute bg-white -top-[12px] md:-top-[16px] uppercase ">
+				<div className="text-f1-red font-bold text-sm pr-2 absolute bg-white -top-[12px] md:-top-[12px] uppercase ">
 					{props.round}
 				</div>
 				<div className="flex pb-5 mb-5 border-b-1 border-f1-black/20 items-center md:items-start ">
 					<div className="w-full md:mr-3 text-justify">
-						<div className="text-xl md:text-2xl font-bold flex md:flex-col gap-1 md:gap-0 divide-black leading-5 md:leading-7">
+						<div className="text-xl font-bold flex md:flex-col gap-1 md:gap-0 divide-black leading-5 md:leading-6">
 							<div>
 								{formattedDateCapitalized}
 								<span className="md:hidden"> - </span>
@@ -97,14 +97,16 @@ export function Calendar(props: CalendarProps) {
 							</div>
 						</div>
 						{props.description && (
-							<p className="md:text-xl">{props.description}</p>
+							<p className="md:text-base/5">
+								{props.description}
+							</p>
 						)}
 					</div>
 
 					<img
 						src={props.flag?.url}
 						alt={`${props.track} flag`}
-						className="rounded-md min-w-[57px] min-h-[32px] border border-f1-black/70 self-start md:mt-3"
+						className="rounded-md w-[46px] h-auto border border-f1-black/70 self-start md:mt-3"
 					/>
 				</div>
 			</a>
