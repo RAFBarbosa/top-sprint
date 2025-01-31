@@ -7,6 +7,7 @@ interface NextRaceProps {
 	track: string;
 	date: Date;
 	link: string;
+	description: string;
 	flag: { url: string };
 }
 
@@ -35,9 +36,16 @@ export function NextRace(props: NextRaceProps) {
 							className="rounded-md min-w-[57px] min-h-[32px]"
 						/>
 					</div>
-					<p className="text-xl md:text-2xl font-bold uppercase pt-3 border-t w-full md:mr-3 tracking-wider border-white/50 text-justify">
-						{props.track}
-					</p>
+					<span className="pt-2 md:pt-0 border-t w-full md:mr-3 border-white/50 md:flex items-end leading-3 md:leading-6">
+						<p className="text-xl md:text-2xl font-bold uppercase tracking-wider">
+							{props.track}
+						</p>
+						{props.description && (
+							<p className="text-md md:ml-2 md:mb-[1px]">
+								{props.description}
+							</p>
+						)}
+					</span>
 				</div>
 			</div>
 			<Countdown
