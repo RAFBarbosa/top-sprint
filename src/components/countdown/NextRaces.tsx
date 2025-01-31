@@ -123,6 +123,7 @@ export function NextRaces() {
 					track={nextRace.track || ""}
 					date={parseISO(nextRace.date)}
 					link={nextRace.link || ""}
+					description={nextRace.description || ""}
 					flag={nextRace.flag || { url: GenericLogo }}
 				/>
 			) : (

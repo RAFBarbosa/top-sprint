@@ -17,7 +17,7 @@ export function Banner(props: BannerProps) {
 					{props.category}
 				</div>
 				<div className="group-hover:underline">
-					<div className="text-3xl md:text-4xl font-bold mb-4 leading-8">
+					<div className="text-2xl/6 md:text-3xl/8 font-bold mb-4">
 						{props.title}
 					</div>
 					<div className="overflow-hidden">
