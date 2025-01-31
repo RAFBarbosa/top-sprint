@@ -29,7 +29,7 @@ export function Banners() {
 
 	return (
 		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col justify-between">
-			<div className="pr-2 sticky top-20 z-10">
+			<div className="pr-2 md:sticky top-16 z-10">
 				{data?.banners && data.banners.length > 0 ? (
 					data.banners.map((data) => (
 						<Banner
