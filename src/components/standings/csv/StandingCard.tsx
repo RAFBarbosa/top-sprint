@@ -6,6 +6,7 @@ interface StandingCardProps {
 	position: number;
 	name: string;
 	photo: string;
+	grid?: string;
 	teamName?: string;
 	teamColor?: string;
 	teamDrivers?: string;
@@ -33,7 +34,7 @@ export function StandingCard(props: StandingCardProps) {
 	return (
 		<button
 			onClick={handleCardClick}
-			className="tracking-wide overflow-hidden w-full"
+			className="tracking-wide overflow-hidden w-full group"
 		>
 			{/* <div className="tracking-wide overflow-hidden"> pointer-events-none*/}
 			<div
@@ -42,8 +43,11 @@ export function StandingCard(props: StandingCardProps) {
 						? "bg-f1-silver text-white h-32 md:h-15"
 						: "bg-white"
 				} ${
-					isDrivers &&
-					"hover:bg-f1-silver hover:text-white cursor-pointer"
+					isDrivers
+						? props.grid === "gridA"
+							? "hover:bg-f1-carbon hover:text-white cursor-pointer"
+							: "hover:bg-f1-red hover:text-white cursor-pointer"
+						: ""
 				}`}
 			>
 				<div className="flex items-center flex-grow z-30 h-full ">
@@ -158,6 +162,9 @@ export function StandingCard(props: StandingCardProps) {
 							props.isActive
 								? "text-white md:text-f1-red"
 								: "text-f1-red"
+						} ${
+							props.grid === "gridB" &&
+							"group-hover:text-white transition-colors duration-200"
 						}`}
 					>
 						<MenuArrow fontSize="inherit" />

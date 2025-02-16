@@ -7,7 +7,7 @@ const Drivers: React.FC = () => {
 	const enhancedCards = useEnhancedCards();
 
 	return (
-		<div className="bg-f1-lightSilver w-full pt-4 pb-8">
+		<div id="pilotos" className="bg-f1-lightSilver w-full pt-4 pb-8">
 			<div className="h-16 bg-divider bg-cover mb-4 opacity-5 max-w-screen-xl mx-auto"></div>
 			<div className="max-w-screen-xl mx-auto bg-white rounded p-6">
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
