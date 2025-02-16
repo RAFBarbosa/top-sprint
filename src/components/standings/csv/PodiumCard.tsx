@@ -5,6 +5,7 @@ interface PodiumCardProps {
 	position: number;
 	name: string;
 	photo: string;
+	grid?: string;
 	teamColor?: string;
 	teamDrivers?: string;
 	activeTab: "drivers" | "teams";
@@ -26,8 +27,10 @@ export function PodiumCard(props: PodiumCardProps) {
 	return (
 		<div
 			onClick={handleDriverClick}
-			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl h-[320px] transition-translate duration-200 ${
-				isDrivers && "hover:-translate-y-1 cursor-pointer"
+			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl  transition-translate duration-200 ${
+				isDrivers
+					? "hover:-translate-y-1 cursor-pointer h-[260px]"
+					: "h-[320px]"
 			}`}
 		>
 			<div
@@ -61,9 +64,9 @@ export function PodiumCard(props: PodiumCardProps) {
 				alt={`${props.name} foto`}
 				className={`absolute object-cover max-w-none ${
 					isDrivers
-						? `bottom-0 right-0 ${
-								props.position === 1 ? "h-[330px]" : "h-[280px]"
-						  } w-auto translate-x-[20px] translate-y-[10px]`
+						? `bottom-0 right-0 scale-70 ${
+								props.position === 1 ? "h-[330px]" : "h-[290px]"
+						  } w-auto translate-x-[90px] translate-y-[35px]`
 						: `top-1/2 left-1/2 h-[350px] w-auto transform -translate-x-[51%] translate-y-[-50%]`
 				}`}
 			/>
@@ -72,13 +75,21 @@ export function PodiumCard(props: PodiumCardProps) {
 				className={`absolute bottom-0 bg-white w-full -z-10 rounded-2xl ${
 					props.position === 1
 						? isDrivers
-							? "h-[calc(55%+20px)]"
+							? "h-[calc(65%+15px)]"
 							: "h-full"
-						: "h-[55%]"
+						: "h-[65%]"
 				}`}
 			></div>
 
-			<div className="text-white p-4 bg-f1-silver h-[90px] relative md:flex flex-col leading-4 tracking-wider justify-center hidden">
+			<div
+				className={`text-white p-4 h-[90px] relative md:flex flex-col leading-4 tracking-wider justify-center hidden ${
+					props.grid === "gridA"
+						? "bg-f1-carbon"
+						: props.grid === "gridB"
+						? "bg-f1-red"
+						: "bg-f1-silver"
+				}`}
+			>
 				<span
 					className={`${
 						isDrivers
