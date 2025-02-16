@@ -24,6 +24,7 @@ export function DataLoader(props: DataLoaderProps) {
 				);
 				return {
 					...driver,
+					grid: driverFromData?.grid || "",
 					photo: driverFromData?.photo?.url || "",
 					number: driverFromData?.number || "",
 					teamName: driverFromData?.team?.name || "",
@@ -57,7 +58,7 @@ export function DataLoader(props: DataLoaderProps) {
 	}, [props.data, drivers, teams]);
 
 	return (
-		<div className="max-w-[950px] w-full mx-auto">
+		<div className="w-full mx-auto">
 			{props.activeTab === "drivers" && (
 				<StandingsList
 					title="Pilotos"

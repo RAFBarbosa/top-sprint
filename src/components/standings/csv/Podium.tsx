@@ -1,6 +1,7 @@
 import { PodiumCard } from "./PodiumCard";
 
 interface PodiumProps {
+	grid?: string;
 	topThree: {
 		name: string;
 		photo: string;
@@ -15,15 +16,16 @@ export function Podium(props: PodiumProps) {
 	if (props.topThree.length < 3) return null;
 
 	return (
-		<div className="mb-5">
+		<div className="mb-2">
 			{props.activeTab === "drivers" ? (
-				<div className="md:flex md:space-x-4 ">
+				<div className="md:flex md:gap-x-2 ">
 					<div className="hidden md:block w-[31%]">
 						<PodiumCard
 							name={props.topThree[1].name}
 							photo={props.topThree[1].photo}
 							teamColor={props.topThree[1].teamColor}
 							position={2}
+							grid={props.grid}
 							activeTab={props.activeTab}
 						/>
 					</div>
@@ -33,6 +35,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
 							position={1}
+							grid={props.grid}
 							activeTab={props.activeTab}
 						/>
 					</div>
@@ -42,6 +45,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[2].photo}
 							teamColor={props.topThree[2].teamColor}
 							position={3}
+							grid={props.grid}
 							activeTab={props.activeTab}
 						/>
 					</div>
