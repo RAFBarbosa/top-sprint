@@ -45,10 +45,10 @@ export function StandingCard(props: StandingCardProps) {
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
 			return (
-				<span className="font-bold text-sm text-f1-text">
+				<span className="font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
-						className="rotate-270 text-green-500"
+						className="rotate-270 text-green-500 scale-90 translate-y-[1px]"
 					/>
 					{positionDifference}
 				</span>
@@ -58,7 +58,7 @@ export function StandingCard(props: StandingCardProps) {
 				<span className="font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
-						className="rotate-90 text-f1-red"
+						className="rotate-90 text-f1-red scale-90"
 					/>
 					{Math.abs(positionDifference)}
 				</span>
@@ -74,10 +74,10 @@ export function StandingCard(props: StandingCardProps) {
 			className="tracking-wide overflow-hidden w-full group"
 		>
 			<div
-				className={`flex p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
+				className={`flex px-2 md:p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
 					props.isActive
-						? "bg-f1-silver text-white h-32 md:h-15"
-						: "bg-white"
+						? "bg-f1-silver text-white h-32 md:h-15 py-4"
+						: "bg-white py-2"
 				} ${
 					isDrivers
 						? props.grid === "gridA"
@@ -87,11 +87,7 @@ export function StandingCard(props: StandingCardProps) {
 				}`}
 			>
 				<div className="flex items-center flex-grow z-30 h-full md:h-4">
-					<span
-						className={`font-bold md:text-lg ${
-							props.isActive && "text-xl"
-						}`}
-					>
+					<span className="font-bold md:text-lg">
 						{props.position}
 					</span>
 					<span
@@ -152,7 +148,7 @@ export function StandingCard(props: StandingCardProps) {
 				</div>
 
 				<div
-					className={`bg-f1-bg-silver rounded-xl text-sm flex z-30 gap-2 text-white  ${
+					className={`bg-f1-bg-silver rounded-xl text-sm flex z-30 gap-2 text-white ${
 						props.isActive ? "self-end" : "self-center"
 					} ${
 						isDrivers &&
@@ -161,7 +157,7 @@ export function StandingCard(props: StandingCardProps) {
 				>
 					<div className="pl-2">{renderPositionDifference()}</div>
 					<div
-						className={`font-light rounded-xl px-2 ${
+						className={`font-light rounded-xl px-2 min-w-[70px] ${
 							props.grid === "gridA"
 								? "bg-f1-carbon"
 								: props.grid === "gridB"
@@ -176,6 +172,62 @@ export function StandingCard(props: StandingCardProps) {
 						{props.valueKey === "1" ? "PT" : props.valueLabel}
 					</div>
 				</div>
+
+				{/* <div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
+					<div className="relative w-full h-full">
+						{isDrivers ? (
+							<img
+								src={props.photo}
+								alt={`${props.name} foto`}
+								style={{
+									objectFit: "cover",
+									width: isDrivers ? "auto" : "100%",
+									height: isDrivers
+										? props.isActive
+											? "130%"
+											: "270%"
+										: "140%",
+									maxWidth: "100%",
+									maxHeight: "280%",
+									transform: isDrivers
+										? props.isActive
+											? "translateY(7%)"
+											: "translateX(-30%) translateY(-2%)"
+										: "translateY(-6%) translateX(15%)",
+								}}
+							/>
+						) : (
+							props.isActive && (
+								<div>
+									<img
+										src={props.photo}
+										alt={`${props.name} foto`}
+										style={{
+											objectFit: "cover",
+											width: isDrivers ? "auto" : "100%",
+											height: isDrivers ? "130%" : "140%",
+											maxWidth: "100%",
+											maxHeight: "150%",
+											transform: isDrivers
+												? "translateY(7%)"
+												: "translateY(-6%) translateX(15%)",
+										}}
+									/>
+
+									<div
+										className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
+										style={{
+											width: "60%",
+											height: "33%",
+											top: 0,
+											left: 40,
+										}}
+									/>
+								</div>
+							)
+						)}
+					</div>
+				</div> */}
 
 				{props.isActive ? (
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
