@@ -109,9 +109,9 @@ export function StandingCard(props: StandingCardProps) {
 					>
 						<div
 							className={`${
-								isDrivers &&
-								props.isActive &&
-								"flex flex-col md:flex-row items-start"
+								isDrivers && props.isActive
+									? "flex flex-col md:flex-row items-start"
+									: "-translate-y-[3px] md:translate-y-0"
 							}`}
 						>
 							<span
@@ -127,10 +127,9 @@ export function StandingCard(props: StandingCardProps) {
 							</span>
 							{secondName && (
 								<span
-									className={`
-                    font-bold md:ml-1
-                    ${isDrivers ? "uppercase" : "ml-1"} 
-                    ${!props.isActive && "ml-1"}`}
+									className={`font-bold md:ml-1
+										${isDrivers ? "uppercase" : "ml-1"} 
+										${!props.isActive && "ml-1"}`}
 								>
 									{secondName}
 								</span>
