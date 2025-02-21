@@ -4,7 +4,7 @@ mutation CreateDriver(
 	$city: String!
 	$equipment: String!
 	$phone: String!
-	$photo: AssetCreateOneInlineInput!
+	$photo: AssetCreateOneInlineInput
 ) {
 	createDriver(
 		data: {

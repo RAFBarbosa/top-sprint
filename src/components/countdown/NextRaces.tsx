@@ -117,18 +117,24 @@ export function NextRaces() {
 
 	return (
 		<div className="text-white">
-			{nextRace && nextRace.date ? (
-				<NextRace
-					key={nextRace.id}
-					track={nextRace.track || ""}
-					date={parseISO(nextRace.date)}
-					link={nextRace.link || ""}
-					description={nextRace.description || ""}
-					flag={nextRace.flag || { url: GenericLogo }}
-				/>
-			) : (
-				<p className="text-white text-center">Sem corridas futuras</p>
-			)}
+			{
+				nextRace && nextRace.date ? (
+					<NextRace
+						key={nextRace.id}
+						track={nextRace.track || ""}
+						date={parseISO(nextRace.date)}
+						link={nextRace.link || ""}
+						description={nextRace.description || ""}
+						flag={nextRace.flag || { url: GenericLogo }}
+					/>
+				) : (
+					""
+				)
+				// (
+				// 	<p className="text-white text-center">Sem corridas futuras</p>
+
+				// )
+			}
 		</div>
 	);
 }
