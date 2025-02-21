@@ -41,10 +41,10 @@ export function PodiumCard(props: PodiumCardProps) {
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
 			return (
-				<span className="font-bold text-sm text-f1-text">
+				<span className="font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
-						className="rotate-270 text-green-500"
+						className="rotate-270 text-green-500 scale-90 translate-y-[1px]"
 					/>
 					{positionDifference}
 				</span>
@@ -54,7 +54,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				<span className="font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
-						className="rotate-90 text-f1-red"
+						className="rotate-90 text-f1-red scale-90"
 					/>
 					{Math.abs(positionDifference)}
 				</span>
@@ -86,9 +86,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				{props.position}
 			</div>
 
-			<div
-				className={`bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-4 mb-1 gap-2 text-white`}
-			>
+			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-2 mb-1 gap-2 text-white scale-90">
 				<div>{renderPositionDifference()}</div>
 				<div
 					className={`rounded-xl px-2 ${
