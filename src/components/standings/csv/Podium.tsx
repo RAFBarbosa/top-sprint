@@ -7,9 +7,13 @@ interface PodiumProps {
 		photo: string;
 		teamColor: string;
 		teamDrivers: string;
+		points: string;
+		teamName: string;
 		[key: string]: string;
 	}[];
 	activeTab: "drivers" | "teams";
+	newData: { name: string }[]; // Add newData prop
+	oldData: { name: string }[]; // Add oldData prop
 }
 
 export function Podium(props: PodiumProps) {
@@ -24,9 +28,13 @@ export function Podium(props: PodiumProps) {
 							name={props.topThree[1].name}
 							photo={props.topThree[1].photo}
 							teamColor={props.topThree[1].teamColor}
+							teamName={props.topThree[1].teamName}
+							points={props.topThree[1].pts}
 							position={2}
 							grid={props.grid}
 							activeTab={props.activeTab}
+							newData={props.newData}
+							oldData={props.oldData || []}
 						/>
 					</div>
 					<div className="md:block md:w-[38%]">
@@ -34,9 +42,13 @@ export function Podium(props: PodiumProps) {
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
+							teamName={props.topThree[0].teamName}
+							points={props.topThree[0].pts}
 							position={1}
 							grid={props.grid}
 							activeTab={props.activeTab}
+							newData={props.newData}
+							oldData={props.oldData || []}
 						/>
 					</div>
 					<div className="hidden md:block w-[31%]">
@@ -44,9 +56,13 @@ export function Podium(props: PodiumProps) {
 							name={props.topThree[2].name}
 							photo={props.topThree[2].photo}
 							teamColor={props.topThree[2].teamColor}
+							teamName={props.topThree[2].teamName}
+							points={props.topThree[2].pts}
 							position={3}
 							grid={props.grid}
 							activeTab={props.activeTab}
+							newData={props.newData}
+							oldData={props.oldData || []}
 						/>
 					</div>
 				</div>
@@ -57,9 +73,12 @@ export function Podium(props: PodiumProps) {
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
+							points={props.topThree[0].pts}
 							position={1}
 							teamDrivers={props.topThree[0].drivers || ""}
 							activeTab={props.activeTab}
+							newData={props.newData}
+							oldData={props.oldData || []}
 						/>
 					</div>
 				</div>

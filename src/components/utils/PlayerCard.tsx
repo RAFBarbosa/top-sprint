@@ -16,6 +16,7 @@ interface PlayerCardProps {
 		photo: string;
 		teamColor: string;
 		teamName: string;
+		grid: string;
 	};
 }
 
@@ -75,7 +76,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						<div
 							className="w-55 h-53 absolute top-0 left-3 border-t-4 border-l-4 rounded-tl-lg z-20"
 							style={{ borderColor: data.teamColor }}
-						></div>
+						/>
 						<span className="flex flex-col mb-4 leading-3 z-30">
 							<p>Nota Geral</p>
 
@@ -139,36 +140,51 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 					{/* Driver Info */}
 					<div
-						className={`text-white px-4 py-6 h-[150px] flex flex-col gap-2 justify-end bg-linear-0 from-f1-carbon to-f1-silver z-30 relative`}
+						className={
+							"text-white px-4 py-5 h-[150px] flex flex-col gap-2 justify-end bg-linear-0 from-f1-carbon to-f1-silver z-30 relative"
+						}
 						style={{
 							boxShadow: `0 -10px 10px -5px rgba(0, 0, 0, .5)`,
 						}}
 					>
-						<div className="flex items-center justify-between font-regular">
-							<span className="flex flex-col text-2xl leading-4 ">
+						<div className="flex items-end justify-between font-regular">
+							<span className="flex flex-col text-3xl leading-3">
 								<span
 									className={
 										secondName
 											? ""
-											: "font-bold uppercase text-3xl"
+											: "font-bold uppercase text-4xl"
 									}
 								>
 									{firstName}
 								</span>
 								{secondName && (
-									<span className="font-bold uppercase text-3xl">
+									<span className="font-bold uppercase text-4xl leading-tight">
 										{secondName}
 									</span>
 								)}
 							</span>
-							<p className="text-4xl self-end">{data.num}</p>
+							<div className="flex flex-col items-end gap-[2px]">
+								<h2
+									className={`font-semibold uppercase text-white text-xs px-2 rounded leading-tight ${
+										data.grid === "gridA"
+											? "bg-f1-carbon"
+											: "bg-f1-red"
+									} `}
+								>
+									{data.grid === "gridA"
+										? "Grid A"
+										: "Grid B"}
+								</h2>
+								<p className="text-4xl">{data.num}</p>
+							</div>
 						</div>
 
 						{/* Team color bar */}
 						<div
 							className="w-full h-1"
 							style={{ backgroundColor: data.teamColor }}
-						></div>
+						/>
 
 						{/* Team name and tsl logo */}
 						<div className="flex items-start justify-between">

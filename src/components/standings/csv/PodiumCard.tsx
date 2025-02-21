@@ -1,14 +1,20 @@
 import useNormalizeString from "../../hooks/useNormalizeString";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
+import { usePositionDifference } from "../../hooks/usePositionDifference";
+import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 
 interface PodiumCardProps {
 	position: number;
 	name: string;
 	photo: string;
 	grid?: string;
+	points?: string;
+	teamName?: string;
 	teamColor?: string;
 	teamDrivers?: string;
 	activeTab: "drivers" | "teams";
+	newData: { name: string }[]; // Add newData prop
+	oldData: { name: string }[]; // Add oldData prop
 }
 
 export function PodiumCard(props: PodiumCardProps) {
@@ -24,12 +30,46 @@ export function PodiumCard(props: PodiumCardProps) {
 		isDrivers && navigateToDriver(useNormalizeString(props.name));
 	};
 
+	// Calculate the position difference using the hook
+	const positionDifference = usePositionDifference(
+		props.newData,
+		props.oldData,
+		props.name
+	);
+
+	// Arrow logic
+	const renderPositionDifference = () => {
+		if (positionDifference > 0) {
+			return (
+				<span className="font-bold text-sm text-f1-text">
+					<PlayArrowRoundedIcon
+						fontSize="small"
+						className="rotate-270 text-green-500"
+					/>
+					{positionDifference}
+				</span>
+			);
+		} else if (positionDifference < 0) {
+			return (
+				<span className="font-bold text-sm flex items-center text-f1-text">
+					<PlayArrowRoundedIcon
+						fontSize="small"
+						className="rotate-90 text-f1-red"
+					/>
+					{Math.abs(positionDifference)}
+				</span>
+			);
+		} else {
+			return <span className="text-gray-500 font-bold">–</span>;
+		}
+	};
+
 	return (
 		<div
 			onClick={handleDriverClick}
-			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl  transition-translate duration-200 ${
+			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl transition-translate duration-200 ${
 				isDrivers
-					? "hover:-translate-y-1 cursor-pointer h-[260px]"
+					? "hover:-translate-y-1 cursor-pointer h-[280px]"
 					: "h-[320px]"
 			}`}
 		>
@@ -37,13 +77,31 @@ export function PodiumCard(props: PodiumCardProps) {
 				className={`ml-5 text-2xl font-f1Title hidden md:block ${
 					props.position === 1
 						? isDrivers
-							? "mb-12"
+							? "mb-10"
 							: "mb-16 ml-15 text-3xl"
-						: "mb-7"
+						: "mb-6"
 				}`}
 				style={{ color: props.teamColor }}
 			>
 				{props.position}
+			</div>
+
+			<div
+				className={`bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-4 mb-1 gap-2 text-white`}
+			>
+				<div>{renderPositionDifference()}</div>
+				<div
+					className={`rounded-xl px-2 ${
+						props.grid === "gridA"
+							? "bg-f1-carbon"
+							: props.grid === "gridB"
+							? "bg-f1-red"
+							: "bg-f1-silver"
+					} `}
+				>
+					<span className="font-bold">{props.points}</span>{" "}
+					{props.points === "1" ? "PT" : "PTS"}
+				</div>
 			</div>
 
 			<div
@@ -66,7 +124,7 @@ export function PodiumCard(props: PodiumCardProps) {
 					isDrivers
 						? `bottom-0 right-0 scale-70 ${
 								props.position === 1 ? "h-[330px]" : "h-[290px]"
-						  } w-auto translate-x-[90px] translate-y-[35px]`
+						  } w-auto translate-x-[70px] translate-y-[15px]`
 						: `top-1/2 left-1/2 h-[350px] w-auto transform -translate-x-[51%] translate-y-[-50%]`
 				}`}
 			/>
@@ -75,14 +133,14 @@ export function PodiumCard(props: PodiumCardProps) {
 				className={`absolute bottom-0 bg-white w-full -z-10 rounded-2xl ${
 					props.position === 1
 						? isDrivers
-							? "h-[calc(65%+15px)]"
+							? "h-[calc(67%+15px)]"
 							: "h-full"
-						: "h-[65%]"
+						: "h-[67%]"
 				}`}
 			></div>
 
 			<div
-				className={`text-white p-4 h-[90px] relative md:flex flex-col leading-4 tracking-wider justify-center hidden ${
+				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider ${
 					props.grid === "gridA"
 						? "bg-f1-carbon"
 						: props.grid === "gridB"
@@ -106,14 +164,19 @@ export function PodiumCard(props: PodiumCardProps) {
 						: props.teamDrivers || "No drivers"}
 				</span>
 				{secondName && isDrivers && (
-					<span
-						className={`font-bold ${
-							isDrivers && "uppercase text-2xl"
-						}`}
-					>
+					<span className="font-bold uppercase text-2xl leading-6">
 						{secondName}
 					</span>
 				)}
+				<div
+					className={`font-light leading-3 mt-auto ${
+						isDrivers
+							? "text-left text-sm "
+							: "text-center text-base"
+					}`}
+				>
+					{isDrivers ? props.teamName : props.name}
+				</div>
 			</div>
 		</div>
 	);

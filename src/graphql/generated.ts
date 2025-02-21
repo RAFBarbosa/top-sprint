@@ -7601,7 +7601,7 @@ export type CreateDriverMutationVariables = Exact<{
   city: Scalars['String'];
   equipment: Scalars['String'];
   phone: Scalars['String'];
-  photo: AssetCreateOneInlineInput;
+  photo?: InputMaybe<AssetCreateOneInlineInput>;
 }>;
 
 
@@ -7634,7 +7634,7 @@ export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typenam
 
 
 export const CreateDriverDocument = gql`
-    mutation CreateDriver($name: String!, $stream: String!, $city: String!, $equipment: String!, $phone: String!, $photo: AssetCreateOneInlineInput!) {
+    mutation CreateDriver($name: String!, $stream: String!, $city: String!, $equipment: String!, $phone: String!, $photo: AssetCreateOneInlineInput) {
   createDriver(
     data: {name: $name, stream: $stream, city: $city, equipment: $equipment, phone: $phone, photo: $photo}
   ) {
@@ -7854,7 +7854,7 @@ export type GetTeamsLazyQueryHookResult = ReturnType<typeof useGetTeamsLazyQuery
 export type GetTeamsQueryResult = Apollo.QueryResult<GetTeamsQuery, GetTeamsQueryVariables>;
 export const GetStatsDataDocument = gql`
     query GetStatsData {
-  datas(orderBy: publishedAt_DESC, first: 1) {
+  datas(orderBy: publishedAt_DESC, first: 2) {
     id
     csv {
       url
