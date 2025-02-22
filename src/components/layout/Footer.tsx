@@ -37,7 +37,7 @@ export function Footer() {
 						<SocialIcon
 							className="bg-f1-carbon rounded-lg hover:bg-f1-silver transition-colors duration-200 border-1 border-f1-silver"
 							network="youtube"
-							url="https://www.youtube.com/@feliplayTb"
+							url="https://www.youtube.com/@ligatopsprint"
 							bgColor="transparent"
 							style={{ height: 45, width: 45 }}
 						/>
