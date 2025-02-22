@@ -29,7 +29,7 @@ export function Signature(props: SignatureProps) {
 				<img
 					src={signature.imageUrl}
 					alt={signature.name}
-					className="w-8 h-auto rounded-full p-1 bg-neutral-700 border border-white"
+					className="w-8 h-auto rounded-full p-1 bg-neutral-700 "
 				/>
 			</div>
 		</a>
