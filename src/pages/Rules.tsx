@@ -3,8 +3,34 @@ import Car2Bg from "/src/assets/img/car2-bg.png";
 import Car4Bg from "/src/assets/img/car4-bg.png";
 
 export function Rules() {
+	const racePoints = [
+		"25 pontos",
+		"18 pontos",
+		"15 pontos",
+		"12 pontos",
+		"10 pontos",
+		"8 pontos",
+		"6 pontos",
+		"4 pontos",
+		"2 pontos",
+		"1 ponto",
+	];
+
+	const sprintPoints = [
+		"8 pontos",
+		"7 pontos",
+		"6 pontos",
+		"5 pontos",
+		"4 pontos",
+		"3 pontos",
+		"2 pontos",
+		"1 ponto",
+		"0 pontos",
+		"0 pontos",
+	];
+
 	return (
-		<aside id="regras" className="mx-auto leading-snug">
+		<aside id="regras" className="mx-auto leading-snug w-full">
 			<div className="w-full mb-8 max-w-screen-xl px-3 mx-auto">
 				<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
@@ -179,18 +205,18 @@ export function Rules() {
 				</div>
 			</div>
 
-			<div className="mb-8 pt-8 pb-2 bg-f1-bg-silver">
+			<div className="mb-8 pt-8 pb-2 w-full bg-f1-bg-silver">
 				<div className="w-full h-auto relative max-w-screen-xl px-3 mx-auto">
 					<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 mb-6">
 						<h2 className="font-bold text-3xl md:text-4xl">
 							Pontuação
 						</h2>
 					</div>
-					<div className="flex flex-col justify-center max-w-screen-md mx-auto mb-4">
-						<div className="">
+					<div className="flex flex-col justify-center max-w-screen-sm mx-auto mb-4">
+						<div className="border border-f1-carbon rounded-2xl pt-3">
 							<table className="min-w-full text-left">
 								<thead>
-									<tr className="border-b border-b-white">
+									<tr className="border-b border-b-f1-carbon">
 										<th className="px-4 pb-4 uppercase">
 											Posição
 										</th>
@@ -214,75 +240,32 @@ export function Rules() {
 										"8",
 										"9",
 										"10",
-										"11",
-										"12",
-										"13",
-										"14",
-										"15",
-										"16",
-										"17",
-										"18",
-										"19",
-										"20",
-									].map((position, index) => (
+									].map((position, index, arr) => (
 										<tr
 											key={index}
-											className=" even:bg-white odd:bg-f1-bg-silver"
+											className="even:bg-white odd:bg-f1-bg-silver"
 										>
-											<td className="px-4 py-4">
+											<td
+												className={`px-4 py-4 ${
+													index === arr.length - 1
+														? "rounded-bl-2xl"
+														: ""
+												}`}
+											>
 												{position}
 											</td>
 											<td className="px-4 py-4">
-												{
-													[
-														"25 pontos",
-														"22 pontos",
-														"20 pontos",
-														"18 pontos",
-														"16 pontos",
-														"15 pontos",
-														"14 pontos",
-														"13 pontos",
-														"12 pontos",
-														"11 pontos",
-														"10 pontos",
-														"9 pontos",
-														"8 pontos",
-														"7 pontos",
-														"6 pontos",
-														"5 pontos",
-														"4 pontos",
-														"3 pontos",
-														"2 pontos",
-														"1 ponto",
-													][index]
-												}
+												{racePoints[index]}
 											</td>
-											<td className="px-4 py-4">
-												{
-													[
-														"16 pontos",
-														"14 pontos",
-														"12 pontos",
-														"11 pontos",
-														"10 pontos",
-														"9 pontos",
-														"8 pontos",
-														"7 pontos",
-														"6 pontos",
-														"5 pontos",
-														"4 pontos",
-														"3 pontos",
-														"2 pontos",
-														"1 ponto",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-													][index]
-												}
+											<td
+												className={`px-4 py-4 ${
+													index ===
+													sprintPoints.length - 1
+														? "rounded-br-2xl"
+														: ""
+												}`}
+											>
+												{sprintPoints[index]}
 											</td>
 										</tr>
 									))}
@@ -293,18 +276,18 @@ export function Rules() {
 							<p className="mb-2 font-bold text-xl">
 								Pontos extra
 							</p>
-							<div className="md:flex md:gap-x-6 space-y-1 md:space-y-0">
+							<div className="space-y-1">
 								<p>
 									<strong>
 										Melhor volta na corrida principal:
 									</strong>{" "}
-									2 pontos
+									1 ponto
 								</p>
 								<p>
 									<strong>
 										Pole position na corrida principal:
 									</strong>{" "}
-									2 pontos
+									1 ponto
 								</p>
 								<p>
 									<strong>Presença por corrida:</strong> 1
