@@ -3003,6 +3003,7 @@ export type DriverUpdateManyInput = {
   fullTime?: InputMaybe<Scalars['Boolean']>;
   grid?: InputMaybe<Grid>;
   name?: InputMaybe<Scalars['String']>;
+  number?: InputMaybe<Scalars['String']>;
   phone?: InputMaybe<Scalars['String']>;
   stream?: InputMaybe<Scalars['String']>;
 };
@@ -3284,7 +3285,6 @@ export type DriverWhereStageInput = {
 /** References Driver record uniquely */
 export type DriverWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
-  number?: InputMaybe<Scalars['String']>;
 };
 
 /** An object with an ID */
@@ -7715,7 +7715,7 @@ export type GetBannersLazyQueryHookResult = ReturnType<typeof useGetBannersLazyQ
 export type GetBannersQueryResult = Apollo.QueryResult<GetBannersQuery, GetBannersQueryVariables>;
 export const GetCalendarsDocument = gql`
     query GetCalendars {
-  calendars(stage: PUBLISHED, orderBy: round_ASC) {
+  calendars(stage: PUBLISHED, orderBy: date_ASC) {
     id
     track
     round
