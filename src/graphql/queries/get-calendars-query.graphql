@@ -1,5 +1,5 @@
 query GetCalendars {
-	calendars(stage: PUBLISHED, orderBy: round_ASC) {
+	calendars(stage: PUBLISHED, orderBy: date_ASC) {
 		id
 		track
 		round
