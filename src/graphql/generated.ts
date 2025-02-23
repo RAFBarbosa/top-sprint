@@ -41,7 +41,6 @@ export type Asset = Entity & Node & {
   /** The file name */
   fileName: Scalars['String'];
   flagCalendar: Array<Calendar>;
-  flagRace: Array<Race>;
   /** The file handle */
   handle: Scalars['String'];
   /** The height of the file */
@@ -129,20 +128,6 @@ export type AssetFlagCalendarArgs = {
   orderBy?: InputMaybe<CalendarOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<CalendarWhereInput>;
-};
-
-
-/** Asset system model */
-export type AssetFlagRaceArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  last?: InputMaybe<Scalars['Int']>;
-  locales?: InputMaybe<Array<Locale>>;
-  orderBy?: InputMaybe<RaceOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<RaceWhereInput>;
 };
 
 
@@ -283,7 +268,6 @@ export type AssetCreateInput = {
   csvData?: InputMaybe<DataCreateManyInlineInput>;
   fileName?: InputMaybe<Scalars['String']>;
   flagCalendar?: InputMaybe<CalendarCreateManyInlineInput>;
-  flagRace?: InputMaybe<RaceCreateManyInlineInput>;
   /** Inline mutations for managing document localizations excluding the default locale */
   localizations?: InputMaybe<AssetCreateLocalizationsInput>;
   photoBanner?: InputMaybe<BannerCreateManyInlineInput>;
@@ -373,9 +357,6 @@ export type AssetManyWhereInput = {
   flagCalendar_every?: InputMaybe<CalendarWhereInput>;
   flagCalendar_none?: InputMaybe<CalendarWhereInput>;
   flagCalendar_some?: InputMaybe<CalendarWhereInput>;
-  flagRace_every?: InputMaybe<RaceWhereInput>;
-  flagRace_none?: InputMaybe<RaceWhereInput>;
-  flagRace_some?: InputMaybe<RaceWhereInput>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -512,7 +493,6 @@ export type AssetUpdateInput = {
   csvData?: InputMaybe<DataUpdateManyInlineInput>;
   fileName?: InputMaybe<Scalars['String']>;
   flagCalendar?: InputMaybe<CalendarUpdateManyInlineInput>;
-  flagRace?: InputMaybe<RaceUpdateManyInlineInput>;
   /** Manage document localizations */
   localizations?: InputMaybe<AssetUpdateLocalizationsInput>;
   photoBanner?: InputMaybe<BannerUpdateManyInlineInput>;
@@ -793,9 +773,6 @@ export type AssetWhereInput = {
   flagCalendar_every?: InputMaybe<CalendarWhereInput>;
   flagCalendar_none?: InputMaybe<CalendarWhereInput>;
   flagCalendar_some?: InputMaybe<CalendarWhereInput>;
-  flagRace_every?: InputMaybe<RaceWhereInput>;
-  flagRace_none?: InputMaybe<RaceWhereInput>;
-  flagRace_some?: InputMaybe<RaceWhereInput>;
   handle?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   handle_contains?: InputMaybe<Scalars['String']>;
@@ -2616,12 +2593,14 @@ export type Driver = Entity & Node & {
   documentInStages: Array<Driver>;
   equipment?: Maybe<Scalars['String']>;
   fullTime?: Maybe<Scalars['Boolean']>;
+  grid?: Maybe<Grid>;
   /** List of Driver versions */
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   number?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
   photo?: Maybe<Asset>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
@@ -2717,8 +2696,10 @@ export type DriverCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
   name?: InputMaybe<Scalars['String']>;
   number?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
   stream?: InputMaybe<Scalars['String']>;
   team?: InputMaybe<TeamCreateOneInlineInput>;
@@ -2818,6 +2799,13 @@ export type DriverManyWhereInput = {
   fullTime?: InputMaybe<Scalars['Boolean']>;
   /** Any other value that exists and is not equal to the given value. */
   fullTime_not?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
+  /** All values that are contained in given list. */
+  grid_in?: InputMaybe<Array<InputMaybe<Grid>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  grid_not?: InputMaybe<Grid>;
+  /** All values that are not contained in given list. */
+  grid_not_in?: InputMaybe<Array<InputMaybe<Grid>>>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -2875,6 +2863,25 @@ export type DriverManyWhereInput = {
   number_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   number_starts_with?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  phone_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  phone_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  phone_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  phone_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  phone_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  phone_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  phone_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  phone_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  phone_starts_with?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
@@ -2942,12 +2949,16 @@ export enum DriverOrderByInput {
   EquipmentDesc = 'equipment_DESC',
   FullTimeAsc = 'fullTime_ASC',
   FullTimeDesc = 'fullTime_DESC',
+  GridAsc = 'grid_ASC',
+  GridDesc = 'grid_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   NameAsc = 'name_ASC',
   NameDesc = 'name_DESC',
   NumberAsc = 'number_ASC',
   NumberDesc = 'number_DESC',
+  PhoneAsc = 'phone_ASC',
+  PhoneDesc = 'phone_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
   PublishedAtDesc = 'publishedAt_DESC',
   StreamAsc = 'stream_ASC',
@@ -2960,8 +2971,10 @@ export type DriverUpdateInput = {
   city?: InputMaybe<Scalars['String']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
   name?: InputMaybe<Scalars['String']>;
   number?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
   stream?: InputMaybe<Scalars['String']>;
   team?: InputMaybe<TeamUpdateOneInlineInput>;
@@ -2988,7 +3001,10 @@ export type DriverUpdateManyInput = {
   city?: InputMaybe<Scalars['String']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
   name?: InputMaybe<Scalars['String']>;
+  number?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
   stream?: InputMaybe<Scalars['String']>;
 };
 
@@ -3111,6 +3127,13 @@ export type DriverWhereInput = {
   fullTime?: InputMaybe<Scalars['Boolean']>;
   /** Any other value that exists and is not equal to the given value. */
   fullTime_not?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
+  /** All values that are contained in given list. */
+  grid_in?: InputMaybe<Array<InputMaybe<Grid>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  grid_not?: InputMaybe<Grid>;
+  /** All values that are not contained in given list. */
+  grid_not_in?: InputMaybe<Array<InputMaybe<Grid>>>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -3168,6 +3191,25 @@ export type DriverWhereInput = {
   number_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   number_starts_with?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  phone_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  phone_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  phone_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  phone_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  phone_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  phone_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  phone_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  phone_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  phone_starts_with?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
@@ -3243,7 +3285,6 @@ export type DriverWhereStageInput = {
 /** References Driver record uniquely */
 export type DriverWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
-  number?: InputMaybe<Scalars['String']>;
 };
 
 /** An object with an ID */
@@ -3263,7 +3304,6 @@ export enum EntityTypeName {
   Data = 'Data',
   Driver = 'Driver',
   HallOfFame = 'HallOfFame',
-  Race = 'Race',
   /** Scheduled Operation system model */
   ScheduledOperation = 'ScheduledOperation',
   /** Scheduled Release system model */
@@ -3282,6 +3322,11 @@ export type EntityWhereInput = {
   /** The Type name of an object */
   typename: EntityTypeName;
 };
+
+export enum Grid {
+  GridA = 'gridA',
+  GridB = 'gridB'
+}
 
 export type HallOfFame = Entity & Node & {
   __typename?: 'HallOfFame';
@@ -3863,8 +3908,6 @@ export type Mutation = {
   createDriver?: Maybe<Driver>;
   /** Create one hallOfFame */
   createHallOfFame?: Maybe<HallOfFame>;
-  /** Create one race */
-  createRace?: Maybe<Race>;
   /** Create one scheduledRelease */
   createScheduledRelease?: Maybe<ScheduledRelease>;
   /** Create one team */
@@ -3924,21 +3967,12 @@ export type Mutation = {
   /** Delete many HallOfFame documents, return deleted documents */
   deleteManyHallsOfFameConnection: HallOfFameConnection;
   /**
-   * Delete many Race documents
-   * @deprecated Please use the new paginated many mutation (deleteManyRacesConnection)
-   */
-  deleteManyRaces: BatchPayload;
-  /** Delete many Race documents, return deleted documents */
-  deleteManyRacesConnection: RaceConnection;
-  /**
    * Delete many Team documents
    * @deprecated Please use the new paginated many mutation (deleteManyTeamsConnection)
    */
   deleteManyTeams: BatchPayload;
   /** Delete many Team documents, return deleted documents */
   deleteManyTeamsConnection: TeamConnection;
-  /** Delete one race from _all_ existing stages. Returns deleted document. */
-  deleteRace?: Maybe<Race>;
   /** Delete and return scheduled operation */
   deleteScheduledOperation?: Maybe<ScheduledOperation>;
   /** Delete one scheduledRelease from _all_ existing stages. Returns deleted document. */
@@ -4000,21 +4034,12 @@ export type Mutation = {
   /** Publish many HallOfFame documents */
   publishManyHallsOfFameConnection: HallOfFameConnection;
   /**
-   * Publish many Race documents
-   * @deprecated Please use the new paginated many mutation (publishManyRacesConnection)
-   */
-  publishManyRaces: BatchPayload;
-  /** Publish many Race documents */
-  publishManyRacesConnection: RaceConnection;
-  /**
    * Publish many Team documents
    * @deprecated Please use the new paginated many mutation (publishManyTeamsConnection)
    */
   publishManyTeams: BatchPayload;
   /** Publish many Team documents */
   publishManyTeamsConnection: TeamConnection;
-  /** Publish one race */
-  publishRace?: Maybe<Race>;
   /** Publish one team */
   publishTeam?: Maybe<Team>;
   /** Schedule to publish one asset */
@@ -4029,8 +4054,6 @@ export type Mutation = {
   schedulePublishDriver?: Maybe<Driver>;
   /** Schedule to publish one hallOfFame */
   schedulePublishHallOfFame?: Maybe<HallOfFame>;
-  /** Schedule to publish one race */
-  schedulePublishRace?: Maybe<Race>;
   /** Schedule to publish one team */
   schedulePublishTeam?: Maybe<Team>;
   /** Unpublish one asset from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
@@ -4045,8 +4068,6 @@ export type Mutation = {
   scheduleUnpublishDriver?: Maybe<Driver>;
   /** Unpublish one hallOfFame from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishHallOfFame?: Maybe<HallOfFame>;
-  /** Unpublish one race from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
-  scheduleUnpublishRace?: Maybe<Race>;
   /** Unpublish one team from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   scheduleUnpublishTeam?: Maybe<Team>;
   /** Unpublish one asset from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
@@ -4104,21 +4125,12 @@ export type Mutation = {
   /** Find many HallOfFame documents that match criteria in specified stage and unpublish from target stages */
   unpublishManyHallsOfFameConnection: HallOfFameConnection;
   /**
-   * Unpublish many Race documents
-   * @deprecated Please use the new paginated many mutation (unpublishManyRacesConnection)
-   */
-  unpublishManyRaces: BatchPayload;
-  /** Find many Race documents that match criteria in specified stage and unpublish from target stages */
-  unpublishManyRacesConnection: RaceConnection;
-  /**
    * Unpublish many Team documents
    * @deprecated Please use the new paginated many mutation (unpublishManyTeamsConnection)
    */
   unpublishManyTeams: BatchPayload;
   /** Find many Team documents that match criteria in specified stage and unpublish from target stages */
   unpublishManyTeamsConnection: TeamConnection;
-  /** Unpublish one race from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
-  unpublishRace?: Maybe<Race>;
   /** Unpublish one team from selected stages. Unpublish either the complete document with its relations, localizations and base data or specific localizations only. */
   unpublishTeam?: Maybe<Team>;
   /** Update one asset */
@@ -4176,21 +4188,12 @@ export type Mutation = {
   /** Update many HallOfFame documents */
   updateManyHallsOfFameConnection: HallOfFameConnection;
   /**
-   * Update many races
-   * @deprecated Please use the new paginated many mutation (updateManyRacesConnection)
-   */
-  updateManyRaces: BatchPayload;
-  /** Update many Race documents */
-  updateManyRacesConnection: RaceConnection;
-  /**
    * Update many teams
    * @deprecated Please use the new paginated many mutation (updateManyTeamsConnection)
    */
   updateManyTeams: BatchPayload;
   /** Update many Team documents */
   updateManyTeamsConnection: TeamConnection;
-  /** Update one race */
-  updateRace?: Maybe<Race>;
   /** Update one scheduledRelease */
   updateScheduledRelease?: Maybe<ScheduledRelease>;
   /** Update one team */
@@ -4207,8 +4210,6 @@ export type Mutation = {
   upsertDriver?: Maybe<Driver>;
   /** Upsert one hallOfFame */
   upsertHallOfFame?: Maybe<HallOfFame>;
-  /** Upsert one race */
-  upsertRace?: Maybe<Race>;
   /** Upsert one team */
   upsertTeam?: Maybe<Team>;
 };
@@ -4241,11 +4242,6 @@ export type MutationCreateDriverArgs = {
 
 export type MutationCreateHallOfFameArgs = {
   data: HallOfFameCreateInput;
-};
-
-
-export type MutationCreateRaceArgs = {
-  data: RaceCreateInput;
 };
 
 
@@ -4379,21 +4375,6 @@ export type MutationDeleteManyHallsOfFameConnectionArgs = {
 };
 
 
-export type MutationDeleteManyRacesArgs = {
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
-export type MutationDeleteManyRacesConnectionArgs = {
-  after?: InputMaybe<Scalars['ID']>;
-  before?: InputMaybe<Scalars['ID']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
 export type MutationDeleteManyTeamsArgs = {
   where?: InputMaybe<TeamManyWhereInput>;
 };
@@ -4406,11 +4387,6 @@ export type MutationDeleteManyTeamsConnectionArgs = {
   last?: InputMaybe<Scalars['Int']>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<TeamManyWhereInput>;
-};
-
-
-export type MutationDeleteRaceArgs = {
-  where: RaceWhereUniqueInput;
 };
 
 
@@ -4582,24 +4558,6 @@ export type MutationPublishManyHallsOfFameConnectionArgs = {
 };
 
 
-export type MutationPublishManyRacesArgs = {
-  to?: Array<Stage>;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
-export type MutationPublishManyRacesConnectionArgs = {
-  after?: InputMaybe<Scalars['ID']>;
-  before?: InputMaybe<Scalars['ID']>;
-  first?: InputMaybe<Scalars['Int']>;
-  from?: InputMaybe<Stage>;
-  last?: InputMaybe<Scalars['Int']>;
-  skip?: InputMaybe<Scalars['Int']>;
-  to?: Array<Stage>;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
 export type MutationPublishManyTeamsArgs = {
   to?: Array<Stage>;
   where?: InputMaybe<TeamManyWhereInput>;
@@ -4615,12 +4573,6 @@ export type MutationPublishManyTeamsConnectionArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   to?: Array<Stage>;
   where?: InputMaybe<TeamManyWhereInput>;
-};
-
-
-export type MutationPublishRaceArgs = {
-  to?: Array<Stage>;
-  where: RaceWhereUniqueInput;
 };
 
 
@@ -4681,14 +4633,6 @@ export type MutationSchedulePublishHallOfFameArgs = {
 };
 
 
-export type MutationSchedulePublishRaceArgs = {
-  releaseAt?: InputMaybe<Scalars['DateTime']>;
-  releaseId?: InputMaybe<Scalars['String']>;
-  to?: Array<Stage>;
-  where: RaceWhereUniqueInput;
-};
-
-
 export type MutationSchedulePublishTeamArgs = {
   releaseAt?: InputMaybe<Scalars['DateTime']>;
   releaseId?: InputMaybe<Scalars['String']>;
@@ -4744,14 +4688,6 @@ export type MutationScheduleUnpublishHallOfFameArgs = {
   releaseAt?: InputMaybe<Scalars['DateTime']>;
   releaseId?: InputMaybe<Scalars['String']>;
   where: HallOfFameWhereUniqueInput;
-};
-
-
-export type MutationScheduleUnpublishRaceArgs = {
-  from?: Array<Stage>;
-  releaseAt?: InputMaybe<Scalars['DateTime']>;
-  releaseId?: InputMaybe<Scalars['String']>;
-  where: RaceWhereUniqueInput;
 };
 
 
@@ -4913,24 +4849,6 @@ export type MutationUnpublishManyHallsOfFameConnectionArgs = {
 };
 
 
-export type MutationUnpublishManyRacesArgs = {
-  from?: Array<Stage>;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
-export type MutationUnpublishManyRacesConnectionArgs = {
-  after?: InputMaybe<Scalars['ID']>;
-  before?: InputMaybe<Scalars['ID']>;
-  first?: InputMaybe<Scalars['Int']>;
-  from?: Array<Stage>;
-  last?: InputMaybe<Scalars['Int']>;
-  skip?: InputMaybe<Scalars['Int']>;
-  stage?: InputMaybe<Stage>;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
 export type MutationUnpublishManyTeamsArgs = {
   from?: Array<Stage>;
   where?: InputMaybe<TeamManyWhereInput>;
@@ -4946,12 +4864,6 @@ export type MutationUnpublishManyTeamsConnectionArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   stage?: InputMaybe<Stage>;
   where?: InputMaybe<TeamManyWhereInput>;
-};
-
-
-export type MutationUnpublishRaceArgs = {
-  from?: Array<Stage>;
-  where: RaceWhereUniqueInput;
 };
 
 
@@ -5099,23 +5011,6 @@ export type MutationUpdateManyHallsOfFameConnectionArgs = {
 };
 
 
-export type MutationUpdateManyRacesArgs = {
-  data: RaceUpdateManyInput;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
-export type MutationUpdateManyRacesConnectionArgs = {
-  after?: InputMaybe<Scalars['ID']>;
-  before?: InputMaybe<Scalars['ID']>;
-  data: RaceUpdateManyInput;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<RaceManyWhereInput>;
-};
-
-
 export type MutationUpdateManyTeamsArgs = {
   data: TeamUpdateManyInput;
   where?: InputMaybe<TeamManyWhereInput>;
@@ -5130,12 +5025,6 @@ export type MutationUpdateManyTeamsConnectionArgs = {
   last?: InputMaybe<Scalars['Int']>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<TeamManyWhereInput>;
-};
-
-
-export type MutationUpdateRaceArgs = {
-  data: RaceUpdateInput;
-  where: RaceWhereUniqueInput;
 };
 
 
@@ -5184,12 +5073,6 @@ export type MutationUpsertDriverArgs = {
 export type MutationUpsertHallOfFameArgs = {
   upsert: HallOfFameUpsertInput;
   where: HallOfFameWhereUniqueInput;
-};
-
-
-export type MutationUpsertRaceArgs = {
-  upsert: RaceUpsertInput;
-  where: RaceWhereUniqueInput;
 };
 
 
@@ -5282,14 +5165,6 @@ export type Query = {
   hallsOfFameConnection: HallOfFameConnection;
   /** Fetches an object given its ID */
   node?: Maybe<Node>;
-  /** Retrieve a single race */
-  race?: Maybe<Race>;
-  /** Retrieve document version */
-  raceVersion?: Maybe<DocumentVersion>;
-  /** Retrieve multiple races */
-  races: Array<Race>;
-  /** Retrieve multiple races using the Relay connection interface */
-  racesConnection: RaceConnection;
   /** Retrieve a single scheduledOperation */
   scheduledOperation?: Maybe<ScheduledOperation>;
   /** Retrieve multiple scheduledOperations */
@@ -5560,44 +5435,6 @@ export type QueryNodeArgs = {
 };
 
 
-export type QueryRaceArgs = {
-  locales?: Array<Locale>;
-  stage?: Stage;
-  where: RaceWhereUniqueInput;
-};
-
-
-export type QueryRaceVersionArgs = {
-  where: VersionWhereInput;
-};
-
-
-export type QueryRacesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  locales?: Array<Locale>;
-  orderBy?: InputMaybe<RaceOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  stage?: Stage;
-  where?: InputMaybe<RaceWhereInput>;
-};
-
-
-export type QueryRacesConnectionArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  locales?: Array<Locale>;
-  orderBy?: InputMaybe<RaceOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  stage?: Stage;
-  where?: InputMaybe<RaceWhereInput>;
-};
-
-
 export type QueryScheduledOperationArgs = {
   locales?: Array<Locale>;
   stage?: Stage;
@@ -5751,528 +5588,6 @@ export type RgbaInput = {
   r: Scalars['RGBAHue'];
 };
 
-export type Race = Entity & Node & {
-  __typename?: 'Race';
-  /** The time the document was created */
-  createdAt: Scalars['DateTime'];
-  /** User that created this document */
-  createdBy?: Maybe<User>;
-  date?: Maybe<Scalars['DateTime']>;
-  /** Get the document in other stages */
-  documentInStages: Array<Race>;
-  flag?: Maybe<Asset>;
-  /** List of Race versions */
-  history: Array<Version>;
-  /** The unique identifier */
-  id: Scalars['ID'];
-  link?: Maybe<Scalars['String']>;
-  /** The time the document was published. Null on documents in draft stage. */
-  publishedAt?: Maybe<Scalars['DateTime']>;
-  /** User that last published this document */
-  publishedBy?: Maybe<User>;
-  scheduledIn: Array<ScheduledOperation>;
-  /** System stage field */
-  stage: Stage;
-  track?: Maybe<Scalars['String']>;
-  /** The time the document was updated */
-  updatedAt: Scalars['DateTime'];
-  /** User that last updated this document */
-  updatedBy?: Maybe<User>;
-};
-
-
-export type RaceCreatedByArgs = {
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  locales?: InputMaybe<Array<Locale>>;
-};
-
-
-export type RaceDocumentInStagesArgs = {
-  includeCurrent?: Scalars['Boolean'];
-  inheritLocale?: Scalars['Boolean'];
-  stages?: Array<Stage>;
-};
-
-
-export type RaceFlagArgs = {
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  locales?: InputMaybe<Array<Locale>>;
-  where?: InputMaybe<AssetSingleRelationWhereInput>;
-};
-
-
-export type RaceHistoryArgs = {
-  limit?: Scalars['Int'];
-  skip?: Scalars['Int'];
-  stageOverride?: InputMaybe<Stage>;
-};
-
-
-export type RacePublishedByArgs = {
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  locales?: InputMaybe<Array<Locale>>;
-};
-
-
-export type RaceScheduledInArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  last?: InputMaybe<Scalars['Int']>;
-  locales?: InputMaybe<Array<Locale>>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<ScheduledOperationWhereInput>;
-};
-
-
-export type RaceUpdatedByArgs = {
-  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
-  locales?: InputMaybe<Array<Locale>>;
-};
-
-export type RaceConnectInput = {
-  /** Allow to specify document position in list of connected documents, will default to appending at end of list */
-  position?: InputMaybe<ConnectPositionInput>;
-  /** Document to connect */
-  where: RaceWhereUniqueInput;
-};
-
-/** A connection to a list of items. */
-export type RaceConnection = {
-  __typename?: 'RaceConnection';
-  aggregate: Aggregate;
-  /** A list of edges. */
-  edges: Array<RaceEdge>;
-  /** Information to aid in pagination. */
-  pageInfo: PageInfo;
-};
-
-export type RaceCreateInput = {
-  createdAt?: InputMaybe<Scalars['DateTime']>;
-  date?: InputMaybe<Scalars['DateTime']>;
-  flag?: InputMaybe<AssetCreateOneInlineInput>;
-  link?: InputMaybe<Scalars['String']>;
-  track?: InputMaybe<Scalars['String']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']>;
-};
-
-export type RaceCreateManyInlineInput = {
-  /** Connect multiple existing Race documents */
-  connect?: InputMaybe<Array<RaceWhereUniqueInput>>;
-  /** Create and connect multiple existing Race documents */
-  create?: InputMaybe<Array<RaceCreateInput>>;
-};
-
-export type RaceCreateOneInlineInput = {
-  /** Connect one existing Race document */
-  connect?: InputMaybe<RaceWhereUniqueInput>;
-  /** Create and connect one Race document */
-  create?: InputMaybe<RaceCreateInput>;
-};
-
-/** An edge in a connection. */
-export type RaceEdge = {
-  __typename?: 'RaceEdge';
-  /** A cursor for use in pagination. */
-  cursor: Scalars['String'];
-  /** The item at the end of the edge. */
-  node: Race;
-};
-
-/** Identifies documents */
-export type RaceManyWhereInput = {
-  /** Logical AND on all given filters. */
-  AND?: InputMaybe<Array<RaceWhereInput>>;
-  /** Logical NOT on all given filters combined by AND. */
-  NOT?: InputMaybe<Array<RaceWhereInput>>;
-  /** Logical OR on all given filters. */
-  OR?: InputMaybe<Array<RaceWhereInput>>;
-  /** Contains search across all appropriate fields. */
-  _search?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  createdAt_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  createdAt_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  createdAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  createdAt_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  createdAt_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  createdAt_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  createdBy?: InputMaybe<UserWhereInput>;
-  date?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  date_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  date_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  date_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  date_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  date_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  date_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  date_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  documentInStages_every?: InputMaybe<RaceWhereStageInput>;
-  documentInStages_none?: InputMaybe<RaceWhereStageInput>;
-  documentInStages_some?: InputMaybe<RaceWhereStageInput>;
-  flag?: InputMaybe<AssetWhereInput>;
-  id?: InputMaybe<Scalars['ID']>;
-  /** All values containing the given string. */
-  id_contains?: InputMaybe<Scalars['ID']>;
-  /** All values ending with the given string. */
-  id_ends_with?: InputMaybe<Scalars['ID']>;
-  /** All values that are contained in given list. */
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  id_not?: InputMaybe<Scalars['ID']>;
-  /** All values not containing the given string. */
-  id_not_contains?: InputMaybe<Scalars['ID']>;
-  /** All values not ending with the given string */
-  id_not_ends_with?: InputMaybe<Scalars['ID']>;
-  /** All values that are not contained in given list. */
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  /** All values not starting with the given string. */
-  id_not_starts_with?: InputMaybe<Scalars['ID']>;
-  /** All values starting with the given string. */
-  id_starts_with?: InputMaybe<Scalars['ID']>;
-  link?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  link_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  link_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  link_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  link_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  link_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  link_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  link_starts_with?: InputMaybe<Scalars['String']>;
-  publishedAt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  publishedAt_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  publishedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  publishedAt_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  publishedAt_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  publishedAt_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  publishedBy?: InputMaybe<UserWhereInput>;
-  scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
-  scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
-  scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
-  track?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  track_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  track_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  track_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  track_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  track_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  track_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  track_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  track_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  track_starts_with?: InputMaybe<Scalars['String']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  updatedAt_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  updatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  updatedAt_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  updatedAt_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  updatedAt_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  updatedBy?: InputMaybe<UserWhereInput>;
-};
-
-export enum RaceOrderByInput {
-  CreatedAtAsc = 'createdAt_ASC',
-  CreatedAtDesc = 'createdAt_DESC',
-  DateAsc = 'date_ASC',
-  DateDesc = 'date_DESC',
-  IdAsc = 'id_ASC',
-  IdDesc = 'id_DESC',
-  LinkAsc = 'link_ASC',
-  LinkDesc = 'link_DESC',
-  PublishedAtAsc = 'publishedAt_ASC',
-  PublishedAtDesc = 'publishedAt_DESC',
-  TrackAsc = 'track_ASC',
-  TrackDesc = 'track_DESC',
-  UpdatedAtAsc = 'updatedAt_ASC',
-  UpdatedAtDesc = 'updatedAt_DESC'
-}
-
-export type RaceUpdateInput = {
-  date?: InputMaybe<Scalars['DateTime']>;
-  flag?: InputMaybe<AssetUpdateOneInlineInput>;
-  link?: InputMaybe<Scalars['String']>;
-  track?: InputMaybe<Scalars['String']>;
-};
-
-export type RaceUpdateManyInlineInput = {
-  /** Connect multiple existing Race documents */
-  connect?: InputMaybe<Array<RaceConnectInput>>;
-  /** Create and connect multiple Race documents */
-  create?: InputMaybe<Array<RaceCreateInput>>;
-  /** Delete multiple Race documents */
-  delete?: InputMaybe<Array<RaceWhereUniqueInput>>;
-  /** Disconnect multiple Race documents */
-  disconnect?: InputMaybe<Array<RaceWhereUniqueInput>>;
-  /** Override currently-connected documents with multiple existing Race documents */
-  set?: InputMaybe<Array<RaceWhereUniqueInput>>;
-  /** Update multiple Race documents */
-  update?: InputMaybe<Array<RaceUpdateWithNestedWhereUniqueInput>>;
-  /** Upsert multiple Race documents */
-  upsert?: InputMaybe<Array<RaceUpsertWithNestedWhereUniqueInput>>;
-};
-
-export type RaceUpdateManyInput = {
-  date?: InputMaybe<Scalars['DateTime']>;
-  link?: InputMaybe<Scalars['String']>;
-  track?: InputMaybe<Scalars['String']>;
-};
-
-export type RaceUpdateManyWithNestedWhereInput = {
-  /** Update many input */
-  data: RaceUpdateManyInput;
-  /** Document search */
-  where: RaceWhereInput;
-};
-
-export type RaceUpdateOneInlineInput = {
-  /** Connect existing Race document */
-  connect?: InputMaybe<RaceWhereUniqueInput>;
-  /** Create and connect one Race document */
-  create?: InputMaybe<RaceCreateInput>;
-  /** Delete currently connected Race document */
-  delete?: InputMaybe<Scalars['Boolean']>;
-  /** Disconnect currently connected Race document */
-  disconnect?: InputMaybe<Scalars['Boolean']>;
-  /** Update single Race document */
-  update?: InputMaybe<RaceUpdateWithNestedWhereUniqueInput>;
-  /** Upsert single Race document */
-  upsert?: InputMaybe<RaceUpsertWithNestedWhereUniqueInput>;
-};
-
-export type RaceUpdateWithNestedWhereUniqueInput = {
-  /** Document to update */
-  data: RaceUpdateInput;
-  /** Unique document search */
-  where: RaceWhereUniqueInput;
-};
-
-export type RaceUpsertInput = {
-  /** Create document if it didn't exist */
-  create: RaceCreateInput;
-  /** Update document if it exists */
-  update: RaceUpdateInput;
-};
-
-export type RaceUpsertWithNestedWhereUniqueInput = {
-  /** Upsert data */
-  data: RaceUpsertInput;
-  /** Unique document search */
-  where: RaceWhereUniqueInput;
-};
-
-/** This contains a set of filters that can be used to compare values internally */
-export type RaceWhereComparatorInput = {
-  /** This field can be used to request to check if the entry is outdated by internal comparison */
-  outdated_to?: InputMaybe<Scalars['Boolean']>;
-};
-
-/** Identifies documents */
-export type RaceWhereInput = {
-  /** Logical AND on all given filters. */
-  AND?: InputMaybe<Array<RaceWhereInput>>;
-  /** Logical NOT on all given filters combined by AND. */
-  NOT?: InputMaybe<Array<RaceWhereInput>>;
-  /** Logical OR on all given filters. */
-  OR?: InputMaybe<Array<RaceWhereInput>>;
-  /** Contains search across all appropriate fields. */
-  _search?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  createdAt_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  createdAt_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  createdAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  createdAt_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  createdAt_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  createdAt_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  createdBy?: InputMaybe<UserWhereInput>;
-  date?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  date_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  date_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  date_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  date_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  date_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  date_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  date_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  documentInStages_every?: InputMaybe<RaceWhereStageInput>;
-  documentInStages_none?: InputMaybe<RaceWhereStageInput>;
-  documentInStages_some?: InputMaybe<RaceWhereStageInput>;
-  flag?: InputMaybe<AssetWhereInput>;
-  id?: InputMaybe<Scalars['ID']>;
-  /** All values containing the given string. */
-  id_contains?: InputMaybe<Scalars['ID']>;
-  /** All values ending with the given string. */
-  id_ends_with?: InputMaybe<Scalars['ID']>;
-  /** All values that are contained in given list. */
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  id_not?: InputMaybe<Scalars['ID']>;
-  /** All values not containing the given string. */
-  id_not_contains?: InputMaybe<Scalars['ID']>;
-  /** All values not ending with the given string */
-  id_not_ends_with?: InputMaybe<Scalars['ID']>;
-  /** All values that are not contained in given list. */
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  /** All values not starting with the given string. */
-  id_not_starts_with?: InputMaybe<Scalars['ID']>;
-  /** All values starting with the given string. */
-  id_starts_with?: InputMaybe<Scalars['ID']>;
-  link?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  link_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  link_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  link_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  link_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  link_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  link_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  link_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  link_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  link_starts_with?: InputMaybe<Scalars['String']>;
-  publishedAt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  publishedAt_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  publishedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  publishedAt_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  publishedAt_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  publishedAt_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  publishedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  publishedBy?: InputMaybe<UserWhereInput>;
-  scheduledIn_every?: InputMaybe<ScheduledOperationWhereInput>;
-  scheduledIn_none?: InputMaybe<ScheduledOperationWhereInput>;
-  scheduledIn_some?: InputMaybe<ScheduledOperationWhereInput>;
-  track?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  track_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  track_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  track_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  track_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  track_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  track_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  track_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  track_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  track_starts_with?: InputMaybe<Scalars['String']>;
-  updatedAt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than the given value. */
-  updatedAt_gt?: InputMaybe<Scalars['DateTime']>;
-  /** All values greater than or equal the given value. */
-  updatedAt_gte?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are contained in given list. */
-  updatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  /** All values less than the given value. */
-  updatedAt_lt?: InputMaybe<Scalars['DateTime']>;
-  /** All values less than or equal the given value. */
-  updatedAt_lte?: InputMaybe<Scalars['DateTime']>;
-  /** Any other value that exists and is not equal to the given value. */
-  updatedAt_not?: InputMaybe<Scalars['DateTime']>;
-  /** All values that are not contained in given list. */
-  updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
-  updatedBy?: InputMaybe<UserWhereInput>;
-};
-
-/** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
-export type RaceWhereStageInput = {
-  /** Logical AND on all given filters. */
-  AND?: InputMaybe<Array<RaceWhereStageInput>>;
-  /** Logical NOT on all given filters combined by AND. */
-  NOT?: InputMaybe<Array<RaceWhereStageInput>>;
-  /** Logical OR on all given filters. */
-  OR?: InputMaybe<Array<RaceWhereStageInput>>;
-  /** This field contains fields which can be set as true or false to specify an internal comparison */
-  compareWithParent?: InputMaybe<RaceWhereComparatorInput>;
-  /** Specify the stage to compare with */
-  stage?: InputMaybe<Stage>;
-};
-
-/** References Race record uniquely */
-export type RaceWhereUniqueInput = {
-  id?: InputMaybe<Scalars['ID']>;
-};
-
 /** Custom type representing a rich text value comprising of raw rich text ast, html, markdown and text values */
 export type RichText = {
   __typename?: 'RichText';
@@ -6368,7 +5683,7 @@ export type ScheduledOperationUpdatedByArgs = {
   locales?: InputMaybe<Array<Locale>>;
 };
 
-export type ScheduledOperationAffectedDocument = Asset | Banner | Calendar | Data | Driver | HallOfFame | Race | Team;
+export type ScheduledOperationAffectedDocument = Asset | Banner | Calendar | Data | Driver | HallOfFame | Team;
 
 export type ScheduledOperationConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
@@ -8280,6 +7595,18 @@ export enum _SystemDateTimeFieldVariation {
   Localization = 'localization'
 }
 
+export type CreateDriverMutationVariables = Exact<{
+  name: Scalars['String'];
+  stream: Scalars['String'];
+  city: Scalars['String'];
+  equipment: Scalars['String'];
+  phone: Scalars['String'];
+  photo?: InputMaybe<AssetCreateOneInlineInput>;
+}>;
+
+
+export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string } | null };
+
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8298,7 +7625,7 @@ export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ _
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null }>, teams: Array<{ __typename?: 'Team', name?: string | null, id: string, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, grid?: Grid | null, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null }>, teams: Array<{ __typename?: 'Team', name?: string | null, id: string, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -8306,6 +7633,46 @@ export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, csv?: { __typename?: 'Asset', url: string } | null }> };
 
 
+export const CreateDriverDocument = gql`
+    mutation CreateDriver($name: String!, $stream: String!, $city: String!, $equipment: String!, $phone: String!, $photo: AssetCreateOneInlineInput) {
+  createDriver(
+    data: {name: $name, stream: $stream, city: $city, equipment: $equipment, phone: $phone, photo: $photo}
+  ) {
+    id
+  }
+}
+    `;
+export type CreateDriverMutationFn = Apollo.MutationFunction<CreateDriverMutation, CreateDriverMutationVariables>;
+
+/**
+ * __useCreateDriverMutation__
+ *
+ * To run a mutation, you first call `useCreateDriverMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDriverMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDriverMutation, { data, loading, error }] = useCreateDriverMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      stream: // value for 'stream'
+ *      city: // value for 'city'
+ *      equipment: // value for 'equipment'
+ *      phone: // value for 'phone'
+ *      photo: // value for 'photo'
+ *   },
+ * });
+ */
+export function useCreateDriverMutation(baseOptions?: Apollo.MutationHookOptions<CreateDriverMutation, CreateDriverMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDriverMutation, CreateDriverMutationVariables>(CreateDriverDocument, options);
+      }
+export type CreateDriverMutationHookResult = ReturnType<typeof useCreateDriverMutation>;
+export type CreateDriverMutationResult = Apollo.MutationResult<CreateDriverMutation>;
+export type CreateDriverMutationOptions = Apollo.BaseMutationOptions<CreateDriverMutation, CreateDriverMutationVariables>;
 export const GetBannersDocument = gql`
     query GetBanners {
   banners(orderBy: publishedAt_ASC) {
@@ -8348,7 +7715,7 @@ export type GetBannersLazyQueryHookResult = ReturnType<typeof useGetBannersLazyQ
 export type GetBannersQueryResult = Apollo.QueryResult<GetBannersQuery, GetBannersQueryVariables>;
 export const GetCalendarsDocument = gql`
     query GetCalendars {
-  calendars(stage: PUBLISHED, orderBy: round_ASC) {
+  calendars(stage: PUBLISHED, orderBy: date_ASC) {
     id
     track
     round
@@ -8435,6 +7802,7 @@ export const GetTeamsDocument = gql`
     stream
     city
     equipment
+    grid
     team {
       name
       color {
@@ -8486,7 +7854,7 @@ export type GetTeamsLazyQueryHookResult = ReturnType<typeof useGetTeamsLazyQuery
 export type GetTeamsQueryResult = Apollo.QueryResult<GetTeamsQuery, GetTeamsQueryVariables>;
 export const GetStatsDataDocument = gql`
     query GetStatsData {
-  datas(orderBy: publishedAt_DESC, first: 1) {
+  datas(orderBy: publishedAt_DESC, first: 2) {
     id
     csv {
       url
