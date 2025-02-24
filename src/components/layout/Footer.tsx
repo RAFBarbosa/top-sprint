@@ -41,6 +41,13 @@ export function Footer() {
 							bgColor="transparent"
 							style={{ height: 45, width: 45 }}
 						/>
+						<SocialIcon
+							className="bg-f1-carbon rounded-lg hover:bg-f1-silver transition-colors duration-200 border-1 border-f1-silver"
+							network="discord"
+							url="https://discord.gg/tZs5hwsubQ"
+							bgColor="transparent"
+							style={{ height: 45, width: 45 }}
+						/>
 					</div>
 					<div className="h-[.5px] w-[45px] bg-f1-silver my-2 self-end hidden md:block" />
 
