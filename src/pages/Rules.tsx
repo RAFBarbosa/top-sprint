@@ -4,9 +4,9 @@ import Car4Bg from "/src/assets/img/car4-bg.png";
 
 export function Rules() {
 	const racePoints = [
-		"25 pontos",
-		"18 pontos",
-		"15 pontos",
+		"20 pontos",
+		"16 pontos",
+		"14 pontos",
 		"12 pontos",
 		"10 pontos",
 		"8 pontos",
@@ -72,8 +72,18 @@ export function Rules() {
 						<strong className="block text-xl">
 							Primeira Etapa (Sprint):
 						</strong>
-						<ul className="list-disc ml-5 space-y-1">
-							<li>Grid: Posição no campeonato invertido*</li>
+						<ul className="list-disc space-y-1">
+							<dl>
+								<dt>Grid Semi-Invertido:*</dt>
+								<dd>
+									<b>-</b> 10 primeiras posições Grid A
+									invertido
+								</dd>
+								<dd>
+									<b>-</b> 10 últimas posições Grid B
+									Invertido.
+								</dd>
+							</dl>
 							<li>Duração: 5 Voltas</li>
 						</ul>
 					</div>
@@ -173,25 +183,53 @@ export function Rules() {
 					<div className="w-full flex flex-col md:flex-row">
 						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
 							<p>
-								Se houverem pilotos reservas durante o
-								campeonato, eles não irão contar pontos para o
-								piloto que estão substituindo, assim como para a
-								equipe de construtores. A pontuação para os
-								demais pilotos irá ignorar a existência do
-								piloto reserva.
+								Nas raras ocasiões onde pouca gente for
+								participar da etapa. A direção pode convidar
+								ex-pilotos Top Sprint para completar o grid.
 							</p>
 							<p>
-								Ex: o piloto reserva ficou em primeiro e um
-								titular em segundo - o piloto titular terá a
-								pontuação de primeiro. O mesmo serve para Pole e
-								Volta Rápida.
+								Para evitar colisões com Reservas, na contagem
+								da pontuação, a posição do reserva será
+								ignorada.{" "}
+								<i>
+									Se o reserva ficou em terceiro, todos os
+									titulares seguintes subirão uma posição.
+								</i>
 							</p>
 							<p>
-								Se um piloto reserva causar NC em um carro
-								titular, o titular poderá abrir uma análise de
-								incidente para reaver a pontuação mínima (último
-								lugar) daquela corrida, conforme a ordem dos
-								incidentes.
+								<b>Terceiro Piloto (NOVO):</b> A pedido dos
+								jogadores, vamos introduzir uma forma de um
+								piloto que souber que vai faltar, convidar um
+								terceiro piloto para participar no seu lugar.
+							</p>
+							<ul className="list-disc ml-5">
+								<li>
+									Cada piloto pode fazer isso UMA vez na
+									temporada
+								</li>
+								<li>
+									O piloto titular irá ganhar metade dos
+									pontos do Terceiro Piloto
+								</li>
+								<li>
+									Infrações cometidas pelo terceiro piloto,
+									serão aplicadas ao piloto títular
+								</li>
+								<li>
+									De forma geral, Pilotos Reserva Top Sprint
+									deverão ter prioridade como terceiro piloto
+								</li>
+								<li>
+									Como exceção a direção pode considerar
+									pilotos externos caso exista videos de
+									corridas do piloto proposto
+								</li>
+							</ul>
+							<p>
+								<i>
+									Pilotos reservas e Terceiro Pilotos não
+									poderão participar da última etapa.
+								</i>
 							</p>
 						</div>
 						<figure className="md:block w-full md:w-1/2 pr-3">
@@ -354,7 +392,7 @@ export function Rules() {
 									piloto a ir ao pit.
 								</li>
 								<li>
-									<strong>-8 pontos</strong>: Quando o piloto
+									<strong>-6 pontos</strong>: Quando o piloto
 									der NC (não completar) no carro do outro
 									piloto ou múltiplos carros com danos.
 								</li>
@@ -366,7 +404,7 @@ export function Rules() {
 						<p>
 							<strong>
 								As penalidades para a Sprint são reduzidas: 1,
-								2, ou 4 pontos.
+								2, ou 3 pontos.
 							</strong>
 						</p>
 						<div className="space-y-2 flex flex-col">
