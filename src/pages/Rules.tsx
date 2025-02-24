@@ -61,11 +61,12 @@ export function Rules() {
 					</div>
 					<p>
 						A <strong>Top Sprint</strong> inclui{" "}
-						<strong>corridas Sprint</strong> e de{" "}
-						<strong>desempenho realista</strong>, ambas com o
-						objetivo de criar oportunidades para quem está atrás no
-						campeonato, oferecendo mais emoção nas disputas por
-						posições e pontos.
+						<strong>corridas Sprint</strong>{" "}
+						{/* e de{" "}
+						<strong>desempenho realista</strong>, ambas  */}
+						com o objetivo de criar oportunidades para quem está
+						atrás no campeonato, oferecendo mais emoção nas disputas
+						por posições e pontos.
 					</p>
 					<p>Os dias de corrida serão divididos em duas etapas:</p>
 					<div className="space-y-2">
@@ -74,7 +75,7 @@ export function Rules() {
 						</strong>
 						<ul className="ml-5 list-disc space-y-1">
 							<li>
-								Grid Semi-Invertido:*
+								Grid Semi-Invertido: *
 								<ul>
 									<li>
 										<b>-</b> 10 primeiras posições Grid A
@@ -131,14 +132,16 @@ export function Rules() {
 							<p>
 								<strong>Desempenho:</strong> Os pilotos
 								utilizarão os carros definidos antes do
-								campeonato e com desempenho igual em 7 das 9
-								corridas. Duas corridas serão selecionadas para
-								terem desempenho realista. A distribuição dos
-								carros será realizada conforme a tabela do
-								campeonato da etapa anterior, atribuindo-se o
-								pior carro ao piloto que estiver em primeiro
-								lugar e o melhor carro ao piloto que estiver em
-								último, e assim sucessivamente.
+								campeonato e com desempenho igual.
+								{/* em 7 das 9 corridas.  
+								Duas corridas serão selecionadas para terem
+								desempenho realista. 
+								A distribuição dos carros será realizada
+								conforme a tabela do campeonato da etapa
+								anterior, atribuindo-se o pior carro ao piloto
+								que estiver em primeiro lugar e o melhor carro
+								ao piloto que estiver em último, e assim
+								sucessivamente.*/}
 							</p>
 							<p>
 								<strong>Assistências:</strong> Todas
@@ -199,15 +202,15 @@ export function Rules() {
 								</i>
 							</p>
 							<p>
-								<b>Terceiro Piloto (NOVO):</b> A pedido dos
-								jogadores, vamos introduzir uma forma de um
-								piloto que souber que vai faltar, convidar um
-								terceiro piloto para participar no seu lugar.
+								<b>Terceiro Piloto:</b> A pedido dos jogadores,
+								vamos introduzir uma forma de um piloto que
+								souber que vai faltar, convidar um terceiro
+								piloto para participar no seu lugar.
 							</p>
 							<ul className="list-disc ml-5">
 								<li>
-									Cada piloto pode fazer isso UMA vez na
-									temporada
+									Cada piloto pode fazer isso{" "}
+									<strong>UMA</strong> vez na temporada
 								</li>
 								<li>
 									O piloto titular irá ganhar metade dos
@@ -253,10 +256,10 @@ export function Rules() {
 						</h2>
 					</div>
 					<div className="flex flex-col justify-center max-w-screen-sm mx-auto mb-4">
-						<div className="border border-f1-carbon rounded-2xl pt-3">
+						<div className="border border-f1-carbon/50 rounded-2xl pt-3">
 							<table className="min-w-full text-left">
 								<thead>
-									<tr className="border-b border-b-f1-carbon">
+									<tr className="border-b border-b-f1-carbon/50">
 										<th className="px-4 pb-4 uppercase">
 											Posição
 										</th>
@@ -314,7 +317,7 @@ export function Rules() {
 						</div>
 						<div className="px-4 mt-4">
 							<p className="mb-2 font-bold text-xl">
-								Pontos extra
+								Pontos extra para ambos grids:
 							</p>
 							<div className="space-y-1">
 								<p>
@@ -400,26 +403,28 @@ export function Rules() {
 								</li>
 							</ul>
 						</div>
-					</div>
-
-					<div className="w-full md:w-1/2 space-y-2">
 						<p>
 							<strong>
 								As penalidades para a Sprint são reduzidas: 1,
 								2, ou 3 pontos.
 							</strong>
 						</p>
+					</div>
+
+					<div className="w-full md:w-1/2 space-y-2">
 						<div className="space-y-2 flex flex-col">
-							<strong>
-								Penalidades adicionais (até 5 pontos) podem ser
-								aplicadas se houver intenção/imprudência de
-								causar o incidente.
-							</strong>
-
-							<strong>
-								Incidentes envolvendo múltiplos carros:
-							</strong>
-
+							<p>
+								<strong>
+									Penalidades adicionais (até 4 pontos) podem
+									ser aplicadas se houver intenção/imprudência
+									de causar o incidente.
+								</strong>
+							</p>
+							<p>
+								<strong>
+									Incidentes envolvendo múltiplos carros:
+								</strong>
+							</p>
 							<p>
 								Se qualquer um dos pilotos atrás do carro que
 								está liderando não possuir direito a linha
@@ -427,7 +432,6 @@ export function Rules() {
 								geralmente ele deverá ceder a posição ou será
 								predominantemente culpado pelo incidente.
 							</p>
-
 							<p>
 								Considerando a regra acima, os pilotos que estão
 								executando a ultrapassagem precisam se
@@ -435,25 +439,27 @@ export function Rules() {
 								de forma desnecessária que mais de dois carros
 								dividam a curva.
 							</p>
-
-							<strong>
-								Os juízes podem aplicar penalidades com base na
-								gravação oficial, mesmo que os pilotos
-								envolvidos não tenham aberto um ticket, se a
-								culpa for inquestionável.
-							</strong>
+							<p>
+								<strong>
+									Os juízes podem aplicar penalidades com base
+									na gravação oficial, mesmo que os pilotos
+									envolvidos não tenham aberto um ticket, se a
+									culpa for inquestionável.
+								</strong>
+							</p>
 							<p>
 								De forma geral, as penalidades serão dadas
 								através de redução de pontos no campeonato.{" "}
 								<strong>
-									Em casos excepcionais, onde uma penalidade
-									de 5 ou 10 segundos seja mais justa para
-									incidentes nas voltas finais da corrida, ela
-									poderá ser aplicada
+									Em casos excepcionais, penalidades como
+									acréscimo de tempo ou troca de posições
+									poderão ser utilizadas, principalmente para
+									incidentes que acontecem na volta final,
+									onde a perda de pontos pode não refletir o
+									impacto real da ocorrência
 								</strong>
 								.
 							</p>
-
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 								As regras utilizadas serão baseadas no{" "}
 								<a
