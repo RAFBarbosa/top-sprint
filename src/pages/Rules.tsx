@@ -61,7 +61,7 @@ export function Rules() {
 					</div>
 					<p>
 						A <strong>Top Sprint</strong> inclui{" "}
-						<strong>corridas Sprint</strong>
+						<strong>corridas Sprint</strong>{" "}
 						{/* e de{" "}
 						<strong>desempenho realista</strong>, ambas  */}
 						com o objetivo de criar oportunidades para quem está
@@ -409,26 +409,16 @@ export function Rules() {
 								2, ou 3 pontos.
 							</strong>
 						</p>
-						<p>
-							<strong>
-								Penalidades adicionais (até 4 pontos) podem ser
-								aplicadas se houver intenção/imprudência de
-								causar o incidente.
-							</strong>
-						</p>
 					</div>
 
 					<div className="w-full md:w-1/2 space-y-2">
 						<div className="space-y-2 flex flex-col">
 							<p>
-								Além da perda de pontos no campeonato, os juízes
-								poderão aplicar outras penalidades em casos
-								específicos, caso seja mais justo para o piloto
-								prejudicado. Penalidades como acréscimo de tempo
-								ou troca de posições poderão ser utilizadas,
-								principalmente para incidentes que acontecem na
-								volta final, onde a perda de pontos pode não
-								refletir o impacto real da ocorrência.
+								<strong>
+									Penalidades adicionais (até 4 pontos) podem
+									ser aplicadas se houver intenção/imprudência
+									de causar o incidente.
+								</strong>
 							</p>
 							<p>
 								<strong>
@@ -461,10 +451,12 @@ export function Rules() {
 								De forma geral, as penalidades serão dadas
 								através de redução de pontos no campeonato.{" "}
 								<strong>
-									Em casos excepcionais, onde uma penalidade
-									de 5 ou 10 segundos seja mais justa para
-									incidentes nas voltas finais da corrida, ela
-									poderá ser aplicada
+									Em casos excepcionais, penalidades como
+									acréscimo de tempo ou troca de posições
+									poderão ser utilizadas, principalmente para
+									incidentes que acontecem na volta final,
+									onde a perda de pontos pode não refletir o
+									impacto real da ocorrência
 								</strong>
 								.
 							</p>
