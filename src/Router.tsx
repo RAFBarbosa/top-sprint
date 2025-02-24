@@ -3,8 +3,9 @@ import { Home } from "./pages/Home";
 import { Rules } from "./pages/Rules";
 import { Profile } from "./pages/Profile";
 import { Champions } from "./pages/Champions";
-import { Admin } from "./pages/Admin";
+import { Login } from "./pages/Login";
 import Drivers from "./pages/Drivers";
+import { Registration } from "./pages/Registration";
 
 export function Router() {
 	return (
@@ -14,7 +15,8 @@ export function Router() {
 			<Route path="/campeoes" element={<Champions />} />
 			<Route path="/pilotos" element={<Drivers />} />
 			<Route path="/pilotos/:driverName" element={<Profile />} />
-			<Route path="/admin" element={<Admin />} />
+			<Route path="/login" element={<Login />} />
+			<Route path="/cadastro" element={<Registration />} />
 		</Routes>
 	);
 }

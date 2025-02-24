@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { StandingsList } from "./StandingsList";
 import useCsvLoader from "../../hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
@@ -10,13 +10,12 @@ interface DataLoaderProps {
 }
 
 export function DataLoader(props: DataLoaderProps) {
-	const { teams, drivers } = useCsvLoader();
-	const [enhancedDrivers, setEnhancedDrivers] = useState<any[]>([]);
-	const [enhancedTeams, setEnhancedTeams] = useState<any[]>([]);
+	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader();
 
-	useEffect(() => {
+	// Memoize enhancedDrivers and enhancedTeams
+	const enhancedDrivers = useMemo(() => {
 		if (props.data && drivers && teams) {
-			const enhancedDriversData = drivers.map((driver) => {
+			return drivers.map((driver) => {
 				const driverFromData = props.data?.drivers.find(
 					(driverFromData) =>
 						useNormalizeString(driverFromData.name) ===
@@ -24,22 +23,27 @@ export function DataLoader(props: DataLoaderProps) {
 				);
 				return {
 					...driver,
+					grid: driverFromData?.grid || "",
 					photo: driverFromData?.photo?.url || "",
 					number: driverFromData?.number || "",
 					teamName: driverFromData?.team?.name || "",
 					teamColor: driverFromData?.team?.color?.hex || "",
 				};
 			});
+		}
+		return [];
+	}, [props.data, drivers, teams]);
 
-			const enhancedTeamsData = teams.map((team) => {
+	const enhancedTeams = useMemo(() => {
+		if (props.data && teams) {
+			return teams.map((team) => {
 				const teamFromData = props.data?.teams.find(
 					(teamFromData) =>
 						useNormalizeString(teamFromData.name) ===
 						useNormalizeString(team.name)
 				);
 
-				// Get the driver names assigned to the team
-				const teamDrivers = enhancedDriversData
+				const teamDrivers = enhancedDrivers
 					.filter((driver) => driver.teamName === team.name)
 					.map((driver) => driver.name);
 
@@ -50,18 +54,17 @@ export function DataLoader(props: DataLoaderProps) {
 					drivers: teamDrivers || "",
 				};
 			});
-
-			setEnhancedDrivers(enhancedDriversData);
-			setEnhancedTeams(enhancedTeamsData);
 		}
-	}, [props.data, drivers, teams]);
+		return [];
+	}, [props.data, teams, enhancedDrivers]);
 
 	return (
-		<div className="max-w-[950px] w-full mx-auto">
+		<div className="w-full mx-auto">
 			{props.activeTab === "drivers" && (
 				<StandingsList
 					title="Pilotos"
 					data={enhancedDrivers}
+					oldData={oldDrivers}
 					valueKey="pts"
 					valueLabel="PTS"
 					activeTab={props.activeTab}
@@ -71,6 +74,7 @@ export function DataLoader(props: DataLoaderProps) {
 				<StandingsList
 					title="Equipes"
 					data={enhancedTeams}
+					oldData={oldTeams}
 					valueKey="pts"
 					valueLabel="PTS"
 					activeTab={props.activeTab}

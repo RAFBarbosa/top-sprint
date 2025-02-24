@@ -1,11 +1,13 @@
-import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import useNormalizeString from "../../hooks/useNormalizeString";
+import { usePositionDifference } from "../../hooks/usePositionDifference"; // Import the hook
 
 interface StandingCardProps {
 	position: number;
 	name: string;
 	photo: string;
+	grid?: string;
 	teamName?: string;
 	teamColor?: string;
 	teamDrivers?: string;
@@ -14,6 +16,8 @@ interface StandingCardProps {
 	activeTab: "drivers" | "teams";
 	isActive: boolean;
 	onClick: () => void;
+	newData: { name: string }[]; // Add newData prop
+	oldData: { name: string }[]; // Add oldData prop
 }
 
 export function StandingCard(props: StandingCardProps) {
@@ -24,42 +28,76 @@ export function StandingCard(props: StandingCardProps) {
 
 	const navigateToDriver = useNavigateToDriver();
 
+	// Calculate the position difference using the hook
+	const positionDifference = usePositionDifference(
+		props.newData,
+		props.oldData,
+		props.name
+	);
+
 	const handleCardClick = () => {
 		if (isDrivers) {
 			navigateToDriver(useNormalizeString(props.name));
 		}
 	};
 
+	// Arrow logic
+	const renderPositionDifference = () => {
+		if (positionDifference > 0) {
+			return (
+				<span className="font-bold text-sm flex items-center text-f1-text">
+					<PlayArrowRoundedIcon
+						fontSize="small"
+						className="rotate-270 text-green-500 scale-90 translate-y-[1px]"
+					/>
+					{positionDifference}
+				</span>
+			);
+		} else if (positionDifference < 0) {
+			return (
+				<span className="font-bold text-sm flex items-center text-f1-text">
+					<PlayArrowRoundedIcon
+						fontSize="small"
+						className="rotate-90 text-f1-red scale-90"
+					/>
+					{Math.abs(positionDifference)}
+				</span>
+			);
+		} else {
+			return <span className="text-gray-500 font-bold">–</span>;
+		}
+	};
+
 	return (
 		<button
 			onClick={handleCardClick}
-			className="tracking-wide overflow-hidden w-full"
+			className="tracking-wide overflow-hidden w-full group"
 		>
-			{/* <div className="tracking-wide overflow-hidden"> pointer-events-none*/}
 			<div
-				className={`flex p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
+				className={`flex px-2 md:p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
 					props.isActive
-						? "bg-f1-silver text-white h-32 md:h-15"
-						: "bg-white"
+						? "bg-f1-silver text-white h-32 md:h-15 py-4"
+						: "bg-white py-2"
 				} ${
-					isDrivers &&
-					"hover:bg-f1-silver hover:text-white cursor-pointer"
+					isDrivers
+						? props.grid === "gridA"
+							? "hover:bg-f1-carbon hover:text-white cursor-pointer"
+							: "hover:bg-f1-red hover:text-white cursor-pointer"
+						: ""
 				}`}
 			>
-				<div className="flex items-center flex-grow z-30 h-full ">
-					<span
-						className={`font-bold md:text-lg ${
-							props.isActive && "text-xl"
-						}`}
-					>
+				<div className="flex items-center flex-grow z-30 h-full md:h-4">
+					<span className="font-bold md:text-lg">
 						{props.position}
 					</span>
 					<span
-						className="mx-2 w-1 self-stretch"
+						className={`mx-2 w-1 self-center md:self-stretch  ${
+							props.isActive ? "h-23 md:h-4" : "h-10 md:h-4"
+						}`}
 						style={{ backgroundColor: props.teamColor }}
-					></span>
+					/>
 					<div
-						className={`flex flex-col md:flex-row items-baseline md:text-lg h-full justify-between ${
+						className={`flex flex-col md:flex-row items-baseline md:text-lg h-full md:h-auto justify-between ${
 							props.isActive
 								? "text-3xl leading-8 md:leading-7"
 								: "text-lg"
@@ -67,13 +105,13 @@ export function StandingCard(props: StandingCardProps) {
 					>
 						<div
 							className={`${
-								isDrivers &&
-								props.isActive &&
-								"flex flex-col md:flex-row items-start"
+								isDrivers && props.isActive
+									? "flex flex-col md:flex-row items-start"
+									: "-translate-y-[3px] md:translate-y-0"
 							}`}
 						>
 							<span
-								className={`${
+								className={`leading-7 ${
 									isDrivers
 										? secondName
 											? "font-regular"
@@ -85,8 +123,7 @@ export function StandingCard(props: StandingCardProps) {
 							</span>
 							{secondName && (
 								<span
-									className={`
-										font-bold md:ml-1 
+									className={`font-bold md:ml-1
 										${isDrivers ? "uppercase" : "ml-1"} 
 										${!props.isActive && "ml-1"}`}
 								>
@@ -111,16 +148,88 @@ export function StandingCard(props: StandingCardProps) {
 				</div>
 
 				<div
-					className={`bg-f1-bg-silver rounded-xl px-2 text-f1-text z-30 ${
-						props.isActive && "self-end md:self-center"
-					}
+					className={`bg-f1-bg-silver rounded-xl text-sm flex z-30 gap-2 text-white ${
+						props.isActive ? "self-end" : "self-center"
+					} ${
+						isDrivers &&
+						"group-hover:bg-white transition-colors duration-200"
 					}`}
 				>
-					<span className="font-bold">{props.valueKey}</span>{" "}
-					{props.valueKey === "1" ? "PT" : props.valueLabel}
+					<div className="pl-2">{renderPositionDifference()}</div>
+					<div
+						className={`font-light rounded-xl px-2 min-w-[70px] ${
+							props.grid === "gridA"
+								? "bg-f1-carbon"
+								: props.grid === "gridB"
+								? "bg-f1-red"
+								: "bg-f1-silver"
+						} ${
+							isDrivers &&
+							"group-hover:bg-f1-bg-silver group-hover:text-f1-text transition-colors duration-200"
+						} `}
+					>
+						<span className="font-bold">{props.valueKey}</span>{" "}
+						{props.valueKey === "1" ? "PT" : props.valueLabel}
+					</div>
 				</div>
 
-				{props.isActive && (
+				{/* <div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
+					<div className="relative w-full h-full">
+						{isDrivers ? (
+							<img
+								src={props.photo}
+								alt={`${props.name} foto`}
+								style={{
+									objectFit: "cover",
+									width: isDrivers ? "auto" : "100%",
+									height: isDrivers
+										? props.isActive
+											? "130%"
+											: "270%"
+										: "140%",
+									maxWidth: "100%",
+									maxHeight: "280%",
+									transform: isDrivers
+										? props.isActive
+											? "translateY(7%)"
+											: "translateX(-30%) translateY(-2%)"
+										: "translateY(-6%) translateX(15%)",
+								}}
+							/>
+						) : (
+							props.isActive && (
+								<div>
+									<img
+										src={props.photo}
+										alt={`${props.name} foto`}
+										style={{
+											objectFit: "cover",
+											width: isDrivers ? "auto" : "100%",
+											height: isDrivers ? "130%" : "140%",
+											maxWidth: "100%",
+											maxHeight: "150%",
+											transform: isDrivers
+												? "translateY(7%)"
+												: "translateY(-6%) translateX(15%)",
+										}}
+									/>
+
+									<div
+										className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
+										style={{
+											width: "60%",
+											height: "33%",
+											top: 0,
+											left: 40,
+										}}
+									/>
+								</div>
+							)
+						)}
+					</div>
+				</div> */}
+
+				{props.isActive ? (
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
 						<div className="relative w-full h-full">
 							<img
@@ -151,20 +260,28 @@ export function StandingCard(props: StandingCardProps) {
 							)}
 						</div>
 					</div>
-				)}
-				{isDrivers && (
-					<div
-						className={`ml-2 text-sm ${
-							props.isActive
-								? "text-white md:text-f1-red"
-								: "text-f1-red"
-						}`}
-					>
-						<MenuArrow fontSize="inherit" />
-					</div>
+				) : (
+					isDrivers && (
+						<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10">
+							<div className="relative w-full h-full hidden md:block">
+								<img
+									src={props.photo}
+									alt={`${props.name} foto`}
+									style={{
+										objectFit: "cover",
+										width: isDrivers ? "auto" : "100%",
+										height: isDrivers ? "280%" : "140%",
+										maxWidth: "100%",
+										maxHeight: "350%",
+										transform:
+											"translateX(-60%) translateY(-3%)",
+									}}
+								/>
+							</div>
+						</div>
+					)
 				)}
 			</div>
-			{/* </div> */}
 		</button>
 	);
 }

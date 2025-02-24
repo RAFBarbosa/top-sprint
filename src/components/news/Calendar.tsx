@@ -77,12 +77,12 @@ export function Calendar(props: CalendarProps) {
 				</div>
 				<div className="flex pb-5 mb-5 border-b-1 border-f1-black/20 items-center md:items-start ">
 					<div className="w-full md:mr-3 text-justify">
-						<div className="text-xl font-bold flex md:flex-col gap-1 md:gap-0 divide-black leading-5 md:leading-6">
-							<div>
+						<div className=" flex md:flex-col gap-1 md:gap-0 divide-black ">
+							<div className="text-lg/5 font-semibold md:leading-6">
 								{formattedDateCapitalized}
 								<span className="md:hidden"> - </span>
 							</div>
-							<div className="flex">
+							<div className="flex text-lg/5 font-bold uppercase md:leading-6">
 								{props.track}
 								<div
 									className={`group-hover:translate-x-1 transition-all duration-200 ${
