@@ -28,6 +28,7 @@ export function useEnhancedCards() {
 					return {
 						...card,
 						stream: driverFromData?.stream || "",
+						grid: driverFromData?.grid || "",
 						city: driverFromData?.city || "",
 						equipment: driverFromData?.equipment || "",
 						photo: driverFromData?.photo?.url || "",

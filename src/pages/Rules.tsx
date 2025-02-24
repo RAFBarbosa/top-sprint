@@ -3,8 +3,34 @@ import Car2Bg from "/src/assets/img/car2-bg.png";
 import Car4Bg from "/src/assets/img/car4-bg.png";
 
 export function Rules() {
+	const racePoints = [
+		"20 pontos",
+		"16 pontos",
+		"14 pontos",
+		"12 pontos",
+		"10 pontos",
+		"8 pontos",
+		"6 pontos",
+		"4 pontos",
+		"2 pontos",
+		"1 ponto",
+	];
+
+	const sprintPoints = [
+		"8 pontos",
+		"7 pontos",
+		"6 pontos",
+		"5 pontos",
+		"4 pontos",
+		"3 pontos",
+		"2 pontos",
+		"1 ponto",
+		"0 pontos",
+		"0 pontos",
+	];
+
 	return (
-		<aside id="regras" className="mx-auto leading-snug">
+		<aside id="regras" className="mx-auto leading-snug w-full">
 			<div className="w-full mb-8 max-w-screen-xl px-3 mx-auto">
 				<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
@@ -46,8 +72,18 @@ export function Rules() {
 						<strong className="block text-xl">
 							Primeira Etapa (Sprint):
 						</strong>
-						<ul className="list-disc ml-5 space-y-1">
-							<li>Grid: Posição no campeonato invertido*</li>
+						<ul className="list-disc space-y-1">
+							<dl>
+								<dt>Grid Semi-Invertido:*</dt>
+								<dd>
+									<b>-</b> 10 primeiras posições Grid A
+									invertido
+								</dd>
+								<dd>
+									<b>-</b> 10 últimas posições Grid B
+									Invertido.
+								</dd>
+							</dl>
 							<li>Duração: 5 Voltas</li>
 						</ul>
 					</div>
@@ -147,25 +183,53 @@ export function Rules() {
 					<div className="w-full flex flex-col md:flex-row">
 						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
 							<p>
-								Se houverem pilotos reservas durante o
-								campeonato, eles não irão contar pontos para o
-								piloto que estão substituindo, assim como para a
-								equipe de construtores. A pontuação para os
-								demais pilotos irá ignorar a existência do
-								piloto reserva.
+								Nas raras ocasiões onde pouca gente for
+								participar da etapa. A direção pode convidar
+								ex-pilotos Top Sprint para completar o grid.
 							</p>
 							<p>
-								Ex: o piloto reserva ficou em primeiro e um
-								titular em segundo - o piloto titular terá a
-								pontuação de primeiro. O mesmo serve para Pole e
-								Volta Rápida.
+								Para evitar colisões com Reservas, na contagem
+								da pontuação, a posição do reserva será
+								ignorada.{" "}
+								<i>
+									Se o reserva ficou em terceiro, todos os
+									titulares seguintes subirão uma posição.
+								</i>
 							</p>
 							<p>
-								Se um piloto reserva causar NC em um carro
-								titular, o titular poderá abrir uma análise de
-								incidente para reaver a pontuação mínima (último
-								lugar) daquela corrida, conforme a ordem dos
-								incidentes.
+								<b>Terceiro Piloto (NOVO):</b> A pedido dos
+								jogadores, vamos introduzir uma forma de um
+								piloto que souber que vai faltar, convidar um
+								terceiro piloto para participar no seu lugar.
+							</p>
+							<ul className="list-disc ml-5">
+								<li>
+									Cada piloto pode fazer isso UMA vez na
+									temporada
+								</li>
+								<li>
+									O piloto titular irá ganhar metade dos
+									pontos do Terceiro Piloto
+								</li>
+								<li>
+									Infrações cometidas pelo terceiro piloto,
+									serão aplicadas ao piloto títular
+								</li>
+								<li>
+									De forma geral, Pilotos Reserva Top Sprint
+									deverão ter prioridade como terceiro piloto
+								</li>
+								<li>
+									Como exceção a direção pode considerar
+									pilotos externos caso exista videos de
+									corridas do piloto proposto
+								</li>
+							</ul>
+							<p>
+								<i>
+									Pilotos reservas e Terceiro Pilotos não
+									poderão participar da última etapa.
+								</i>
 							</p>
 						</div>
 						<figure className="md:block w-full md:w-1/2 pr-3">
@@ -179,18 +243,18 @@ export function Rules() {
 				</div>
 			</div>
 
-			<div className="mb-8 pt-8 pb-2 bg-f1-bg-silver">
+			<div className="mb-8 pt-8 pb-2 w-full bg-f1-bg-silver">
 				<div className="w-full h-auto relative max-w-screen-xl px-3 mx-auto">
 					<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 mb-6">
 						<h2 className="font-bold text-3xl md:text-4xl">
 							Pontuação
 						</h2>
 					</div>
-					<div className="flex flex-col justify-center max-w-screen-md mx-auto mb-4">
-						<div className="">
+					<div className="flex flex-col justify-center max-w-screen-sm mx-auto mb-4">
+						<div className="border border-f1-carbon rounded-2xl pt-3">
 							<table className="min-w-full text-left">
 								<thead>
-									<tr className="border-b border-b-white">
+									<tr className="border-b border-b-f1-carbon">
 										<th className="px-4 pb-4 uppercase">
 											Posição
 										</th>
@@ -214,75 +278,32 @@ export function Rules() {
 										"8",
 										"9",
 										"10",
-										"11",
-										"12",
-										"13",
-										"14",
-										"15",
-										"16",
-										"17",
-										"18",
-										"19",
-										"20",
-									].map((position, index) => (
+									].map((position, index, arr) => (
 										<tr
 											key={index}
-											className=" even:bg-white odd:bg-f1-bg-silver"
+											className="even:bg-white odd:bg-f1-bg-silver"
 										>
-											<td className="px-4 py-4">
+											<td
+												className={`px-4 py-4 ${
+													index === arr.length - 1
+														? "rounded-bl-2xl"
+														: ""
+												}`}
+											>
 												{position}
 											</td>
 											<td className="px-4 py-4">
-												{
-													[
-														"25 pontos",
-														"22 pontos",
-														"20 pontos",
-														"18 pontos",
-														"16 pontos",
-														"15 pontos",
-														"14 pontos",
-														"13 pontos",
-														"12 pontos",
-														"11 pontos",
-														"10 pontos",
-														"9 pontos",
-														"8 pontos",
-														"7 pontos",
-														"6 pontos",
-														"5 pontos",
-														"4 pontos",
-														"3 pontos",
-														"2 pontos",
-														"1 ponto",
-													][index]
-												}
+												{racePoints[index]}
 											</td>
-											<td className="px-4 py-4">
-												{
-													[
-														"16 pontos",
-														"14 pontos",
-														"12 pontos",
-														"11 pontos",
-														"10 pontos",
-														"9 pontos",
-														"8 pontos",
-														"7 pontos",
-														"6 pontos",
-														"5 pontos",
-														"4 pontos",
-														"3 pontos",
-														"2 pontos",
-														"1 ponto",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-														"0 pontos",
-													][index]
-												}
+											<td
+												className={`px-4 py-4 ${
+													index ===
+													sprintPoints.length - 1
+														? "rounded-br-2xl"
+														: ""
+												}`}
+											>
+												{sprintPoints[index]}
 											</td>
 										</tr>
 									))}
@@ -293,18 +314,18 @@ export function Rules() {
 							<p className="mb-2 font-bold text-xl">
 								Pontos extra
 							</p>
-							<div className="md:flex md:gap-x-6 space-y-1 md:space-y-0">
+							<div className="space-y-1">
 								<p>
 									<strong>
 										Melhor volta na corrida principal:
 									</strong>{" "}
-									2 pontos
+									1 ponto
 								</p>
 								<p>
 									<strong>
 										Pole position na corrida principal:
 									</strong>{" "}
-									2 pontos
+									1 ponto
 								</p>
 								<p>
 									<strong>Presença por corrida:</strong> 1
@@ -371,7 +392,7 @@ export function Rules() {
 									piloto a ir ao pit.
 								</li>
 								<li>
-									<strong>-8 pontos</strong>: Quando o piloto
+									<strong>-6 pontos</strong>: Quando o piloto
 									der NC (não completar) no carro do outro
 									piloto ou múltiplos carros com danos.
 								</li>
@@ -383,7 +404,7 @@ export function Rules() {
 						<p>
 							<strong>
 								As penalidades para a Sprint são reduzidas: 1,
-								2, ou 4 pontos.
+								2, ou 3 pontos.
 							</strong>
 						</p>
 						<div className="space-y-2 flex flex-col">

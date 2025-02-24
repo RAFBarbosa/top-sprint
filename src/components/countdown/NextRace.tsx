@@ -36,12 +36,18 @@ export function NextRace(props: NextRaceProps) {
 							className="rounded-md min-w-[57px] min-h-[32px]"
 						/>
 					</div>
-					<span className="pt-2 md:pt-0 border-t w-full md:mr-3 border-white/50 md:flex items-end leading-3 md:leading-6">
-						<p className="text-xl md:text-2xl font-bold uppercase tracking-wider">
+					<span className="md:pt-0 pt-2 border-t w-full md:mr-3 border-white/50 flex flex-col md:flex-row md:items-end justify-center md:justify-start">
+						<p
+							className={`font-bold uppercase tracking-wider leading-6 md:leading-8 ${
+								props.description
+									? "text-xl md:text-2xl"
+									: "text-2xl"
+							}`}
+						>
 							{props.track}
 						</p>
 						{props.description && (
-							<p className="text-md md:ml-2 md:mb-[1px]">
+							<p className="text-sm md:text-base md:ml-2 md:mb-[1px] leading-2 md:leading-6">
 								{props.description}
 							</p>
 						)}
