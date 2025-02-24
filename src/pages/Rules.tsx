@@ -72,18 +72,20 @@ export function Rules() {
 						<strong className="block text-xl">
 							Primeira Etapa (Sprint):
 						</strong>
-						<ul className="list-disc space-y-1">
-							<dl>
-								<dt>Grid Semi-Invertido:*</dt>
-								<dd>
-									<b>-</b> 10 primeiras posições Grid A
-									invertido
-								</dd>
-								<dd>
-									<b>-</b> 10 últimas posições Grid B
-									Invertido.
-								</dd>
-							</dl>
+						<ul className="ml-5 list-disc space-y-1">
+							<li>
+								Grid Semi-Invertido:*
+								<ul>
+									<li>
+										<b>-</b> 10 primeiras posições Grid A
+										invertido
+									</li>
+									<li>
+										<b>-</b> 10 últimas posições Grid B
+										Invertido
+									</li>
+								</ul>
+							</li>
 							<li>Duração: 5 Voltas</li>
 						</ul>
 					</div>
