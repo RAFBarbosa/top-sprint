@@ -317,7 +317,7 @@ export function Rules() {
 						</div>
 						<div className="px-4 mt-4">
 							<p className="mb-2 font-bold text-xl">
-								Pontos extra para ambos grids:
+								Pontos extra para ambos os grids:
 							</p>
 							<div className="space-y-1">
 								<p>
