@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
 import useNormalizeString from "../components/hooks/useNormalizeString";
 
@@ -7,7 +7,7 @@ const Drivers: React.FC = () => {
 	const enhancedCards = useEnhancedCards();
 
 	return (
-		<div className="bg-f1-lightSilver w-full pt-4 pb-8">
+		<div id="pilotos" className="bg-f1-lightSilver w-full pt-4 pb-8">
 			<div className="h-16 bg-divider bg-cover mb-4 opacity-5 max-w-screen-xl mx-auto"></div>
 			<div className="max-w-screen-xl mx-auto bg-white rounded p-6">
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
@@ -58,13 +58,13 @@ const Drivers: React.FC = () => {
 										/>
 									</div>
 									<span
-										className="mx-2 w-1 self-stretch"
+										className="x-2 w-1 mx-2 self-center h-16"
 										style={{
 											backgroundColor: driver.teamColor,
 										}}
-									></span>
-									<div className="flex flex-col justify-between min-h-[60px]">
-										<p className="text-2xl font-regular">
+									/>
+									<div className="flex flex-col justify-between min-h-16">
+										<p className="text-2xl font-regular leading-5">
 											<span
 												className={`${
 													secondName
@@ -85,7 +85,7 @@ const Drivers: React.FC = () => {
 												</span>
 											)}
 										</p>
-										<p className="text-sm text-gray-600">
+										<p className="text-sm text-gray-600 mt-auto leading-3">
 											{driver.teamName}
 										</p>
 									</div>

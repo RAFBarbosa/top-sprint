@@ -44,7 +44,7 @@ export function Profile() {
 		currentIndex !== null &&
 		enhancedCards.length > 0 && (
 			<aside
-				id="profile"
+				id="perfil"
 				className="bg-f1-bg-silver py-8 flex flex-col grow"
 			>
 				<div>
