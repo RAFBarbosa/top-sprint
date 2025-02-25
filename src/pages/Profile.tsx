@@ -238,10 +238,10 @@ export function Profile() {
 									{driverData?.stats?.totalPoints && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
-												Pontos
+												Pontos Grid A
 											</p>
 											<p>
-												{driverData.stats.totalPoints}
+												{driverData.stats.totalPointsA}
 											</p>
 										</>
 									)}
