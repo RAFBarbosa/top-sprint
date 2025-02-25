@@ -156,21 +156,24 @@ const useCsvLoader = () => {
 									.slice(1)
 									.map((row) => ({
 										name: row[16] || "N/A",
-										championships: row[45] || "N/A",
+										championships: row[54] || "N/A",
 										totalPart: row[20] || "N/A",
 										totalPoints: row[24] || "N/A",
+										totalPointsA: row[28] || "N/A",
+										totalPointsB: row[31] || "N/A",
 										pointsPerDay: row[25] || "N/A",
 										raceFinishedPercentage:
-											row[29] || "N/A",
-										poles: row[32] || "N/A",
-										fastestLaps: row[35] || "N/A",
-										totalWins: row[38] || "N/A",
-										totalSprintWins: row[41] || "N/A",
-										totalPodiums: row[44] || "N/A",
-										totalPointsNoBonus: row[51] || "N/A",
+											row[35] || "N/A",
+										poles: row[38] || "N/A",
+										fastestLaps: row[41] || "N/A",
+										totalWins: row[44] || "N/A",
+										totalWinsB: row[47] || "N/A",
+										totalSprintWins: row[50] || "N/A",
+										totalPodiums: row[53] || "N/A",
+										totalPointsNoBonus: row[65] || "N/A",
 										totalPointsPerDayNoBonus:
-											row[52] || "N/A",
-										powerRanking: row[56] || "N/A",
+											row[66] || "N/A",
+										powerRanking: row[70] || "N/A",
 									}))
 									.filter(
 										(item) =>
@@ -178,12 +181,15 @@ const useCsvLoader = () => {
 											item.championships !== "N/A" &&
 											item.totalPart !== "N/A" &&
 											item.totalPoints !== "N/A" &&
+											item.totalPointsA !== "N/A" &&
+											item.totalPointsB !== "N/A" &&
 											item.pointsPerDay !== "N/A" &&
 											item.raceFinishedPercentage !==
 												"N/A" &&
 											item.poles !== "N/A" &&
 											item.fastestLaps !== "N/A" &&
 											item.totalWins !== "N/A" &&
+											item.totalWinsB !== "N/A" &&
 											item.totalSprintWins !== "N/A" &&
 											item.totalPodiums !== "N/A" &&
 											item.totalPointsNoBonus !== "N/A" &&
