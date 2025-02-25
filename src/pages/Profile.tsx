@@ -143,8 +143,8 @@ export function Profile() {
 						</div>
 					</div>
 					<div className="flex justify-center items-center mx-auto w-full py-6 md:w-fit bg-white gap-4 md:rounded md:p-8">
-						<div className="flex flex-col md:flex-row rounded gap-6">
-							<div className="flex mx-auto">
+						<div className="flex flex-col md:flex-row rounded md:gap-6">
+							<div className="flex flex-col mx-auto">
 								{driverData ? (
 									<PlayerCard
 										ref={cardRef}
@@ -153,6 +153,12 @@ export function Profile() {
 								) : (
 									<p>Driver not found</p>
 								)}
+								<div className="self-center group mt-6">
+									<ShareButton
+										cardRef={cardRef}
+										data={driverData}
+									/>
+								</div>
 							</div>
 							<div className="flex flex-col justify-between">
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-y-2 pt-6 md:pt-0 ">
@@ -178,6 +184,14 @@ export function Profile() {
 												Vitórias em Corridas
 											</p>
 											<p>{driverData.stats.totalWins}</p>
+										</>
+									)}
+									{driverData?.stats?.totalWinsB && (
+										<>
+											<p className="font-bold mt-2 md:mt-0">
+												Vitórias em Corridas Grid B
+											</p>
+											<p>{driverData.stats.totalWinsB}</p>
 										</>
 									)}
 									{driverData?.stats?.totalSprintWins && (
@@ -231,6 +245,16 @@ export function Profile() {
 											</p>
 										</>
 									)}
+									{driverData?.stats?.totalPointsB && (
+										<>
+											<p className="font-bold mt-2 md:mt-0">
+												Pontos Grid B
+											</p>
+											<p>
+												{driverData.stats.totalPointsB}
+											</p>
+										</>
+									)}
 									{driverData?.stats?.totalPart && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
@@ -248,27 +272,19 @@ export function Profile() {
 										</>
 									)}
 									{driverData?.stream && (
-										<>
-											<a
-												href={`${driverData.stream}`}
-												target="_blank"
-												className="text-f1-red hover:opacity-90 transition-all duration-200"
-											>
-												<div className="flex items-center gap-2 mt-2 md:mt-0">
-													<p className="font-bold">
-														Stream
-													</p>
-													<LiveTvIcon fontSize="small" />
-												</div>
-											</a>
-										</>
+										<a
+											href={`${driverData.stream}`}
+											target="_blank"
+											className="text-f1-red hover:opacity-90 transition-all duration-200"
+										>
+											<div className="flex items-center gap-2 mt-2 md:mt-0">
+												<p className="font-bold">
+													Stream
+												</p>
+												<LiveTvIcon fontSize="small" />
+											</div>
+										</a>
 									)}
-								</div>
-								<div className="md:self-start self-center group order-first md:order-last">
-									<ShareButton
-										cardRef={cardRef}
-										data={driverData}
-									/>
 								</div>
 							</div>
 						</div>
