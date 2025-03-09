@@ -85,7 +85,7 @@ export function HallsOfFame() {
 						<ul className="list-disc ml-5 mb-2">
 							<li>
 								Troféus para Primeiro, Segundo e Terceiro lugar
-								de pilotos.
+								do Grid A e Primeiro do Grid B.
 							</li>
 							<li>
 								Medalhas para ambos os campeões de contrutores.

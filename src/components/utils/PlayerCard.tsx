@@ -6,7 +6,7 @@ import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 interface PlayerCardProps {
 	data: {
 		name: string;
-		number: string;
+		num: string;
 		racecraft: string;
 		awareness: string;
 		pace: string;
@@ -30,6 +30,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 		};
 
 		const { firstName, secondName } = splitDriverName(data.name);
+
+		const teamColor = data.teamColor || "#fff";
 
 		const borderColor =
 			parseFloat(data.rating) >= 90
@@ -75,7 +77,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						{/* Team color border */}
 						<div
 							className="w-55 h-53 absolute top-0 left-3 border-t-4 border-l-4 rounded-tl-lg z-20"
-							style={{ borderColor: data.teamColor }}
+							style={{ borderColor: teamColor }}
 						/>
 						<span className="flex flex-col mb-4 leading-3 z-30">
 							<p>Nota Geral</p>
@@ -166,15 +168,19 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							</span>
 							<div className="flex flex-col items-end gap-[2px]">
 								<h2
-									className={`font-semibold uppercase text-white text-xs px-2 rounded leading-tight ${
+									className={`font-semibold uppercase text-xs px-2 rounded leading-tight ${
 										data.grid === "gridA"
-											? "bg-f1-carbon"
-											: "bg-f1-red"
+											? "bg-f1-carbon text-white"
+											: data.grid === "gridB"
+											? "bg-f1-red text-white"
+											: "bg-white text-f1-black"
 									} `}
 								>
 									{data.grid === "gridA"
 										? "Grid A"
-										: "Grid B"}
+										: data.grid === "gridB"
+										? "Grid B"
+										: "Reserva"}
 								</h2>
 								<p className="text-4xl">{data.num}</p>
 							</div>
@@ -183,7 +189,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						{/* Team color bar */}
 						<div
 							className="w-full h-1"
-							style={{ backgroundColor: data.teamColor }}
+							style={{ backgroundColor: teamColor }}
 						/>
 
 						{/* Team name and tsl logo */}

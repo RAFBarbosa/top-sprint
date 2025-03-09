@@ -7795,7 +7795,7 @@ export type GetHallsOfFameLazyQueryHookResult = ReturnType<typeof useGetHallsOfF
 export type GetHallsOfFameQueryResult = Apollo.QueryResult<GetHallsOfFameQuery, GetHallsOfFameQueryVariables>;
 export const GetTeamsDocument = gql`
     query GetTeams {
-  drivers(stage: PUBLISHED, where: {fullTime: true}) {
+  drivers(stage: PUBLISHED) {
     id
     name
     number
