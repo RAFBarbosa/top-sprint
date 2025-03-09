@@ -14,35 +14,46 @@ export function Profile() {
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 
+	const gridA = enhancedCards.filter((driver) => driver.grid === "gridA");
+	const gridB = enhancedCards.filter((driver) => driver.grid === "gridB");
+	const reserves = enhancedCards.filter(
+		(driver) => driver.grid === "reserva"
+	);
+
+	const orderedEnhancedCards = [...gridA, ...gridB, ...reserves];
+
 	useEffect(() => {
-		const index = enhancedCards.findIndex(
+		const index = orderedEnhancedCards.findIndex(
 			(driver) =>
 				useNormalizeString(driver.name.toLowerCase()) ===
 				useNormalizeString(driverName?.toLowerCase())
 		);
-		setCurrentIndex(index >= 0 ? index : enhancedCards.length - 1);
-	}, [driverName, enhancedCards]);
+		setCurrentIndex(index >= 0 ? index : orderedEnhancedCards.length - 1);
+	}, [driverName, orderedEnhancedCards]);
 
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
-			const prevDriver = enhancedCards[currentIndex - 1];
+			const prevDriver = orderedEnhancedCards[currentIndex - 1];
 			navigate(`/pilotos/${useNormalizeString(prevDriver.name)}`);
 		}
 	};
 
 	const handleNextClick = () => {
-		if (currentIndex !== null && currentIndex < enhancedCards.length - 1) {
-			const nextDriver = enhancedCards[currentIndex + 1];
+		if (
+			currentIndex !== null &&
+			currentIndex < orderedEnhancedCards.length - 1
+		) {
+			const nextDriver = orderedEnhancedCards[currentIndex + 1];
 			navigate(`/pilotos/${useNormalizeString(nextDriver.name)}`);
 		}
 	};
 
 	const driverData =
-		currentIndex !== null ? enhancedCards[currentIndex] : null;
+		currentIndex !== null ? orderedEnhancedCards[currentIndex] : null;
 
 	return (
 		currentIndex !== null &&
-		enhancedCards.length > 0 && (
+		orderedEnhancedCards.length > 0 && (
 			<aside
 				id="perfil"
 				className="bg-f1-bg-silver py-8 flex flex-col grow"
@@ -67,8 +78,9 @@ export function Profile() {
 								style={{
 									borderColor: `${
 										currentIndex > 0
-											? enhancedCards[currentIndex - 1]
-													.teamColor
+											? orderedEnhancedCards[
+													currentIndex - 1
+											  ].teamColor
 											: ""
 									}`,
 								}}
@@ -84,7 +96,7 @@ export function Profile() {
 											style={{
 												backgroundImage: `url(${
 													currentIndex > 0
-														? enhancedCards[
+														? orderedEnhancedCards[
 																currentIndex - 1
 														  ].photo
 														: ""
@@ -100,19 +112,23 @@ export function Profile() {
 								onClick={handleNextClick}
 								disabled={
 									currentIndex === null ||
-									currentIndex === enhancedCards.length - 1
+									currentIndex ===
+										orderedEnhancedCards.length - 1
 								}
 								className={`bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
 									currentIndex === null ||
-									currentIndex === enhancedCards.length - 1
+									currentIndex ===
+										orderedEnhancedCards.length - 1
 										? "opacity-50 cursor-not-allowed"
 										: "hover:opacity-80 cursor-pointer"
 								}`}
 								style={{
 									borderColor: `${
-										currentIndex < enhancedCards.length - 1
-											? enhancedCards[currentIndex + 1]
-													.teamColor
+										currentIndex <
+										orderedEnhancedCards.length - 1
+											? orderedEnhancedCards[
+													currentIndex + 1
+											  ].teamColor
 											: ""
 									}`,
 								}}
@@ -123,10 +139,10 @@ export function Profile() {
 											className="w-22 h-22 bg-cover translate-y-[10px] scale-120"
 											style={{
 												backgroundImage: `url(${
-													enhancedCards[
+													orderedEnhancedCards[
 														currentIndex + 1
 													]
-														? enhancedCards[
+														? orderedEnhancedCards[
 																currentIndex + 1
 														  ].photo
 														: ""
