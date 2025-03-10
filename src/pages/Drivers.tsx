@@ -7,7 +7,7 @@ const Drivers: React.FC = () => {
 	const gridA = enhancedCards.filter((driver) => driver.grid === "gridA");
 	const gridB = enhancedCards.filter((driver) => driver.grid === "gridB");
 	const reserves = enhancedCards.filter(
-		(driver) => driver.grid === "reserva"
+		(driver) => driver.grid === "reserva" || driver.grid === "inativo"
 	);
 
 	return (
