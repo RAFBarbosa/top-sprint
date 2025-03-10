@@ -202,8 +202,10 @@ export function Rules() {
 									<strong>DUAS</strong> vez na temporada
 								</li>
 								<li>
-									O piloto titular irá ganhar metade dos
-									pontos do Terceiro Piloto
+									O piloto titular receberá a pontuação
+									equivalente à do terceiro piloto, mas
+									contando como se tivesse terminado 5
+									posições atrás
 								</li>
 								<li>
 									Infrações cometidas pelo terceiro piloto,
