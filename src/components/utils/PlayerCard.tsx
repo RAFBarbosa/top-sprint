@@ -6,7 +6,7 @@ import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 interface PlayerCardProps {
 	data: {
 		name: string;
-		number: string;
+		num: string;
 		racecraft: string;
 		awareness: string;
 		pace: string;
@@ -31,12 +31,24 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 		const { firstName, secondName } = splitDriverName(data.name);
 
-		const borderColor =
-			parseFloat(data.rating) >= 90
-				? "repeating-linear-gradient(145deg, #ffd700, #e6c200 15%, #b88a00 20%)" // Golden border
-				: parseFloat(data.rating) >= 80
-				? "repeating-linear-gradient(145deg, #c0c0c0, #a8a8a8 15%, #8c8c8c 20%)" // Silver border
-				: "repeating-linear-gradient(145deg, #cd7f32, #c0802d 15%, #a6672a 20%)"; // Bronze border
+		const teamColor = data.teamColor || "#fff";
+
+		const hasSpecialAchievement = [
+			data.stats.championships,
+			data.stats.totalSprintWins,
+			data.stats.totalWins,
+			data.stats.totalWinsB,
+		].some((value) => value && value > 1);
+
+		const isCrystalBorder = hasSpecialAchievement && Math.random() < 0.01;
+
+		const borderColor = isCrystalBorder
+			? "repeating-linear-gradient(145deg, #b3f0ff, #a0e7f5 10%, #b2fff5 20%, #aaf2d5 30%, #aaf2aa 40%, #d7ff8f 50%, #fff5b3 60%, #ffe0a0 70%, #ffb3a0 80%, #e0aaff 90%)"
+			: parseFloat(data.rating) >= 90
+			? "repeating-linear-gradient(145deg, #ffd700, #e6c200 15%, #b88a00 20%)" // Golden border
+			: parseFloat(data.rating) >= 80
+			? "repeating-linear-gradient(145deg, #c0c0c0, #a8a8a8 15%, #8c8c8c 20%)" // Silver border
+			: "repeating-linear-gradient(145deg, #cd7f32, #c0802d 15%, #a6672a 20%)"; // Bronze border
 
 		return (
 			<div
@@ -75,7 +87,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						{/* Team color border */}
 						<div
 							className="w-55 h-53 absolute top-0 left-3 border-t-4 border-l-4 rounded-tl-lg z-20"
-							style={{ borderColor: data.teamColor }}
+							style={{ borderColor: teamColor }}
 						/>
 						<span className="flex flex-col mb-4 leading-3 z-30">
 							<p>Nota Geral</p>
@@ -166,15 +178,21 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							</span>
 							<div className="flex flex-col items-end gap-[2px]">
 								<h2
-									className={`font-semibold uppercase text-white text-xs px-2 rounded leading-tight ${
+									className={`font-semibold uppercase text-xs px-2 rounded leading-tight ${
 										data.grid === "gridA"
-											? "bg-f1-carbon"
-											: "bg-f1-red"
+											? "bg-f1-carbon text-white"
+											: data.grid === "gridB"
+											? "bg-f1-red text-white"
+											: "bg-white text-f1-black"
 									} `}
 								>
 									{data.grid === "gridA"
 										? "Grid A"
-										: "Grid B"}
+										: data.grid === "gridB"
+										? "Grid B"
+										: data.grid === "reserva"
+										? "Reserva"
+										: "Ex-Piloto"}
 								</h2>
 								<p className="text-4xl">{data.num}</p>
 							</div>
@@ -183,7 +201,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						{/* Team color bar */}
 						<div
 							className="w-full h-1"
-							style={{ backgroundColor: data.teamColor }}
+							style={{ backgroundColor: teamColor }}
 						/>
 
 						{/* Team name and tsl logo */}
