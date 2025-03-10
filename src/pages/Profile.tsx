@@ -17,7 +17,7 @@ export function Profile() {
 	const gridA = enhancedCards.filter((driver) => driver.grid === "gridA");
 	const gridB = enhancedCards.filter((driver) => driver.grid === "gridB");
 	const reserves = enhancedCards.filter(
-		(driver) => driver.grid === "reserva"
+		(driver) => driver.grid === "reserva" || driver.grid === "inativo"
 	);
 
 	const orderedEnhancedCards = [...gridA, ...gridB, ...reserves];

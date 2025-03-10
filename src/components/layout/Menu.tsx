@@ -41,7 +41,7 @@ export function Menu() {
 	const gridA = enhancedDrivers.filter((driver) => driver.grid === "gridA");
 	const gridB = enhancedDrivers.filter((driver) => driver.grid === "gridB");
 	const reserves = enhancedDrivers.filter(
-		(driver) => driver.grid === "reserva"
+		(driver) => driver.grid === "reserva" || driver.grid === "inativo"
 	);
 
 	const handleLinkClick = () => {
