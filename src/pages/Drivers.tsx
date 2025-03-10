@@ -12,6 +12,19 @@ const Drivers: React.FC = () => {
 
 	return (
 		<div id="pilotos" className="bg-f1-lightSilver w-full pt-4 pb-8">
+			<div className="h-16 bg-divider bg-cover mb-4 opacity-5 max-w-screen-xl mx-auto" />
+			<div className="max-w-screen-xl mx-auto bg-white rounded p-6 pb-0">
+				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
+					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide">
+						Pilotos
+					</h1>
+				</div>
+				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
+					Confira o line-up oficial da temporada. Cards e detalhes
+					completos de todos os pilotos Top Sprint, com pontuação e
+					resultados atualizados.
+				</div>
+			</div>
 			<div className="max-w-screen-xl mx-auto bg-white rounded p-6 space-y-6">
 				<DriverList gridName="Grid A" drivers={gridA} />
 				<DriverList gridName="Grid B" drivers={gridB} />
