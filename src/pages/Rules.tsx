@@ -199,7 +199,7 @@ export function Rules() {
 							<ul className="list-disc ml-5">
 								<li>
 									Cada piloto pode fazer isso{" "}
-									<strong>DUAS</strong> vez na temporada
+									<strong>DUAS</strong> vezes na temporada
 								</li>
 								<li>
 									O piloto titular receberá a pontuação
