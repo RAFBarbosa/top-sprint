@@ -20,7 +20,7 @@ export function Podium(props: PodiumProps) {
 	if (props.topThree.length < 3) return null;
 
 	return (
-		<div className="mb-2">
+		<div className="mb-1">
 			{props.activeTab === "drivers" ? (
 				<div className="md:flex md:gap-x-2 ">
 					<div className="hidden md:block w-[31%]">
