@@ -78,7 +78,7 @@ export function PodiumCard(props: PodiumCardProps) {
 					props.position === 1
 						? isDrivers
 							? "mb-10"
-							: "mb-16 ml-15 text-3xl"
+							: "mb-6 ml-15 text-3xl"
 						: "mb-6"
 				}`}
 				style={{ color: props.teamColor }}
