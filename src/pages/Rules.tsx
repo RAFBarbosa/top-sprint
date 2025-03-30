@@ -74,7 +74,20 @@ export function Rules() {
 							Primeira Etapa (Sprint):
 						</strong>
 						<ul className="ml-5 list-disc space-y-1">
-							<li>Grid: Qualificatória de 1 volta</li>
+							{/* <li>Grid: Qualificatória de 1 volta</li> */}
+							<li>
+								Grid Semi-Invertido: *
+								<ul>
+									<li>
+										<b>-</b> 10 primeiras posições: Grid A
+										invertido
+									</li>
+									<li>
+										<b>-</b> 10 últimas posições: Grid B
+										Invertido
+									</li>
+								</ul>
+							</li>
 							<li>Duração: 5 Voltas</li>
 						</ul>
 					</div>
@@ -86,11 +99,11 @@ export function Rules() {
 							<li>Grid: Qualificatória Curta (18 minutos)</li>
 							<li>Duração: 35% do circuito</li>
 						</ul>
-						{/* <p className="italic text-f1-silver">
+						<p className="italic text-f1-silver">
 							* Na primeira corrida da temporada e nos dias de
 							desempenho realista, haverá uma qualificatória de
 							uma volta para definir o grid da Sprint.
-						</p> */}
+						</p>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
 							perdê-la."
