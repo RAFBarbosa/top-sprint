@@ -24,7 +24,7 @@ export function Footer() {
 							className="bg-f1-carbon rounded-lg hover:bg-f1-silver transition-colors duration-200 border-1 border-f1-silver"
 							network="whatsapp"
 							target="_blank"
-							url="https://chat.whatsapp.com/EitAZ6kSIVVDkK4I0pfsIV"
+							url="https://chat.whatsapp.com/BBUq88qF23DFffFN7mlRz1"
 							bgColor="transparent"
 							style={{ height: 45, width: 45 }}
 						/>
