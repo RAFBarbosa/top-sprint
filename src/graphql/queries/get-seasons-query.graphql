@@ -1,0 +1,8 @@
+query GetSeasons {
+	seasons(orderBy: startDate_DESC) {
+		id
+		name
+		year
+		slug
+	}
+}

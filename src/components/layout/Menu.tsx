@@ -13,9 +13,10 @@ import MenuDriverList from "../drivers/MenuDriverList";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
-	{ id: "/regras", label: "Regras e Formato" },
-	{ id: "/campeoes", label: "Mural dos Campeões" },
+	{ id: "/resultados/atual", label: "Resultados" },
 	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
+	{ id: "/campeoes", label: "Mural dos Campeões" },
+	{ id: "/regras", label: "Regras e Formato" },
 	{
 		id: "https://docs.google.com/forms/d/e/1FAIpQLSfHN50Fhz16wKABFaKlBa-iLFSeDVENnuZyZ7pK40qXJkL5Nw/viewform",
 		label: "Tickets",
@@ -87,7 +88,7 @@ export function Menu() {
 
 			<div
 				className={`fixed top-0 right-0 bg-f1-red px-2 py-6 transition-transform duration-300 transform ${
-					isOpen ? "translate-y-[56px]" : "translate-y-[-330px]"
+					isOpen ? "translate-y-[56px]" : "translate-y-[-398px]"
 				} md:hidden w-full z-30`}
 			>
 				<ul className="space-y-2">

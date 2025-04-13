@@ -3,9 +3,10 @@ import { Home } from "./pages/Home";
 import { Rules } from "./pages/Rules";
 import { Profile } from "./pages/Profile";
 import { Champions } from "./pages/Champions";
-import { Login } from "./pages/Login";
+import { Results } from "./pages/Results";
 import Drivers from "./pages/Drivers";
 import { Registration } from "./pages/Registration";
+import { Calendar } from "./pages/Calendar";
 
 export function Router() {
 	return (
@@ -15,7 +16,8 @@ export function Router() {
 			<Route path="/campeoes" element={<Champions />} />
 			<Route path="/pilotos" element={<Drivers />} />
 			<Route path="/pilotos/:driverName" element={<Profile />} />
-			<Route path="/login" element={<Login />} />
+			<Route path="/resultados/:slug" element={<Calendar />} />
+			<Route path="/resultado/:id" element={<Results />} />
 			<Route path="/cadastro" element={<Registration />} />
 		</Routes>
 	);
