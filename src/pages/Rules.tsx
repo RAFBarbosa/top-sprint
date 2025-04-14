@@ -100,9 +100,8 @@ export function Rules() {
 							<li>Duração: 35% do circuito</li>
 						</ul>
 						<p className="italic text-f1-silver">
-							* Na primeira corrida da temporada, haverá uma
-							qualificatória de uma volta para definir o grid da
-							Sprint.
+							* Na primeira corrida da temporada, haverá uma qualificatória de
+							uma volta para definir o grid da Sprint.
 						</p>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
