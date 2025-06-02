@@ -13,7 +13,7 @@ import MenuDriverList from "../drivers/MenuDriverList";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
-	{ id: "/resultados/atual", label: "Resultados" },
+	// { id: "/resultados/atual", label: "Resultados" },
 	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
 	{ id: "/regras", label: "Regras e Formato" },
