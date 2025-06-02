@@ -35,6 +35,8 @@ export function useEnhancedCards() {
 						teamName: driverFromData?.team?.name || "",
 						teamColor: driverFromData?.team?.color?.hex || "",
 						stats: driverStats || {},
+						badge: driverFromData?.badge || "",
+						badgeTitle: driverFromData?.badgeTitle || "",
 					};
 				})
 				.filter(Boolean);
