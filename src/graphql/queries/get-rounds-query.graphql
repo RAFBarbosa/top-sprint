@@ -35,6 +35,10 @@ query GetDrivers {
 		photo {
 			url
 		}
+		badge {
+			url
+		}
+		badgeTitle
 	}
 }
 
