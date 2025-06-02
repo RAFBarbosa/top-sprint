@@ -16,6 +16,10 @@ query GetTeams {
 		photo {
 			url
 		}
+		badge {
+			url
+		}
+		badgeTitle
 	}
 	teams(stage: PUBLISHED) {
 		color {

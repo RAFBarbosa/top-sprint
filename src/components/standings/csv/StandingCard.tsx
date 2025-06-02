@@ -11,6 +11,8 @@ interface StandingCardProps {
 	teamName?: string;
 	teamColor?: string;
 	teamDrivers?: string;
+	badge: Array<{ url: string }>;
+	badgeTitle: string;
 	valueKey: string;
 	valueLabel: string;
 	activeTab: "drivers" | "teams";
@@ -18,6 +20,25 @@ interface StandingCardProps {
 	onClick: () => void;
 	newData: { name: string }[]; // Add newData prop
 	oldData: { name: string }[]; // Add oldData prop
+}
+
+function formatBadgeTitle(title: string): string {
+	// Handle null/undefined and non-string types
+	if (typeof title !== "string" || !title.trim()) return "";
+
+	// Handle camelCase and PascalCase
+	const spaced = title
+		.replace(/([A-Z][a-z]+)/g, " $1") // Handle capital letters followed by lowercase
+		.replace(/([A-Z]+)/g, " $1") // Handle all-caps abbreviations
+		.trim();
+
+	// Capitalize first letter of each word and lowercase the rest
+	return spaced
+		.toLowerCase()
+		.split(" ")
+		.filter((word) => word) // Remove empty strings
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
 }
 
 export function StandingCard(props: StandingCardProps) {
@@ -67,6 +88,8 @@ export function StandingCard(props: StandingCardProps) {
 			return <span className="text-gray-500 font-bold">–</span>;
 		}
 	};
+
+	const badgeUrls = props.badge?.map((badge) => badge.url) || [];
 
 	return (
 		<button

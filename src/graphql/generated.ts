@@ -31,6 +31,7 @@ export type Aggregate = {
 /** Asset system model */
 export type Asset = Entity & Node & {
   __typename?: 'Asset';
+  badgeDriver: Array<Driver>;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
   /** User that created this document */
@@ -80,6 +81,20 @@ export type Asset = Entity & Node & {
   url: Scalars['String'];
   /** The file width */
   width?: Maybe<Scalars['Float']>;
+};
+
+
+/** Asset system model */
+export type AssetBadgeDriverArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<DriverOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<DriverWhereInput>;
 };
 
 
@@ -279,6 +294,7 @@ export type AssetConnection = {
 };
 
 export type AssetCreateInput = {
+  badgeDriver?: InputMaybe<DriverCreateManyInlineInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   csvData?: InputMaybe<DataCreateManyInlineInput>;
   fileName?: InputMaybe<Scalars['String']>;
@@ -348,6 +364,9 @@ export type AssetManyWhereInput = {
   OR?: InputMaybe<Array<AssetWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  badgeDriver_every?: InputMaybe<DriverWhereInput>;
+  badgeDriver_none?: InputMaybe<DriverWhereInput>;
+  badgeDriver_some?: InputMaybe<DriverWhereInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -509,6 +528,7 @@ export type AssetTransformationInput = {
 };
 
 export type AssetUpdateInput = {
+  badgeDriver?: InputMaybe<DriverUpdateManyInlineInput>;
   csvData?: InputMaybe<DataUpdateManyInlineInput>;
   fileName?: InputMaybe<Scalars['String']>;
   flagCalendar?: InputMaybe<CalendarUpdateManyInlineInput>;
@@ -749,6 +769,9 @@ export type AssetWhereInput = {
   OR?: InputMaybe<Array<AssetWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  badgeDriver_every?: InputMaybe<DriverWhereInput>;
+  badgeDriver_none?: InputMaybe<DriverWhereInput>;
+  badgeDriver_some?: InputMaybe<DriverWhereInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -986,6 +1009,11 @@ export type AssetWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
   slug?: InputMaybe<Scalars['String']>;
 };
+
+export enum BadgeTitle {
+  MestreDaChuva = 'mestreDaChuva',
+  ReiDaChuva = 'reiDaChuva'
+}
 
 export type Banner = Entity & Node & {
   __typename?: 'Banner';
@@ -2607,6 +2635,8 @@ export type DocumentVersion = {
 
 export type Driver = Entity & Node & {
   __typename?: 'Driver';
+  badge: Array<Asset>;
+  badgeTitle: Array<BadgeTitle>;
   city?: Maybe<Scalars['String']>;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
@@ -2638,6 +2668,19 @@ export type Driver = Entity & Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
+};
+
+
+export type DriverBadgeArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<AssetOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<AssetWhereInput>;
 };
 
 
@@ -2715,6 +2758,8 @@ export type DriverConnection = {
 };
 
 export type DriverCreateInput = {
+  badge?: InputMaybe<AssetCreateManyInlineInput>;
+  badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   equipment?: InputMaybe<Scalars['String']>;
@@ -2762,6 +2807,19 @@ export type DriverManyWhereInput = {
   OR?: InputMaybe<Array<DriverWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  /** Matches if the field array contains *all* items provided to the filter and order does match */
+  badgeTitle?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array contains *all* items provided to the filter */
+  badgeTitle_contains_all?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array does not contain any of the items provided to the filter */
+  badgeTitle_contains_none?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array contains at least one item provided to the filter */
+  badgeTitle_contains_some?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array does not contains *all* items provided to the filter or order does not match */
+  badgeTitle_not?: InputMaybe<Array<BadgeTitle>>;
+  badge_every?: InputMaybe<AssetWhereInput>;
+  badge_none?: InputMaybe<AssetWhereInput>;
+  badge_some?: InputMaybe<AssetWhereInput>;
   city?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   city_contains?: InputMaybe<Scalars['String']>;
@@ -2964,6 +3022,8 @@ export type DriverManyWhereInput = {
 };
 
 export enum DriverOrderByInput {
+  BadgeTitleAsc = 'badgeTitle_ASC',
+  BadgeTitleDesc = 'badgeTitle_DESC',
   CityAsc = 'city_ASC',
   CityDesc = 'city_DESC',
   CreatedAtAsc = 'createdAt_ASC',
@@ -2991,6 +3051,8 @@ export enum DriverOrderByInput {
 }
 
 export type DriverUpdateInput = {
+  badge?: InputMaybe<AssetUpdateManyInlineInput>;
+  badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
@@ -3021,6 +3083,7 @@ export type DriverUpdateManyInlineInput = {
 };
 
 export type DriverUpdateManyInput = {
+  badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
@@ -3090,6 +3153,19 @@ export type DriverWhereInput = {
   OR?: InputMaybe<Array<DriverWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  /** Matches if the field array contains *all* items provided to the filter and order does match */
+  badgeTitle?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array contains *all* items provided to the filter */
+  badgeTitle_contains_all?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array does not contain any of the items provided to the filter */
+  badgeTitle_contains_none?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array contains at least one item provided to the filter */
+  badgeTitle_contains_some?: InputMaybe<Array<BadgeTitle>>;
+  /** Matches if the field array does not contains *all* items provided to the filter or order does not match */
+  badgeTitle_not?: InputMaybe<Array<BadgeTitle>>;
+  badge_every?: InputMaybe<AssetWhereInput>;
+  badge_none?: InputMaybe<AssetWhereInput>;
+  badge_some?: InputMaybe<AssetWhereInput>;
   city?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   city_contains?: InputMaybe<Scalars['String']>;
@@ -10073,7 +10149,7 @@ export type GetSeasonRoundsQuery = { __typename?: 'Query', rounds: Array<{ __typ
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, grid?: Grid | null, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, grid?: Grid | null, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }> };
 
 export type GetRoundResultsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -10090,7 +10166,7 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, grid?: Grid | null, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null }>, teams: Array<{ __typename?: 'Team', name?: string | null, id: string, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', name?: string | null, id: string, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10321,6 +10397,9 @@ export const GetDriversDocument = gql`
     photo {
       url
     }
+    badge {
+      url
+    }
   }
 }
     `;
@@ -10458,6 +10537,10 @@ export const GetTeamsDocument = gql`
     photo {
       url
     }
+    badge {
+      url
+    }
+    badgeTitle
   }
   teams(stage: PUBLISHED) {
     color {
