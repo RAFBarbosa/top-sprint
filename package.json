@@ -16,6 +16,7 @@
 		"@mui/icons-material": "^6.1.1",
 		"@mui/material": "^6.1.1",
 		"@tailwindcss/postcss": "^4.0.0-beta.6",
+		"@mui/x-data-grid": "^7.28.0",
 		"@vercel/analytics": "^1.4.1",
 		"@vime/core": "5.3.1",
 		"@vime/react": "5.3.1",

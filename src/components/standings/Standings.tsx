@@ -4,6 +4,11 @@ import DataLoader from "./csv/DataLoader";
 import { TabSwitch } from "./csv/TabSwitch";
 import { useState } from "react";
 
+const tabs = [
+	{ id: "drivers", label: "PILOTOS" },
+	{ id: "teams", label: "EQUIPES" },
+] as const;
+
 const loadingSkeleton = () => {
 	return (
 		<div className="px-3 w-full md:max-w-screen-xl mx-auto">
@@ -29,7 +34,8 @@ const loadingSkeleton = () => {
 
 export function Standings() {
 	const { data, error, loading } = useGetTeamsQuery();
-	const [activeTab, setActiveTab] = useState<"drivers" | "teams">("drivers");
+	const [activeTab, setActiveTab] =
+		useState<(typeof tabs)[number]["id"]>("drivers");
 
 	if (loading) return loadingSkeleton();
 	if (error)
@@ -41,8 +47,12 @@ export function Standings() {
 
 	return (
 		<aside className="pb-10 flex flex-col relative bg-f1-lightSilver items-center">
-			<div className="m-2.5">
-				<TabSwitch activeTab={activeTab} setActiveTab={setActiveTab} />
+			<div className="flex justify-center min-w-max">
+				<TabSwitch
+					tabs={tabs}
+					activeTab={activeTab}
+					setActiveTab={setActiveTab}
+				/>
 			</div>
 
 			<div className="bg-radial-[at_50%_100%] from-f1-silver to-f1-carbon to-70% md:h-[320px] h-[280px] w-full absolute left-0 top-12">
