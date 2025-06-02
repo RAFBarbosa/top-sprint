@@ -202,7 +202,8 @@ export function Profile() {
 											<p>{driverData.stats.totalWins}</p>
 										</>
 									)}
-									{driverData?.stats?.totalWinsB && (
+									{(driverData?.grid === "gridB" ||
+										driverData?.stats?.totalWinsB > 0) && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
 												Vitórias em Corridas Grid B
@@ -251,7 +252,9 @@ export function Profile() {
 											</p>
 										</>
 									)}
-									{driverData?.stats?.totalPoints && (
+									{(driverData?.grid === "gridA" ||
+										driverData?.stats?.totalPointsA >
+											0) && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
 												Pontos Grid A
@@ -261,7 +264,9 @@ export function Profile() {
 											</p>
 										</>
 									)}
-									{driverData?.stats?.totalPointsB && (
+									{(driverData?.grid === "gridB" ||
+										driverData?.stats?.totalPointsB >
+											0) && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
 												Pontos Grid B
