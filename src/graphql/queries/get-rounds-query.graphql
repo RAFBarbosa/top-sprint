@@ -1,0 +1,61 @@
+query GetSeasonRounds($slug: String!) {
+	rounds(
+		where: { season: { slug: $slug } }
+		stage: PUBLISHED
+		orderBy: date_ASC
+	) {
+		id
+		name
+		link
+		date
+		track {
+			id
+			name
+			circuit
+			location
+			uniqueName
+			flag {
+				url
+			}
+		}
+	}
+}
+
+query GetDrivers {
+	drivers(stage: PUBLISHED) {
+		id
+		name
+		grid
+		team {
+			name
+			color {
+				hex
+			}
+		}
+		photo {
+			url
+		}
+	}
+}
+
+query GetRoundResults($id: ID!) {
+	round(where: { id: $id }, stage: PUBLISHED) {
+		id
+		name
+		date
+		link
+		season {
+			name
+		}
+		track {
+			id
+			name
+			circuit
+			location
+			flag {
+				url
+			}
+		}
+		results
+	}
+}
