@@ -238,7 +238,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 										? "Reserva"
 										: "Ex-Piloto"}
 								</h2>
-								<p className="text-4xl">{data.num}</p>
+								<p className="text-4xl italic mr-1">
+									{data.num}
+								</p>
 							</div>
 						</div>
 
