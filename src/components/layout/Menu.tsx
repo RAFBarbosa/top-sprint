@@ -19,7 +19,12 @@ const menuItems = [
 	{ id: "/regras", label: "Regras e Formato" },
 	{
 		id: "https://docs.google.com/forms/d/e/1FAIpQLSfHN50Fhz16wKABFaKlBa-iLFSeDVENnuZyZ7pK40qXJkL5Nw/viewform",
-		label: "Tickets",
+		label: "Abrir Ticket",
+		external: true,
+	},
+	{
+		id: "https://docs.google.com/forms/d/19PHr-9GcvGMmp0SU2Nva9PEWDlm4R6JHjkIKD_L-YiI/edit",
+		label: "Inscrições",
 		external: true,
 	},
 ];
