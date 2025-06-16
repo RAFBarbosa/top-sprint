@@ -10149,7 +10149,7 @@ export type GetSeasonRoundsQuery = { __typename?: 'Query', rounds: Array<{ __typ
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, grid?: Grid | null, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, grid?: Grid | null, number?: string | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }> };
 
 export type GetRoundResultsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -10388,6 +10388,7 @@ export const GetDriversDocument = gql`
     id
     name
     grid
+    number
     team {
       name
       color {
@@ -10400,6 +10401,7 @@ export const GetDriversDocument = gql`
     badge {
       url
     }
+    badgeTitle
   }
 }
     `;
