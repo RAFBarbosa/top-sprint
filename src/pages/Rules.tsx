@@ -41,11 +41,11 @@ export function Rules() {
 				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
 					As regras utilizadas serão baseadas no{" "}
 					<a
-						href="https://downloads.f1esports.com/Rules/2022/F1_Esports_Series_Participants_Handbook_v1.5.pdf"
+						href="https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmbylqzb10o8107mzfm9zewqg"
 						target="_blank"
 						className="text-f1-red font-bold underline"
 					>
-						manual oficial
+						manual oficial Top Sprint
 					</a>
 					.
 				</div>
@@ -100,8 +100,9 @@ export function Rules() {
 							<li>Duração: 35% do circuito</li>
 						</ul>
 						<p className="italic text-f1-silver">
-							* Na primeira corrida da temporada, haverá uma qualificatória de
-							uma volta para definir o grid da Sprint.
+							* Na primeira corrida da temporada, haverá uma
+							qualificatória de uma volta para definir o grid da
+							Sprint.
 						</p>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
@@ -424,7 +425,7 @@ export function Rules() {
 									de causar o incidente.
 								</strong>
 							</p>
-							<p>
+							{/* <p>
 								<strong>
 									Incidentes envolvendo múltiplos carros:
 								</strong>
@@ -442,7 +443,7 @@ export function Rules() {
 								certificar de que é segura e que não vai forçar
 								de forma desnecessária que mais de dois carros
 								dividam a curva.
-							</p>
+							</p> */}
 							<p>
 								<strong>
 									Os juízes podem aplicar penalidades com base
@@ -467,11 +468,11 @@ export function Rules() {
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 								As regras utilizadas serão baseadas no{" "}
 								<a
-									href="https://downloads.f1esports.com/Rules/2022/F1_Esports_Series_Participants_Handbook_v1.5.pdf"
+									href="https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmbylqzb10o8107mzfm9zewqg"
 									target="_blank"
-									className="text-f1-red underline"
+									className="text-f1-red font-bold underline"
 								>
-									manual oficial
+									manual oficial Top Sprint
 								</a>
 								.
 							</p>
