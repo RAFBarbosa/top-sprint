@@ -53,7 +53,7 @@ export function Rules() {
 			<div className="flex flex-col md:flex-row items-start mb-10 max-w-screen-xl px-3 mx-auto">
 				<div className="w-full md:w-1/2 space-y-4 px-3">
 					<div className="font-bold text-xl">
-						<p>O campeonato utilizará F1 24.</p>
+						<p>O campeonato utilizará F1 25.</p>
 						<p>
 							As corridas acontecerão todas as quartas-feiras às
 							22h.
