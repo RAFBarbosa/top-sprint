@@ -1,6 +1,6 @@
-import { useGetTeamsQuery } from "../../graphql/generated";
+import { useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
 import Carousel from "../utils/Carousel";
-import GenericLogo from "/src/assets/img/white-logo.png";
+// import GenericLogo from "/src/assets/img/white-logo.png";
 import { Team } from "./Team";
 import { Skeleton } from "@mui/material";
 
@@ -18,9 +18,12 @@ const loadingSkeleton = () => (
 );
 
 export function Teams() {
-	const { data, error, loading } = useGetTeamsQuery();
+	const { data: teamsData, error, loading } = useGetTeamsQuery();
+	const { data: driversData } = useGetDriversQuery();
 
-	if (loading) return loadingSkeleton();
+	console.log("Teams data:", driversData);
+
+	if (loading || !driversData) return loadingSkeleton();
 	if (error)
 		return (
 			<div className="text-red-500 text-center py-6">
@@ -36,19 +39,29 @@ export function Teams() {
 						Equipes e Pilotos
 					</div>
 					<Carousel slidesToShowDesktop={1} slidesToShowMobile={1}>
-						{data?.teams && data.teams.length > 0 ? (
-							data.teams.map((team) => (
+						{teamsData?.teams.map((team) => {
+							const teamDrivers = driversData.drivers.filter(
+								(driver) => driver.team?.name === team.name
+							);
+
+							const gridA = teamDrivers.filter(
+								(d) => d.grid === "gridA"
+							);
+							const gridB = teamDrivers.filter(
+								(d) => d.grid === "gridB"
+							);
+
+							return (
 								<Team
 									key={team.id}
-									name={team.name || ""}
-									photo={team.photo || { url: GenericLogo }}
+									name={team.name}
+									logo={team.photo?.url}
+									teamColor={team.color.hex}
+									gridA={gridA}
+									gridB={gridB}
 								/>
-							))
-						) : (
-							<p className="text-white text-center">
-								No drivers available
-							</p>
-						)}
+							);
+						})}
 					</Carousel>
 				</div>
 			</div>
