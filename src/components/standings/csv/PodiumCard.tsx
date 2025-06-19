@@ -123,7 +123,7 @@ export function PodiumCard(props: PodiumCardProps) {
 						? `bottom-0 right-0 scale-70 ${
 								props.position === 1 ? "h-[330px]" : "h-[290px]"
 						  } w-auto translate-x-[70px] translate-y-[15px]`
-						: `top-1/2 left-1/2 h-[350px] w-auto transform -translate-x-[51%] translate-y-[-50%]`
+						: `bottom-0 right-0 scale-70 translate-x-[-74%] translate-y-[-27%]`
 				}`}
 			/>
 
@@ -135,7 +135,7 @@ export function PodiumCard(props: PodiumCardProps) {
 							: "h-full"
 						: "h-[67%]"
 				}`}
-			></div>
+			/>
 
 			<div
 				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider ${
