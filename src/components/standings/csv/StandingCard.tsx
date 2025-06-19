@@ -265,16 +265,16 @@ export function StandingCard(props: StandingCardProps) {
 								style={{
 									objectFit: "cover",
 									width: isDrivers ? "auto" : "100%",
-									height: isDrivers ? "130%" : "140%",
+									height: isDrivers ? "130%" : "100%",
 									maxWidth: "100%",
 									maxHeight: "150%",
 									transform: isDrivers
 										? "translateY(7%)"
-										: "translateY(-6%) translateX(15%)",
+										: "translateY(0%) translateX(-30%)",
 								}}
 							/>
 
-							{!isDrivers && (
+							{/* {!isDrivers && (
 								<div
 									className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
 									style={{
@@ -284,7 +284,7 @@ export function StandingCard(props: StandingCardProps) {
 										left: 40,
 									}}
 								/>
-							)}
+							)} */}
 						</div>
 					</div>
 				) : (
