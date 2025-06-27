@@ -76,7 +76,7 @@ export function Menu() {
 			{/* Mobile */}
 			<button className="text-xl font-semibold md:hidden z-50">
 				<Link to="/" onClick={handleLinkClick}>
-					Liga Top Sprint
+					Liga Brazuka
 				</Link>
 			</button>
 			<button
