@@ -198,9 +198,11 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					</div>
 
 					<div
-						className="text-white px-4 py-5 h-[150px] flex flex-col gap-2 justify-end bg-linear-0 from-f1-carbon to-f1-silver z-20 relative"
+						className="text-white px-4 py-5 h-[150px] flex flex-col gap-2 justify-end bg-linear-0 from-f1-text to-f1-silver z-20 relative"
+						// className="text-white px-4 py-5 h-[150px] flex flex-col gap-2 justify-end z-20 relative"
 						style={{
 							boxShadow: `0 -10px 10px -5px rgba(0, 0, 0, .5)`,
+							// background: teamColor,
 						}}
 					>
 						<div className="flex items-end justify-between font-regular">

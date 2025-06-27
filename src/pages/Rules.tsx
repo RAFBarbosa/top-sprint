@@ -45,7 +45,7 @@ export function Rules() {
 						target="_blank"
 						className="text-f1-red font-bold underline"
 					>
-						manual oficial Top Sprint
+						manual oficial Brazuka
 					</a>
 					.
 				</div>
@@ -60,7 +60,7 @@ export function Rules() {
 						</p>
 					</div>
 					<p>
-						A <strong>Top Sprint</strong> inclui{" "}
+						A <strong>Brazuka</strong> inclui{" "}
 						<strong>corridas Sprint</strong>{" "}
 						{/* e de{" "}
 						<strong>desempenho realista</strong>, ambas  */}
@@ -191,7 +191,7 @@ export function Rules() {
 							<p>
 								Nas raras ocasiões onde pouca gente for
 								participar da etapa. A direção pode convidar
-								ex-pilotos <strong>Top Sprint</strong> para
+								ex-pilotos <strong>Brazuka</strong> para
 								completar o grid.
 							</p>
 							{/* <p>
@@ -226,7 +226,7 @@ export function Rules() {
 								</li>
 								<li>
 									De forma geral,{" "}
-									<strong>Pilotos Reserva Top Sprint</strong>{" "}
+									<strong>Pilotos Reserva Brazuka</strong>{" "}
 									deverão ter prioridade como terceiro piloto
 								</li>
 								<li>
@@ -357,7 +357,7 @@ export function Rules() {
 					<div className="w-full md:w-1/2 space-y-2">
 						<p>
 							É esperado que todos os pilotos da{" "}
-							<strong>Top Sprint</strong> corram de forma justa,
+							<strong>Brazuka</strong> corram de forma justa,
 							deixando espaço para dividir curvas e atendo-se às
 							regras. Porém, haverá incidentes, e mesmo que não
 							haja a intenção, estes incidentes podem prejudicar a
@@ -472,7 +472,7 @@ export function Rules() {
 									target="_blank"
 									className="text-f1-red font-bold underline"
 								>
-									manual oficial Top Sprint
+									manual oficial Brazuka
 								</a>
 								.
 							</p>
