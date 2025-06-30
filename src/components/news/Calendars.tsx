@@ -25,7 +25,7 @@ export function Calendars() {
 	return (
 		<aside className="md:w-1/2">
 			<div className="mx-auto flex flex-col gap-6">
-				<span className="font-bold text-4xl border-b-10 pb-2">
+				<span className="font-bold text-4xl border-b-10 border-f1-black pb-2">
 					Calendário
 				</span>
 

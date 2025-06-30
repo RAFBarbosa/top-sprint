@@ -90,12 +90,17 @@ body {
 	--font-f1Title: "Formula1-Regular", "sans-serif";
 	--font-signature: "Inter", "sans-serif";
 
-	--color-f1-red: #eb1c24;
+	--color-f1-red: #007024; /* Green */
+	--color-f1-black: #f7c600; /* Yellow */
+	--color-f1-carbon: #212a74; /* Blue */
+
+	/* --color-f1-red: #eb1c24;
 	--color-f1-black: #000000;
+	--color-f1-carbon: #15151e; */
+
 	--color-f1-silver: #38383f;
 	--color-f1-bg-silver: #ededed;
 	--color-f1-lightSilver: #dcdada;
-	--color-f1-carbon: #15151e;
 	--color-f1-text: #15151e;
 	--color-f1-purple: #581c87;
 	--color-rolex: #006341;
