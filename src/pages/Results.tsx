@@ -142,7 +142,7 @@ export function Results() {
 						<div className="flex flex-col items-start mt-10">
 							<div className="flex gap-6 items-center justify-center md:justify-between w-full">
 								<h2 className="uppercase text-lg md:text-5xl font-semibold">
-									<span>Liga Top Sprint</span>
+									<span>Liga Brazuka</span>
 									<br />
 									{resultsData?.round?.track?.location}{" "}
 									{resultsData?.round?.season?.name} <br />
