@@ -86,7 +86,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 				if (navigator.share) {
 					await navigator.share({
 						title: `${data.name} Card`,
-						text: `Confira o card do piloto ${data.name} da Liga Brazuka! ${currentPath}`,
+						text: `Confira o card do piloto ${data.name} da Liga Top Sprint! ${currentPath}`,
 						files: [file],
 					});
 				} else {
