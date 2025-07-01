@@ -55,7 +55,7 @@ export function Standings() {
 				/>
 			</div>
 
-			<div className="bg-radial-[at_50%_100%] from-f1-silver to-f1-text to-70% md:h-[320px] h-[280px] w-full absolute left-0 top-12">
+			<div className="bg-radial-[at_50%_100%] from-f1-silver to-f1-carbon to-70% md:h-[320px] h-[280px] w-full absolute left-0 top-12">
 				<div className="h-22 bg-divider bg-cover opacity-5 absolute left-0 bottom-0 w-full"></div>
 			</div>
 
