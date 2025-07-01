@@ -21,7 +21,7 @@ const Drivers: React.FC = () => {
 				</div>
 				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
 					Confira o line-up oficial da temporada. Cards e detalhes
-					completos de todos os pilotos Brazuka, com pontuação e
+					completos de todos os pilotos Top Sprint, com pontuação e
 					resultados atualizados.
 				</div>
 			</div>
