@@ -1,4 +1,4 @@
-schema: https://us-west-2.cdn.hygraph.com/content/cmcjgc5j107zx07n39xsh6whh/master
+schema: https://us-west-2.cdn.hygraph.com/content/cm12mnmvz09v707n5el5f552n/master
 
 documents: "./src/graphql/**/*.graphql"
 

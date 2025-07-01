@@ -54,7 +54,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				<span className="font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
-						className="rotate-90 text-red-500 scale-90"
+						className="rotate-90 text-f1-red scale-90"
 					/>
 					{Math.abs(positionDifference)}
 				</span>

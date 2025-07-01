@@ -13,7 +13,7 @@ export function Header() {
 			</div>
 
 			{!isResultsPage && (
-				<div className="bg-f1-text mt-[56px] md:mt-[74px]">
+				<div className="bg-f1-black mt-[56px] md:mt-[74px]">
 					<NextRaces />
 				</div>
 			)}
