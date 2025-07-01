@@ -21,8 +21,6 @@ export function Teams() {
 	const { data: teamsData, error, loading } = useGetTeamsQuery();
 	const { data: driversData } = useGetDriversQuery();
 
-	console.log("Teams data:", driversData);
-
 	if (loading || !driversData) return loadingSkeleton();
 	if (error)
 		return (
