@@ -2,6 +2,7 @@ import { Skeleton } from "@mui/material";
 import Carousel from "../utils/Carousel"; // Assuming you have a Carousel component
 import { HallOfFame } from "./HallOfFame";
 import { useGetHallsOfFameQuery } from "../../graphql/generated";
+import { Divider } from "../layout/Divider";
 
 const loadingSkeleton = () => {
 	return (
@@ -31,10 +32,11 @@ export function HallsOfFame() {
 					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
 						Mural dos Campeões
 					</h1>
+					<Divider className="max-w-screen-xl mx-auto" />
 
 					{/* Loop through hallsOfFame and generate a carousel for each item */}
 					{data?.hallsOfFame && data.hallsOfFame.length > 0 ? (
-						data.hallsOfFame.map((data) => {
+						data.hallsOfFame.map((data, index) => {
 							const numOfPhotos = data.photo.length;
 
 							// Logic to determine slidesToShow and autoplay
@@ -44,20 +46,22 @@ export function HallsOfFame() {
 
 							return (
 								<div key={data.id} className="mb-8">
-									{/* Display the season as the title for each carousel */}
-									<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
+									{/* Only show the divider if it's not the first item */}
+									{index > 0 && (
+										<div className="h-16 bg-divider bg-cover my-4 opacity-5" />
+									)}
+
 									<h2 className="font-semibold text-2xl md:text-3xl tracking-wide mb-4">
 										{data.season}
 									</h2>
 
-									<div className="w-full h-3 bg-f1-carbon my-4"></div>
+									<div className="w-full h-3 bg-f1-carbon my-4" />
 
 									{/* Carousel */}
 									<Carousel>
-										{/* Loop through the photos and create a slide for each one */}
-										{data.photo.map((photo, index) => (
+										{data.photo.map((photo, idx) => (
 											<HallOfFame
-												key={`${data.id}-${index}`}
+												key={`${data.id}-${idx}`}
 												season={data.season || ""}
 												photo={photo}
 											/>

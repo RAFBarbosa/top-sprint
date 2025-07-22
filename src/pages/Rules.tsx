@@ -1,3 +1,4 @@
+import { Divider } from "../components/layout/Divider";
 import Car1Bg from "/src/assets/img/car1-bg.png";
 import Car2Bg from "/src/assets/img/car2-bg.png";
 import Car4Bg from "/src/assets/img/car4-bg.png";
@@ -32,7 +33,7 @@ export function Rules() {
 	return (
 		<aside id="regras" className="mx-auto leading-snug w-full">
 			<div className="w-full mb-8 max-w-screen-xl px-3 mx-auto">
-				<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
+				<Divider className="max-w-screen-xl mx-auto px-3" />
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
 					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide">
 						Regras e Formato

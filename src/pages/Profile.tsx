@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import useNormalizeString from "../components/hooks/useNormalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
+import { Divider } from "../components/layout/Divider";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
@@ -54,11 +55,9 @@ export function Profile() {
 	return (
 		currentIndex !== null &&
 		orderedEnhancedCards.length > 0 && (
-			<aside
-				id="perfil"
-				className="bg-f1-bg-silver py-8 flex flex-col grow"
-			>
+			<aside id="perfil" className="bg-f1-bg-silver flex flex-col grow">
 				<div>
+					<Divider className="max-w-screen-xl mx-auto px-3" />
 					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between px-3">
 						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full">
 							Perfil do Piloto
