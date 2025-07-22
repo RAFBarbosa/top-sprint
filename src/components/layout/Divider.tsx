@@ -8,7 +8,8 @@ type DividerProps = {
 };
 
 export function Divider({
-	imageUrl = "https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmde5tyc1s6ma07ljmdjt4mu1",
+	// imageUrl = "https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmde5tyc1s6ma07ljmdjt4mu1",
+	imageUrl = "https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmdeqpdjdgarv07lpv62rkza7",
 	linkUrl = "https://www.instagram.com/bmzchange/",
 	alt = "Divider",
 	className = "",
