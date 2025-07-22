@@ -1,8 +1,8 @@
 import React from "react";
 
 type DividerProps = {
-	imageUrl: string;
-	linkUrl: string;
+	imageUrl?: string;
+	linkUrl?: string;
 	alt?: string;
 	className?: string; // in case you want to extend styling externally
 };
@@ -15,7 +15,7 @@ export function Divider({
 	className = "",
 }: DividerProps) {
 	return (
-		<div className={`relative my-4 h-22 w-full ${className}`}>
+		<div className={`relative my-4 h-16 w-full ${className}`}>
 			<div className="h-full w-full bg-divider bg-cover opacity-5" />
 			<a
 				href={linkUrl}
