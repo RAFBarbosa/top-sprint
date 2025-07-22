@@ -6,7 +6,7 @@ interface Driver {
 	name: string;
 	photo?: { url: string };
 	teamColor?: string;
-	// number: string;
+	number: string;
 }
 
 interface TeamProps {
