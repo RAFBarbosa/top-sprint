@@ -26,7 +26,7 @@ export function Divider({
 				<img
 					src={imageUrl}
 					alt={alt}
-					className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:h-20 h-16"
+					className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:h-20 h-14"
 				/>
 			</a>
 		</div>
