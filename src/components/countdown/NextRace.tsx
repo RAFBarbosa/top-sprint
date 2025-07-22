@@ -33,7 +33,7 @@ export function NextRace(props: NextRaceProps) {
 						<img
 							src={props.flag?.url}
 							alt={`${props.track} flag`}
-							className="rounded-md min-w-[57px] min-h-[32px]"
+							className="rounded-md min-w-[57px] min-h-[32px] border border-white/20"
 						/>
 					</div>
 					<span className="md:pt-0 pt-2 border-t w-full md:mr-3 border-white/50 flex flex-col md:flex-row md:items-end justify-center md:justify-start">
