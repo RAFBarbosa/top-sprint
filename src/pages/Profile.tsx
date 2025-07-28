@@ -60,7 +60,7 @@ export function Profile() {
 				className="bg-f1-bg-silver flex flex-col grow pb-6"
 			>
 				<div className="max-w-screen-xl w-full mx-auto md:px-3">
-					<Divider className="px-3" />
+					<Divider className="px-3 md:px-0" />
 					<div className="mb-8 flex flex-col sm:flex-row justify-between px-3 md:px-0">
 						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full">
 							Perfil do Piloto
