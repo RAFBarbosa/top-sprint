@@ -12,6 +12,9 @@ query GetTeams {
 			color {
 				hex
 			}
+			photo {
+				url
+			}
 		}
 		photo {
 			url
