@@ -9,7 +9,7 @@ export function Partners() {
 	return (
 		<div className="bg-f1-lighterCarbon w-full py-6">
 			<div className="md:max-w-screen-xl mx-auto px-3">
-				<h3 className="text-f1-bg-silver font-extrabold text-center text-3xl mb-6 tracking-wide">
+				<h3 className="text-f1-white font-extrabold text-center text-3xl mb-6 tracking-wide">
 					Nossos Parceiros
 				</h3>
 				<div className="flex flex-wrap justify-center gap-10">
