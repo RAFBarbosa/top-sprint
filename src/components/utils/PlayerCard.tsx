@@ -18,6 +18,7 @@ interface PlayerCardProps {
 		photo: string;
 		teamColor: string;
 		teamName: string;
+		teamLogo: string;
 		grid: string;
 		badge: Array<{ url: string }>;
 		badgeTitle: string;
@@ -249,14 +250,31 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							style={{ backgroundColor: teamColor }}
 						/>
 
-						<div className="flex items-start justify-between">
-							<p className="font-regular text-xl">
-								{data.teamName}
-							</p>
+						<div className="flex justify-between items-start w-full">
+							<div className="flex items-center gap-2 min-w-0">
+								{data.teamName && (
+									<>
+										<p
+											className="font-normal text-xl truncate"
+											title={data.teamName}
+										>
+											{data.teamName}
+										</p>
+										{data.teamLogo && (
+											<img
+												className="h-5 w-auto object-contain"
+												src={data.teamLogo}
+												alt={`${data.teamName} logo`}
+											/>
+										)}
+									</>
+								)}
+							</div>
+
 							<img
-								className="object-cover h-[30px] pt-2"
+								className="h-[30px] w-auto object-contain pt-2"
 								src={Logo}
-								alt="TSL Logo"
+								alt="Top Sprint League Logo"
 							/>
 						</div>
 					</div>
