@@ -3,12 +3,12 @@ import { useGetPartnersQuery } from "../../graphql/generated";
 
 type DividerProps = {
 	className?: string;
-	rotationInterval?: number; // in milliseconds
+	rotationInterval?: number;
 };
 
 export function Divider({
 	className = "",
-	rotationInterval = 10000, // 5 seconds by default
+	rotationInterval = 10000,
 }: DividerProps) {
 	const { data, error, loading } = useGetPartnersQuery();
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,11 +23,18 @@ export function Divider({
 			image: {
 				url: "https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmde5tyc1s6ma07ljmdjt4mu1",
 			},
-			linkUrl: "https://www.instagram.com/bmzchange/",
+			link: "https://www.instagram.com/bmzchange/",
 		},
 	];
 
 	const partners = data?.partners?.length ? data.partners : defaultPartners;
+
+	// Initialize with random index
+	useEffect(() => {
+		if (partners.length > 1) {
+			setCurrentIndex(Math.floor(Math.random() * partners.length));
+		}
+	}, [partners.length]);
 
 	useEffect(() => {
 		if (partners.length <= 1) return; // No rotation needed if only one partner
@@ -50,17 +57,17 @@ export function Divider({
 	const currentPartner = partners[currentIndex];
 
 	return (
-		<div className={`relative my-4 h-18 w-full ${className}`}>
+		<div className={`relative my-4 h-21 w-full ${className}`}>
 			<div className="h-full w-full bg-divider bg-cover opacity-5" />
 			<a
-				href={currentPartner.linkUrl || currentPartner.link}
+				href={currentPartner.link || ""}
 				target="_blank"
 				rel="noopener noreferrer"
 				className="pointer"
 			>
 				<img
 					src={currentPartner.image?.url}
-					alt={currentPartner.altText || currentPartner.altText}
+					alt={currentPartner.altText || currentPartner.name || ""}
 					className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:h-20 h-16 transition-opacity duration-500 ${
 						isVisible ? "opacity-100" : "opacity-0"
 					}`}
