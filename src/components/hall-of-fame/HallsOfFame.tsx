@@ -1,5 +1,5 @@
 import { Skeleton } from "@mui/material";
-import Carousel from "../utils/Carousel"; // Assuming you have a Carousel component
+import Carousel from "../utils/Carousel";
 import { HallOfFame } from "./HallOfFame";
 import { useGetHallsOfFameQuery } from "../../graphql/generated";
 import { Divider } from "../layout/Divider";
