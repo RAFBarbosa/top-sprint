@@ -150,6 +150,11 @@ export function StandingCard(props: StandingCardProps) {
 								: Array.isArray(props.teamDrivers)
 								? props.teamDrivers.join(" / ")
 								: props.teamDrivers || "No drivers"}
+							{/* <img
+								src={props.teamLogo}
+								alt="Team Logo"
+								className="ml-2 inline-block h-4 w-4 translate-y-[-4px]"
+							/> */}
 						</span>
 					</div>
 				</div>

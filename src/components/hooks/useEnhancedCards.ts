@@ -33,6 +33,7 @@ export function useEnhancedCards() {
 						equipment: driverFromData?.equipment || "",
 						photo: driverFromData?.photo?.url || "",
 						teamName: driverFromData?.team?.name || "",
+						teamLogo: driverFromData?.team?.photo?.url || "",
 						teamColor: driverFromData?.team?.color?.hex || "",
 						stats: driverStats || {},
 						badge: driverFromData?.badge || "",
