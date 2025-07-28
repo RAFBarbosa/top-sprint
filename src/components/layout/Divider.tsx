@@ -50,7 +50,7 @@ export function Divider({
 	const currentPartner = partners[currentIndex];
 
 	return (
-		<div className={`relative my-4 h-22 w-full ${className}`}>
+		<div className={`relative my-4 h-18 w-full ${className}`}>
 			<div className="h-full w-full bg-divider bg-cover opacity-5" />
 			<a
 				href={currentPartner.linkUrl || currentPartner.link}
