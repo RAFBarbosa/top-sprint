@@ -57,7 +57,7 @@ export function Divider({
 	const currentPartner = partners[currentIndex];
 
 	return (
-		<div className={`relative my-4 h-21 w-full ${className}`}>
+		<div className={`relative my-4 h-16 w-full ${className}`}>
 			<div className="h-full w-full bg-divider bg-cover opacity-5" />
 			<a
 				href={currentPartner.link || ""}
@@ -65,13 +65,13 @@ export function Divider({
 				rel="noopener noreferrer"
 				className="pointer"
 			>
-				<img
+				{/* <img
 					src={currentPartner.image?.url}
 					alt={currentPartner.altText || currentPartner.name || ""}
 					className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:h-20 h-16 transition-opacity duration-500 ${
 						isVisible ? "opacity-100" : "opacity-0"
 					}`}
-				/>
+				/> */}
 			</a>
 		</div>
 	);
