@@ -55,15 +55,17 @@ export function Profile() {
 	return (
 		currentIndex !== null &&
 		orderedEnhancedCards.length > 0 && (
-			<aside id="perfil" className="bg-f1-bg-silver flex flex-col grow">
-				<div>
-					<Divider className="max-w-screen-xl mx-auto px-3" />
-					<div className="max-w-screen-xl mx-auto mb-8 flex flex-col sm:flex-row justify-between px-3">
+			<aside
+				id="perfil"
+				className="bg-f1-bg-silver flex flex-col grow pb-6"
+			>
+				<div className="max-w-screen-xl w-full mx-auto md:px-3">
+					<Divider className="px-3" />
+					<div className="mb-8 flex flex-col sm:flex-row justify-between px-3 md:px-0">
 						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full">
 							Perfil do Piloto
 						</h1>
 						<div className="flex justify-between gap-1 h-25 mt-2 md:mt-0 sm:ml-2">
-							{/* Previous Button */}
 							<button
 								onClick={handlePrevClick}
 								disabled={
@@ -106,7 +108,6 @@ export function Profile() {
 								</div>
 							</button>
 
-							{/* Next Button */}
 							<button
 								onClick={handleNextClick}
 								disabled={
@@ -157,26 +158,33 @@ export function Profile() {
 							</button>
 						</div>
 					</div>
-					<div className="flex justify-center items-center mx-auto w-full py-6 md:w-fit bg-white gap-4 md:rounded md:p-8">
-						<div className="flex flex-col md:flex-row rounded md:gap-6">
-							<div className="flex flex-col mx-auto">
-								{driverData ? (
-									<PlayerCard
-										ref={cardRef}
-										data={driverData}
-									/>
-								) : (
-									<p>Driver not found</p>
-								)}
-								<div className="self-center group mt-6">
-									<ShareButton
-										cardRef={cardRef}
-										data={driverData}
-									/>
+
+					{/* Split Layout Container */}
+					<div className="w-full py-6 bg-white md:rounded md:p-8 px-3">
+						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-4">
+							{/* Left Half - Fixed Card */}
+							<div className="md:w-1/2 flex justify-center md:justify-end">
+								<div className="flex flex-col">
+									{driverData ? (
+										<PlayerCard
+											ref={cardRef}
+											data={driverData}
+										/>
+									) : (
+										<p>Driver not found</p>
+									)}
+									<div className="self-center group mt-6">
+										<ShareButton
+											cardRef={cardRef}
+											data={driverData}
+										/>
+									</div>
 								</div>
 							</div>
-							<div className="flex flex-col justify-between">
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-y-2 pt-6 md:pt-0 ">
+
+							{/* Right Half - Stats */}
+							<div className="md:w-1/2">
+								<div className="md:grid md:grid-cols-2 md:gap-y-3 md:space-y-0">
 									{driverData?.city && (
 										<>
 											<p className="font-bold">Cidade</p>
@@ -295,7 +303,7 @@ export function Profile() {
 										<a
 											href={`${driverData.stream}`}
 											target="_blank"
-											className="text-f1-red hover:opacity-90 transition-all duration-200"
+											className="text-f1-red hover:opacity-80 transition-all duration-200"
 										>
 											<div className="flex items-center gap-2 mt-2 md:mt-0">
 												<p className="font-bold">
