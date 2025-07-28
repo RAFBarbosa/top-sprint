@@ -1,11 +1,13 @@
 import { Logo } from "./Logo";
 import { SocialIcon } from "react-social-icons";
 import { Signature } from "../utils/Signature";
+import { Partners } from "./Partners";
 
 export function Footer() {
 	return (
-		<footer className="bg-f1-carbon py-6 text-white mt-auto">
-			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto px-3">
+		<footer className="bg-f1-carbon pb-6 text-white mt-auto">
+			<Partners />
+			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto px-3 pt-6">
 				<div className="flex md:flex-col items-center md:items-start gap-2 md:gap-0">
 					<div className="md:w-[60px] w-[40px]">
 						<Logo />

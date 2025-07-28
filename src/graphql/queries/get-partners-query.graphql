@@ -1,0 +1,15 @@
+query GetPartners {
+	partners(where: { active: true }, orderBy: publishedAt_ASC) {
+		id
+		name
+		altText
+		image {
+			url
+		}
+		footerLogo {
+			url
+		}
+		link
+		active
+	}
+}
