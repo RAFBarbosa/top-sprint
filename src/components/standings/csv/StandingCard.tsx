@@ -10,6 +10,7 @@ interface StandingCardProps {
 	grid?: string;
 	teamName?: string;
 	teamColor?: string;
+	teamLogo?: string;
 	teamDrivers?: string;
 	badge: Array<{ url: string }>;
 	badgeTitle: string;
@@ -20,25 +21,6 @@ interface StandingCardProps {
 	onClick: () => void;
 	newData: { name: string }[]; // Add newData prop
 	oldData: { name: string }[]; // Add oldData prop
-}
-
-function formatBadgeTitle(title: string): string {
-	// Handle null/undefined and non-string types
-	if (typeof title !== "string" || !title.trim()) return "";
-
-	// Handle camelCase and PascalCase
-	const spaced = title
-		.replace(/([A-Z][a-z]+)/g, " $1") // Handle capital letters followed by lowercase
-		.replace(/([A-Z]+)/g, " $1") // Handle all-caps abbreviations
-		.trim();
-
-	// Capitalize first letter of each word and lowercase the rest
-	return spaced
-		.toLowerCase()
-		.split(" ")
-		.filter((word) => word) // Remove empty strings
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-		.join(" ");
 }
 
 export function StandingCard(props: StandingCardProps) {
@@ -88,8 +70,6 @@ export function StandingCard(props: StandingCardProps) {
 			return <span className="text-gray-500 font-bold">–</span>;
 		}
 	};
-
-	const badgeUrls = props.badge?.map((badge) => badge.url) || [];
 
 	return (
 		<button
@@ -160,7 +140,7 @@ export function StandingCard(props: StandingCardProps) {
 						</div>
 
 						<span
-							className={`md:ml-2 text-sm font-light ${
+							className={`md:ml-2 text-sm font-light flex md:self-center ${
 								props.isActive &&
 								"bg-f1-silver rounded-lg pr-1 md:bg-transparent"
 							}`}
@@ -200,62 +180,6 @@ export function StandingCard(props: StandingCardProps) {
 					</div>
 				</div>
 
-				{/* <div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
-					<div className="relative w-full h-full">
-						{isDrivers ? (
-							<img
-								src={props.photo}
-								alt={`${props.name} foto`}
-								style={{
-									objectFit: "cover",
-									width: isDrivers ? "auto" : "100%",
-									height: isDrivers
-										? props.isActive
-											? "130%"
-											: "270%"
-										: "140%",
-									maxWidth: "100%",
-									maxHeight: "280%",
-									transform: isDrivers
-										? props.isActive
-											? "translateY(7%)"
-											: "translateX(-30%) translateY(-2%)"
-										: "translateY(-6%) translateX(15%)",
-								}}
-							/>
-						) : (
-							props.isActive && (
-								<div>
-									<img
-										src={props.photo}
-										alt={`${props.name} foto`}
-										style={{
-											objectFit: "cover",
-											width: isDrivers ? "auto" : "100%",
-											height: isDrivers ? "130%" : "140%",
-											maxWidth: "100%",
-											maxHeight: "150%",
-											transform: isDrivers
-												? "translateY(7%)"
-												: "translateY(-6%) translateX(15%)",
-										}}
-									/>
-
-									<div
-										className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
-										style={{
-											width: "60%",
-											height: "33%",
-											top: 0,
-											left: 40,
-										}}
-									/>
-								</div>
-							)
-						)}
-					</div>
-				</div> */}
-
 				{props.isActive ? (
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
 						<div className="relative w-full h-full">
@@ -273,18 +197,6 @@ export function StandingCard(props: StandingCardProps) {
 										: "translateY(0%) translateX(-30%)",
 								}}
 							/>
-
-							{/* {!isDrivers && (
-								<div
-									className="lg:hidden absolute bg-f1-silver rounded-tl-lg"
-									style={{
-										width: "60%",
-										height: "30%",
-										top: 0,
-										left: 40,
-									}}
-								/>
-							)} */}
 						</div>
 					</div>
 				) : (

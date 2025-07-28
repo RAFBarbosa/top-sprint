@@ -27,6 +27,7 @@ export function DataLoader(props: DataLoaderProps) {
 					photo: driverFromData?.photo?.url || "",
 					number: driverFromData?.number || "",
 					teamName: driverFromData?.team?.name || "",
+					teamLogo: driverFromData?.team?.photo?.url || "",
 					teamColor: driverFromData?.team?.color?.hex || "",
 				};
 			});
@@ -50,6 +51,7 @@ export function DataLoader(props: DataLoaderProps) {
 				return {
 					...team,
 					photo: teamFromData?.photo?.url || "",
+					teamLogo: teamFromData?.photo?.url || "",
 					teamColor: teamFromData?.color?.hex || "",
 					drivers: teamDrivers || "",
 				};

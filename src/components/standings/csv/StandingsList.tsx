@@ -127,6 +127,7 @@ export function StandingsList(props: StandingsListProps) {
 												grid={"gridA"}
 												photo={item.photo || ""}
 												teamName={item.teamName || ""}
+												teamLogo={item.teamLogo || ""}
 												teamColor={item.teamColor || ""}
 												teamDrivers={item.drivers || ""}
 												activeTab={props.activeTab}
@@ -155,6 +156,7 @@ export function StandingsList(props: StandingsListProps) {
 												grid={"gridB"}
 												photo={item.photo || ""}
 												teamName={item.teamName || ""}
+												teamLogo={item.teamLogo || ""}
 												teamColor={item.teamColor || ""}
 												teamDrivers={item.drivers || ""}
 												activeTab={props.activeTab}
@@ -185,6 +187,7 @@ export function StandingsList(props: StandingsListProps) {
 										grid={"gridA"}
 										photo={item.photo || ""}
 										teamName={item.teamName || ""}
+										teamLogo={item.teamLogo || ""}
 										teamColor={item.teamColor || ""}
 										teamDrivers={item.drivers || ""}
 										activeTab={props.activeTab}
@@ -228,6 +231,7 @@ export function StandingsList(props: StandingsListProps) {
 										grid={"gridB"}
 										photo={item.photo || ""}
 										teamName={item.teamName || ""}
+										teamLogo={item.teamLogo || ""}
 										teamColor={item.teamColor || ""}
 										teamDrivers={item.drivers || ""}
 										activeTab={props.activeTab}
@@ -268,6 +272,7 @@ export function StandingsList(props: StandingsListProps) {
 									valueLabel={props.valueLabel}
 									photo={item.photo || ""}
 									teamName={item.teamName || ""}
+									teamLogo={item.teamLogo || ""}
 									teamColor={item.teamColor || ""}
 									teamDrivers={item.drivers || ""}
 									activeTab={props.activeTab}
@@ -292,6 +297,7 @@ export function StandingsList(props: StandingsListProps) {
 									photo={item.photo || ""}
 									teamName={item.teamName || ""}
 									teamColor={item.teamColor || ""}
+									teamLogo={item.teamLogo || ""}
 									teamDrivers={item.drivers || ""}
 									activeTab={props.activeTab}
 									isActive={activeCard === index + 2}
