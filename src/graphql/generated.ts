@@ -1064,7 +1064,7 @@ export enum BadgeTitle {
 
 export type Banner = Entity & Node & {
   __typename?: 'Banner';
-  category?: Maybe<Scalars['String']>;
+  category: NewsCategory;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
   /** User that created this document */
@@ -1160,7 +1160,7 @@ export type BannerConnection = {
 };
 
 export type BannerCreateInput = {
-  category?: InputMaybe<Scalars['String']>;
+  category: NewsCategory;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
@@ -1201,25 +1201,13 @@ export type BannerManyWhereInput = {
   OR?: InputMaybe<Array<BannerWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
-  category?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  category_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  category_ends_with?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<NewsCategory>;
   /** All values that are contained in given list. */
-  category_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  category_in?: InputMaybe<Array<InputMaybe<NewsCategory>>>;
   /** Any other value that exists and is not equal to the given value. */
-  category_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  category_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  category_not_ends_with?: InputMaybe<Scalars['String']>;
+  category_not?: InputMaybe<NewsCategory>;
   /** All values that are not contained in given list. */
-  category_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  category_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  category_starts_with?: InputMaybe<Scalars['String']>;
+  category_not_in?: InputMaybe<Array<InputMaybe<NewsCategory>>>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1352,7 +1340,7 @@ export enum BannerOrderByInput {
 }
 
 export type BannerUpdateInput = {
-  category?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<NewsCategory>;
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
   title?: InputMaybe<Scalars['String']>;
@@ -1376,7 +1364,7 @@ export type BannerUpdateManyInlineInput = {
 };
 
 export type BannerUpdateManyInput = {
-  category?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<NewsCategory>;
   link?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
 };
@@ -1440,25 +1428,13 @@ export type BannerWhereInput = {
   OR?: InputMaybe<Array<BannerWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
-  category?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  category_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  category_ends_with?: InputMaybe<Scalars['String']>;
+  category?: InputMaybe<NewsCategory>;
   /** All values that are contained in given list. */
-  category_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  category_in?: InputMaybe<Array<InputMaybe<NewsCategory>>>;
   /** Any other value that exists and is not equal to the given value. */
-  category_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  category_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  category_not_ends_with?: InputMaybe<Scalars['String']>;
+  category_not?: InputMaybe<NewsCategory>;
   /** All values that are not contained in given list. */
-  category_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  category_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  category_starts_with?: InputMaybe<Scalars['String']>;
+  category_not_in?: InputMaybe<Array<InputMaybe<NewsCategory>>>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -5881,6 +5857,12 @@ export type MutationUpsertTrackArgs = {
   upsert: TrackUpsertInput;
   where: TrackWhereUniqueInput;
 };
+
+export enum NewsCategory {
+  Destaque = 'destaque',
+  Inativo = 'inativo',
+  Secundario = 'secundario'
+}
 
 /** An object with an ID */
 export type Node = {
@@ -11035,12 +11017,27 @@ export type CreateAssetMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type CreateAssetMutation = { __typename?: 'Mutation', createAsset?: { __typename?: 'Asset', id: string, url: string, upload?: { __typename?: 'AssetUpload', status?: AssetUploadStatus | null, expiresAt?: any | null, error?: { __typename?: 'AssetUploadError', code: string, message: string } | null, requestPostData?: { __typename?: 'AssetUploadRequestPostData', url: string, date: string, key: string, signature: string, algorithm: string, policy: string, credential: string, securityToken?: string | null } | null } | null } | null };
 
+export type CreateBannerMutationVariables = Exact<{
+  data: BannerCreateInput;
+}>;
+
+
+export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+
 export type CreateDriverMutationVariables = Exact<{
   data: DriverCreateInput;
 }>;
 
 
 export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+
+export type UpdateBannerMutationVariables = Exact<{
+  where: BannerWhereUniqueInput;
+  data: BannerUpdateInput;
+}>;
+
+
+export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateDriverMutationVariables = Exact<{
   where: DriverWhereUniqueInput;
@@ -11053,7 +11050,12 @@ export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { _
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, link?: string | null, category?: string | null, title?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, link?: string | null, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+
+export type GetBannersCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typename?: '__Type', enumValues?: Array<{ __typename?: '__EnumValue', name: string }> | null } | null };
 
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11161,6 +11163,47 @@ export function useCreateAssetMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateAssetMutationHookResult = ReturnType<typeof useCreateAssetMutation>;
 export type CreateAssetMutationResult = Apollo.MutationResult<CreateAssetMutation>;
 export type CreateAssetMutationOptions = Apollo.BaseMutationOptions<CreateAssetMutation, CreateAssetMutationVariables>;
+export const CreateBannerDocument = gql`
+    mutation CreateBanner($data: BannerCreateInput!) {
+  createBanner(data: $data) {
+    id
+    title
+    link
+    category
+    photo {
+      id
+      url
+    }
+    createdAt
+  }
+}
+    `;
+export type CreateBannerMutationFn = Apollo.MutationFunction<CreateBannerMutation, CreateBannerMutationVariables>;
+
+/**
+ * __useCreateBannerMutation__
+ *
+ * To run a mutation, you first call `useCreateBannerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateBannerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createBannerMutation, { data, loading, error }] = useCreateBannerMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateBannerMutation(baseOptions?: Apollo.MutationHookOptions<CreateBannerMutation, CreateBannerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateBannerMutation, CreateBannerMutationVariables>(CreateBannerDocument, options);
+      }
+export type CreateBannerMutationHookResult = ReturnType<typeof useCreateBannerMutation>;
+export type CreateBannerMutationResult = Apollo.MutationResult<CreateBannerMutation>;
+export type CreateBannerMutationOptions = Apollo.BaseMutationOptions<CreateBannerMutation, CreateBannerMutationVariables>;
 export const CreateDriverDocument = gql`
     mutation CreateDriver($data: DriverCreateInput!) {
   createDriver(data: $data) {
@@ -11214,6 +11257,48 @@ export function useCreateDriverMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateDriverMutationHookResult = ReturnType<typeof useCreateDriverMutation>;
 export type CreateDriverMutationResult = Apollo.MutationResult<CreateDriverMutation>;
 export type CreateDriverMutationOptions = Apollo.BaseMutationOptions<CreateDriverMutation, CreateDriverMutationVariables>;
+export const UpdateBannerDocument = gql`
+    mutation UpdateBanner($where: BannerWhereUniqueInput!, $data: BannerUpdateInput!) {
+  updateBanner(where: $where, data: $data) {
+    id
+    title
+    link
+    category
+    photo {
+      id
+      url
+    }
+    updatedAt
+  }
+}
+    `;
+export type UpdateBannerMutationFn = Apollo.MutationFunction<UpdateBannerMutation, UpdateBannerMutationVariables>;
+
+/**
+ * __useUpdateBannerMutation__
+ *
+ * To run a mutation, you first call `useUpdateBannerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateBannerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateBannerMutation, { data, loading, error }] = useUpdateBannerMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateBannerMutation(baseOptions?: Apollo.MutationHookOptions<UpdateBannerMutation, UpdateBannerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateBannerMutation, UpdateBannerMutationVariables>(UpdateBannerDocument, options);
+      }
+export type UpdateBannerMutationHookResult = ReturnType<typeof useUpdateBannerMutation>;
+export type UpdateBannerMutationResult = Apollo.MutationResult<UpdateBannerMutation>;
+export type UpdateBannerMutationOptions = Apollo.BaseMutationOptions<UpdateBannerMutation, UpdateBannerMutationVariables>;
 export const UpdateDriverDocument = gql`
     mutation UpdateDriver($where: DriverWhereUniqueInput!, $data: DriverUpdateInput!) {
   updateDriver(where: $where, data: $data) {
@@ -11272,12 +11357,15 @@ export const GetBannersDocument = gql`
     query GetBanners {
   banners(orderBy: publishedAt_ASC) {
     id
+    title
     link
     category
-    title
     photo {
+      id
       url
     }
+    createdAt
+    updatedAt
   }
 }
     `;
@@ -11308,6 +11396,42 @@ export function useGetBannersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetBannersQueryHookResult = ReturnType<typeof useGetBannersQuery>;
 export type GetBannersLazyQueryHookResult = ReturnType<typeof useGetBannersLazyQuery>;
 export type GetBannersQueryResult = Apollo.QueryResult<GetBannersQuery, GetBannersQueryVariables>;
+export const GetBannersCategoriesDocument = gql`
+    query GetBannersCategories {
+  __type(name: "NewsCategory") {
+    enumValues {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetBannersCategoriesQuery__
+ *
+ * To run a query within a React component, call `useGetBannersCategoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBannersCategoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBannersCategoriesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetBannersCategoriesQuery(baseOptions?: Apollo.QueryHookOptions<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>(GetBannersCategoriesDocument, options);
+      }
+export function useGetBannersCategoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>(GetBannersCategoriesDocument, options);
+        }
+export type GetBannersCategoriesQueryHookResult = ReturnType<typeof useGetBannersCategoriesQuery>;
+export type GetBannersCategoriesLazyQueryHookResult = ReturnType<typeof useGetBannersCategoriesLazyQuery>;
+export type GetBannersCategoriesQueryResult = Apollo.QueryResult<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>;
 export const GetCalendarsDocument = gql`
     query GetCalendars {
   calendars(stage: PUBLISHED, orderBy: date_ASC) {
