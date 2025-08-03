@@ -345,12 +345,12 @@ export function DriverRegistration() {
 	return (
 		<div className="flex flex-col md:flex-row w-full">
 			{/* Driver Sidebar */}
-			<div className="w-full md:w-80 bg-white p-4 rounded-lg shadow-md h-full">
+			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
 				<div className="mb-4 space-y-2">
 					<input
 						type="text"
 						placeholder="Buscar pilotos (nome, número, cidade, etc)..."
-						className="w-full p-2 border rounded"
+						className="w-full p-2 border rounded h-11"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
@@ -358,7 +358,7 @@ export function DriverRegistration() {
 					<select
 						value={gridFilter}
 						onChange={(e) => setGridFilter(e.target.value)}
-						className="w-full p-2 border rounded max-h-[42px]"
+						className="w-full p-2 border rounded h-11"
 					>
 						<option value="">Todos os grids</option>
 						{gridData?.__type?.enumValues?.map((option) => (
@@ -415,7 +415,7 @@ export function DriverRegistration() {
 			<div className="mx-auto max-w-3xl w-full">
 				<form
 					onSubmit={handleDriver}
-					className="bg-white p-6 rounded-lg shadow-md"
+					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
 				>
 					<div className="flex justify-between items-center mb-6">
 						<h2 className="text-2xl font-bold">
@@ -461,7 +461,7 @@ export function DriverRegistration() {
 								value={formData.name}
 								onChange={handleChange}
 								required
-								className="w-full p-2 border rounded"
+								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
 
@@ -472,12 +472,12 @@ export function DriverRegistration() {
 								type="text"
 								value={formData.number}
 								onChange={handleChange}
-								className="w-full p-2 border rounded"
+								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
 
 						<div>
-							<label className="block mb-1">Grid *</label>
+							<label className="block mb-1 ">Grid *</label>
 							<Listbox
 								value={formData.grid}
 								onChange={(value) =>
@@ -487,7 +487,7 @@ export function DriverRegistration() {
 								}
 							>
 								<div className="relative">
-									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
 											{formData.grid
 												? formatEnum(formData.grid)
@@ -545,7 +545,7 @@ export function DriverRegistration() {
 								name="stream"
 								value={formData.stream}
 								onChange={handleChange}
-								className="w-full p-2 border rounded"
+								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
 
@@ -555,7 +555,7 @@ export function DriverRegistration() {
 								name="city"
 								value={formData.city}
 								onChange={handleChange}
-								className="w-full p-2 border rounded"
+								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
 
@@ -565,7 +565,7 @@ export function DriverRegistration() {
 								name="equipment"
 								value={formData.equipment}
 								onChange={handleChange}
-								className="w-full p-2 border rounded"
+								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
 
@@ -576,14 +576,14 @@ export function DriverRegistration() {
 								value={formData.phone}
 								onChange={handleChange}
 								required
-								className="w-full p-2 border rounded"
+								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
 
 						<div className="relative">
 							<label className="block mb-1">Equipe</label>
 							<Listbox value={teamId} onChange={setTeamId}>
-								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer">
+								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 									{teamId ? (
 										<div className="flex items-center gap-2">
 											<img
@@ -644,7 +644,7 @@ export function DriverRegistration() {
 										e.target.files?.[0] &&
 										setPhotoFile(e.target.files[0])
 									}
-									className="w-full p-2 border rounded max-h-[42px]"
+									className="w-full p-2 border rounded h-11"
 								/>
 								{photoFile && (
 									<p className="text-sm mt-1 text-gray-600">
@@ -661,7 +661,7 @@ export function DriverRegistration() {
 										<img
 											src={selectedDriver.photo.url}
 											alt={`Foto de ${selectedDriver.name}`}
-											className="h-42 w-42 object-cover border border-gray-300 mx-auto"
+											className="h-42 w-42 object-cover border border-gray-300 mx-auto mt-[6px]"
 										/>
 									</div>
 								)}
