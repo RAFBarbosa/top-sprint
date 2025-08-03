@@ -11401,7 +11401,7 @@ export type UpdateDriverMutationResult = Apollo.MutationResult<UpdateDriverMutat
 export type UpdateDriverMutationOptions = Apollo.BaseMutationOptions<UpdateDriverMutation, UpdateDriverMutationVariables>;
 export const GetBannersDocument = gql`
     query GetBanners {
-  banners(orderBy: publishedAt_ASC) {
+  banners(orderBy: createdAt_DESC) {
     id
     title
     content
