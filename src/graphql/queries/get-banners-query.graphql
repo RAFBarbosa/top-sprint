@@ -1,5 +1,5 @@
 query GetBanners {
-	banners(orderBy: publishedAt_ASC) {
+	banners(orderBy: createdAt_DESC) {
 		id
 		title
 		content
