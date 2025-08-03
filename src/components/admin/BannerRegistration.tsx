@@ -13,11 +13,55 @@ import {
 	useCreateAssetMutation,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+function LimitedTextarea({
+	value,
+	onChange,
+	maxLength = 300,
+	...props
+}: {
+	value: string;
+	onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+	maxLength?: number;
+} & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+	return (
+		<div className="relative">
+			<textarea
+				{...props}
+				value={value}
+				onChange={(e) => {
+					if (e.target.value.length <= maxLength) {
+						onChange(e);
+					}
+				}}
+				maxLength={maxLength}
+				className={`w-full p-2 border rounded min-h-24 pr-12 ${props.className}`}
+			/>
+			<div
+				className={`absolute bottom-2 right-2 text-xs ${
+					value.length >= maxLength * 0.9
+						? "text-red-500"
+						: "text-gray-500"
+				}`}
+			>
+				{value.length}/{maxLength}
+			</div>
+			<noscript>
+				<div className="text-xs text-gray-500 mt-1">
+					Máximo de {maxLength} caracteres permitidos
+				</div>
+			</noscript>
+		</div>
+	);
+}
 
 export function BannerRegistration() {
 	// State management
 	const [formData, setFormData] = useState({
 		title: "",
+		content: "",
 		link: "",
 		category: "",
 	});
@@ -63,6 +107,7 @@ export function BannerRegistration() {
 		setIsEditing(true);
 		setFormData({
 			title: banner.title,
+			content: banner.content,
 			link: banner.link || "",
 			category: banner.category,
 		});
@@ -73,6 +118,7 @@ export function BannerRegistration() {
 		setIsEditing(false);
 		setFormData({
 			title: "",
+			content: "",
 			link: "",
 			category: "",
 		});
@@ -86,6 +132,7 @@ export function BannerRegistration() {
 		try {
 			// Validate required fields
 			if (!formData.title) throw new Error("Título é obrigatório");
+			if (!formData.content) throw new Error("Conteúdo é obrigatório");
 			if (!formData.category) throw new Error("Categoria é obrigatória");
 
 			let photoId = null;
@@ -159,6 +206,7 @@ export function BannerRegistration() {
 						where: { id: selectedBanner.id },
 						data: {
 							title: formData.title,
+							content: formData.content,
 							link: formData.link || null,
 							category: formData.category,
 							photo: photoId
@@ -180,6 +228,7 @@ export function BannerRegistration() {
 					variables: {
 						data: {
 							title: formData.title,
+							content: formData.content,
 							link: formData.link || null,
 							category: formData.category,
 							photo: photoId
@@ -230,8 +279,10 @@ export function BannerRegistration() {
 			const matchesSearch = searchTerm
 				? Object.entries({
 						title: banner.title,
+						content: banner.content,
 						link: banner.link,
 						category: banner.category,
+						date: banner.createdAt,
 				  }).some(([_, value]) =>
 						value
 							?.toString()
@@ -267,6 +318,16 @@ export function BannerRegistration() {
 		);
 	}
 
+	const formatDateWithCapitalizedMonth = (dateString: string) => {
+		const date = new Date(dateString);
+		const day = format(date, "dd", { locale: ptBR });
+		const month = format(date, "MMMM", { locale: ptBR });
+		const year = format(date, "yyyy", { locale: ptBR });
+
+		const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
+		return `${day} de ${capitalizedMonth} de ${year}`;
+	};
+
 	return (
 		<div className="flex flex-col md:flex-row w-full">
 			{/* Banner Sidebar */}
@@ -274,7 +335,7 @@ export function BannerRegistration() {
 				<div className="mb-4 space-y-2">
 					<input
 						type="text"
-						placeholder="Buscar banners (título, link, categoria)..."
+						placeholder="Buscar banners (título, conteúdo, link, categoria)..."
 						className="w-full p-2 border rounded h-11"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
@@ -310,19 +371,31 @@ export function BannerRegistration() {
 										<span className="truncate">
 											{banner.title}
 										</span>
-										<span className="text-xs text-gray-500">
-											{banner.category &&
-												`• ${formatEnum(
-													banner.category
-												)}`}
-										</span>
+										<div className="flex flex-col items-start">
+											{banner.category && (
+												<span className="text-xs text-gray-500">
+													•{" "}
+													{formatEnum(
+														banner.category
+													)}
+												</span>
+											)}
+											{banner.createdAt && (
+												<span className="text-xs text-gray-500">
+													•{" "}
+													{formatDateWithCapitalizedMonth(
+														banner.createdAt
+													)}
+												</span>
+											)}
+										</div>
 									</div>
 
 									{banner.photo?.url && (
 										<img
 											src={banner.photo.url}
 											alt={banner.title}
-											className="w-8 h-8 rounded-full object-cover scale-400 translate-y-9"
+											className="w-13 h-13 object-cover"
 										/>
 									)}
 								</button>
@@ -387,6 +460,15 @@ export function BannerRegistration() {
 								onChange={handleChange}
 								required
 								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+						<div className="md:col-span-2">
+							<label className="block mb-1">Conteúdo *</label>{" "}
+							<LimitedTextarea
+								name="content"
+								value={formData.content}
+								onChange={handleChange}
+								required
 							/>
 						</div>
 
@@ -491,7 +573,7 @@ export function BannerRegistration() {
 									<img
 										src={selectedBanner.photo.url}
 										alt={`Foto do banner ${selectedBanner.title}`}
-										className="h-42 w-42 object-cover border border-gray-300"
+										className="h-auto w-full md:w-3/5 mx-auto object-cover border border-gray-300"
 									/>
 								</div>
 							)}
