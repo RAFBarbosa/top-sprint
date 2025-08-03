@@ -94,9 +94,17 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 				<div className="bg-black relative w-full h-full flex flex-col justify-between">
 					<img
 						className={`object-cover absolute top-0 left-0 h-full ${
-							badgeUrls.length === 0 ? "opacity-70" : "opacity-50"
+							data.badgeTitle?.includes("reiDaChuva") ||
+							data.badgeTitle?.includes("mestreDaChuva")
+								? "opacity-50"
+								: "opacity-70"
 						}`}
-						src={badgeUrls.length === 0 ? bgCard : bgCardChuva}
+						src={
+							data.badgeTitle?.includes("reiDaChuva") ||
+							data.badgeTitle?.includes("mestreDaChuva")
+								? bgCardChuva
+								: bgCard
+						}
 						alt="Background"
 					/>
 
