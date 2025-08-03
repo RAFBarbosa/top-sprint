@@ -5,6 +5,7 @@ mutation UpdateBanner(
 	updateBanner(where: $where, data: $data) {
 		id
 		title
+		content
 		link
 		category
 		photo {

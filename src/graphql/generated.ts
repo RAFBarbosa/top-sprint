@@ -1065,6 +1065,7 @@ export enum BadgeTitle {
 export type Banner = Entity & Node & {
   __typename?: 'Banner';
   category: NewsCategory;
+  content?: Maybe<Scalars['String']>;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
   /** User that created this document */
@@ -1161,6 +1162,7 @@ export type BannerConnection = {
 
 export type BannerCreateInput = {
   category: NewsCategory;
+  content?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
@@ -1208,6 +1210,25 @@ export type BannerManyWhereInput = {
   category_not?: InputMaybe<NewsCategory>;
   /** All values that are not contained in given list. */
   category_not_in?: InputMaybe<Array<InputMaybe<NewsCategory>>>;
+  content?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  content_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  content_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  content_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  content_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  content_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  content_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  content_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  content_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  content_starts_with?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1325,6 +1346,8 @@ export type BannerManyWhereInput = {
 export enum BannerOrderByInput {
   CategoryAsc = 'category_ASC',
   CategoryDesc = 'category_DESC',
+  ContentAsc = 'content_ASC',
+  ContentDesc = 'content_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
   IdAsc = 'id_ASC',
@@ -1341,6 +1364,7 @@ export enum BannerOrderByInput {
 
 export type BannerUpdateInput = {
   category?: InputMaybe<NewsCategory>;
+  content?: InputMaybe<Scalars['String']>;
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
   title?: InputMaybe<Scalars['String']>;
@@ -1365,6 +1389,7 @@ export type BannerUpdateManyInlineInput = {
 
 export type BannerUpdateManyInput = {
   category?: InputMaybe<NewsCategory>;
+  content?: InputMaybe<Scalars['String']>;
   link?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
 };
@@ -1435,6 +1460,25 @@ export type BannerWhereInput = {
   category_not?: InputMaybe<NewsCategory>;
   /** All values that are not contained in given list. */
   category_not_in?: InputMaybe<Array<InputMaybe<NewsCategory>>>;
+  content?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  content_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  content_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  content_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  content_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  content_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  content_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  content_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  content_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  content_starts_with?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -11022,7 +11066,7 @@ export type CreateBannerMutationVariables = Exact<{
 }>;
 
 
-export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type CreateDriverMutationVariables = Exact<{
   data: DriverCreateInput;
@@ -11037,7 +11081,7 @@ export type UpdateBannerMutationVariables = Exact<{
 }>;
 
 
-export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateDriverMutationVariables = Exact<{
   where: DriverWhereUniqueInput;
@@ -11050,7 +11094,7 @@ export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { _
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, link?: string | null, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetBannersCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11168,6 +11212,7 @@ export const CreateBannerDocument = gql`
   createBanner(data: $data) {
     id
     title
+    content
     link
     category
     photo {
@@ -11262,6 +11307,7 @@ export const UpdateBannerDocument = gql`
   updateBanner(where: $where, data: $data) {
     id
     title
+    content
     link
     category
     photo {
@@ -11358,6 +11404,7 @@ export const GetBannersDocument = gql`
   banners(orderBy: publishedAt_ASC) {
     id
     title
+    content
     link
     category
     photo {
