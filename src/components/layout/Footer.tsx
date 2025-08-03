@@ -20,7 +20,7 @@ export function Footer() {
 						</div>
 					</div>
 					<Link
-						to="/admin"
+						to="/admin/painel"
 						className="z-50 text-white flex items-center gap-2 bg-f1-silver/80 hover:bg-f1-red/90 p-2 rounded cursor-pointer duration-120"
 						title="Login Administrador"
 					>
