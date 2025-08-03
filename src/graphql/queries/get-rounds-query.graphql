@@ -22,24 +22,39 @@ query GetSeasonRounds($slug: String!) {
 }
 
 query GetDrivers {
-	drivers(stage: PUBLISHED) {
+	drivers {
 		id
-		name
 		grid
+		name
 		number
+		stream
+		photo {
+			url
+		}
+		badgeTitle
+		badge {
+			url
+		}
+		city
+		equipment
+		phone
 		team {
 			name
 			color {
 				hex
 			}
+			photo {
+				url
+			}
 		}
-		photo {
-			url
+	}
+}
+
+query GridOptions {
+	__type(name: "Grid") {
+		enumValues {
+			name
 		}
-		badge {
-			url
-		}
-		badgeTitle
 	}
 }
 

@@ -1,0 +1,24 @@
+mutation createAsset {
+	createAsset(data: {}) {
+		id
+		url
+		upload {
+			status
+			expiresAt
+			error {
+				code
+				message
+			}
+			requestPostData {
+				url
+				date
+				key
+				signature
+				algorithm
+				policy
+				credential
+				securityToken
+			}
+		}
+	}
+}
