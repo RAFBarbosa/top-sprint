@@ -1,11 +1,22 @@
 query GetBanners {
-	banners(orderBy: publishedAt_ASC) {
+	banners() {
 		id
+		title
 		link
 		category
-		title
 		photo {
+			id
 			url
+		}
+		createdAt
+		updatedAt
+	}
+}
+
+query GetBannersCategories {
+	__type(name: "NewsCategory") {
+		enumValues {
+			name
 		}
 	}
 }
