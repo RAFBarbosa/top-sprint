@@ -1,0 +1,29 @@
+# Add this to your GraphQL operations file
+mutation UpdateDriver(
+	$where: DriverWhereUniqueInput!
+	$data: DriverUpdateInput!
+) {
+	updateDriver(where: $where, data: $data) {
+		id
+		name
+		number
+		grid
+		stream
+		city
+		equipment
+		phone
+		photo {
+			url
+		}
+		team {
+			id
+			name
+			color {
+				hex
+			}
+			photo {
+				url
+			}
+		}
+	}
+}

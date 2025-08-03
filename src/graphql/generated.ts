@@ -1057,6 +1057,7 @@ export type AssetWhereUniqueInput = {
 };
 
 export enum BadgeTitle {
+  AntiZika = 'antiZika',
   MestreDaChuva = 'mestreDaChuva',
   ReiDaChuva = 'reiDaChuva'
 }
@@ -5914,12 +5915,12 @@ export type Partner = Entity & Node & {
   createdBy?: Maybe<User>;
   /** Get the document in other stages */
   documentInStages: Array<Partner>;
-  footerLogo?: Maybe<Asset>;
+  footerLogo: Asset;
   /** List of Partner versions */
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
-  image: Asset;
+  image?: Maybe<Asset>;
   link?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   /** The time the document was published. Null on documents in draft stage. */
@@ -6014,8 +6015,8 @@ export type PartnerCreateInput = {
   active: Scalars['Boolean'];
   altText?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
-  footerLogo?: InputMaybe<AssetCreateOneInlineInput>;
-  image: AssetCreateOneInlineInput;
+  footerLogo: AssetCreateOneInlineInput;
+  image?: InputMaybe<AssetCreateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
@@ -10922,17 +10923,132 @@ export enum _SystemDateTimeFieldVariation {
   Localization = 'localization'
 }
 
-export type CreateDriverMutationVariables = Exact<{
+/** One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string. */
+export type __EnumValue = {
+  __typename?: '__EnumValue';
   name: Scalars['String'];
-  stream: Scalars['String'];
-  city: Scalars['String'];
-  equipment: Scalars['String'];
-  phone: Scalars['String'];
-  photo?: InputMaybe<AssetCreateOneInlineInput>;
+  description?: Maybe<Scalars['String']>;
+  isDeprecated: Scalars['Boolean'];
+  deprecationReason?: Maybe<Scalars['String']>;
+};
+
+/** Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type. */
+export type __Field = {
+  __typename?: '__Field';
+  name: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  args: Array<__InputValue>;
+  type: __Type;
+  isDeprecated: Scalars['Boolean'];
+  deprecationReason?: Maybe<Scalars['String']>;
+};
+
+
+/** Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type. */
+export type __FieldArgsArgs = {
+  includeDeprecated?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value. */
+export type __InputValue = {
+  __typename?: '__InputValue';
+  name: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  type: __Type;
+  /** A GraphQL-formatted string representing the default value for this input value. */
+  defaultValue?: Maybe<Scalars['String']>;
+  isDeprecated: Scalars['Boolean'];
+  deprecationReason?: Maybe<Scalars['String']>;
+};
+
+/**
+ * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+ *
+ * Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByUrl`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+ */
+export type __Type = {
+  __typename?: '__Type';
+  kind: __TypeKind;
+  name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  specifiedByUrl?: Maybe<Scalars['String']>;
+  fields?: Maybe<Array<__Field>>;
+  interfaces?: Maybe<Array<__Type>>;
+  possibleTypes?: Maybe<Array<__Type>>;
+  enumValues?: Maybe<Array<__EnumValue>>;
+  inputFields?: Maybe<Array<__InputValue>>;
+  ofType?: Maybe<__Type>;
+};
+
+
+/**
+ * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+ *
+ * Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByUrl`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+ */
+export type __TypeFieldsArgs = {
+  includeDeprecated?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+/**
+ * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+ *
+ * Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByUrl`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+ */
+export type __TypeEnumValuesArgs = {
+  includeDeprecated?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+/**
+ * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+ *
+ * Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByUrl`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+ */
+export type __TypeInputFieldsArgs = {
+  includeDeprecated?: InputMaybe<Scalars['Boolean']>;
+};
+
+/** An enum describing what kind of type a given `__Type` is. */
+export enum __TypeKind {
+  /** Indicates this type is a scalar. */
+  Scalar = 'SCALAR',
+  /** Indicates this type is an object. `fields` and `interfaces` are valid fields. */
+  Object = 'OBJECT',
+  /** Indicates this type is an interface. `fields`, `interfaces`, and `possibleTypes` are valid fields. */
+  Interface = 'INTERFACE',
+  /** Indicates this type is a union. `possibleTypes` is a valid field. */
+  Union = 'UNION',
+  /** Indicates this type is an enum. `enumValues` is a valid field. */
+  Enum = 'ENUM',
+  /** Indicates this type is an input object. `inputFields` is a valid field. */
+  InputObject = 'INPUT_OBJECT',
+  /** Indicates this type is a list. `ofType` is a valid field. */
+  List = 'LIST',
+  /** Indicates this type is a non-null. `ofType` is a valid field. */
+  NonNull = 'NON_NULL'
+}
+
+export type CreateAssetMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateAssetMutation = { __typename?: 'Mutation', createAsset?: { __typename?: 'Asset', id: string, url: string, upload?: { __typename?: 'AssetUpload', status?: AssetUploadStatus | null, expiresAt?: any | null, error?: { __typename?: 'AssetUploadError', code: string, message: string } | null, requestPostData?: { __typename?: 'AssetUploadRequestPostData', url: string, date: string, key: string, signature: string, algorithm: string, policy: string, credential: string, securityToken?: string | null } | null } | null } | null };
+
+export type CreateDriverMutationVariables = Exact<{
+  data: DriverCreateInput;
 }>;
 
 
-export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string } | null };
+export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+
+export type UpdateDriverMutationVariables = Exact<{
+  where: DriverWhereUniqueInput;
+  data: DriverUpdateInput;
+}>;
+
+
+export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
 
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10952,7 +11068,7 @@ export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ _
 export type GetPartnersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPartnersQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, altText?: string | null, link?: string | null, active: boolean, image: { __typename?: 'Asset', url: string }, footerLogo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetPartnersQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, altText?: string | null, link?: string | null, active: boolean, image?: { __typename?: 'Asset', url: string } | null, footerLogo: { __typename?: 'Asset', url: string } }> };
 
 export type GetSeasonRoundsQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -10964,7 +11080,12 @@ export type GetSeasonRoundsQuery = { __typename?: 'Query', rounds: Array<{ __typ
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, grid?: Grid | null, number?: string | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+
+export type GridOptionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GridOptionsQuery = { __typename?: 'Query', __type?: { __typename?: '__Type', enumValues?: Array<{ __typename?: '__EnumValue', name: string }> | null } | null };
 
 export type GetRoundResultsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -10981,7 +11102,7 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', name?: string | null, id: string, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -10989,12 +11110,81 @@ export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, csv?: { __typename?: 'Asset', url: string } | null }> };
 
 
-export const CreateDriverDocument = gql`
-    mutation CreateDriver($name: String!, $stream: String!, $city: String!, $equipment: String!, $phone: String!, $photo: AssetCreateOneInlineInput) {
-  createDriver(
-    data: {name: $name, stream: $stream, city: $city, equipment: $equipment, phone: $phone, photo: $photo}
-  ) {
+export const CreateAssetDocument = gql`
+    mutation createAsset {
+  createAsset(data: {}) {
     id
+    url
+    upload {
+      status
+      expiresAt
+      error {
+        code
+        message
+      }
+      requestPostData {
+        url
+        date
+        key
+        signature
+        algorithm
+        policy
+        credential
+        securityToken
+      }
+    }
+  }
+}
+    `;
+export type CreateAssetMutationFn = Apollo.MutationFunction<CreateAssetMutation, CreateAssetMutationVariables>;
+
+/**
+ * __useCreateAssetMutation__
+ *
+ * To run a mutation, you first call `useCreateAssetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateAssetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createAssetMutation, { data, loading, error }] = useCreateAssetMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCreateAssetMutation(baseOptions?: Apollo.MutationHookOptions<CreateAssetMutation, CreateAssetMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateAssetMutation, CreateAssetMutationVariables>(CreateAssetDocument, options);
+      }
+export type CreateAssetMutationHookResult = ReturnType<typeof useCreateAssetMutation>;
+export type CreateAssetMutationResult = Apollo.MutationResult<CreateAssetMutation>;
+export type CreateAssetMutationOptions = Apollo.BaseMutationOptions<CreateAssetMutation, CreateAssetMutationVariables>;
+export const CreateDriverDocument = gql`
+    mutation CreateDriver($data: DriverCreateInput!) {
+  createDriver(data: $data) {
+    id
+    name
+    number
+    grid
+    stream
+    city
+    equipment
+    phone
+    photo {
+      url
+    }
+    team {
+      id
+      name
+      color {
+        hex
+      }
+      photo {
+        url
+      }
+    }
   }
 }
     `;
@@ -11013,12 +11203,7 @@ export type CreateDriverMutationFn = Apollo.MutationFunction<CreateDriverMutatio
  * @example
  * const [createDriverMutation, { data, loading, error }] = useCreateDriverMutation({
  *   variables: {
- *      name: // value for 'name'
- *      stream: // value for 'stream'
- *      city: // value for 'city'
- *      equipment: // value for 'equipment'
- *      phone: // value for 'phone'
- *      photo: // value for 'photo'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -11029,6 +11214,60 @@ export function useCreateDriverMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateDriverMutationHookResult = ReturnType<typeof useCreateDriverMutation>;
 export type CreateDriverMutationResult = Apollo.MutationResult<CreateDriverMutation>;
 export type CreateDriverMutationOptions = Apollo.BaseMutationOptions<CreateDriverMutation, CreateDriverMutationVariables>;
+export const UpdateDriverDocument = gql`
+    mutation UpdateDriver($where: DriverWhereUniqueInput!, $data: DriverUpdateInput!) {
+  updateDriver(where: $where, data: $data) {
+    id
+    name
+    number
+    grid
+    stream
+    city
+    equipment
+    phone
+    photo {
+      url
+    }
+    team {
+      id
+      name
+      color {
+        hex
+      }
+      photo {
+        url
+      }
+    }
+  }
+}
+    `;
+export type UpdateDriverMutationFn = Apollo.MutationFunction<UpdateDriverMutation, UpdateDriverMutationVariables>;
+
+/**
+ * __useUpdateDriverMutation__
+ *
+ * To run a mutation, you first call `useUpdateDriverMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDriverMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDriverMutation, { data, loading, error }] = useUpdateDriverMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateDriverMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDriverMutation, UpdateDriverMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDriverMutation, UpdateDriverMutationVariables>(UpdateDriverDocument, options);
+      }
+export type UpdateDriverMutationHookResult = ReturnType<typeof useUpdateDriverMutation>;
+export type UpdateDriverMutationResult = Apollo.MutationResult<UpdateDriverMutation>;
+export type UpdateDriverMutationOptions = Apollo.BaseMutationOptions<UpdateDriverMutation, UpdateDriverMutationVariables>;
 export const GetBannersDocument = gql`
     query GetBanners {
   banners(orderBy: publishedAt_ASC) {
@@ -11243,24 +11482,31 @@ export type GetSeasonRoundsLazyQueryHookResult = ReturnType<typeof useGetSeasonR
 export type GetSeasonRoundsQueryResult = Apollo.QueryResult<GetSeasonRoundsQuery, GetSeasonRoundsQueryVariables>;
 export const GetDriversDocument = gql`
     query GetDrivers {
-  drivers(stage: PUBLISHED) {
+  drivers {
     id
-    name
     grid
+    name
     number
+    stream
+    photo {
+      url
+    }
+    badgeTitle
+    badge {
+      url
+    }
+    city
+    equipment
+    phone
     team {
       name
       color {
         hex
       }
+      photo {
+        url
+      }
     }
-    photo {
-      url
-    }
-    badge {
-      url
-    }
-    badgeTitle
   }
 }
     `;
@@ -11291,6 +11537,42 @@ export function useGetDriversLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetDriversQueryHookResult = ReturnType<typeof useGetDriversQuery>;
 export type GetDriversLazyQueryHookResult = ReturnType<typeof useGetDriversLazyQuery>;
 export type GetDriversQueryResult = Apollo.QueryResult<GetDriversQuery, GetDriversQueryVariables>;
+export const GridOptionsDocument = gql`
+    query GridOptions {
+  __type(name: "Grid") {
+    enumValues {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGridOptionsQuery__
+ *
+ * To run a query within a React component, call `useGridOptionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGridOptionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGridOptionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGridOptionsQuery(baseOptions?: Apollo.QueryHookOptions<GridOptionsQuery, GridOptionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GridOptionsQuery, GridOptionsQueryVariables>(GridOptionsDocument, options);
+      }
+export function useGridOptionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GridOptionsQuery, GridOptionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GridOptionsQuery, GridOptionsQueryVariables>(GridOptionsDocument, options);
+        }
+export type GridOptionsQueryHookResult = ReturnType<typeof useGridOptionsQuery>;
+export type GridOptionsLazyQueryHookResult = ReturnType<typeof useGridOptionsLazyQuery>;
+export type GridOptionsQueryResult = Apollo.QueryResult<GridOptionsQuery, GridOptionsQueryVariables>;
 export const GetRoundResultsDocument = gql`
     query GetRoundResults($id: ID!) {
   round(where: {id: $id}, stage: PUBLISHED) {
@@ -11407,11 +11689,11 @@ export const GetTeamsDocument = gql`
     badgeTitle
   }
   teams(stage: PUBLISHED) {
+    id
     color {
       hex
     }
     name
-    id
     photo {
       url
     }
