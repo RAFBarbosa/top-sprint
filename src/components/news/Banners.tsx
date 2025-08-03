@@ -22,32 +22,41 @@ const loadingSkeleton = () => {
 };
 
 export function Banners() {
-	const { data, error, loading } = useGetBannersQuery({
-		variables: {
-			orderBy: { createdAt: "desc" }, // Sort by createdAt in descending order (newest first)
-		},
-	});
+	const { data, error, loading } = useGetBannersQuery();
 
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
 
-	// Get the most recent banner (first in the array since we sorted by createdAt desc)
-	const latestBanner = data?.banners?.[0];
+	// Filter banners with category "destaque" and sort by createdAt (newest first)
+	const featuredBanners = data?.banners
+		?.filter((banner) => banner.category === "destaque")
+		?.sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() -
+				new Date(a.createdAt).getTime()
+		);
+
+	// Get the most recent featured banner
+	const latestFeaturedBanner = featuredBanners?.[0];
+
+	console.log("Latest Featured Banner:", latestFeaturedBanner);
 
 	return (
 		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col justify-between">
 			<div className="pr-2 md:sticky top-16 z-10">
-				{latestBanner ? (
+				{latestFeaturedBanner ? (
 					<Banner
-						key={latestBanner.id}
-						link={latestBanner.link || ""}
-						category={latestBanner.category || ""}
-						title={latestBanner.title || ""}
-						content={latestBanner.content || ""}
-						photo={latestBanner.photo || { url: GenericLogo }}
+						key={latestFeaturedBanner.id}
+						link={latestFeaturedBanner.link || ""}
+						category={latestFeaturedBanner.category || ""}
+						title={latestFeaturedBanner.title || ""}
+						content={latestFeaturedBanner.content || ""}
+						photo={
+							latestFeaturedBanner.photo || { url: GenericLogo }
+						}
 					/>
 				) : (
-					<p>Sem banners para carregar</p>
+					<p>Nenhum banner em destaque encontrado</p>
 				)}
 			</div>
 			<div className="md:h-full h-2 bg-divider bg-cover opacity-10 mr-2 md:mr-5 mt-4"></div>
