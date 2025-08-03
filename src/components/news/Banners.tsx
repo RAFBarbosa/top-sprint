@@ -31,15 +31,21 @@ export function Banners() {
 		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col justify-between">
 			<div className="pr-2 md:sticky top-16 z-10">
 				{data?.banners && data.banners.length > 0 ? (
-					data.banners.map((data) => (
-						<Banner
-							key={data.id}
-							link={data.link || ""}
-							category={data.category || ""}
-							title={data.title || ""}
-							photo={data.photo || { url: GenericLogo }}
-						/>
-					))
+					<Banner
+						key={data.banners[data.banners.length - 1].id}
+						link={data.banners[data.banners.length - 1].link || ""}
+						category={
+							data.banners[data.banners.length - 1].category || ""
+						}
+						title={
+							data.banners[data.banners.length - 1].title || ""
+						}
+						photo={
+							data.banners[data.banners.length - 1].photo || {
+								url: GenericLogo,
+							}
+						}
+					/>
 				) : (
 					<p>Sem banners para carregar</p>
 				)}

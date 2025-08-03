@@ -2,8 +2,8 @@ import { Logo } from "./Logo";
 import { SocialIcon } from "react-social-icons";
 import { Signature } from "../utils/Signature";
 import { Partners } from "./Partners";
-import { LoginIcon } from "../utils/LoginIcon";
 import { Link } from "react-router-dom";
+import PersonIcon from "@mui/icons-material/Person";
 
 export function Footer() {
 	return (
@@ -24,7 +24,7 @@ export function Footer() {
 						className="z-50 text-white flex items-center gap-2 bg-f1-silver/80 hover:bg-f1-red/90 p-2 rounded cursor-pointer duration-120"
 						title="Login Administrador"
 					>
-						<LoginIcon />
+						<PersonIcon />
 						Login
 					</Link>
 				</div>

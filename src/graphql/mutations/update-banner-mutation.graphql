@@ -1,0 +1,16 @@
+mutation UpdateBanner(
+	$where: BannerWhereUniqueInput!
+	$data: BannerUpdateInput!
+) {
+	updateBanner(where: $where, data: $data) {
+		id
+		title
+		link
+		category
+		photo {
+			id
+			url
+		}
+		updatedAt
+	}
+}
