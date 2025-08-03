@@ -2,6 +2,7 @@ mutation CreateBanner($data: BannerCreateInput!) {
 	createBanner(data: $data) {
 		id
 		title
+		content
 		link
 		category
 		photo {
