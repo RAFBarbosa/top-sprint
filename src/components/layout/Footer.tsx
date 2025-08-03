@@ -2,19 +2,31 @@ import { Logo } from "./Logo";
 import { SocialIcon } from "react-social-icons";
 import { Signature } from "../utils/Signature";
 import { Partners } from "./Partners";
+import { LoginIcon } from "../utils/LoginIcon";
+import { Link } from "react-router-dom";
 
 export function Footer() {
 	return (
 		<footer className="bg-f1-carbon pb-6 text-white mt-auto">
 			<Partners />
-			<div className="flex flex-col-reverse md:flex-row justify-between items-center md:max-w-screen-xl mx-auto px-3 pt-6">
-				<div className="flex md:flex-col items-center md:items-start gap-2 md:gap-0">
-					<div className="md:w-[60px] w-[40px]">
-						<Logo />
+			<div className="flex flex-col-reverse md:flex-row justify-between md:max-w-screen-xl mx-auto px-3 pt-6">
+				<div className="flex flex-col items-center md:items-start gap-2 md:gap-1 h-full ">
+					<div className="flex items-center gap-2 md:flex-col md:items-start">
+						<div className="md:w-[70px] w-[40px] md:-translate-y-3">
+							<Logo />
+						</div>
+						<div className="font-light text-sm md:-translate-y-6">
+							Top Sprint League - Todos os direitos reservados
+						</div>
 					</div>
-					<p className="font-light text-sm md:-translate-y-2">
-						Top Sprint League - Todos os direitos reservados
-					</p>
+					<Link
+						to="/admin"
+						className="z-50 text-white flex items-center gap-2 bg-f1-silver/80 hover:bg-f1-red/90 p-2 rounded cursor-pointer duration-120"
+						title="Login Administrador"
+					>
+						<LoginIcon />
+						Login
+					</Link>
 				</div>
 				<div className="md:hidden h-[.5px] w-full bg-f1-silver my-6" />
 				<div className="flex flex-col items-center gap-4 md:gap-2">

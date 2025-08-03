@@ -1,21 +1,25 @@
-mutation CreateDriver(
-	$name: String!
-	$stream: String!
-	$city: String!
-	$equipment: String!
-	$phone: String!
-	$photo: AssetCreateOneInlineInput
-) {
-	createDriver(
-		data: {
-			name: $name
-			stream: $stream
-			city: $city
-			equipment: $equipment
-			phone: $phone
-			photo: $photo
-		}
-	) {
+mutation CreateDriver($data: DriverCreateInput!) {
+	createDriver(data: $data) {
 		id
+		name
+		number
+		grid
+		stream
+		city
+		equipment
+		phone
+		photo {
+			url
+		}
+		team {
+			id
+			name
+			color {
+				hex
+			}
+			photo {
+				url
+			}
+		}
 	}
 }
