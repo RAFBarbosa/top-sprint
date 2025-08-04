@@ -1,9 +1,10 @@
 import { FormEvent, useState } from "react";
 import {
 	useCreateCalendarMutation,
-	useGetCalendarsQuery,
+	useGetCalendarsRegistrationQuery,
 	useUpdateCalendarMutation,
 	useCreateAssetMutation,
+	GetCalendarsRegistrationDocument,
 } from "../../graphql/generated";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,6 +16,7 @@ export function CalendarRegistration() {
 		description: "",
 		date: "",
 		link: "",
+		active: true,
 	});
 
 	const [flagFile, setFlagFile] = useState<File | null>(null);
@@ -33,15 +35,8 @@ export function CalendarRegistration() {
 		useUpdateCalendarMutation();
 	const [createAsset] = useCreateAssetMutation();
 
-	const {
-		data: calendarsData,
-		loading: calendarsLoading,
-		error: calendarsError,
-	} = useGetCalendarsQuery({
-		variables: {
-			orderBy: "date_DESC",
-		},
-	});
+	const { data: calendarsData, error: calendarsError } =
+		useGetCalendarsRegistrationQuery();
 
 	const isoToDatetimeLocal = (isoString: string) => {
 		if (!isoString) return "";
@@ -62,6 +57,7 @@ export function CalendarRegistration() {
 			description: calendar.description,
 			date: isoToDatetimeLocal(calendar.date),
 			link: calendar.link || "",
+			active: calendar.active,
 		});
 	};
 
@@ -74,6 +70,7 @@ export function CalendarRegistration() {
 			description: "",
 			date: "",
 			link: "",
+			active: true,
 		});
 		setFlagFile(null);
 	};
@@ -167,6 +164,7 @@ export function CalendarRegistration() {
 							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
+							active: formData.active,
 							flag: flagId
 								? { connect: { id: flagId } }
 								: undefined,
@@ -190,8 +188,25 @@ export function CalendarRegistration() {
 							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
+							active: formData.active,
 							flag: flagId ? { connect: { id: flagId } } : null,
 						},
+					},
+					update(cache, { data }) {
+						const existing = cache.readQuery({
+							query: GetCalendarsRegistrationDocument,
+						});
+						if (existing && data?.createCalendar) {
+							cache.writeQuery({
+								query: GetCalendarsRegistrationDocument,
+								data: {
+									calendars: [
+										data.createCalendar,
+										...existing.calendars,
+									],
+								},
+							});
+						}
 					},
 				});
 
@@ -227,31 +242,30 @@ export function CalendarRegistration() {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const filteredCalendars =
-		calendarsData?.calendars?.filter((calendar) => {
-			return searchTerm
-				? Object.entries({
-						track: calendar.track,
-						round: calendar.round,
-						description: calendar.description,
-						date: calendar.date,
-						link: calendar.link,
-				  }).some(([_, value]) =>
-						value
-							?.toString()
-							.toLowerCase()
-							.includes(searchTerm.toLowerCase())
-				  )
-				: true;
-		}) || [];
-
-	if (calendarsLoading) {
-		return (
-			<div className="bg-f1-lightSilver py-10 flex justify-center">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
-			</div>
-		);
-	}
+	const filteredCalendars = (
+		calendarsData?.calendars
+			? [...calendarsData.calendars].sort((a, b) => {
+					const dateA = new Date(a.date).getTime();
+					const dateB = new Date(b.date).getTime();
+					return dateB - dateA;
+			  })
+			: []
+	).filter((calendar) => {
+		return searchTerm
+			? Object.entries({
+					track: calendar.track,
+					round: calendar.round,
+					description: calendar.description,
+					date: calendar.date,
+					link: calendar.link,
+			  }).some(([_, value]) =>
+					value
+						?.toString()
+						.toLowerCase()
+						.includes(searchTerm.toLowerCase())
+			  )
+			: true;
+	});
 
 	if (calendarsError) {
 		return (
@@ -444,7 +458,20 @@ export function CalendarRegistration() {
 								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
-
+						<div className="flex items-center gap-2 mb-4">
+							<label className="block">Ativo:</label>
+							<input
+								type="checkbox"
+								checked={formData.active}
+								onChange={(e) =>
+									setFormData({
+										...formData,
+										active: e.target.checked,
+									})
+								}
+								className="w-4 h-4"
+							/>
+						</div>
 						<div className="md:col-span-2">
 							<label className="block mb-1">Bandeira</label>
 							<input

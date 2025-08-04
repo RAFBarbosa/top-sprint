@@ -1,5 +1,20 @@
-query GetCalendars($orderBy: CalendarOrderByInput, $where: CalendarWhereInput) {
-	calendars(orderBy: $orderBy, where: $where) {
+query GetCalendars {
+	calendars(orderBy: date_ASC, where: { active: true }, stage: PUBLISHED) {
+		id
+		track
+		round
+		active
+		description
+		date
+		link
+		flag {
+			url
+		}
+	}
+}
+
+query GetCalendarsRegistration {
+	calendars(orderBy: date_ASC, stage: DRAFT) {
 		id
 		track
 		round

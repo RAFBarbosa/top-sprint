@@ -50,6 +50,35 @@ query GetDrivers {
 	}
 }
 
+query GetDriversRegistration {
+	drivers(orderBy: name_ASC, stage: DRAFT) {
+		id
+		grid
+		name
+		number
+		stream
+		photo {
+			url
+		}
+		badgeTitle
+		badge {
+			url
+		}
+		city
+		equipment
+		phone
+		team {
+			name
+			color {
+				hex
+			}
+			photo {
+				url
+			}
+		}
+	}
+}
+
 query GridOptions {
 	__type(name: "Grid") {
 		enumValues {
