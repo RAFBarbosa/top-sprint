@@ -1620,6 +1620,7 @@ export type BatchPayload = {
 
 export type Calendar = Entity & Node & {
   __typename?: 'Calendar';
+  active: Scalars['Boolean'];
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
   /** User that created this document */
@@ -1718,6 +1719,7 @@ export type CalendarConnection = {
 };
 
 export type CalendarCreateInput = {
+  active: Scalars['Boolean'];
   createdAt?: InputMaybe<Scalars['DateTime']>;
   date?: InputMaybe<Scalars['DateTime']>;
   description?: InputMaybe<Scalars['String']>;
@@ -1761,6 +1763,9 @@ export type CalendarManyWhereInput = {
   OR?: InputMaybe<Array<CalendarWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  active?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  active_not?: InputMaybe<Scalars['Boolean']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1929,6 +1934,8 @@ export type CalendarManyWhereInput = {
 };
 
 export enum CalendarOrderByInput {
+  ActiveAsc = 'active_ASC',
+  ActiveDesc = 'active_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
   DateAsc = 'date_ASC',
@@ -1950,6 +1957,7 @@ export enum CalendarOrderByInput {
 }
 
 export type CalendarUpdateInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
   date?: InputMaybe<Scalars['DateTime']>;
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetUpdateOneInlineInput>;
@@ -1976,6 +1984,7 @@ export type CalendarUpdateManyInlineInput = {
 };
 
 export type CalendarUpdateManyInput = {
+  active?: InputMaybe<Scalars['Boolean']>;
   date?: InputMaybe<Scalars['DateTime']>;
   description?: InputMaybe<Scalars['String']>;
   link?: InputMaybe<Scalars['String']>;
@@ -2042,6 +2051,9 @@ export type CalendarWhereInput = {
   OR?: InputMaybe<Array<CalendarWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  active?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  active_not?: InputMaybe<Scalars['Boolean']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -11068,6 +11080,13 @@ export type CreateBannerMutationVariables = Exact<{
 
 export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
+export type CreateCalendarMutationVariables = Exact<{
+  data: CalendarCreateInput;
+}>;
+
+
+export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, link?: string | null, createdAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+
 export type CreateDriverMutationVariables = Exact<{
   data: DriverCreateInput;
 }>;
@@ -11082,6 +11101,14 @@ export type UpdateBannerMutationVariables = Exact<{
 
 
 export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+
+export type UpdateCalendarMutationVariables = Exact<{
+  where: CalendarWhereUniqueInput;
+  data: CalendarUpdateInput;
+}>;
+
+
+export type UpdateCalendarMutation = { __typename?: 'Mutation', updateCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, link?: string | null, updatedAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateDriverMutationVariables = Exact<{
   where: DriverWhereUniqueInput;
@@ -11101,10 +11128,13 @@ export type GetBannersCategoriesQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typename?: '__Type', enumValues?: Array<{ __typename?: '__EnumValue', name: string }> | null } | null };
 
-export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetCalendarsQueryVariables = Exact<{
+  orderBy?: InputMaybe<CalendarOrderByInput>;
+  where?: InputMaybe<CalendarWhereInput>;
+}>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11249,6 +11279,49 @@ export function useCreateBannerMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateBannerMutationHookResult = ReturnType<typeof useCreateBannerMutation>;
 export type CreateBannerMutationResult = Apollo.MutationResult<CreateBannerMutation>;
 export type CreateBannerMutationOptions = Apollo.BaseMutationOptions<CreateBannerMutation, CreateBannerMutationVariables>;
+export const CreateCalendarDocument = gql`
+    mutation CreateCalendar($data: CalendarCreateInput!) {
+  createCalendar(data: $data) {
+    id
+    track
+    round
+    description
+    date
+    link
+    flag {
+      id
+      url
+    }
+    createdAt
+  }
+}
+    `;
+export type CreateCalendarMutationFn = Apollo.MutationFunction<CreateCalendarMutation, CreateCalendarMutationVariables>;
+
+/**
+ * __useCreateCalendarMutation__
+ *
+ * To run a mutation, you first call `useCreateCalendarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCalendarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCalendarMutation, { data, loading, error }] = useCreateCalendarMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateCalendarMutation(baseOptions?: Apollo.MutationHookOptions<CreateCalendarMutation, CreateCalendarMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCalendarMutation, CreateCalendarMutationVariables>(CreateCalendarDocument, options);
+      }
+export type CreateCalendarMutationHookResult = ReturnType<typeof useCreateCalendarMutation>;
+export type CreateCalendarMutationResult = Apollo.MutationResult<CreateCalendarMutation>;
+export type CreateCalendarMutationOptions = Apollo.BaseMutationOptions<CreateCalendarMutation, CreateCalendarMutationVariables>;
 export const CreateDriverDocument = gql`
     mutation CreateDriver($data: DriverCreateInput!) {
   createDriver(data: $data) {
@@ -11345,6 +11418,50 @@ export function useUpdateBannerMutation(baseOptions?: Apollo.MutationHookOptions
 export type UpdateBannerMutationHookResult = ReturnType<typeof useUpdateBannerMutation>;
 export type UpdateBannerMutationResult = Apollo.MutationResult<UpdateBannerMutation>;
 export type UpdateBannerMutationOptions = Apollo.BaseMutationOptions<UpdateBannerMutation, UpdateBannerMutationVariables>;
+export const UpdateCalendarDocument = gql`
+    mutation UpdateCalendar($where: CalendarWhereUniqueInput!, $data: CalendarUpdateInput!) {
+  updateCalendar(where: $where, data: $data) {
+    id
+    track
+    round
+    description
+    date
+    link
+    flag {
+      id
+      url
+    }
+    updatedAt
+  }
+}
+    `;
+export type UpdateCalendarMutationFn = Apollo.MutationFunction<UpdateCalendarMutation, UpdateCalendarMutationVariables>;
+
+/**
+ * __useUpdateCalendarMutation__
+ *
+ * To run a mutation, you first call `useUpdateCalendarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCalendarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCalendarMutation, { data, loading, error }] = useUpdateCalendarMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateCalendarMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCalendarMutation, UpdateCalendarMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCalendarMutation, UpdateCalendarMutationVariables>(UpdateCalendarDocument, options);
+      }
+export type UpdateCalendarMutationHookResult = ReturnType<typeof useUpdateCalendarMutation>;
+export type UpdateCalendarMutationResult = Apollo.MutationResult<UpdateCalendarMutation>;
+export type UpdateCalendarMutationOptions = Apollo.BaseMutationOptions<UpdateCalendarMutation, UpdateCalendarMutationVariables>;
 export const UpdateDriverDocument = gql`
     mutation UpdateDriver($where: DriverWhereUniqueInput!, $data: DriverUpdateInput!) {
   updateDriver(where: $where, data: $data) {
@@ -11480,11 +11597,12 @@ export type GetBannersCategoriesQueryHookResult = ReturnType<typeof useGetBanner
 export type GetBannersCategoriesLazyQueryHookResult = ReturnType<typeof useGetBannersCategoriesLazyQuery>;
 export type GetBannersCategoriesQueryResult = Apollo.QueryResult<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>;
 export const GetCalendarsDocument = gql`
-    query GetCalendars {
-  calendars(stage: PUBLISHED, orderBy: date_ASC) {
+    query GetCalendars($orderBy: CalendarOrderByInput, $where: CalendarWhereInput) {
+  calendars(orderBy: $orderBy, where: $where) {
     id
     track
     round
+    active
     description
     date
     link
@@ -11507,6 +11625,8 @@ export const GetCalendarsDocument = gql`
  * @example
  * const { data, loading, error } = useGetCalendarsQuery({
  *   variables: {
+ *      orderBy: // value for 'orderBy'
+ *      where: // value for 'where'
  *   },
  * });
  */

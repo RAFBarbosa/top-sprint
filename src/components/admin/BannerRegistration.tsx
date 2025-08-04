@@ -406,8 +406,8 @@ export function BannerRegistration() {
 											: ""
 									}`}
 								>
-									<div className="flex flex-col items-start">
-										<span className="truncate">
+									<div className="flex flex-col items-start truncate">
+										<span className="truncate max-w-48">
 											{banner.title}
 										</span>
 										<div className="flex flex-col items-start">
@@ -430,13 +430,15 @@ export function BannerRegistration() {
 										</div>
 									</div>
 
-									{banner.photo?.url && (
-										<img
-											src={banner.photo.url}
-											alt={banner.title}
-											className="w-13 h-13 object-cover"
-										/>
-									)}
+									<div>
+										{banner.photo?.url && (
+											<img
+												src={banner.photo.url}
+												alt={banner.title}
+												className="w-8 h-8 object-cover scale-220 "
+											/>
+										)}
+									</div>
 								</button>
 							</li>
 						))
