@@ -196,7 +196,7 @@ export function BannerRegistration() {
 			}
 
 			if (formData.link && !formData.link.startsWith("http")) {
-				throw new Error("URL do banner deve começar com http/https");
+				throw new Error("URL da notícia deve começar com http/https");
 			}
 
 			if (isEditing && selectedBanner) {
@@ -220,7 +220,7 @@ export function BannerRegistration() {
 
 				setStatus({
 					type: "success",
-					message: "Banner atualizado com sucesso!",
+					message: "Notícia atualizada com sucesso!",
 				});
 			} else {
 				// Create new banner
@@ -242,7 +242,7 @@ export function BannerRegistration() {
 
 				setStatus({
 					type: "success",
-					message: "Banner cadastrado com sucesso!",
+					message: "Notícia cadastrada com sucesso!",
 				});
 			}
 
@@ -259,7 +259,7 @@ export function BannerRegistration() {
 			setStatus({
 				type: "error",
 				message:
-					error.message || "Erro desconhecido ao cadastrar banner",
+					error.message || "Erro desconhecido ao cadastrar notícia",
 			});
 			setUploadProgress(null);
 		}
@@ -335,27 +335,66 @@ export function BannerRegistration() {
 				<div className="mb-4 space-y-2">
 					<input
 						type="text"
-						placeholder="Buscar banners (título, conteúdo, link, categoria)..."
+						placeholder="Buscar notícias (título, conteúdo, link, categoria)..."
 						className="w-full p-2 border rounded h-11"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 
-					<select
+					<Listbox
 						value={categoryFilter}
-						onChange={(e) => setCategoryFilter(e.target.value)}
-						className="w-full p-2 border rounded h-11"
+						onChange={setCategoryFilter}
 					>
-						<option value="">Todas as categorias</option>
-						{categoriesData?.__type?.enumValues?.map((option) => (
-							<option key={option.name} value={option.name}>
-								{formatEnum(option.name)}
-							</option>
-						))}
-					</select>
+						<div className="relative">
+							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+								<span className="block truncate">
+									{categoryFilter
+										? formatEnum(categoryFilter)
+										: "Todas as categorias"}
+								</span>
+								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+									<ChevronUpDownIcon
+										className="h-5 w-5 text-f1-silver"
+										aria-hidden="true"
+									/>
+								</span>
+							</ListboxButton>
+
+							<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+								<ListboxOption
+									value=""
+									className={({ active }) =>
+										`flex items-center gap-2 p-2 cursor-pointer ${
+											active ? "bg-f1-red/20" : ""
+										}`
+									}
+								>
+									Todas as categorias
+								</ListboxOption>
+
+								{categoriesData?.__type?.enumValues?.map(
+									(option) => (
+										<ListboxOption
+											key={option.name}
+											value={option.name}
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active ? "bg-f1-red/20" : ""
+												}`
+											}
+										>
+											<span className="block truncate">
+												{formatEnum(option.name)}
+											</span>
+										</ListboxOption>
+									)
+								)}
+							</ListboxOptions>
+						</div>
+					</Listbox>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] overflow-y-auto pr-2">
+				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 md:min-h-110 overflow-y-auto pr-2">
 					{filteredBanners.length > 0 ? (
 						filteredBanners.map((banner) => (
 							<li key={banner.id}>
@@ -403,7 +442,7 @@ export function BannerRegistration() {
 						))
 					) : (
 						<li className="p-2 text-gray-500 text-center">
-							Nenhum banner encontrado
+							Nenhuma notícia encontrada
 						</li>
 					)}
 				</ul>
@@ -418,8 +457,8 @@ export function BannerRegistration() {
 					<div className="flex justify-between items-center mb-6">
 						<h2 className="text-2xl font-bold">
 							{isEditing
-								? "Editar Banner"
-								: "Cadastrar Novo Banner"}
+								? "Editar Notícia"
+								: "Cadastrar Nova Notícia"}
 						</h2>
 						{isEditing && (
 							<button
@@ -427,7 +466,7 @@ export function BannerRegistration() {
 								onClick={resetForm}
 								className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
 							>
-								Novo Banner
+								Nova Notícia
 							</button>
 						)}
 					</div>

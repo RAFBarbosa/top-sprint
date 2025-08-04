@@ -51,7 +51,7 @@ export default function Sidebar() {
 								}`
 							}
 						>
-							Noticias
+							Notícias
 						</NavLink>
 					</li>
 					<li>
