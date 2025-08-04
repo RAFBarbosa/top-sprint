@@ -294,7 +294,7 @@ export function CalendarRegistration() {
 				<div className="mb-4">
 					<input
 						type="text"
-						placeholder="Buscar calendários (pista, rodada, data)..."
+						placeholder="Buscar Etapas (pista, rodada, data)..."
 						className="w-full p-2 border rounded h-11"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
@@ -361,16 +361,37 @@ export function CalendarRegistration() {
 					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
 				>
 					<div className="flex justify-between items-center mb-6">
-						<h2 className="text-2xl font-bold">
-							{isEditing
-								? "Editar Etapa"
-								: "Cadastrar Nova Etapa"}
-						</h2>
+						<div>
+							<h2 className="text-2xl font-bold">
+								{isEditing
+									? "Editar Etapa"
+									: "Cadastrar Nova Etapa"}
+							</h2>
+							<div className="flex items-center justify-start gap-2 mt-4">
+								<span className="text-sm font-medium">
+									Ativo
+								</span>
+								<label className="relative inline-flex items-center cursor-pointer">
+									<input
+										type="checkbox"
+										checked={formData.active}
+										onChange={(e) =>
+											setFormData({
+												...formData,
+												active: e.target.checked,
+											})
+										}
+										className="sr-only peer"
+									/>
+									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+								</label>
+							</div>
+						</div>
 						{isEditing && (
 							<button
 								type="button"
 								onClick={resetForm}
-								className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+								className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
 							>
 								Nova Etapa
 							</button>
@@ -456,20 +477,6 @@ export function CalendarRegistration() {
 								value={formData.link}
 								onChange={handleChange}
 								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-						<div className="flex items-center gap-2 mb-4">
-							<label className="block">Ativo:</label>
-							<input
-								type="checkbox"
-								checked={formData.active}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										active: e.target.checked,
-									})
-								}
-								className="w-4 h-4"
 							/>
 						</div>
 						<div className="md:col-span-2">

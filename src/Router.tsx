@@ -14,6 +14,7 @@ import CalendarAdmin from "./pages/admin/CalendarAdmin";
 import NewsAdmin from "./pages/admin/NewsAdmin";
 import ResultsAdmin from "./pages/admin/ResultsAdmin";
 import DriversAdmin from "./pages/admin/DriversAdmin";
+import HallOfFameAdmin from "./pages/admin/HallOfFameAdmin";
 
 export function Router() {
 	return (
@@ -33,6 +34,7 @@ export function Router() {
 					<Route path="calendarios" element={<CalendarAdmin />} />
 					<Route path="resultados" element={<ResultsAdmin />} />
 					<Route path="noticias" element={<NewsAdmin />} />
+					<Route path="campeoes" element={<HallOfFameAdmin />} />
 				</Route>
 			</Route>
 		</Routes>
