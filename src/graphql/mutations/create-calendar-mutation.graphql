@@ -1,0 +1,15 @@
+mutation CreateCalendar($data: CalendarCreateInput!) {
+  createCalendar(data: $data) {
+    id
+    track
+    round
+    description
+    date
+    link
+    flag {
+      id
+      url
+    }
+    createdAt
+  }
+}

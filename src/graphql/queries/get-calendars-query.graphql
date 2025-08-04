@@ -1,8 +1,9 @@
-query GetCalendars {
-	calendars(stage: PUBLISHED, orderBy: date_ASC) {
+query GetCalendars($orderBy: CalendarOrderByInput, $where: CalendarWhereInput) {
+	calendars(orderBy: $orderBy, where: $where) {
 		id
 		track
 		round
+		active
 		description
 		date
 		link

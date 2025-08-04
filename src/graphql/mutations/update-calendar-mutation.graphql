@@ -1,0 +1,18 @@
+mutation UpdateCalendar(
+	$where: CalendarWhereUniqueInput!
+	$data: CalendarUpdateInput!
+) {
+	updateCalendar(where: $where, data: $data) {
+		id
+		track
+		round
+		description
+		date
+		link
+		flag {
+			id
+			url
+		}
+		updatedAt
+	}
+}
