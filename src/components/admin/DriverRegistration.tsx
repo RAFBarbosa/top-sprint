@@ -11,7 +11,8 @@ import {
 	useGridOptionsQuery,
 	useCreateAssetMutation,
 	useUpdateDriverMutation,
-	useGetDriversQuery,
+	useGetDriversRegistrationQuery,
+	GetDriversRegistrationDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 
@@ -40,8 +41,32 @@ export function DriverRegistration() {
 	const [gridFilter, setGridFilter] = useState("");
 
 	// GraphQL operations
+	// const [createDriver, { loading: createDriverLoading }] =
+	// 	useCreateDriverMutation();
+
 	const [createDriver, { loading: createDriverLoading }] =
-		useCreateDriverMutation();
+		useCreateDriverMutation({
+			update: (cache, { data }) => {
+				const newDriver = data?.createDriver;
+				if (!newDriver) return;
+
+				const existingData = cache.readQuery({
+					query: GetDriversRegistrationDocument,
+					variables: { stage: "DRAFT" },
+				});
+
+				if (existingData) {
+					cache.writeQuery({
+						query: GetDriversRegistrationDocument,
+						variables: { stage: "DRAFT" },
+						data: {
+							drivers: [newDriver, ...existingData.drivers],
+						},
+					});
+				}
+			},
+		});
+
 	const [updateDriver, { loading: updateDriverLoading }] =
 		useUpdateDriverMutation();
 	const [createAsset] = useCreateAssetMutation();
@@ -61,7 +86,7 @@ export function DriverRegistration() {
 		data: driversData,
 		loading: driversLoading,
 		error: driversError,
-	} = useGetDriversQuery();
+	} = useGetDriversRegistrationQuery();
 
 	// Helper functions
 	const formatEnum = (text: string) =>
@@ -258,6 +283,22 @@ export function DriverRegistration() {
 								: null,
 							team: teamId ? { connect: { id: teamId } } : null,
 						},
+					},
+					update(cache, { data }) {
+						const existing = cache.readQuery({
+							query: GetDriversRegistrationDocument,
+						});
+						if (existing && data?.createDriver) {
+							cache.writeQuery({
+								query: GetDriversRegistrationDocument,
+								data: {
+									drivers: [
+										data.createDriver,
+										...existing.drivers,
+									],
+								},
+							});
+						}
 					},
 				});
 

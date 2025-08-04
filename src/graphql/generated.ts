@@ -11085,7 +11085,7 @@ export type CreateCalendarMutationVariables = Exact<{
 }>;
 
 
-export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, link?: string | null, createdAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, active: boolean, link?: string | null, createdAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type CreateDriverMutationVariables = Exact<{
   data: DriverCreateInput;
@@ -11123,18 +11123,25 @@ export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
+export type GetBannersRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBannersRegistrationQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+
 export type GetBannersCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typename?: '__Type', enumValues?: Array<{ __typename?: '__EnumValue', name: string }> | null } | null };
 
-export type GetCalendarsQueryVariables = Exact<{
-  orderBy?: InputMaybe<CalendarOrderByInput>;
-  where?: InputMaybe<CalendarWhereInput>;
-}>;
+export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+
+export type GetCalendarsRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11157,6 +11164,11 @@ export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+
+export type GetDriversRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
 
 export type GridOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11287,6 +11299,7 @@ export const CreateCalendarDocument = gql`
     round
     description
     date
+    active
     link
     flag {
       id
@@ -11560,6 +11573,49 @@ export function useGetBannersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetBannersQueryHookResult = ReturnType<typeof useGetBannersQuery>;
 export type GetBannersLazyQueryHookResult = ReturnType<typeof useGetBannersLazyQuery>;
 export type GetBannersQueryResult = Apollo.QueryResult<GetBannersQuery, GetBannersQueryVariables>;
+export const GetBannersRegistrationDocument = gql`
+    query GetBannersRegistration {
+  banners(orderBy: createdAt_DESC, stage: DRAFT) {
+    id
+    title
+    content
+    link
+    category
+    photo {
+      id
+      url
+    }
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetBannersRegistrationQuery__
+ *
+ * To run a query within a React component, call `useGetBannersRegistrationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetBannersRegistrationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetBannersRegistrationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetBannersRegistrationQuery(baseOptions?: Apollo.QueryHookOptions<GetBannersRegistrationQuery, GetBannersRegistrationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetBannersRegistrationQuery, GetBannersRegistrationQueryVariables>(GetBannersRegistrationDocument, options);
+      }
+export function useGetBannersRegistrationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetBannersRegistrationQuery, GetBannersRegistrationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetBannersRegistrationQuery, GetBannersRegistrationQueryVariables>(GetBannersRegistrationDocument, options);
+        }
+export type GetBannersRegistrationQueryHookResult = ReturnType<typeof useGetBannersRegistrationQuery>;
+export type GetBannersRegistrationLazyQueryHookResult = ReturnType<typeof useGetBannersRegistrationLazyQuery>;
+export type GetBannersRegistrationQueryResult = Apollo.QueryResult<GetBannersRegistrationQuery, GetBannersRegistrationQueryVariables>;
 export const GetBannersCategoriesDocument = gql`
     query GetBannersCategories {
   __type(name: "NewsCategory") {
@@ -11597,8 +11653,8 @@ export type GetBannersCategoriesQueryHookResult = ReturnType<typeof useGetBanner
 export type GetBannersCategoriesLazyQueryHookResult = ReturnType<typeof useGetBannersCategoriesLazyQuery>;
 export type GetBannersCategoriesQueryResult = Apollo.QueryResult<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>;
 export const GetCalendarsDocument = gql`
-    query GetCalendars($orderBy: CalendarOrderByInput, $where: CalendarWhereInput) {
-  calendars(orderBy: $orderBy, where: $where) {
+    query GetCalendars {
+  calendars(orderBy: date_ASC, where: {active: true}, stage: PUBLISHED) {
     id
     track
     round
@@ -11625,8 +11681,6 @@ export const GetCalendarsDocument = gql`
  * @example
  * const { data, loading, error } = useGetCalendarsQuery({
  *   variables: {
- *      orderBy: // value for 'orderBy'
- *      where: // value for 'where'
  *   },
  * });
  */
@@ -11641,6 +11695,49 @@ export function useGetCalendarsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetCalendarsQueryHookResult = ReturnType<typeof useGetCalendarsQuery>;
 export type GetCalendarsLazyQueryHookResult = ReturnType<typeof useGetCalendarsLazyQuery>;
 export type GetCalendarsQueryResult = Apollo.QueryResult<GetCalendarsQuery, GetCalendarsQueryVariables>;
+export const GetCalendarsRegistrationDocument = gql`
+    query GetCalendarsRegistration {
+  calendars(orderBy: date_ASC, stage: DRAFT) {
+    id
+    track
+    round
+    active
+    description
+    date
+    link
+    flag {
+      url
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCalendarsRegistrationQuery__
+ *
+ * To run a query within a React component, call `useGetCalendarsRegistrationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCalendarsRegistrationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCalendarsRegistrationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCalendarsRegistrationQuery(baseOptions?: Apollo.QueryHookOptions<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>(GetCalendarsRegistrationDocument, options);
+      }
+export function useGetCalendarsRegistrationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>(GetCalendarsRegistrationDocument, options);
+        }
+export type GetCalendarsRegistrationQueryHookResult = ReturnType<typeof useGetCalendarsRegistrationQuery>;
+export type GetCalendarsRegistrationLazyQueryHookResult = ReturnType<typeof useGetCalendarsRegistrationLazyQuery>;
+export type GetCalendarsRegistrationQueryResult = Apollo.QueryResult<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>;
 export const GetHallsOfFameDocument = gql`
     query GetHallsOfFame {
   hallsOfFame(orderBy: publishedAt_DESC) {
@@ -11828,6 +11925,63 @@ export function useGetDriversLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type GetDriversQueryHookResult = ReturnType<typeof useGetDriversQuery>;
 export type GetDriversLazyQueryHookResult = ReturnType<typeof useGetDriversLazyQuery>;
 export type GetDriversQueryResult = Apollo.QueryResult<GetDriversQuery, GetDriversQueryVariables>;
+export const GetDriversRegistrationDocument = gql`
+    query GetDriversRegistration {
+  drivers(orderBy: name_ASC, stage: DRAFT) {
+    id
+    grid
+    name
+    number
+    stream
+    photo {
+      url
+    }
+    badgeTitle
+    badge {
+      url
+    }
+    city
+    equipment
+    phone
+    team {
+      name
+      color {
+        hex
+      }
+      photo {
+        url
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetDriversRegistrationQuery__
+ *
+ * To run a query within a React component, call `useGetDriversRegistrationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDriversRegistrationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDriversRegistrationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDriversRegistrationQuery(baseOptions?: Apollo.QueryHookOptions<GetDriversRegistrationQuery, GetDriversRegistrationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDriversRegistrationQuery, GetDriversRegistrationQueryVariables>(GetDriversRegistrationDocument, options);
+      }
+export function useGetDriversRegistrationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDriversRegistrationQuery, GetDriversRegistrationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDriversRegistrationQuery, GetDriversRegistrationQueryVariables>(GetDriversRegistrationDocument, options);
+        }
+export type GetDriversRegistrationQueryHookResult = ReturnType<typeof useGetDriversRegistrationQuery>;
+export type GetDriversRegistrationLazyQueryHookResult = ReturnType<typeof useGetDriversRegistrationLazyQuery>;
+export type GetDriversRegistrationQueryResult = Apollo.QueryResult<GetDriversRegistrationQuery, GetDriversRegistrationQueryVariables>;
 export const GridOptionsDocument = gql`
     query GridOptions {
   __type(name: "Grid") {
