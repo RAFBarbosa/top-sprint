@@ -355,21 +355,55 @@ export function DriverRegistration() {
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 
-					<select
-						value={gridFilter}
-						onChange={(e) => setGridFilter(e.target.value)}
-						className="w-full p-2 border rounded h-11"
-					>
-						<option value="">Todos os grids</option>
-						{gridData?.__type?.enumValues?.map((option) => (
-							<option key={option.name} value={option.name}>
-								{formatEnum(option.name)}
-							</option>
-						))}
-					</select>
+					<Listbox value={gridFilter} onChange={setGridFilter}>
+						<div className="relative">
+							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+								<span className="block truncate">
+									{gridFilter
+										? formatEnum(gridFilter)
+										: "Todos os grids"}
+								</span>
+								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+									<ChevronUpDownIcon
+										className="h-5 w-5 text-f1-silver"
+										aria-hidden="true"
+									/>
+								</span>
+							</ListboxButton>
+
+							<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+								<ListboxOption
+									value=""
+									className={({ active }) =>
+										`flex items-center gap-2 p-2 cursor-pointer ${
+											active ? "bg-f1-red/20" : ""
+										}`
+									}
+								>
+									Todos os grids
+								</ListboxOption>
+
+								{gridData?.__type?.enumValues?.map((option) => (
+									<ListboxOption
+										key={option.name}
+										value={option.name}
+										className={({ active }) =>
+											`flex items-center gap-2 p-2 cursor-pointer ${
+												active ? "bg-f1-red/20" : ""
+											}`
+										}
+									>
+										<span className="block truncate">
+											{formatEnum(option.name)}
+										</span>
+									</ListboxOption>
+								))}
+							</ListboxOptions>
+						</div>
+					</Listbox>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] overflow-y-auto pr-2">
+				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 md:min-h-110 overflow-y-auto pr-2">
 					{filteredDrivers.length > 0 ? (
 						filteredDrivers.map((driver) => (
 							<li key={driver.id}>
