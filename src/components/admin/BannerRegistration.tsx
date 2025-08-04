@@ -7,10 +7,11 @@ import {
 } from "@headlessui/react";
 import {
 	useCreateBannerMutation,
-	useGetBannersQuery,
+	useGetBannersRegistrationQuery,
 	useGetBannersCategoriesQuery,
 	useUpdateBannerMutation,
 	useCreateAssetMutation,
+	GetBannersRegistrationDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { format } from "date-fns";
@@ -79,7 +80,28 @@ export function BannerRegistration() {
 
 	// GraphQL operations
 	const [createBanner, { loading: createBannerLoading }] =
-		useCreateBannerMutation();
+		useCreateBannerMutation({
+			update: (cache, { data }) => {
+				const newBanner = data?.createBanner;
+				if (!newBanner) return;
+
+				const existingData = cache.readQuery({
+					query: GetBannersRegistrationDocument,
+					variables: { stage: "DRAFT" },
+				});
+
+				if (existingData) {
+					cache.writeQuery({
+						query: GetBannersRegistrationDocument,
+						variables: { stage: "DRAFT" },
+						data: {
+							banners: [newBanner, ...existingData.banners],
+						},
+					});
+				}
+			},
+		});
+
 	const [updateBanner, { loading: updateBannerLoading }] =
 		useUpdateBannerMutation();
 	const [createAsset] = useCreateAssetMutation();
@@ -89,7 +111,7 @@ export function BannerRegistration() {
 		data: bannersData,
 		loading: bannersLoading,
 		error: bannersError,
-	} = useGetBannersQuery();
+	} = useGetBannersRegistrationQuery();
 	const {
 		data: categoriesData,
 		loading: categoriesLoading,
@@ -235,6 +257,22 @@ export function BannerRegistration() {
 								? { connect: { id: photoId } }
 								: null,
 						},
+					},
+					update(cache, { data }) {
+						const existing = cache.readQuery({
+							query: GetBannersRegistrationDocument,
+						});
+						if (existing && data?.createBanner) {
+							cache.writeQuery({
+								query: GetBannersRegistrationDocument,
+								data: {
+									banners: [
+										data.createBanner,
+										...existing.banners,
+									],
+								},
+							});
+						}
 					},
 				});
 
