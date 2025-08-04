@@ -20,6 +20,18 @@ export default function Sidebar() {
 					</li>
 					<li>
 						<NavLink
+							to="/admin/painel/noticias"
+							className={({ isActive }) =>
+								`block p-2 rounded hover:bg-f1-red/20 ${
+									isActive ? "bg-f1-red/20 font-bold" : ""
+								}`
+							}
+						>
+							Notícias
+						</NavLink>
+					</li>
+					<li>
+						<NavLink
 							to="/admin/painel/pilotos"
 							className={({ isActive }) =>
 								`block p-2 rounded hover:bg-f1-red/20 ${
@@ -42,18 +54,7 @@ export default function Sidebar() {
 							Equipes
 						</NavLink>
 					</li>
-					<li>
-						<NavLink
-							to="/admin/painel/noticias"
-							className={({ isActive }) =>
-								`block p-2 rounded hover:bg-f1-red/20 ${
-									isActive ? "bg-f1-red/20 font-bold" : ""
-								}`
-							}
-						>
-							Notícias
-						</NavLink>
-					</li>
+
 					<li>
 						<NavLink
 							to="/admin/painel/calendarios"
@@ -63,7 +64,19 @@ export default function Sidebar() {
 								}`
 							}
 						>
-							Calendario
+							Calendário
+						</NavLink>
+					</li>
+					<li>
+						<NavLink
+							to="/admin/painel/campeoes"
+							className={({ isActive }) =>
+								`block p-2 rounded hover:bg-gray-100 ${
+									isActive ? "bg-f1-red/20 font-bold" : ""
+								}`
+							}
+						>
+							Campeões
 						</NavLink>
 					</li>
 				</ul>
