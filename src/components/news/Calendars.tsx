@@ -17,7 +17,12 @@ const loadingSkeleton = () => {
 };
 
 export function Calendars() {
-	const { data, error, loading } = useGetCalendarsQuery();
+	const { data, error, loading } = useGetCalendarsQuery({
+		variables: {
+			orderBy: "date_ASC",
+			where: { active: true },
+		},
+	});
 
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
