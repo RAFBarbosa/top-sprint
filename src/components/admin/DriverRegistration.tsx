@@ -523,7 +523,7 @@ export function DriverRegistration() {
 													driver.deleted
 												)
 											}
-											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+											className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 											title={
 												driver.deleted
 													? "Restaurar"
