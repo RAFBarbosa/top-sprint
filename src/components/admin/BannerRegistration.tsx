@@ -512,7 +512,7 @@ export function BannerRegistration() {
 										</div>
 									</div>
 
-									<div className="flex items-center">
+									<div className="flex items-center gap-1">
 										<div>
 											{banner.photo?.url && (
 												<img
@@ -529,7 +529,7 @@ export function BannerRegistration() {
 													banner.deleted
 												)
 											}
-											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+											className=" text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 											title={
 												banner.deleted
 													? "Restaurar"
@@ -553,7 +553,7 @@ export function BannerRegistration() {
 			<Dialog
 				open={isDeleteModalOpen}
 				onClose={cancelDelete}
-				className="relative z-50"
+				className="relative z-10"
 			>
 				{/* Backdrop */}
 				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
