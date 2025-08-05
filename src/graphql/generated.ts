@@ -1070,6 +1070,7 @@ export type Banner = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
+  deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<Banner>;
   /** List of Banner versions */
@@ -1164,6 +1165,7 @@ export type BannerCreateInput = {
   category: NewsCategory;
   content?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  deleted: Scalars['Boolean'];
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
   title?: InputMaybe<Scalars['String']>;
@@ -1245,6 +1247,9 @@ export type BannerManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<BannerWhereStageInput>;
   documentInStages_none?: InputMaybe<BannerWhereStageInput>;
   documentInStages_some?: InputMaybe<BannerWhereStageInput>;
@@ -1350,6 +1355,8 @@ export enum BannerOrderByInput {
   ContentDesc = 'content_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   LinkAsc = 'link_ASC',
@@ -1365,6 +1372,7 @@ export enum BannerOrderByInput {
 export type BannerUpdateInput = {
   category?: InputMaybe<NewsCategory>;
   content?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
   title?: InputMaybe<Scalars['String']>;
@@ -1390,6 +1398,7 @@ export type BannerUpdateManyInlineInput = {
 export type BannerUpdateManyInput = {
   category?: InputMaybe<NewsCategory>;
   content?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   link?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
 };
@@ -1495,6 +1504,9 @@ export type BannerWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<BannerWhereStageInput>;
   documentInStages_none?: InputMaybe<BannerWhereStageInput>;
   documentInStages_some?: InputMaybe<BannerWhereStageInput>;
@@ -1626,6 +1638,7 @@ export type Calendar = Entity & Node & {
   /** User that created this document */
   createdBy?: Maybe<User>;
   date?: Maybe<Scalars['DateTime']>;
+  deleted: Scalars['Boolean'];
   description?: Maybe<Scalars['String']>;
   /** Get the document in other stages */
   documentInStages: Array<Calendar>;
@@ -1722,6 +1735,7 @@ export type CalendarCreateInput = {
   active: Scalars['Boolean'];
   createdAt?: InputMaybe<Scalars['DateTime']>;
   date?: InputMaybe<Scalars['DateTime']>;
+  deleted: Scalars['Boolean'];
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetCreateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
@@ -1797,6 +1811,9 @@ export type CalendarManyWhereInput = {
   date_not?: InputMaybe<Scalars['DateTime']>;
   /** All values that are not contained in given list. */
   date_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   description_contains?: InputMaybe<Scalars['String']>;
@@ -1940,6 +1957,8 @@ export enum CalendarOrderByInput {
   CreatedAtDesc = 'createdAt_DESC',
   DateAsc = 'date_ASC',
   DateDesc = 'date_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   DescriptionAsc = 'description_ASC',
   DescriptionDesc = 'description_DESC',
   IdAsc = 'id_ASC',
@@ -1959,6 +1978,7 @@ export enum CalendarOrderByInput {
 export type CalendarUpdateInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   date?: InputMaybe<Scalars['DateTime']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetUpdateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
@@ -1986,6 +2006,7 @@ export type CalendarUpdateManyInlineInput = {
 export type CalendarUpdateManyInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   date?: InputMaybe<Scalars['DateTime']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
@@ -2085,6 +2106,9 @@ export type CalendarWhereInput = {
   date_not?: InputMaybe<Scalars['DateTime']>;
   /** All values that are not contained in given list. */
   date_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   description_contains?: InputMaybe<Scalars['String']>;
@@ -2272,6 +2296,7 @@ export type Data = Entity & Node & {
   /** User that created this document */
   createdBy?: Maybe<User>;
   csv?: Maybe<Asset>;
+  deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<Data>;
   /** List of Data versions */
@@ -2362,6 +2387,7 @@ export type DataConnection = {
 export type DataCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   csv?: InputMaybe<AssetCreateOneInlineInput>;
+  deleted: Scalars['Boolean'];
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
 
@@ -2415,6 +2441,9 @@ export type DataManyWhereInput = {
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
   csv?: InputMaybe<AssetWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<DataWhereStageInput>;
   documentInStages_none?: InputMaybe<DataWhereStageInput>;
   documentInStages_some?: InputMaybe<DataWhereStageInput>;
@@ -2477,6 +2506,8 @@ export type DataManyWhereInput = {
 export enum DataOrderByInput {
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
@@ -2487,6 +2518,7 @@ export enum DataOrderByInput {
 
 export type DataUpdateInput = {
   csv?: InputMaybe<AssetUpdateOneInlineInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type DataUpdateManyInlineInput = {
@@ -2507,8 +2539,7 @@ export type DataUpdateManyInlineInput = {
 };
 
 export type DataUpdateManyInput = {
-  /** No fields in updateMany data input */
-  _?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type DataUpdateManyWithNestedWhereInput = {
@@ -2587,6 +2618,9 @@ export type DataWhereInput = {
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
   csv?: InputMaybe<AssetWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<DataWhereStageInput>;
   documentInStages_none?: InputMaybe<DataWhereStageInput>;
   documentInStages_some?: InputMaybe<DataWhereStageInput>;
@@ -2721,6 +2755,7 @@ export type Driver = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
+  deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<Driver>;
   equipment?: Maybe<Scalars['String']>;
@@ -2841,6 +2876,7 @@ export type DriverCreateInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  deleted: Scalars['Boolean'];
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
   grid?: InputMaybe<Grid>;
@@ -2934,6 +2970,9 @@ export type DriverManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<DriverWhereStageInput>;
   documentInStages_none?: InputMaybe<DriverWhereStageInput>;
   documentInStages_some?: InputMaybe<DriverWhereStageInput>;
@@ -3107,6 +3146,8 @@ export enum DriverOrderByInput {
   CityDesc = 'city_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   EquipmentAsc = 'equipment_ASC',
   EquipmentDesc = 'equipment_DESC',
   FullTimeAsc = 'fullTime_ASC',
@@ -3133,6 +3174,7 @@ export type DriverUpdateInput = {
   badge?: InputMaybe<AssetUpdateManyInlineInput>;
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
   grid?: InputMaybe<Grid>;
@@ -3164,6 +3206,7 @@ export type DriverUpdateManyInlineInput = {
 export type DriverUpdateManyInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
   grid?: InputMaybe<Grid>;
@@ -3280,6 +3323,9 @@ export type DriverWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<DriverWhereStageInput>;
   documentInStages_none?: InputMaybe<DriverWhereStageInput>;
   documentInStages_some?: InputMaybe<DriverWhereStageInput>;
@@ -3519,6 +3565,7 @@ export type HallOfFame = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
+  deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<HallOfFame>;
   /** List of HallOfFame versions */
@@ -3616,7 +3663,8 @@ export type HallOfFameConnection = {
 
 export type HallOfFameCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
-  photo?: InputMaybe<AssetCreateManyInlineInput>;
+  deleted: Scalars['Boolean'];
+  photo: AssetCreateManyInlineInput;
   season: Scalars['String'];
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
@@ -3670,6 +3718,9 @@ export type HallOfFameManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<HallOfFameWhereStageInput>;
   documentInStages_none?: InputMaybe<HallOfFameWhereStageInput>;
   documentInStages_some?: InputMaybe<HallOfFameWhereStageInput>;
@@ -3754,6 +3805,8 @@ export type HallOfFameManyWhereInput = {
 export enum HallOfFameOrderByInput {
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
@@ -3765,6 +3818,7 @@ export enum HallOfFameOrderByInput {
 }
 
 export type HallOfFameUpdateInput = {
+  deleted?: InputMaybe<Scalars['Boolean']>;
   photo?: InputMaybe<AssetUpdateManyInlineInput>;
   season?: InputMaybe<Scalars['String']>;
 };
@@ -3787,6 +3841,7 @@ export type HallOfFameUpdateManyInlineInput = {
 };
 
 export type HallOfFameUpdateManyInput = {
+  deleted?: InputMaybe<Scalars['Boolean']>;
   season?: InputMaybe<Scalars['String']>;
 };
 
@@ -3865,6 +3920,9 @@ export type HallOfFameWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<HallOfFameWhereStageInput>;
   documentInStages_none?: InputMaybe<HallOfFameWhereStageInput>;
   documentInStages_some?: InputMaybe<HallOfFameWhereStageInput>;
@@ -5951,6 +6009,7 @@ export type Partner = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
+  deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<Partner>;
   footerLogo: Asset;
@@ -6053,6 +6112,7 @@ export type PartnerCreateInput = {
   active: Scalars['Boolean'];
   altText?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  deleted: Scalars['Boolean'];
   footerLogo: AssetCreateOneInlineInput;
   image?: InputMaybe<AssetCreateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
@@ -6131,6 +6191,9 @@ export type PartnerManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<PartnerWhereStageInput>;
   documentInStages_none?: InputMaybe<PartnerWhereStageInput>;
   documentInStages_some?: InputMaybe<PartnerWhereStageInput>;
@@ -6237,6 +6300,8 @@ export enum PartnerOrderByInput {
   AltTextDesc = 'altText_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   LinkAsc = 'link_ASC',
@@ -6252,6 +6317,7 @@ export enum PartnerOrderByInput {
 export type PartnerUpdateInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   altText?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   footerLogo?: InputMaybe<AssetUpdateOneInlineInput>;
   image?: InputMaybe<AssetUpdateOneInlineInput>;
   link?: InputMaybe<Scalars['String']>;
@@ -6278,6 +6344,7 @@ export type PartnerUpdateManyInlineInput = {
 export type PartnerUpdateManyInput = {
   active?: InputMaybe<Scalars['Boolean']>;
   altText?: InputMaybe<Scalars['String']>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   link?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
 };
@@ -6379,6 +6446,9 @@ export type PartnerWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<PartnerWhereStageInput>;
   documentInStages_none?: InputMaybe<PartnerWhereStageInput>;
   documentInStages_some?: InputMaybe<PartnerWhereStageInput>;
@@ -9425,6 +9495,7 @@ export type Team = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
+  deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<Team>;
   driver: Array<Driver>;
@@ -9531,6 +9602,7 @@ export type TeamConnection = {
 export type TeamCreateInput = {
   color?: InputMaybe<ColorInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
+  deleted: Scalars['Boolean'];
   driver?: InputMaybe<DriverCreateManyInlineInput>;
   name?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
@@ -9586,6 +9658,9 @@ export type TeamManyWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<TeamWhereStageInput>;
   documentInStages_none?: InputMaybe<TeamWhereStageInput>;
   documentInStages_some?: InputMaybe<TeamWhereStageInput>;
@@ -9671,6 +9746,8 @@ export type TeamManyWhereInput = {
 export enum TeamOrderByInput {
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
+  DeletedAsc = 'deleted_ASC',
+  DeletedDesc = 'deleted_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   NameAsc = 'name_ASC',
@@ -9683,6 +9760,7 @@ export enum TeamOrderByInput {
 
 export type TeamUpdateInput = {
   color?: InputMaybe<ColorInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
   driver?: InputMaybe<DriverUpdateManyInlineInput>;
   name?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetUpdateOneInlineInput>;
@@ -9706,6 +9784,7 @@ export type TeamUpdateManyInlineInput = {
 };
 
 export type TeamUpdateManyInput = {
+  deleted?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
 };
 
@@ -9784,6 +9863,9 @@ export type TeamWhereInput = {
   /** All values that are not contained in given list. */
   createdAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   createdBy?: InputMaybe<UserWhereInput>;
+  deleted?: InputMaybe<Scalars['Boolean']>;
+  /** Any other value that exists and is not equal to the given value. */
+  deleted_not?: InputMaybe<Scalars['Boolean']>;
   documentInStages_every?: InputMaybe<TeamWhereStageInput>;
   documentInStages_none?: InputMaybe<TeamWhereStageInput>;
   documentInStages_some?: InputMaybe<TeamWhereStageInput>;
@@ -11078,21 +11160,28 @@ export type CreateBannerMutationVariables = Exact<{
 }>;
 
 
-export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, deleted: boolean, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type CreateCalendarMutationVariables = Exact<{
   data: CalendarCreateInput;
 }>;
 
 
-export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, active: boolean, link?: string | null, createdAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, deleted: boolean, description?: string | null, date?: any | null, active: boolean, link?: string | null, createdAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type CreateDriverMutationVariables = Exact<{
   data: DriverCreateInput;
 }>;
 
 
-export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+
+export type CreateHallOfFameMutationVariables = Exact<{
+  data: HallOfFameCreateInput;
+}>;
+
+
+export type CreateHallOfFameMutation = { __typename?: 'Mutation', createHallOfFame?: { __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> } | null };
 
 export type UpdateBannerMutationVariables = Exact<{
   where: BannerWhereUniqueInput;
@@ -11100,7 +11189,7 @@ export type UpdateBannerMutationVariables = Exact<{
 }>;
 
 
-export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, deleted: boolean, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateCalendarMutationVariables = Exact<{
   where: CalendarWhereUniqueInput;
@@ -11108,7 +11197,7 @@ export type UpdateCalendarMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCalendarMutation = { __typename?: 'Mutation', updateCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, date?: any | null, link?: string | null, updatedAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type UpdateCalendarMutation = { __typename?: 'Mutation', updateCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, deleted: boolean, date?: any | null, link?: string | null, updatedAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateDriverMutationVariables = Exact<{
   where: DriverWhereUniqueInput;
@@ -11116,17 +11205,25 @@ export type UpdateDriverMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+
+export type UpdateHallOfFameMutationVariables = Exact<{
+  where: HallOfFameWhereUniqueInput;
+  data: HallOfFameUpdateInput;
+}>;
+
+
+export type UpdateHallOfFameMutation = { __typename?: 'Mutation', updateHallOfFame?: { __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> } | null };
 
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, deleted: boolean, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetBannersRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersRegistrationQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+export type GetBannersRegistrationQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, deleted: boolean, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetBannersCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11136,22 +11233,27 @@ export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typ
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetCalendarsRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, photo: Array<{ __typename?: 'Asset', url: string }> }> };
+export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> }> };
+
+export type GetHallsOfFameRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetHallsOfFameRegistrationQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> }> };
 
 export type GetPartnersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPartnersQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, altText?: string | null, link?: string | null, active: boolean, image?: { __typename?: 'Asset', url: string } | null, footerLogo: { __typename?: 'Asset', url: string } }> };
+export type GetPartnersQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, altText?: string | null, deleted: boolean, link?: string | null, active: boolean, image?: { __typename?: 'Asset', url: string } | null, footerLogo: { __typename?: 'Asset', url: string } }> };
 
 export type GetSeasonRoundsQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -11163,12 +11265,12 @@ export type GetSeasonRoundsQuery = { __typename?: 'Query', rounds: Array<{ __typ
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
 
 export type GetDriversRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
 
 export type GridOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11190,7 +11292,7 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, deleted: boolean, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11255,6 +11357,7 @@ export const CreateBannerDocument = gql`
     id
     title
     content
+    deleted
     link
     category
     photo {
@@ -11297,6 +11400,7 @@ export const CreateCalendarDocument = gql`
     id
     track
     round
+    deleted
     description
     date
     active
@@ -11343,6 +11447,7 @@ export const CreateDriverDocument = gql`
     number
     grid
     stream
+    deleted
     city
     equipment
     phone
@@ -11388,12 +11493,51 @@ export function useCreateDriverMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateDriverMutationHookResult = ReturnType<typeof useCreateDriverMutation>;
 export type CreateDriverMutationResult = Apollo.MutationResult<CreateDriverMutation>;
 export type CreateDriverMutationOptions = Apollo.BaseMutationOptions<CreateDriverMutation, CreateDriverMutationVariables>;
+export const CreateHallOfFameDocument = gql`
+    mutation CreateHallOfFame($data: HallOfFameCreateInput!) {
+  createHallOfFame(data: $data) {
+    id
+    season
+    deleted
+    photo {
+      url
+    }
+  }
+}
+    `;
+export type CreateHallOfFameMutationFn = Apollo.MutationFunction<CreateHallOfFameMutation, CreateHallOfFameMutationVariables>;
+
+/**
+ * __useCreateHallOfFameMutation__
+ *
+ * To run a mutation, you first call `useCreateHallOfFameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateHallOfFameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createHallOfFameMutation, { data, loading, error }] = useCreateHallOfFameMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateHallOfFameMutation(baseOptions?: Apollo.MutationHookOptions<CreateHallOfFameMutation, CreateHallOfFameMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateHallOfFameMutation, CreateHallOfFameMutationVariables>(CreateHallOfFameDocument, options);
+      }
+export type CreateHallOfFameMutationHookResult = ReturnType<typeof useCreateHallOfFameMutation>;
+export type CreateHallOfFameMutationResult = Apollo.MutationResult<CreateHallOfFameMutation>;
+export type CreateHallOfFameMutationOptions = Apollo.BaseMutationOptions<CreateHallOfFameMutation, CreateHallOfFameMutationVariables>;
 export const UpdateBannerDocument = gql`
     mutation UpdateBanner($where: BannerWhereUniqueInput!, $data: BannerUpdateInput!) {
   updateBanner(where: $where, data: $data) {
     id
     title
     content
+    deleted
     link
     category
     photo {
@@ -11438,6 +11582,7 @@ export const UpdateCalendarDocument = gql`
     track
     round
     description
+    deleted
     date
     link
     flag {
@@ -11483,6 +11628,7 @@ export const UpdateDriverDocument = gql`
     number
     grid
     stream
+    deleted
     city
     equipment
     phone
@@ -11529,13 +11675,53 @@ export function useUpdateDriverMutation(baseOptions?: Apollo.MutationHookOptions
 export type UpdateDriverMutationHookResult = ReturnType<typeof useUpdateDriverMutation>;
 export type UpdateDriverMutationResult = Apollo.MutationResult<UpdateDriverMutation>;
 export type UpdateDriverMutationOptions = Apollo.BaseMutationOptions<UpdateDriverMutation, UpdateDriverMutationVariables>;
+export const UpdateHallOfFameDocument = gql`
+    mutation UpdateHallOfFame($where: HallOfFameWhereUniqueInput!, $data: HallOfFameUpdateInput!) {
+  updateHallOfFame(where: $where, data: $data) {
+    id
+    season
+    deleted
+    photo {
+      url
+    }
+  }
+}
+    `;
+export type UpdateHallOfFameMutationFn = Apollo.MutationFunction<UpdateHallOfFameMutation, UpdateHallOfFameMutationVariables>;
+
+/**
+ * __useUpdateHallOfFameMutation__
+ *
+ * To run a mutation, you first call `useUpdateHallOfFameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateHallOfFameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateHallOfFameMutation, { data, loading, error }] = useUpdateHallOfFameMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateHallOfFameMutation(baseOptions?: Apollo.MutationHookOptions<UpdateHallOfFameMutation, UpdateHallOfFameMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateHallOfFameMutation, UpdateHallOfFameMutationVariables>(UpdateHallOfFameDocument, options);
+      }
+export type UpdateHallOfFameMutationHookResult = ReturnType<typeof useUpdateHallOfFameMutation>;
+export type UpdateHallOfFameMutationResult = Apollo.MutationResult<UpdateHallOfFameMutation>;
+export type UpdateHallOfFameMutationOptions = Apollo.BaseMutationOptions<UpdateHallOfFameMutation, UpdateHallOfFameMutationVariables>;
 export const GetBannersDocument = gql`
     query GetBanners {
-  banners(orderBy: createdAt_DESC) {
+  banners(orderBy: createdAt_DESC, where: {deleted: false}) {
     id
     title
     content
     link
+    deleted
     category
     photo {
       id
@@ -11580,6 +11766,7 @@ export const GetBannersRegistrationDocument = gql`
     title
     content
     link
+    deleted
     category
     photo {
       id
@@ -11654,11 +11841,16 @@ export type GetBannersCategoriesLazyQueryHookResult = ReturnType<typeof useGetBa
 export type GetBannersCategoriesQueryResult = Apollo.QueryResult<GetBannersCategoriesQuery, GetBannersCategoriesQueryVariables>;
 export const GetCalendarsDocument = gql`
     query GetCalendars {
-  calendars(orderBy: date_ASC, where: {active: true}, stage: PUBLISHED) {
+  calendars(
+    orderBy: date_ASC
+    where: {active: true, deleted: false}
+    stage: PUBLISHED
+  ) {
     id
     track
     round
     active
+    deleted
     description
     date
     link
@@ -11702,6 +11894,7 @@ export const GetCalendarsRegistrationDocument = gql`
     track
     round
     active
+    deleted
     description
     date
     link
@@ -11740,9 +11933,10 @@ export type GetCalendarsRegistrationLazyQueryHookResult = ReturnType<typeof useG
 export type GetCalendarsRegistrationQueryResult = Apollo.QueryResult<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>;
 export const GetHallsOfFameDocument = gql`
     query GetHallsOfFame {
-  hallsOfFame(orderBy: publishedAt_DESC) {
+  hallsOfFame(orderBy: createdAt_DESC, where: {deleted: false}) {
     id
     season
+    deleted
     photo {
       url
     }
@@ -11776,12 +11970,52 @@ export function useGetHallsOfFameLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetHallsOfFameQueryHookResult = ReturnType<typeof useGetHallsOfFameQuery>;
 export type GetHallsOfFameLazyQueryHookResult = ReturnType<typeof useGetHallsOfFameLazyQuery>;
 export type GetHallsOfFameQueryResult = Apollo.QueryResult<GetHallsOfFameQuery, GetHallsOfFameQueryVariables>;
+export const GetHallsOfFameRegistrationDocument = gql`
+    query GetHallsOfFameRegistration {
+  hallsOfFame(orderBy: createdAt_DESC, stage: DRAFT) {
+    id
+    season
+    deleted
+    photo {
+      url
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetHallsOfFameRegistrationQuery__
+ *
+ * To run a query within a React component, call `useGetHallsOfFameRegistrationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetHallsOfFameRegistrationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetHallsOfFameRegistrationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetHallsOfFameRegistrationQuery(baseOptions?: Apollo.QueryHookOptions<GetHallsOfFameRegistrationQuery, GetHallsOfFameRegistrationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetHallsOfFameRegistrationQuery, GetHallsOfFameRegistrationQueryVariables>(GetHallsOfFameRegistrationDocument, options);
+      }
+export function useGetHallsOfFameRegistrationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetHallsOfFameRegistrationQuery, GetHallsOfFameRegistrationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetHallsOfFameRegistrationQuery, GetHallsOfFameRegistrationQueryVariables>(GetHallsOfFameRegistrationDocument, options);
+        }
+export type GetHallsOfFameRegistrationQueryHookResult = ReturnType<typeof useGetHallsOfFameRegistrationQuery>;
+export type GetHallsOfFameRegistrationLazyQueryHookResult = ReturnType<typeof useGetHallsOfFameRegistrationLazyQuery>;
+export type GetHallsOfFameRegistrationQueryResult = Apollo.QueryResult<GetHallsOfFameRegistrationQuery, GetHallsOfFameRegistrationQueryVariables>;
 export const GetPartnersDocument = gql`
     query GetPartners {
-  partners(where: {active: true}, orderBy: publishedAt_ASC) {
+  partners(where: {active: true, deleted: false}, orderBy: publishedAt_ASC) {
     id
     name
     altText
+    deleted
     image {
       url
     }
@@ -11870,12 +12104,13 @@ export type GetSeasonRoundsLazyQueryHookResult = ReturnType<typeof useGetSeasonR
 export type GetSeasonRoundsQueryResult = Apollo.QueryResult<GetSeasonRoundsQuery, GetSeasonRoundsQueryVariables>;
 export const GetDriversDocument = gql`
     query GetDrivers {
-  drivers {
+  drivers(where: {deleted: false}) {
     id
     grid
     name
     number
     stream
+    deleted
     photo {
       url
     }
@@ -11933,6 +12168,7 @@ export const GetDriversRegistrationDocument = gql`
     name
     number
     stream
+    deleted
     photo {
       url
     }
@@ -12113,6 +12349,7 @@ export const GetTeamsDocument = gql`
     name
     number
     stream
+    deleted
     city
     equipment
     grid
@@ -12135,6 +12372,7 @@ export const GetTeamsDocument = gql`
   }
   teams(stage: PUBLISHED) {
     id
+    deleted
     color {
       hex
     }
@@ -12174,7 +12412,7 @@ export type GetTeamsLazyQueryHookResult = ReturnType<typeof useGetTeamsLazyQuery
 export type GetTeamsQueryResult = Apollo.QueryResult<GetTeamsQuery, GetTeamsQueryVariables>;
 export const GetStatsDataDocument = gql`
     query GetStatsData {
-  datas(orderBy: publishedAt_DESC, first: 2) {
+  datas(orderBy: publishedAt_DESC, first: 2, where: {deleted: false}) {
     id
     csv {
       url

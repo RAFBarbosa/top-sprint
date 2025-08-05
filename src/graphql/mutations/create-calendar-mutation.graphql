@@ -3,6 +3,7 @@ mutation CreateCalendar($data: CalendarCreateInput!) {
 		id
 		track
 		round
+		deleted
 		description
 		date
 		active

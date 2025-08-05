@@ -15,6 +15,13 @@ import {
 	GetDriversRegistrationDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { XMarkIcon } from "@heroicons/react/16/solid";
+import {
+	Dialog,
+	DialogTitle,
+	DialogPanel,
+	Description,
+} from "@headlessui/react";
 
 export function DriverRegistration() {
 	// State management
@@ -40,9 +47,46 @@ export function DriverRegistration() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [gridFilter, setGridFilter] = useState("");
 
-	// GraphQL operations
-	// const [createDriver, { loading: createDriverLoading }] =
-	// 	useCreateDriverMutation();
+	const [updateDriver, { loading: updateDriverLoading }] =
+		useUpdateDriverMutation();
+	const [createAsset] = useCreateAssetMutation();
+
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [itemToDelete, setItemToDelete] = useState<{
+		id: string;
+		deleted: boolean;
+	} | null>(null);
+
+	const handleDeleteClick = (id: string, deleted: boolean) => {
+		setItemToDelete({ id, deleted });
+		setIsDeleteModalOpen(true);
+	};
+
+	const confirmDelete = async () => {
+		if (itemToDelete) {
+			await handleToggleDelete(itemToDelete.id, itemToDelete.deleted);
+			setIsDeleteModalOpen(false);
+			setItemToDelete(null);
+		}
+	};
+
+	const cancelDelete = () => {
+		setIsDeleteModalOpen(false);
+		setItemToDelete(null);
+	};
+
+	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
+		try {
+			await updateDriver({
+				variables: {
+					where: { id },
+					data: { deleted: !currentDeleted },
+				},
+			});
+		} catch (error) {
+			console.error("Error toggling delete:", error);
+		}
+	};
 
 	const [createDriver, { loading: createDriverLoading }] =
 		useCreateDriverMutation({
@@ -66,10 +110,6 @@ export function DriverRegistration() {
 				}
 			},
 		});
-
-	const [updateDriver, { loading: updateDriverLoading }] =
-		useUpdateDriverMutation();
-	const [createAsset] = useCreateAssetMutation();
 
 	// Queries
 	const {
@@ -448,7 +488,7 @@ export function DriverRegistration() {
 					{filteredDrivers.length > 0 ? (
 						filteredDrivers.map((driver) => (
 							<li key={driver.id}>
-								<button
+								<div
 									onClick={() => handleSelectDriver(driver)}
 									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
 										selectedDriver?.id === driver.id
@@ -468,14 +508,32 @@ export function DriverRegistration() {
 										</span>
 									</div>
 
-									{driver.photo?.url && (
-										<img
-											src={driver.photo.url}
-											alt={driver.name}
-											className="w-8 h-8 rounded-full object-cover scale-400 translate-y-9"
-										/>
-									)}
-								</button>
+									<div className="flex gap-4">
+										{driver.photo?.url && (
+											<img
+												src={driver.photo.url}
+												alt={driver.name}
+												className="w-8 h-8 rounded-full object-cover scale-400 translate-y-9"
+											/>
+										)}
+										<button
+											onClick={() =>
+												handleDeleteClick(
+													driver.id,
+													driver.deleted
+												)
+											}
+											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+											title={
+												driver.deleted
+													? "Restaurar"
+													: "Excluir"
+											}
+										>
+											<XMarkIcon className="h-5 w-5" />
+										</button>
+									</div>
+								</div>
 							</li>
 						))
 					) : (
@@ -485,6 +543,52 @@ export function DriverRegistration() {
 					)}
 				</ul>
 			</div>
+
+			<Dialog
+				open={isDeleteModalOpen}
+				onClose={cancelDelete}
+				className="relative z-50"
+			>
+				{/* Backdrop */}
+				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+
+				{/* Modal container */}
+				<div className="fixed inset-0 flex items-center justify-center p-4">
+					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
+						<DialogTitle className="text-lg font-bold">
+							{itemToDelete?.deleted
+								? "Restaurar Piloto"
+								: "Excluir Piloto"}
+						</DialogTitle>
+						<Description className="mt-1">
+							{itemToDelete?.deleted
+								? "Deseja restaurar este piloto?"
+								: "Tem certeza que deseja excluir este piloto?"}
+						</Description>
+
+						<div className="mt-6 flex justify-end gap-2">
+							<button
+								onClick={cancelDelete}
+								className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-f1-bg-silver cursor-pointer"
+							>
+								Cancelar
+							</button>
+							<button
+								onClick={confirmDelete}
+								className={`px-4 py-2 text-white rounded cursor-pointer ${
+									itemToDelete?.deleted
+										? "bg-green-600 hover:bg-green-700"
+										: "bg-f1-red hover:bg-f1-red/90"
+								}`}
+							>
+								{itemToDelete?.deleted
+									? "Restaurar"
+									: "Excluir"}
+							</button>
+						</div>
+					</DialogPanel>
+				</div>
+			</Dialog>
 
 			{/* Registration Form */}
 			<div className="mx-auto max-w-3xl w-full">

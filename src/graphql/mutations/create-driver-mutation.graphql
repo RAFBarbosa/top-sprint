@@ -5,6 +5,7 @@ mutation CreateDriver($data: DriverCreateInput!) {
 		number
 		grid
 		stream
+		deleted
 		city
 		equipment
 		phone

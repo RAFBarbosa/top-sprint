@@ -16,6 +16,13 @@ import {
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { XMarkIcon } from "@heroicons/react/16/solid";
+import {
+	Dialog,
+	DialogTitle,
+	DialogPanel,
+	Description,
+} from "@headlessui/react";
 
 function LimitedTextarea({
 	value,
@@ -77,6 +84,43 @@ export function BannerRegistration() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("");
+
+	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+	const [itemToDelete, setItemToDelete] = useState<{
+		id: string;
+		deleted: boolean;
+	} | null>(null);
+
+	const handleDeleteClick = (id: string, deleted: boolean) => {
+		setItemToDelete({ id, deleted });
+		setIsDeleteModalOpen(true);
+	};
+
+	const confirmDelete = async () => {
+		if (itemToDelete) {
+			await handleToggleDelete(itemToDelete.id, itemToDelete.deleted);
+			setIsDeleteModalOpen(false);
+			setItemToDelete(null);
+		}
+	};
+
+	const cancelDelete = () => {
+		setIsDeleteModalOpen(false);
+		setItemToDelete(null);
+	};
+
+	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
+		try {
+			await updateBanner({
+				variables: {
+					where: { id },
+					data: { deleted: !currentDeleted },
+				},
+			});
+		} catch (error) {
+			console.error("Error toggling delete:", error);
+		}
+	};
 
 	// GraphQL operations
 	const [createBanner, { loading: createBannerLoading }] =
@@ -436,7 +480,7 @@ export function BannerRegistration() {
 					{filteredBanners.length > 0 ? (
 						filteredBanners.map((banner) => (
 							<li key={banner.id}>
-								<button
+								<div
 									onClick={() => handleSelectBanner(banner)}
 									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
 										selectedBanner?.id === banner.id
@@ -468,16 +512,34 @@ export function BannerRegistration() {
 										</div>
 									</div>
 
-									<div>
-										{banner.photo?.url && (
-											<img
-												src={banner.photo.url}
-												alt={banner.title}
-												className="w-8 h-8 object-cover scale-220 "
-											/>
-										)}
+									<div className="flex gap-6 items-center">
+										<div>
+											{banner.photo?.url && (
+												<img
+													src={banner.photo.url}
+													alt={banner.title}
+													className="w-8 h-8 object-cover scale-220"
+												/>
+											)}
+										</div>
+										<button
+											onClick={() =>
+												handleDeleteClick(
+													banner.id,
+													banner.deleted
+												)
+											}
+											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+											title={
+												banner.deleted
+													? "Restaurar"
+													: "Excluir"
+											}
+										>
+											<XMarkIcon className="h-5 w-5" />
+										</button>
 									</div>
-								</button>
+								</div>
 							</li>
 						))
 					) : (
@@ -487,6 +549,52 @@ export function BannerRegistration() {
 					)}
 				</ul>
 			</div>
+
+			<Dialog
+				open={isDeleteModalOpen}
+				onClose={cancelDelete}
+				className="relative z-50"
+			>
+				{/* Backdrop */}
+				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+
+				{/* Modal container */}
+				<div className="fixed inset-0 flex items-center justify-center p-4">
+					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
+						<DialogTitle className="text-lg font-bold">
+							{itemToDelete?.deleted
+								? "Restaurar Notícia"
+								: "Excluir Notícia"}
+						</DialogTitle>
+						<Description className="mt-1">
+							{itemToDelete?.deleted
+								? "Deseja restaurar esta notícia?"
+								: "Tem certeza que deseja excluir esta notícia?"}
+						</Description>
+
+						<div className="mt-6 flex justify-end gap-2">
+							<button
+								onClick={cancelDelete}
+								className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-f1-bg-silver cursor-pointer"
+							>
+								Cancelar
+							</button>
+							<button
+								onClick={confirmDelete}
+								className={`px-4 py-2 text-white rounded cursor-pointer ${
+									itemToDelete?.deleted
+										? "bg-green-600 hover:bg-green-700"
+										: "bg-f1-red hover:bg-f1-red/90"
+								}`}
+							>
+								{itemToDelete?.deleted
+									? "Restaurar"
+									: "Excluir"}
+							</button>
+						</div>
+					</DialogPanel>
+				</div>
+			</Dialog>
 
 			{/* Registration Form */}
 			<div className="mx-auto max-w-3xl w-full">

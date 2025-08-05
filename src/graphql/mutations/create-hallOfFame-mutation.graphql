@@ -1,25 +1,10 @@
 mutation CreateHallOfFame($data: HallOfFameCreateInput!) {
 	createHallOfFame(data: $data) {
 		id
-		name
-		number
-		grid
-		stream
-		city
-		equipment
-		phone
+		season
+		deleted
 		photo {
 			url
-		}
-		team {
-			id
-			name
-			color {
-				hex
-			}
-			photo {
-				url
-			}
 		}
 	}
 }

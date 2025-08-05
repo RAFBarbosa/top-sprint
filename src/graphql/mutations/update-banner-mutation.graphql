@@ -6,6 +6,7 @@ mutation UpdateBanner(
 		id
 		title
 		content
+		deleted
 		link
 		category
 		photo {
