@@ -476,7 +476,7 @@ export function BannerRegistration() {
 					</Listbox>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 md:min-h-110 overflow-y-auto pr-2">
+				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-w-70 min-h-60 md:min-h-110 overflow-y-auto pr-2">
 					{filteredBanners.length > 0 ? (
 						filteredBanners.map((banner) => (
 							<li key={banner.id}>
@@ -489,7 +489,7 @@ export function BannerRegistration() {
 									}`}
 								>
 									<div className="flex flex-col items-start truncate">
-										<span className="truncate max-w-48">
+										<span className="truncate max-w-40">
 											{banner.title}
 										</span>
 										<div className="flex flex-col items-start">
@@ -512,13 +512,13 @@ export function BannerRegistration() {
 										</div>
 									</div>
 
-									<div className="flex gap-6 items-center">
+									<div className="flex items-center">
 										<div>
 											{banner.photo?.url && (
 												<img
 													src={banner.photo.url}
 													alt={banner.title}
-													className="w-8 h-8 object-cover scale-220"
+													className="w-14 h-14 object-cover"
 												/>
 											)}
 										</div>

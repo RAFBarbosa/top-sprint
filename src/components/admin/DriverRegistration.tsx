@@ -484,7 +484,7 @@ export function DriverRegistration() {
 					</Listbox>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 md:min-h-110 overflow-y-auto pr-2">
+				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
 					{filteredDrivers.length > 0 ? (
 						filteredDrivers.map((driver) => (
 							<li key={driver.id}>
@@ -497,7 +497,7 @@ export function DriverRegistration() {
 									}`}
 								>
 									<div className="flex flex-col items-start">
-										<span className="truncate">
+										<span className="truncate max-w-40">
 											{driver.name}
 										</span>
 										<span className="text-xs text-gray-500">
