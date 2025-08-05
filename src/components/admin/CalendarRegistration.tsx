@@ -345,7 +345,7 @@ export function CalendarRegistration() {
 					/>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 md:min-h-110 overflow-y-auto pr-2">
+				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
 					{filteredCalendars.length > 0 ? (
 						filteredCalendars.map((calendar) => (
 							<li key={calendar.id}>
@@ -360,7 +360,7 @@ export function CalendarRegistration() {
 									}`}
 								>
 									<div className="flex flex-col items-start truncate">
-										<span className="truncate max-w-48">
+										<span className="truncate max-w-40">
 											{calendar.track}
 										</span>
 										<div className="flex flex-col items-start">
