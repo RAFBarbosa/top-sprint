@@ -1,9 +1,10 @@
 query GetBanners {
-	banners(orderBy: createdAt_DESC) {
+	banners(orderBy: createdAt_DESC, where: { deleted: false }) {
 		id
 		title
 		content
 		link
+		deleted
 		category
 		photo {
 			id
@@ -20,6 +21,7 @@ query GetBannersRegistration {
 		title
 		content
 		link
+		deleted
 		category
 		photo {
 			id

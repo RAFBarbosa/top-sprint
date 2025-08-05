@@ -39,8 +39,6 @@ export function Banners() {
 	// Get the most recent featured banner
 	const latestFeaturedBanner = featuredBanners?.[0];
 
-	console.log("Latest Featured Banner:", latestFeaturedBanner);
-
 	return (
 		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col justify-between">
 			<div className="pr-2 md:sticky top-16 z-10">

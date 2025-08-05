@@ -4,6 +4,7 @@ query GetTeams {
 		name
 		number
 		stream
+		deleted
 		city
 		equipment
 		grid
@@ -26,6 +27,7 @@ query GetTeams {
 	}
 	teams(stage: PUBLISHED) {
 		id
+		deleted
 		color {
 			hex
 		}

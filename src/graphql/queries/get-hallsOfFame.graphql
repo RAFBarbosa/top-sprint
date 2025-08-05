@@ -1,7 +1,19 @@
 query GetHallsOfFame {
-	hallsOfFame(orderBy: publishedAt_DESC) {
+	hallsOfFame(orderBy: createdAt_DESC, where: { deleted: false }) {
 		id
 		season
+		deleted
+		photo {
+			url
+		}
+	}
+}
+
+query GetHallsOfFameRegistration {
+	hallsOfFame(orderBy: createdAt_DESC, stage: DRAFT) {
+		id
+		season
+		deleted
 		photo {
 			url
 		}

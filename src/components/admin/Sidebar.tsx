@@ -6,7 +6,7 @@ export default function Sidebar() {
 		<div className="flex flex-col md:flex-row gap-4 mb-8">
 			<nav className="bg-white p-4 rounded-lg border border-black/20 w-full md:w-64">
 				<ul className="space-y-2 md:space-y-4">
-					<li>
+					{/* <li>
 						<NavLink
 							to="/admin/painel/resultados"
 							className={({ isActive }) =>
@@ -17,7 +17,7 @@ export default function Sidebar() {
 						>
 							Resultados
 						</NavLink>
-					</li>
+					</li> */}
 					<li>
 						<NavLink
 							to="/admin/painel/noticias"
@@ -42,7 +42,7 @@ export default function Sidebar() {
 							Pilotos
 						</NavLink>
 					</li>
-					<li>
+					{/* <li>
 						<NavLink
 							to="/admin/painel/equipes"
 							className={({ isActive }) =>
@@ -53,13 +53,13 @@ export default function Sidebar() {
 						>
 							Equipes
 						</NavLink>
-					</li>
+					</li> */}
 
 					<li>
 						<NavLink
 							to="/admin/painel/calendarios"
 							className={({ isActive }) =>
-								`block p-2 rounded hover:bg-gray-100 ${
+								`block p-2 rounded hover:bg-f1-red/20 ${
 									isActive ? "bg-f1-red/20 font-bold" : ""
 								}`
 							}
@@ -67,18 +67,18 @@ export default function Sidebar() {
 							Calendário
 						</NavLink>
 					</li>
-					<li>
+					{/* <li>
 						<NavLink
 							to="/admin/painel/campeoes"
 							className={({ isActive }) =>
-								`block p-2 rounded hover:bg-gray-100 ${
+								`block p-2 rounded hover:bg-f1-red/20 ${
 									isActive ? "bg-f1-red/20 font-bold" : ""
 								}`
 							}
 						>
 							Campeões
 						</NavLink>
-					</li>
+					</li> */}
 				</ul>
 			</nav>
 

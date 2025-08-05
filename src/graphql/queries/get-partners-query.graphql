@@ -1,8 +1,12 @@
 query GetPartners {
-	partners(where: { active: true }, orderBy: publishedAt_ASC) {
+	partners(
+		where: { active: true, deleted: false }
+		orderBy: publishedAt_ASC
+	) {
 		id
 		name
 		altText
+		deleted
 		image {
 			url
 		}

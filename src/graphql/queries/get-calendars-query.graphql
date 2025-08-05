@@ -1,9 +1,14 @@
 query GetCalendars {
-	calendars(orderBy: date_ASC, where: { active: true }, stage: PUBLISHED) {
+	calendars(
+		orderBy: date_ASC
+		where: { active: true, deleted: false }
+		stage: PUBLISHED
+	) {
 		id
 		track
 		round
 		active
+		deleted
 		description
 		date
 		link
@@ -19,6 +24,7 @@ query GetCalendarsRegistration {
 		track
 		round
 		active
+		deleted
 		description
 		date
 		link

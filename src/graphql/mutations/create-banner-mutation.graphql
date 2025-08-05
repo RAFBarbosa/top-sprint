@@ -3,6 +3,7 @@ mutation CreateBanner($data: BannerCreateInput!) {
 		id
 		title
 		content
+		deleted
 		link
 		category
 		photo {

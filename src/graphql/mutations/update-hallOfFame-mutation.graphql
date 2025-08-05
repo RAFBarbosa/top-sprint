@@ -1,0 +1,13 @@
+mutation UpdateHallOfFame(
+	$where: HallOfFameWhereUniqueInput!
+	$data: HallOfFameUpdateInput!
+) {
+	updateHallOfFame(where: $where, data: $data) {
+		id
+		season
+		deleted
+		photo {
+			url
+		}
+	}
+}

@@ -22,12 +22,13 @@ query GetSeasonRounds($slug: String!) {
 }
 
 query GetDrivers {
-	drivers {
+	drivers(where: { deleted: false }) {
 		id
 		grid
 		name
 		number
 		stream
+		deleted
 		photo {
 			url
 		}
@@ -57,6 +58,7 @@ query GetDriversRegistration {
 		name
 		number
 		stream
+		deleted
 		photo {
 			url
 		}

@@ -9,6 +9,7 @@ mutation UpdateDriver(
 		number
 		grid
 		stream
+		deleted
 		city
 		equipment
 		phone
