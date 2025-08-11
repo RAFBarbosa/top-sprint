@@ -330,27 +330,23 @@ export function TeamRegistration() {
 												className="w-8 h-8 rounded-full object-cover"
 											/>
 										)}
+										<div className="flex items-center gap-2">
+											{team.color?.hex && (
+												<>
+													<span
+														className="w-[5px] h-[13px]"
+														style={{
+															backgroundColor:
+																team.color.hex,
+														}}
+													></span>
+												</>
+											)}
+										</div>
 										<div className="flex flex-col items-start">
 											<span className="truncate max-w-40">
 												{team.name}
 											</span>
-											<div className="flex items-center gap-2">
-												{team.color?.hex && (
-													<>
-														<span
-															className="w-3 h-3 rounded-full border border-gray-300"
-															style={{
-																backgroundColor:
-																	team.color
-																		.hex,
-															}}
-														></span>
-														<span className="text-xs text-gray-500">
-															{team.color.hex}
-														</span>
-													</>
-												)}
-											</div>
 										</div>
 									</div>
 
@@ -482,8 +478,10 @@ export function TeamRegistration() {
 							/>
 						</div>
 
-						<div>
-							<label className="block mb-1">Cor</label>
+						<div className="md:col-span-2">
+							<label className="block mb-1 md:col-span-2">
+								Cor
+							</label>
 							<div className="flex items-center gap-2">
 								<input
 									type="color"
