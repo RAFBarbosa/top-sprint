@@ -452,7 +452,7 @@ export function DriverRegistration() {
 								</span>
 							</ListboxButton>
 
-							<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+							<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
 								<ListboxOption
 									value=""
 									className={({ active }) =>
