@@ -1,0 +1,10 @@
+mutation CreateData($data: DataCreateInput!) {
+	createData(data: $data) {
+		id
+		grid
+		deleted
+		csv {
+			url
+		}
+	}
+}

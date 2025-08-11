@@ -13,6 +13,60 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
+const ItemTypes = {
+	PHOTO: "photo",
+};
+
+// Draggable Photo Component
+const DraggablePhoto = ({
+	photo,
+	index,
+	movePhoto,
+	onRemove,
+}: {
+	photo: any;
+	index: number;
+	movePhoto: (fromIndex: number, toIndex: number) => void;
+	onRemove: (index: number) => void;
+}) => {
+	const [, ref] = useDrag({
+		type: ItemTypes.PHOTO,
+		item: { index },
+	});
+
+	const [, drop] = useDrop({
+		accept: ItemTypes.PHOTO,
+		hover: (draggedItem: { index: number }) => {
+			if (draggedItem.index !== index) {
+				movePhoto(draggedItem.index, index);
+				draggedItem.index = index;
+			}
+		},
+	});
+
+	return (
+		<div
+			ref={(node) => ref(drop(node))}
+			className="relative group cursor-move"
+		>
+			<img
+				src={photo.url}
+				alt={`Foto ${index + 1}`}
+				className="w-full h-32 object-cover rounded border border-gray-300"
+			/>
+			<button
+				type="button"
+				onClick={() => onRemove(index)}
+				className="absolute top-1 right-1 bg-f1-red text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+			>
+				<XMarkIcon className="h-4 w-4" />
+			</button>
+		</div>
+	);
+};
 
 export function HallOfFameRegistration() {
 	// State management
@@ -24,6 +78,7 @@ export function HallOfFameRegistration() {
 		type: "idle" | "loading" | "success" | "error";
 		message: string;
 	}>({ type: "idle", message: "" });
+	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const [selectedItem, setSelectedItem] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -50,6 +105,20 @@ export function HallOfFameRegistration() {
 	const cancelDelete = () => {
 		setIsDeleteModalOpen(false);
 		setItemToDelete(null);
+	};
+
+	const movePhoto = (fromIndex: number, toIndex: number) => {
+		if (isEditing && selectedItem) {
+			const updatedPhotos = [...selectedItem.photo];
+			const [movedPhoto] = updatedPhotos.splice(fromIndex, 1);
+			updatedPhotos.splice(toIndex, 0, movedPhoto);
+			setSelectedItem({ ...selectedItem, photo: updatedPhotos });
+		} else {
+			const updatedPhotos = [...photoFiles];
+			const [movedPhoto] = updatedPhotos.splice(fromIndex, 1);
+			updatedPhotos.splice(toIndex, 0, movedPhoto);
+			setPhotoFiles(updatedPhotos);
+		}
 	};
 
 	// GraphQL operations
@@ -106,6 +175,7 @@ export function HallOfFameRegistration() {
 		setPhotoFiles([]);
 		setSelectedItem(null);
 		setIsEditing(false);
+		setUploadProgress(null);
 	};
 
 	const handleSubmit = async (event: FormEvent) => {
@@ -115,88 +185,130 @@ export function HallOfFameRegistration() {
 		try {
 			// Validate required fields
 			if (!formData.season) throw new Error("Temporada é obrigatória");
+			if (photoFiles.length === 0 && !isEditing)
+				throw new Error("Pelo menos uma foto é obrigatória");
 
-			// Upload photos and get their URLs
-			const photoUploads = await Promise.all(
+			// Upload photos and get their IDs
+			const photoIds = await Promise.all(
 				photoFiles.map(async (file) => {
-					const assetResult = await createAsset({
-						variables: { data: {} },
-					});
-					const asset = assetResult.data?.createAsset;
-					const uploadData = asset?.upload?.requestPostData;
+					try {
+						setStatus({
+							type: "loading",
+							message: "Enviando imagens...",
+						});
 
-					if (!asset?.id || !uploadData?.url) {
-						throw new Error("Failed to get upload data");
-					}
+						const assetResult = await createAsset({
+							variables: { data: {} },
+						});
 
-					const formData = new FormData();
-					const finalKey = uploadData.key.replace(
-						"${filename}",
-						encodeURIComponent(file.name)
-					);
-					formData.append("key", finalKey);
-					formData.append("policy", uploadData.policy);
-					formData.append("x-amz-algorithm", uploadData.algorithm);
-					formData.append("x-amz-credential", uploadData.credential);
-					formData.append("x-amz-date", uploadData.date);
-					formData.append("x-amz-signature", uploadData.signature);
-					if (uploadData.securityToken) {
+						const asset = assetResult.data?.createAsset;
+						const uploadData = asset?.upload?.requestPostData;
+						if (!asset?.id || !uploadData?.url) {
+							throw new Error("Failed to get upload data");
+						}
+
+						const formData = new FormData();
+						const finalKey = uploadData.key.replace(
+							"${filename}",
+							encodeURIComponent(file.name)
+						);
+						formData.append("key", finalKey);
+						formData.append("policy", uploadData.policy);
 						formData.append(
-							"x-amz-security-token",
-							uploadData.securityToken
+							"x-amz-algorithm",
+							uploadData.algorithm
+						);
+						formData.append(
+							"x-amz-credential",
+							uploadData.credential
+						);
+						formData.append("x-amz-date", uploadData.date);
+						formData.append(
+							"x-amz-signature",
+							uploadData.signature
+						);
+						if (uploadData.securityToken) {
+							formData.append(
+								"x-amz-security-token",
+								uploadData.securityToken
+							);
+						}
+						formData.append("file", file);
+
+						const uploadResponse = await fetch(uploadData.url, {
+							method: "POST",
+							body: formData,
+						});
+
+						if (!uploadResponse.ok)
+							throw new Error("Upload failed");
+
+						setUploadProgress(100);
+						return asset.id;
+					} catch (uploadError) {
+						throw new Error(
+							`Falha no upload da foto: ${uploadError.message}`
 						);
 					}
-					formData.append("file", file);
-
-					const uploadResponse = await fetch(uploadData.url, {
-						method: "POST",
-						body: formData,
-					});
-
-					if (!uploadResponse.ok) throw new Error("Upload failed");
-
-					return {
-						url: `https://us-west-2.graphassets.com/${asset.id}`,
-					};
 				})
 			);
 
 			if (isEditing && selectedItem) {
-				// Update existing item
+				// Update existing item with correct mutation structure
 				await updateHallOfFame({
 					variables: {
 						where: { id: selectedItem.id },
 						data: {
 							season: formData.season,
-							photo: {
-								create: photoUploads,
-							},
+							...(photoIds.length > 0 && {
+								photo: {
+									// For updates, we need to specify the exact operation
+									upsert: photoIds.map((id) => ({
+										where: { id },
+										create: { id },
+										update: { id },
+									})),
+								},
+							}),
 						},
 					},
 				});
 			} else {
-				// Create new item
+				// Create new item with correct mutation structure
 				await createHallOfFame({
 					variables: {
 						data: {
 							season: formData.season,
-							photo: {
-								create: photoUploads,
-							},
+							...(photoIds.length > 0 && {
+								photo: {
+									connect: photoIds.map((id) => ({ id })),
+								},
+							}),
 							deleted: false,
 						},
 					},
 				});
 			}
 
-			setStatus({ type: "success", message: "Sucesso!" });
+			setStatus({
+				type: "success",
+				message: isEditing
+					? "Temporada atualizada com sucesso!"
+					: "Temporada cadastrada com sucesso!",
+			});
 			resetForm();
+
+			// Clear success message after 5 seconds
+			setTimeout(() => {
+				setStatus({ type: "idle", message: "" });
+			}, 5000);
 		} catch (error) {
 			console.error("Error:", error);
 			setStatus({
 				type: "error",
 				message: error.message || "Erro desconhecido",
 			});
+			setUploadProgress(null);
 		}
 	};
 
@@ -215,10 +327,8 @@ export function HallOfFameRegistration() {
 
 	// Filter items based on search term
 	const filteredItems =
-		data?.hallsOfFame?.filter(
-			(item) =>
-				item.season.toLowerCase().includes(searchTerm.toLowerCase()) &&
-				!item.deleted
+		data?.hallsOfFame?.filter((item) =>
+			item.season.toLowerCase().includes(searchTerm.toLowerCase())
 		) || [];
 
 	if (loading) {
@@ -240,6 +350,7 @@ export function HallOfFameRegistration() {
 	}
 
 	return (
+		// <DndProvider backend={HTML5Backend}>
 		<div className="flex flex-col md:flex-row w-full">
 			{/* Sidebar */}
 			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
@@ -253,34 +364,51 @@ export function HallOfFameRegistration() {
 					/>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 md:min-h-110 overflow-y-auto pr-2">
+				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
 					{filteredItems.length > 0 ? (
 						filteredItems.map((item) => (
-							<li
-								key={item.id}
-								className="w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden "
-							>
-								<button
+							<li key={item.id}>
+								<div
 									onClick={() => handleSelectItem(item)}
-									className={`text-left flex-1 cursor-pointer ${
+									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
 										selectedItem?.id === item.id
-											? "font-bold"
+											? "bg-f1-red/20 font-bold"
 											: ""
 									}`}
 								>
-									{item.season}
-								</button>
-								<button
-									onClick={() =>
-										handleDeleteClick(item.id, item.deleted)
-									}
-									className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer t duration-120"
-									title={
-										item.deleted ? "Restaurar" : "Excluir"
-									}
-								>
-									<XMarkIcon className="h-5 w-5" />
-								</button>
+									<div className="flex flex-col items-start">
+										<span className="truncate max-w-40">
+											{item.season}
+										</span>
+									</div>
+
+									<div className="flex gap-4">
+										{item.photo?.[0]?.url && (
+											<img
+												src={item.photo[0].url}
+												alt={item.season}
+												className="w-8 h-8 rounded-full object-cover scale-400 translate-y-9"
+											/>
+										)}
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												handleDeleteClick(
+													item.id,
+													item.deleted
+												);
+											}}
+											className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+											title={
+												item.deleted
+													? "Restaurar"
+													: "Excluir"
+											}
+										>
+											<XMarkIcon className="h-5 w-5" />
+										</button>
+									</div>
+								</div>
 							</li>
 						))
 					) : (
@@ -354,7 +482,7 @@ export function HallOfFameRegistration() {
 							<button
 								type="button"
 								onClick={resetForm}
-								className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300"
+								className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
 							>
 								Nova Temporada
 							</button>
@@ -398,35 +526,100 @@ export function HallOfFameRegistration() {
 						</div>
 
 						<div>
-							<label className="block mb-1">Fotos *</label>
+							<label className="block mb-1">
+								Fotos {!isEditing && "*"}
+							</label>
 							<input
 								type="file"
 								accept="image/*"
 								multiple
-								required
+								required={!isEditing}
 								onChange={handleAddPhoto}
 								className="w-full p-2 border rounded h-11"
 							/>
+							{photoFiles.length > 0 && (
+								<p className="text-sm mt-1 text-gray-600">
+									{photoFiles.length} arquivo(s)
+									selecionado(s)
+								</p>
+							)}
 						</div>
 
-						<div className="grid grid-cols-3 gap-2">
-							{photoFiles.map((file, index) => (
-								<div key={index} className="relative group">
-									<img
-										src={URL.createObjectURL(file)}
-										alt={`Preview ${index}`}
-										className="w-full h-32 object-cover rounded"
-									/>
-									<button
-										type="button"
-										onClick={() => handleRemovePhoto(index)}
-										className="absolute top-1 right-1 bg-f1-red text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-									>
-										<XMarkIcon className="h-4 w-4" />
-									</button>
+						{/* New Photos Preview */}
+						{photoFiles.length > 0 && (
+							<div>
+								<h3 className="text-lg font-medium mb-2">
+									Novas fotos para upload:
+								</h3>
+								<div className="grid grid-cols-3 gap-2">
+									{photoFiles.map((file, index) => (
+										<div
+											key={index}
+											className="relative group"
+										>
+											<img
+												src={URL.createObjectURL(file)}
+												alt={`Preview ${index}`}
+												className="w-full h-32 object-cover rounded"
+											/>
+											<button
+												type="button"
+												onClick={() =>
+													handleRemovePhoto(index)
+												}
+												className="absolute top-1 right-1 bg-f1-red text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+											>
+												<XMarkIcon className="h-4 w-4" />
+											</button>
+										</div>
+									))}
 								</div>
-							))}
-						</div>
+							</div>
+						)}
+
+						{/* Existing Photos (when editing) */}
+						{isEditing && selectedItem?.photo?.length > 0 && (
+							<div>
+								<h3 className="text-lg font-medium mb-2">
+									Fotos atuais:
+								</h3>
+								<div className="grid grid-cols-3 gap-2">
+									{selectedItem.photo.map(
+										(photo: any, index: number) => (
+											// <DraggablePhoto
+											<div
+												key={photo.id || index}
+												photo={photo}
+												index={index}
+												movePhoto={movePhoto}
+												onRemove={(index) => {
+													const updatedPhotos = [
+														...selectedItem.photo,
+													];
+													updatedPhotos.splice(
+														index,
+														1
+													);
+													setSelectedItem({
+														...selectedItem,
+														photo: updatedPhotos,
+													});
+												}}
+											/>
+										)
+									)}
+								</div>
+							</div>
+						)}
+
+						{uploadProgress !== null && (
+							<div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+								<div
+									className="bg-f1-red h-2.5 rounded-full"
+									style={{ width: `${uploadProgress}%` }}
+								></div>
+							</div>
+						)}
 
 						<button
 							type="submit"
@@ -438,5 +631,6 @@ export function HallOfFameRegistration() {
 				</form>
 			</div>
 		</div>
+		// </DndProvider>
 	);
 }

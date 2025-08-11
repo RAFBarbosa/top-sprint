@@ -16,7 +16,7 @@ query GetBanners {
 }
 
 query GetBannersRegistration {
-	banners(orderBy: createdAt_DESC, stage: DRAFT) {
+	banners(orderBy: createdAt_DESC, stage: DRAFT, where: { deleted: false }) {
 		id
 		title
 		content

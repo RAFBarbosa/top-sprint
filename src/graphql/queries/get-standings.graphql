@@ -27,11 +27,11 @@ query GetTeams {
 	}
 	teams(stage: PUBLISHED) {
 		id
+		name
 		deleted
 		color {
 			hex
 		}
-		name
 		photo {
 			url
 		}
