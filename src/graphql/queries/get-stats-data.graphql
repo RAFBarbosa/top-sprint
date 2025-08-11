@@ -1,6 +1,19 @@
 query GetStatsData {
 	datas(orderBy: publishedAt_DESC, first: 2, where: { deleted: false }) {
 		id
+		grid
+		csv {
+			url
+		}
+	}
+}
+
+query GetData {
+	datas(orderBy: publishedAt_DESC, where: { deleted: false }) {
+		id
+		grid
+		deleted
+		createdAt
 		csv {
 			url
 		}

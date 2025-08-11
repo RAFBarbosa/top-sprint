@@ -1,0 +1,27 @@
+mutation UpdateTeam($where: TeamWhereUniqueInput!, $data: TeamUpdateInput!) {
+	updateTeam(where: $where, data: $data) {
+		id
+		name
+		deleted
+		color {
+			hex
+		}
+		photo {
+			url
+		}
+		driver {
+			id
+			name
+			number
+			grid
+			stream
+			deleted
+			city
+			equipment
+			phone
+			photo {
+				url
+			}
+		}
+	}
+}

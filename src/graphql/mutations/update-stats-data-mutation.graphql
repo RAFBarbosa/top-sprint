@@ -1,0 +1,10 @@
+mutation UpdateData($where: DataWhereUniqueInput!, $data: DataUpdateInput!) {
+	updateData(where: $where, data: $data) {
+		id
+		deleted
+		grid
+		csv {
+			url
+		}
+	}
+}
