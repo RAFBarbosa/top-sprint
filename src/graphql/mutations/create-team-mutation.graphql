@@ -1,0 +1,26 @@
+mutation CreateTeam($data: TeamCreateInput!) {
+	createTeam(data: $data) {
+		id
+		name
+		color {
+			hex
+		}
+		photo {
+			url
+		}
+		driver {
+			id
+			name
+			number
+			grid
+			stream
+			deleted
+			city
+			equipment
+			phone
+			photo {
+				url
+			}
+		}
+	}
+}

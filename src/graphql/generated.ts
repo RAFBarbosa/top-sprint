@@ -2264,6 +2264,11 @@ export type CalendarWhereUniqueInput = {
   id?: InputMaybe<Scalars['ID']>;
 };
 
+export enum Class {
+  A = 'a',
+  B = 'b'
+}
+
 /** Representing a color value comprising of HEX, RGBA and css color values */
 export type Color = {
   __typename?: 'Color';
@@ -2299,6 +2304,7 @@ export type Data = Entity & Node & {
   deleted: Scalars['Boolean'];
   /** Get the document in other stages */
   documentInStages: Array<Data>;
+  grid: Grid;
   /** List of Data versions */
   history: Array<Version>;
   /** The unique identifier */
@@ -2388,6 +2394,7 @@ export type DataCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']>;
   csv?: InputMaybe<AssetCreateOneInlineInput>;
   deleted: Scalars['Boolean'];
+  grid: Grid;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
 };
 
@@ -2447,6 +2454,13 @@ export type DataManyWhereInput = {
   documentInStages_every?: InputMaybe<DataWhereStageInput>;
   documentInStages_none?: InputMaybe<DataWhereStageInput>;
   documentInStages_some?: InputMaybe<DataWhereStageInput>;
+  grid?: InputMaybe<Grid>;
+  /** All values that are contained in given list. */
+  grid_in?: InputMaybe<Array<InputMaybe<Grid>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  grid_not?: InputMaybe<Grid>;
+  /** All values that are not contained in given list. */
+  grid_not_in?: InputMaybe<Array<InputMaybe<Grid>>>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -2508,6 +2522,8 @@ export enum DataOrderByInput {
   CreatedAtDesc = 'createdAt_DESC',
   DeletedAsc = 'deleted_ASC',
   DeletedDesc = 'deleted_DESC',
+  GridAsc = 'grid_ASC',
+  GridDesc = 'grid_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   PublishedAtAsc = 'publishedAt_ASC',
@@ -2519,6 +2535,7 @@ export enum DataOrderByInput {
 export type DataUpdateInput = {
   csv?: InputMaybe<AssetUpdateOneInlineInput>;
   deleted?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
 };
 
 export type DataUpdateManyInlineInput = {
@@ -2540,6 +2557,7 @@ export type DataUpdateManyInlineInput = {
 
 export type DataUpdateManyInput = {
   deleted?: InputMaybe<Scalars['Boolean']>;
+  grid?: InputMaybe<Grid>;
 };
 
 export type DataUpdateManyWithNestedWhereInput = {
@@ -2624,6 +2642,13 @@ export type DataWhereInput = {
   documentInStages_every?: InputMaybe<DataWhereStageInput>;
   documentInStages_none?: InputMaybe<DataWhereStageInput>;
   documentInStages_some?: InputMaybe<DataWhereStageInput>;
+  grid?: InputMaybe<Grid>;
+  /** All values that are contained in given list. */
+  grid_in?: InputMaybe<Array<InputMaybe<Grid>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  grid_not?: InputMaybe<Grid>;
+  /** All values that are not contained in given list. */
+  grid_not_in?: InputMaybe<Array<InputMaybe<Grid>>>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -2751,6 +2776,7 @@ export type Driver = Entity & Node & {
   badge: Array<Asset>;
   badgeTitle: Array<BadgeTitle>;
   city?: Maybe<Scalars['String']>;
+  class: Class;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
   /** User that created this document */
@@ -2875,6 +2901,7 @@ export type DriverCreateInput = {
   badge?: InputMaybe<AssetCreateManyInlineInput>;
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
+  class: Class;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   deleted: Scalars['Boolean'];
   equipment?: InputMaybe<Scalars['String']>;
@@ -2954,6 +2981,13 @@ export type DriverManyWhereInput = {
   city_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   city_starts_with?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<Class>;
+  /** All values that are contained in given list. */
+  class_in?: InputMaybe<Array<InputMaybe<Class>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  class_not?: InputMaybe<Class>;
+  /** All values that are not contained in given list. */
+  class_not_in?: InputMaybe<Array<InputMaybe<Class>>>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -3144,6 +3178,8 @@ export enum DriverOrderByInput {
   BadgeTitleDesc = 'badgeTitle_DESC',
   CityAsc = 'city_ASC',
   CityDesc = 'city_DESC',
+  ClassAsc = 'class_ASC',
+  ClassDesc = 'class_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
   DeletedAsc = 'deleted_ASC',
@@ -3174,6 +3210,7 @@ export type DriverUpdateInput = {
   badge?: InputMaybe<AssetUpdateManyInlineInput>;
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<Class>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
@@ -3206,6 +3243,7 @@ export type DriverUpdateManyInlineInput = {
 export type DriverUpdateManyInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<Class>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
@@ -3307,6 +3345,13 @@ export type DriverWhereInput = {
   city_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   city_starts_with?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<Class>;
+  /** All values that are contained in given list. */
+  class_in?: InputMaybe<Array<InputMaybe<Class>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  class_not?: InputMaybe<Class>;
+  /** All values that are not contained in given list. */
+  class_not_in?: InputMaybe<Array<InputMaybe<Class>>>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -11183,6 +11228,20 @@ export type CreateHallOfFameMutationVariables = Exact<{
 
 export type CreateHallOfFameMutation = { __typename?: 'Mutation', createHallOfFame?: { __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> } | null };
 
+export type CreateDataMutationVariables = Exact<{
+  data: DataCreateInput;
+}>;
+
+
+export type CreateDataMutation = { __typename?: 'Mutation', createData?: { __typename?: 'Data', id: string, grid: Grid, deleted: boolean, csv?: { __typename?: 'Asset', url: string } | null } | null };
+
+export type CreateTeamMutationVariables = Exact<{
+  data: TeamCreateInput;
+}>;
+
+
+export type CreateTeamMutation = { __typename?: 'Mutation', createTeam?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
+
 export type UpdateBannerMutationVariables = Exact<{
   where: BannerWhereUniqueInput;
   data: BannerUpdateInput;
@@ -11214,6 +11273,22 @@ export type UpdateHallOfFameMutationVariables = Exact<{
 
 
 export type UpdateHallOfFameMutation = { __typename?: 'Mutation', updateHallOfFame?: { __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> } | null };
+
+export type UpdateDataMutationVariables = Exact<{
+  where: DataWhereUniqueInput;
+  data: DataUpdateInput;
+}>;
+
+
+export type UpdateDataMutation = { __typename?: 'Mutation', updateData?: { __typename?: 'Data', id: string, deleted: boolean, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null } | null };
+
+export type UpdateTeamMutationVariables = Exact<{
+  where: TeamWhereUniqueInput;
+  data: TeamUpdateInput;
+}>;
+
+
+export type UpdateTeamMutation = { __typename?: 'Mutation', updateTeam?: { __typename?: 'Team', id: string, name?: string | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
 
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11292,12 +11367,17 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, deleted: boolean, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, csv?: { __typename?: 'Asset', url: string } | null }> };
+export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null }> };
+
+export type GetDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, deleted: boolean, createdAt: any, csv?: { __typename?: 'Asset', url: string } | null }> };
 
 
 export const CreateAssetDocument = gql`
@@ -11531,6 +11611,98 @@ export function useCreateHallOfFameMutation(baseOptions?: Apollo.MutationHookOpt
 export type CreateHallOfFameMutationHookResult = ReturnType<typeof useCreateHallOfFameMutation>;
 export type CreateHallOfFameMutationResult = Apollo.MutationResult<CreateHallOfFameMutation>;
 export type CreateHallOfFameMutationOptions = Apollo.BaseMutationOptions<CreateHallOfFameMutation, CreateHallOfFameMutationVariables>;
+export const CreateDataDocument = gql`
+    mutation CreateData($data: DataCreateInput!) {
+  createData(data: $data) {
+    id
+    grid
+    deleted
+    csv {
+      url
+    }
+  }
+}
+    `;
+export type CreateDataMutationFn = Apollo.MutationFunction<CreateDataMutation, CreateDataMutationVariables>;
+
+/**
+ * __useCreateDataMutation__
+ *
+ * To run a mutation, you first call `useCreateDataMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateDataMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createDataMutation, { data, loading, error }] = useCreateDataMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateDataMutation(baseOptions?: Apollo.MutationHookOptions<CreateDataMutation, CreateDataMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateDataMutation, CreateDataMutationVariables>(CreateDataDocument, options);
+      }
+export type CreateDataMutationHookResult = ReturnType<typeof useCreateDataMutation>;
+export type CreateDataMutationResult = Apollo.MutationResult<CreateDataMutation>;
+export type CreateDataMutationOptions = Apollo.BaseMutationOptions<CreateDataMutation, CreateDataMutationVariables>;
+export const CreateTeamDocument = gql`
+    mutation CreateTeam($data: TeamCreateInput!) {
+  createTeam(data: $data) {
+    id
+    name
+    color {
+      hex
+    }
+    photo {
+      url
+    }
+    driver {
+      id
+      name
+      number
+      grid
+      stream
+      deleted
+      city
+      equipment
+      phone
+      photo {
+        url
+      }
+    }
+  }
+}
+    `;
+export type CreateTeamMutationFn = Apollo.MutationFunction<CreateTeamMutation, CreateTeamMutationVariables>;
+
+/**
+ * __useCreateTeamMutation__
+ *
+ * To run a mutation, you first call `useCreateTeamMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTeamMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTeamMutation, { data, loading, error }] = useCreateTeamMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateTeamMutation(baseOptions?: Apollo.MutationHookOptions<CreateTeamMutation, CreateTeamMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTeamMutation, CreateTeamMutationVariables>(CreateTeamDocument, options);
+      }
+export type CreateTeamMutationHookResult = ReturnType<typeof useCreateTeamMutation>;
+export type CreateTeamMutationResult = Apollo.MutationResult<CreateTeamMutation>;
+export type CreateTeamMutationOptions = Apollo.BaseMutationOptions<CreateTeamMutation, CreateTeamMutationVariables>;
 export const UpdateBannerDocument = gql`
     mutation UpdateBanner($where: BannerWhereUniqueInput!, $data: BannerUpdateInput!) {
   updateBanner(where: $where, data: $data) {
@@ -11714,6 +11886,101 @@ export function useUpdateHallOfFameMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateHallOfFameMutationHookResult = ReturnType<typeof useUpdateHallOfFameMutation>;
 export type UpdateHallOfFameMutationResult = Apollo.MutationResult<UpdateHallOfFameMutation>;
 export type UpdateHallOfFameMutationOptions = Apollo.BaseMutationOptions<UpdateHallOfFameMutation, UpdateHallOfFameMutationVariables>;
+export const UpdateDataDocument = gql`
+    mutation UpdateData($where: DataWhereUniqueInput!, $data: DataUpdateInput!) {
+  updateData(where: $where, data: $data) {
+    id
+    deleted
+    grid
+    csv {
+      url
+    }
+  }
+}
+    `;
+export type UpdateDataMutationFn = Apollo.MutationFunction<UpdateDataMutation, UpdateDataMutationVariables>;
+
+/**
+ * __useUpdateDataMutation__
+ *
+ * To run a mutation, you first call `useUpdateDataMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateDataMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateDataMutation, { data, loading, error }] = useUpdateDataMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateDataMutation(baseOptions?: Apollo.MutationHookOptions<UpdateDataMutation, UpdateDataMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateDataMutation, UpdateDataMutationVariables>(UpdateDataDocument, options);
+      }
+export type UpdateDataMutationHookResult = ReturnType<typeof useUpdateDataMutation>;
+export type UpdateDataMutationResult = Apollo.MutationResult<UpdateDataMutation>;
+export type UpdateDataMutationOptions = Apollo.BaseMutationOptions<UpdateDataMutation, UpdateDataMutationVariables>;
+export const UpdateTeamDocument = gql`
+    mutation UpdateTeam($where: TeamWhereUniqueInput!, $data: TeamUpdateInput!) {
+  updateTeam(where: $where, data: $data) {
+    id
+    name
+    deleted
+    color {
+      hex
+    }
+    photo {
+      url
+    }
+    driver {
+      id
+      name
+      number
+      grid
+      stream
+      deleted
+      city
+      equipment
+      phone
+      photo {
+        url
+      }
+    }
+  }
+}
+    `;
+export type UpdateTeamMutationFn = Apollo.MutationFunction<UpdateTeamMutation, UpdateTeamMutationVariables>;
+
+/**
+ * __useUpdateTeamMutation__
+ *
+ * To run a mutation, you first call `useUpdateTeamMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTeamMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTeamMutation, { data, loading, error }] = useUpdateTeamMutation({
+ *   variables: {
+ *      where: // value for 'where'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateTeamMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTeamMutation, UpdateTeamMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTeamMutation, UpdateTeamMutationVariables>(UpdateTeamDocument, options);
+      }
+export type UpdateTeamMutationHookResult = ReturnType<typeof useUpdateTeamMutation>;
+export type UpdateTeamMutationResult = Apollo.MutationResult<UpdateTeamMutation>;
+export type UpdateTeamMutationOptions = Apollo.BaseMutationOptions<UpdateTeamMutation, UpdateTeamMutationVariables>;
 export const GetBannersDocument = gql`
     query GetBanners {
   banners(orderBy: createdAt_DESC, where: {deleted: false}) {
@@ -11761,7 +12028,7 @@ export type GetBannersLazyQueryHookResult = ReturnType<typeof useGetBannersLazyQ
 export type GetBannersQueryResult = Apollo.QueryResult<GetBannersQuery, GetBannersQueryVariables>;
 export const GetBannersRegistrationDocument = gql`
     query GetBannersRegistration {
-  banners(orderBy: createdAt_DESC, stage: DRAFT) {
+  banners(orderBy: createdAt_DESC, stage: DRAFT, where: {deleted: false}) {
     id
     title
     content
@@ -11889,7 +12156,7 @@ export type GetCalendarsLazyQueryHookResult = ReturnType<typeof useGetCalendarsL
 export type GetCalendarsQueryResult = Apollo.QueryResult<GetCalendarsQuery, GetCalendarsQueryVariables>;
 export const GetCalendarsRegistrationDocument = gql`
     query GetCalendarsRegistration {
-  calendars(orderBy: date_ASC, stage: DRAFT) {
+  calendars(orderBy: date_ASC, stage: DRAFT, where: {deleted: false}) {
     id
     track
     round
@@ -11972,7 +12239,7 @@ export type GetHallsOfFameLazyQueryHookResult = ReturnType<typeof useGetHallsOfF
 export type GetHallsOfFameQueryResult = Apollo.QueryResult<GetHallsOfFameQuery, GetHallsOfFameQueryVariables>;
 export const GetHallsOfFameRegistrationDocument = gql`
     query GetHallsOfFameRegistration {
-  hallsOfFame(orderBy: createdAt_DESC, stage: DRAFT) {
+  hallsOfFame(orderBy: createdAt_DESC, stage: DRAFT, where: {deleted: false}) {
     id
     season
     deleted
@@ -12162,7 +12429,7 @@ export type GetDriversLazyQueryHookResult = ReturnType<typeof useGetDriversLazyQ
 export type GetDriversQueryResult = Apollo.QueryResult<GetDriversQuery, GetDriversQueryVariables>;
 export const GetDriversRegistrationDocument = gql`
     query GetDriversRegistration {
-  drivers(orderBy: name_ASC, stage: DRAFT) {
+  drivers(orderBy: name_ASC, stage: DRAFT, where: {deleted: false}) {
     id
     grid
     name
@@ -12372,11 +12639,11 @@ export const GetTeamsDocument = gql`
   }
   teams(stage: PUBLISHED) {
     id
+    name
     deleted
     color {
       hex
     }
-    name
     photo {
       url
     }
@@ -12414,6 +12681,7 @@ export const GetStatsDataDocument = gql`
     query GetStatsData {
   datas(orderBy: publishedAt_DESC, first: 2, where: {deleted: false}) {
     id
+    grid
     csv {
       url
     }
@@ -12447,3 +12715,43 @@ export function useGetStatsDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetStatsDataQueryHookResult = ReturnType<typeof useGetStatsDataQuery>;
 export type GetStatsDataLazyQueryHookResult = ReturnType<typeof useGetStatsDataLazyQuery>;
 export type GetStatsDataQueryResult = Apollo.QueryResult<GetStatsDataQuery, GetStatsDataQueryVariables>;
+export const GetDataDocument = gql`
+    query GetData {
+  datas(orderBy: publishedAt_DESC, where: {deleted: false}) {
+    id
+    grid
+    deleted
+    createdAt
+    csv {
+      url
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetDataQuery__
+ *
+ * To run a query within a React component, call `useGetDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDataQuery(baseOptions?: Apollo.QueryHookOptions<GetDataQuery, GetDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDataQuery, GetDataQueryVariables>(GetDataDocument, options);
+      }
+export function useGetDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDataQuery, GetDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDataQuery, GetDataQueryVariables>(GetDataDocument, options);
+        }
+export type GetDataQueryHookResult = ReturnType<typeof useGetDataQuery>;
+export type GetDataLazyQueryHookResult = ReturnType<typeof useGetDataLazyQuery>;
+export type GetDataQueryResult = Apollo.QueryResult<GetDataQuery, GetDataQueryVariables>;

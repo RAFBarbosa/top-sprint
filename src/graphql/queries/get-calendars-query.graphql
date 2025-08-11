@@ -19,7 +19,7 @@ query GetCalendars {
 }
 
 query GetCalendarsRegistration {
-	calendars(orderBy: date_ASC, stage: DRAFT) {
+	calendars(orderBy: date_ASC, stage: DRAFT, where: { deleted: false }) {
 		id
 		track
 		round

@@ -52,7 +52,7 @@ query GetDrivers {
 }
 
 query GetDriversRegistration {
-	drivers(orderBy: name_ASC, stage: DRAFT) {
+	drivers(orderBy: name_ASC, stage: DRAFT, where: { deleted: false }) {
 		id
 		grid
 		name

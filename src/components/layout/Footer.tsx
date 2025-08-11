@@ -10,7 +10,7 @@ export function Footer() {
 		<footer className="bg-f1-carbon pb-6 text-white mt-auto">
 			<Partners />
 			<div className="flex flex-col-reverse md:flex-row justify-between md:max-w-screen-xl mx-auto px-3 pt-6">
-				<div className="flex flex-col items-center md:items-start gap-2 md:gap-1 h-full ">
+				<div className="flex flex-col items-center md:items-start gap-2 md:gap-1 h-full">
 					<div className="flex items-center gap-2 md:flex-col md:items-start">
 						<div className="md:w-[70px] w-[40px] md:-translate-y-3">
 							<Logo />
