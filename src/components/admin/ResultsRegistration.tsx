@@ -428,7 +428,7 @@ export function ResultsRegistration() {
 						</div>
 					)}
 
-					<div className="grid grid-cols-1 gap-4">
+					<div className="grid-cols-1 gap-4">
 						<div>
 							<label className="block mb-1">Grid *</label>
 							<Listbox value={grid} onChange={setGrid}>
@@ -480,7 +480,7 @@ export function ResultsRegistration() {
 							</Listbox>
 						</div>
 
-						<div className="md:col-span-2 md:grid grid-cols-2 gap-4">
+						<div className="md:col-span-2 mt-4 gap-4">
 							<div>
 								<label className="block mb-1">
 									Arquivo CSV *
@@ -499,29 +499,32 @@ export function ResultsRegistration() {
 										Arquivo selecionado: {csvFile.name}
 									</p>
 								)}
-							</div>
+								{isEditing &&
+									selectedData?.csv?.url &&
+									!csvFile && (
+										<div className="md:flex gap-4 mt-1">
+											<span className="">
+												Arquivo atual:
+											</span>
+											<span className="text-sm text-gray-600">
+												{selectedData.csv.url
+													.split("/")
+													.pop()}
+											</span>
+										</div>
+									)}
 
-							{isEditing &&
-								selectedData?.csv?.url &&
-								!csvFile && (
-									<div className="md:flex gap-4 mt-4 md:mt-0">
-										<span className="">Arquivo atual:</span>
-										<span className="text-sm text-gray-600">
-											{selectedData.csv.url
-												.split("/")
-												.pop()}
-										</span>
+								{uploadProgress !== null && (
+									<div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+										<div
+											className="bg-f1-red h-2.5 rounded-full"
+											style={{
+												width: `${uploadProgress}%`,
+											}}
+										></div>
 									</div>
 								)}
-
-							{uploadProgress !== null && (
-								<div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-									<div
-										className="bg-f1-red h-2.5 rounded-full"
-										style={{ width: `${uploadProgress}%` }}
-									></div>
-								</div>
-							)}
+							</div>
 						</div>
 					</div>
 
