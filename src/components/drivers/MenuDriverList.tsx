@@ -24,8 +24,8 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 
 	const splitDriverName = (name: string) => {
 		const nameParts = name.split(" ");
-		const firstName = nameParts[0];
-		const secondName = nameParts.slice(1).join(" ");
+		const firstName = nameParts[0].replace(/B$/, "");
+		const secondName = nameParts.slice(1).join(" ").replace(/B$/, "");
 		return { firstName, secondName };
 	};
 
