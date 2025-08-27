@@ -26,6 +26,13 @@
 	font-style: bold;
 }
 
+@font-face {
+	font-family: "Titillium Web Local";
+	src: url("/src/assets/font/TitilliumWeb-Black.ttf") format("truetype");
+	font-weight: 900;
+	font-style: normal;
+}
+
 html {
 	scroll-behavior: smooth;
 	scrollbar-gutter: stable;
@@ -88,6 +95,7 @@ body {
 	--breakpoint-md: 950px;
 
 	--font-f1: "Titillium Web", "sans-serif";
+	--font-f1Podium: "Alfa Slab One", "serif";
 	--font-f1Title: "Formula1-Regular", "sans-serif";
 	--font-signature: "Inter", "sans-serif";
 
