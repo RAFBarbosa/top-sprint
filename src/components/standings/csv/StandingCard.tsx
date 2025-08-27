@@ -26,9 +26,18 @@ interface StandingCardProps {
 }
 
 export function StandingCard(props: StandingCardProps) {
-	const nameParts = props.name.split(" ");
-	const firstName = nameParts[0];
-	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+	const [firstName, secondName] = (() => {
+		const nameParts = props.name.split(" ");
+		return [
+			nameParts[0].replace(/B$/, ""),
+			nameParts.length > 1
+				? nameParts.slice(1).join(" ").replace(/B$/, "")
+				: "",
+		];
+	})();
+	// const nameParts = props.name.split(" ");
+	// const firstName = nameParts[0];
+	// const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 	const isDrivers = true;
 
 	const navigateToDriver = useNavigateToDriver();
