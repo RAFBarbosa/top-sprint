@@ -79,6 +79,7 @@ export function Podium(props: PodiumProps) {
 							teamColor={props.topThree[0].teamColor}
 							points={props.topThree[0].pts}
 							position={1}
+							class={props.class}
 							teamDrivers={props.topThree[0].drivers || ""}
 							activeTab={props.activeTab}
 							newData={props.newData}

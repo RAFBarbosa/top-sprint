@@ -77,14 +77,14 @@ export function Team({
 		>
 			<div className="flex flex-col md:flex-row gap-5 md:gap-15">
 				<div className="order-2 md:order-1">
-					<h3 className="font-bold uppercase text-xl md:text-2xl mb-2 md:mb-4 text-center">
+					<h3 className="font-bold uppercase text-xl mb-2 md:mb-4 text-center">
 						Grid Heat
 					</h3>
 					<div className="flex flex-wrap gap-4 justify-center">
 						{gridA.map((driver) => (
 							<div
 								key={driver.id}
-								className="relative w-[120px] md:w-[160px] cursor-pointer hover:opacity-90 hover:scale-102 transition-all"
+								className="relative w-[120px] md:w-[160px] cursor-pointer hover:opacity-90 transition-all group "
 								onClick={() => handleDriverClick(driver.name)}
 							>
 								{(loadingImages[driver.id] ?? true) && (
@@ -101,7 +101,7 @@ export function Team({
 											"https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84"
 										}
 										alt={driver.name}
-										className={`w-[150px] h-[150px] md:w-[160px] md:h-[160px] object-cover transition-opacity duration-300 ${
+										className={`w-[150px] h-[150px] md:w-[160px] md:h-[160px] object-cover transition-all duration-300 group-hover:scale-102 ${
 											loadingImages[driver.id] === false
 												? "opacity-100"
 												: "opacity-0"
@@ -118,10 +118,10 @@ export function Team({
 										}}
 									/>
 								</div>
-								<p className="text-center -mt-5 text-lg md:text-xl uppercase font-semibold leading-5 relative z-10">
+								<p className="text-center -mt-5 text-lg md:text-xl uppercase font-semibold leading-5 relative z-10 bg-white">
 									{driver.name}
 								</p>
-								<p className="text-center mt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10">
+								<p className="text-center pt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10 bg-white">
 									{driver.number}
 								</p>
 							</div>
@@ -129,22 +129,22 @@ export function Team({
 					</div>
 				</div>
 
-				<div className="order-1 md:order-2 flex flex-col items-center justify-center gap-2 md:mb-0 mb-2">
-					<h2 className="font-f1Title text-base md:text-xl uppercase -mb-2 mt-2 md:mt-0">
+				<div className="order-1 md:order-2 flex flex-col items-center justify-center gap-2 md:mb-0 mb-2 text-center">
+					<h2 className="font-f1Title text-sm md:text-base uppercase -mb-2 mt-2 md:mt-0">
 						{name}
 					</h2>
-					<p className="text-center mt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10 mb-2">
+					<p className="text-center mt-1 text-base uppercase italic leading-5 relative z-10 mb-2">
 						{teamClass === "classA" ? "Classe A" : "Classe B"}
 					</p>
 					<img
-						className="w-[150px] h-[150px] md:w-[170px] md:h-[170px] object-cover"
+						className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] object-cover"
 						src={logo}
 						alt={name}
 					/>
 				</div>
 
 				<div className="order-3">
-					<h3 className="font-bold uppercase text-xl md:text-2xl mb-2 md:mb-4 text-center">
+					<h3 className="font-bold uppercase text-xl mb-2 md:mb-4 text-center">
 						Grid Carbon
 					</h3>
 					<div className="flex flex-wrap gap-4 justify-center">
@@ -185,10 +185,10 @@ export function Team({
 										}}
 									/>
 								</div>
-								<p className="text-center -mt-5 text-lg md:text-xl uppercase font-semibold leading-5 relative z-10">
+								<p className="text-center -mt-5 text-lg md:text-xl uppercase font-semibold leading-5 relative z-10 bg-white">
 									{driver.name}
-								</p>{" "}
-								<p className="text-center mt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10">
+								</p>
+								<p className="text-center pt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10 bg-white">
 									{driver.number}
 								</p>
 							</div>

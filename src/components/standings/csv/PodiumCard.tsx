@@ -12,6 +12,7 @@ interface PodiumCardProps {
 	points?: string;
 	teamName?: string;
 	teamColor?: string;
+	teamLogo?: string;
 	teamDrivers?: string;
 	activeTab: "gridA" | "gridB";
 	newData: { name: string }[]; // Add newData prop
