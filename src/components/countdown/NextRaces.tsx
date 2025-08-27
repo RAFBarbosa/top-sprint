@@ -4,11 +4,13 @@ import GenericLogo from "/src/assets/img/white-logo.png";
 import { NextRace } from "./NextRace";
 import { Skeleton } from "@mui/material";
 import { parseISO, addHours, isAfter } from "date-fns";
+import { useTab } from "../../contexts/TabContext";
 
 interface Calendar {
 	id: string;
 	track?: string | null;
 	round?: string | null;
+	grid?: string | null;
 	description?: string | null;
 	date?: string | null;
 	link?: string | null;
@@ -48,13 +50,19 @@ export function NextRaces() {
 	const { data, error, loading, refetch } = useGetCalendarsQuery();
 	const [nextRace, setNextRace] = useState<Calendar | null>(null);
 	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+	const { activeTab } = useTab();
 
 	useEffect(() => {
 		if (data) {
 			const calendars = data?.calendars || [];
 			const currentDate = new Date();
 
-			const sortedCalendars = [...calendars].sort(
+			// ✅ only races from the selected grid
+			const filteredCalendars = calendars.filter(
+				(race) => race.grid === activeTab.id
+			);
+
+			const sortedCalendars = [...filteredCalendars].sort(
 				(a, b) =>
 					parseISO(a.date).getTime() - parseISO(b.date).getTime()
 			);
@@ -92,12 +100,11 @@ export function NextRaces() {
 					const timeoutId = setTimeout(() => {
 						refetch();
 					}, timeUntilEnd);
-
 					setTimeoutId(timeoutId);
 				}
 			}
 		}
-	}, [data, refetch]);
+	}, [data, refetch, activeTab.id]);
 
 	useEffect(() => {
 		return () => {
@@ -124,6 +131,7 @@ export function NextRaces() {
 						track={nextRace.track || ""}
 						date={parseISO(nextRace.date)}
 						link={nextRace.link || ""}
+						grid={nextRace.grid || ""}
 						description={nextRace.description || ""}
 						flag={nextRace.flag || { url: GenericLogo }}
 					/>

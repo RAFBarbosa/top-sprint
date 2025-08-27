@@ -9,6 +9,7 @@ query GetCalendars {
 		round
 		active
 		deleted
+		grid
 		description
 		date
 		link
@@ -24,6 +25,7 @@ query GetCalendarsRegistration {
 		track
 		round
 		active
+		grid
 		deleted
 		description
 		date

@@ -95,11 +95,14 @@ body {
 	--color-f1-black: #000000;
 	--color-f1-silver: #38383f;
 	--color-f1-bg-silver: #ededed;
-	--color-f1-lighterCarbon: #1c1c25;
 	--color-f1-lightSilver: #dcdada;
 	--color-f1-carbon: #15151e;
+	--color-f1-lightCarbon: #1c1c25;
+	--color-f1-lighterCarbon: #43434a;
 	--color-f1-text: #15151e;
-	--color-f1-purple: #581c87;
+	--color-f1-heat: #8e0046;
+	--color-f1-purple: #2c0e43;
+	--color-f1-lighterPurple: #48176d;
 	--color-rolex: #006341;
 
 	--background-image-divider: url(../assets/img/divider.png);

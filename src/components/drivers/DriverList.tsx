@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import useNormalizeString from "../hooks/useNormalizeString";
+import { TabSwitch } from "../standings/csv/TabSwitch";
 
 interface DriverListProps {
 	gridName: string;
@@ -13,6 +14,15 @@ export const DriverList: React.FC<DriverListProps> = ({
 }) => {
 	return (
 		<div>
+			<div
+				className={` ${
+					drivers.some((driver) => driver.class === "classB")
+						? "hidden"
+						: ""
+				}`}
+			>
+				<TabSwitch />
+			</div>
 			<h2 className="text-xl font-bold my-4">
 				<div
 					className={`font-extrabold text-4xl tracking-wide mb-6 ${

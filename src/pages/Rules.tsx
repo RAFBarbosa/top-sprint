@@ -125,7 +125,7 @@ export function Rules() {
 			</div>
 
 			<div className="w-full h-auto relative mb-8 max-w-screen-xl px-3 mx-auto">
-				<div className="border-t-8 border-r-8 border-b-8 border-f1-purple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
+				<div className="border-t-8 border-r-8 border-b-8 border-f1-lighterPurple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
 					<div className="font-bold md:text-4xl text-3xl pr-4 absolute bg-white -top-[30px] mt-3">
 						Configuração da Corrida
 					</div>

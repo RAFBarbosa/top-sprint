@@ -15,7 +15,7 @@ interface CalendarProps {
 
 export function Calendar(props: CalendarProps) {
 	const [isWithinTwoHours, setIsWithinTwoHours] = useState(false);
-	const [isFutureDate, setIsFutureDate] = useState(false);
+	const [isFutureDate, setIsFutureDate] = useState(true);
 
 	useEffect(() => {
 		const eventStartTime = new Date(props.date);

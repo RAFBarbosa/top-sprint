@@ -1,15 +1,42 @@
 import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
 import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
+import { useTab } from "../contexts/TabContext";
 
 const Drivers: React.FC = () => {
-	const enhancedCards = useEnhancedCards();
+	const { activeTab, setActiveTab } = useTab();
+
+	const enhancedCards = useEnhancedCards(activeTab.id);
 
 	const gridA = enhancedCards.filter((driver) => driver.grid === "gridA");
 	const gridB = enhancedCards.filter((driver) => driver.grid === "gridB");
 	const reserves = enhancedCards.filter(
 		(driver) => driver.grid === "reserva" || driver.grid === "inativo"
 	);
+
+	const gridAClassAFiltered = gridA.filter(
+		(driver) => driver.class === "classA"
+	);
+	const gridAClassBFiltered = gridA.filter(
+		(driver) => driver.class === "classB"
+	);
+	const gridBClassAFiltered = gridB.filter(
+		(driver) => driver.class === "classA"
+	);
+	const gridBClassBFiltered = gridB.filter(
+		(driver) => driver.class === "classB"
+	);
+
+	const gridDriversMap = {
+		gridA: {
+			classA: gridAClassAFiltered,
+			classB: gridAClassBFiltered,
+		},
+		gridB: {
+			classA: gridBClassAFiltered,
+			classB: gridBClassBFiltered,
+		},
+	};
 
 	return (
 		<div id="pilotos" className="bg-f1-lightSilver w-full pb-8">
@@ -27,12 +54,18 @@ const Drivers: React.FC = () => {
 				</div>
 			</div>
 			<div className="max-w-screen-xl mx-auto bg-white rounded p-6 space-y-6">
-				<DriverList gridName="Grid A" drivers={gridA} />
-				<DriverList gridName="Grid B" drivers={gridB} />
 				<DriverList
+					gridName="Classe A"
+					drivers={gridDriversMap[activeTab.id].classA}
+				/>
+				<DriverList
+					gridName="Classe B"
+					drivers={gridDriversMap[activeTab.id].classB}
+				/>
+				{/* <DriverList
 					gridName="Reservas e Ex-Pilotos"
 					drivers={reserves}
-				/>
+				/> */}
 			</div>
 		</div>
 	);

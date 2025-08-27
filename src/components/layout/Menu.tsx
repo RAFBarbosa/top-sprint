@@ -10,6 +10,7 @@ import { useEnhancedCards } from "../hooks/useEnhancedCards";
 import useNavigateToDriver from "../hooks/useNavigateToDriver";
 import useNormalizeString from "../hooks/useNormalizeString";
 import MenuDriverList from "../drivers/MenuDriverList";
+import { useTab } from "../../contexts/TabContext";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
@@ -41,7 +42,9 @@ export function Menu() {
 	const location = useLocation();
 	const navigateToDriver = useNavigateToDriver();
 
-	const enhancedDrivers = useEnhancedCards();
+	const { activeTab, setActiveTab } = useTab();
+
+	const enhancedDrivers = useEnhancedCards(activeTab.id);
 
 	// Group drivers by grid
 	const gridA = enhancedDrivers.filter((driver) => driver.grid === "gridA");
@@ -57,6 +60,18 @@ export function Menu() {
 
 	const handleDriverClick = (driverName: string) => {
 		setIsOpen(false);
+
+		// Find the driver to determine which grid they belong to
+		const driver = enhancedDrivers.find(
+			(driver) =>
+				useNormalizeString(driver.name) ===
+				useNormalizeString(driverName)
+		);
+
+		// Set the active tab to the driver's grid if found
+		if (driver && driver.grid !== activeTab.id) {
+			setActiveTab(driver.grid);
+		}
 		navigateToDriver(useNormalizeString(driverName));
 	};
 
@@ -172,25 +187,25 @@ export function Menu() {
 									<div className="flex flex-col max-w-screen-xl mx-auto gap-10">
 										<div className="flex justify-between gap-6">
 											<MenuDriverList
-												gridName="Grid A"
+												gridName="Grid Heat"
 												drivers={gridA}
 												onDriverClick={
 													handleDriverClick
 												}
 											/>
 											<MenuDriverList
-												gridName="Grid B"
+												gridName="Grid Carbon"
 												drivers={gridB}
 												onDriverClick={
 													handleDriverClick
 												}
 											/>
 										</div>
-										<MenuDriverList
+										{/* <MenuDriverList
 											gridName="Reservas e Ex-Pilotos"
 											drivers={reserves}
 											onDriverClick={handleDriverClick}
-										/>
+										/> */}
 									</div>
 								</div>
 							</div>

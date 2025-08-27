@@ -19,3 +19,22 @@ query GetData {
 		}
 	}
 }
+
+query GetStatsDataA {
+	datas(orderBy: publishedAt_DESC, first: 2, where: { grid: gridA }) {
+		id
+		csv {
+			url
+		}
+		grid
+	}
+}
+query GetStatsDataB {
+	datas(orderBy: publishedAt_DESC, first: 2, where: { grid: gridB }) {
+		id
+		csv {
+			url
+		}
+		grid
+	}
+}
