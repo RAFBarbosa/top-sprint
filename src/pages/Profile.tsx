@@ -7,34 +7,35 @@ import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import useNormalizeString from "../components/hooks/useNormalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
+import { useTab } from "../contexts/TabContext";
+import { TabSwitch } from "../components/standings/csv/TabSwitch";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
-	const enhancedCards = useEnhancedCards();
+	const { activeTab, setActiveTab } = useTab();
+
+	const enhancedCards = useEnhancedCards(activeTab.id);
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 
-	const gridA = enhancedCards.filter((driver) => driver.grid === "gridA");
-	const gridB = enhancedCards.filter((driver) => driver.grid === "gridB");
-	const reserves = enhancedCards.filter(
-		(driver) => driver.grid === "reserva" || driver.grid === "inativo"
+	// Filter drivers based on active tab
+	const filteredDrivers = enhancedCards.filter(
+		(driver) => driver.grid === activeTab.id
 	);
 
-	const orderedEnhancedCards = [...gridA, ...gridB, ...reserves];
-
 	useEffect(() => {
-		const index = orderedEnhancedCards.findIndex(
+		const index = filteredDrivers.findIndex(
 			(driver) =>
 				useNormalizeString(driver.name.toLowerCase()) ===
 				useNormalizeString(driverName?.toLowerCase())
 		);
-		setCurrentIndex(index >= 0 ? index : orderedEnhancedCards.length - 1);
-	}, [driverName, orderedEnhancedCards]);
+		setCurrentIndex(index >= 0 ? index : filteredDrivers.length - 1);
+	}, [driverName, filteredDrivers, activeTab.id]); // Added activeTab.id to dependencies
 
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
-			const prevDriver = orderedEnhancedCards[currentIndex - 1];
+			const prevDriver = filteredDrivers[currentIndex - 1];
 			navigate(`/pilotos/${useNormalizeString(prevDriver.name)}`);
 		}
 	};
@@ -42,19 +43,19 @@ export function Profile() {
 	const handleNextClick = () => {
 		if (
 			currentIndex !== null &&
-			currentIndex < orderedEnhancedCards.length - 1
+			currentIndex < filteredDrivers.length - 1
 		) {
-			const nextDriver = orderedEnhancedCards[currentIndex + 1];
+			const nextDriver = filteredDrivers[currentIndex + 1];
 			navigate(`/pilotos/${useNormalizeString(nextDriver.name)}`);
 		}
 	};
 
 	const driverData =
-		currentIndex !== null ? orderedEnhancedCards[currentIndex] : null;
+		currentIndex !== null ? filteredDrivers[currentIndex] : null;
 
 	return (
 		currentIndex !== null &&
-		orderedEnhancedCards.length > 0 && (
+		filteredDrivers.length > 0 && (
 			<aside
 				id="perfil"
 				className="bg-f1-bg-silver flex flex-col grow pb-6"
@@ -79,9 +80,8 @@ export function Profile() {
 								style={{
 									borderColor: `${
 										currentIndex > 0
-											? orderedEnhancedCards[
-													currentIndex - 1
-											  ].teamColor
+											? filteredDrivers[currentIndex - 1]
+													.teamColor
 											: ""
 									}`,
 								}}
@@ -97,7 +97,7 @@ export function Profile() {
 											style={{
 												backgroundImage: `url(${
 													currentIndex > 0
-														? orderedEnhancedCards[
+														? filteredDrivers[
 																currentIndex - 1
 														  ].photo
 														: ""
@@ -107,28 +107,24 @@ export function Profile() {
 									</div>
 								</div>
 							</button>
-
 							<button
 								onClick={handleNextClick}
 								disabled={
 									currentIndex === null ||
-									currentIndex ===
-										orderedEnhancedCards.length - 1
+									currentIndex === filteredDrivers.length - 1
 								}
 								className={`bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
 									currentIndex === null ||
-									currentIndex ===
-										orderedEnhancedCards.length - 1
+									currentIndex === filteredDrivers.length - 1
 										? "opacity-50 cursor-not-allowed"
 										: "hover:opacity-80 cursor-pointer"
 								}`}
 								style={{
 									borderColor: `${
 										currentIndex <
-										orderedEnhancedCards.length - 1
-											? orderedEnhancedCards[
-													currentIndex + 1
-											  ].teamColor
+										filteredDrivers.length - 1
+											? filteredDrivers[currentIndex + 1]
+													.teamColor
 											: ""
 									}`,
 								}}
@@ -139,10 +135,10 @@ export function Profile() {
 											className="w-22 h-22 bg-cover translate-y-[10px] scale-120"
 											style={{
 												backgroundImage: `url(${
-													orderedEnhancedCards[
+													filteredDrivers[
 														currentIndex + 1
 													]
-														? orderedEnhancedCards[
+														? filteredDrivers[
 																currentIndex + 1
 														  ].photo
 														: ""
@@ -160,7 +156,10 @@ export function Profile() {
 					</div>
 
 					{/* Split Layout Container */}
-					<div className="w-full py-6 bg-white md:rounded md:p-8 px-3">
+					<div className="w-full p-1 bg-white md:rounded md:pb-8 px-3">
+						<div className="mb-4">
+							<TabSwitch />
+						</div>
 						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-4">
 							{/* Left Half - Fixed Card */}
 							<div className="md:w-1/2 flex justify-center md:justify-end">

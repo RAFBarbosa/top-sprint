@@ -7,6 +7,7 @@ interface NextRaceProps {
 	track: string;
 	date: Date;
 	link: string;
+	grid: string;
 	description: string;
 	flag: { url: string };
 }
@@ -26,6 +27,7 @@ export function NextRace(props: NextRaceProps) {
 		<div className="text-white md:flex justify-between max-w-screen-xl px-3 py-4 mx-auto tracking-wide">
 			<div className="flex flex-col w-full">
 				<div className="text-lg mb-2 font-bold">
+					{/* {props.grid === "gridA" ? "Grid Heat - " : "Grid Carbon - "} */}
 					{formattedDateCapitalized}
 				</div>
 				<div className="flex">

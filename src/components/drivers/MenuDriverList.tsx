@@ -83,13 +83,26 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 							onClick={() => onDriverClick(driver.name)}
 						>
 							<div className="flex items-center">
-								<span
+								<div
+									className="mr-2 rounded-full overflow-hidden border-1 border-f1-carbon transition-all duration-200"
+									style={{
+										backgroundColor: driver.teamColor,
+									}}
+								>
+									<div
+										className="w-8 h-8 scale-150 rounded-full bg-cover transition-all translate-y-[12px]"
+										style={{
+											backgroundImage: `url(${driver.photo})`,
+										}}
+									/>
+								</div>
+								{/* <span
 									className="ml-1 mr-2 w-1 h-4"
 									style={{
 										backgroundColor:
 											driver.teamColor || "#fff",
 									}}
-								/>
+								/> */}
 								<span>
 									<span
 										className={

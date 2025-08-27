@@ -7,7 +7,7 @@ export function Partners() {
 	if (partners.length === 0) return null;
 
 	return (
-		<div className="bg-f1-lighterCarbon w-full py-6">
+		<div className="bg-f1-lightCarbon w-full py-6">
 			<div className="md:max-w-screen-xl mx-auto px-3">
 				<h3 className="text-f1-white font-extrabold text-center text-3xl mb-6 tracking-wide">
 					Nossos Parceiros

@@ -2,6 +2,7 @@ import { PodiumCard } from "./PodiumCard";
 
 interface PodiumProps {
 	grid?: string;
+	class?: string;
 	topThree: {
 		name: string;
 		photo: string;
@@ -11,7 +12,7 @@ interface PodiumProps {
 		teamName: string;
 		[key: string]: string;
 	}[];
-	activeTab: "drivers" | "teams";
+	activeTab: "gridA" | "gridB";
 	newData: { name: string }[]; // Add newData prop
 	oldData: { name: string }[]; // Add oldData prop
 }
@@ -21,7 +22,7 @@ export function Podium(props: PodiumProps) {
 
 	return (
 		<div className="mb-1">
-			{props.activeTab === "drivers" ? (
+			{props.activeTab === "gridA" || "gridB" ? (
 				<div className="md:flex md:gap-x-2 ">
 					<div className="hidden md:block w-[31%]">
 						<PodiumCard
@@ -32,6 +33,7 @@ export function Podium(props: PodiumProps) {
 							points={props.topThree[1].pts}
 							position={2}
 							grid={props.grid}
+							class={props.class}
 							activeTab={props.activeTab}
 							newData={props.newData}
 							oldData={props.oldData || []}
@@ -46,6 +48,7 @@ export function Podium(props: PodiumProps) {
 							points={props.topThree[0].pts}
 							position={1}
 							grid={props.grid}
+							class={props.class}
 							activeTab={props.activeTab}
 							newData={props.newData}
 							oldData={props.oldData || []}
@@ -60,6 +63,7 @@ export function Podium(props: PodiumProps) {
 							points={props.topThree[2].pts}
 							position={3}
 							grid={props.grid}
+							class={props.class}
 							activeTab={props.activeTab}
 							newData={props.newData}
 							oldData={props.oldData || []}

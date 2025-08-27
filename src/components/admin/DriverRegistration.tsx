@@ -13,6 +13,7 @@ import {
 	useUpdateDriverMutation,
 	useGetDriversRegistrationQuery,
 	GetDriversRegistrationDocument,
+	useClassOptionsQuery,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
@@ -29,6 +30,7 @@ export function DriverRegistration() {
 		name: "",
 		number: "",
 		grid: "",
+		class: "",
 		stream: "",
 		city: "",
 		equipment: "",
@@ -123,6 +125,11 @@ export function DriverRegistration() {
 		error: gridError,
 	} = useGridOptionsQuery();
 	const {
+		data: classData,
+		loading: classLoading,
+		error: classError,
+	} = useClassOptionsQuery();
+	const {
 		data: driversData,
 		loading: driversLoading,
 		error: driversError,
@@ -135,12 +142,14 @@ export function DriverRegistration() {
 			.replace(/^./, (str) => str.toUpperCase());
 
 	const handleSelectDriver = (driver: any) => {
+		console.log(driver);
 		setSelectedDriver(driver);
 		setIsEditing(true);
 		setFormData({
 			name: driver.name,
 			number: driver.number || "",
 			grid: driver.grid,
+			class: driver.class,
 			stream: driver.stream || "",
 			city: driver.city || "",
 			equipment: driver.equipment || "",
@@ -161,6 +170,7 @@ export function DriverRegistration() {
 			name: "",
 			number: "",
 			grid: "",
+			class: "",
 			stream: "",
 			city: "",
 			equipment: "",
@@ -263,7 +273,13 @@ export function DriverRegistration() {
 			const validGrids =
 				gridData?.__type?.enumValues?.map((v) => v.name) || [];
 			if (!validGrids.includes(formData.grid)) {
-				throw new Error(`Posição de grid inválida: ${formData.grid}`);
+				throw new Error(`Grid inválido: ${formData.grid}`);
+			}
+
+			const validClasses =
+				classData?.__type?.enumValues?.map((v) => v.name) || [];
+			if (!validClasses.includes(formData.class)) {
+				throw new Error(`Classe inválida: ${formData.class}`);
 			}
 
 			if (formData.stream && !formData.stream.startsWith("http")) {
@@ -286,6 +302,7 @@ export function DriverRegistration() {
 							name: formData.name, // Direct string value
 							number: formData.number || null,
 							grid: formData.grid,
+							class: formData.class,
 							stream: formData.stream || null,
 							city: formData.city || null,
 							equipment: formData.equipment || null,
@@ -314,6 +331,7 @@ export function DriverRegistration() {
 							name: formData.name,
 							number: formData.number || null,
 							grid: formData.grid,
+							class: formData.class,
 							stream: formData.stream || null,
 							city: formData.city || null,
 							equipment: formData.equipment || null,
@@ -362,8 +380,7 @@ export function DriverRegistration() {
 			console.error("Registration error:", error);
 			setStatus({
 				type: "error",
-				message:
-					error.message || "Erro desconhecido ao cadastrar piloto",
+				message: error.message || "Erro ao cadastrar piloto",
 			});
 			setUploadProgress(null);
 		}
@@ -402,7 +419,7 @@ export function DriverRegistration() {
 			return matchesSearch && matchesGrid;
 		}) || [];
 
-	if (teamsLoading || gridLoading || driversLoading) {
+	if (teamsLoading || gridLoading || driversLoading || classLoading) {
 		return (
 			<div className="bg-f1-lightSilver py-10 flex justify-center">
 				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
@@ -410,13 +427,14 @@ export function DriverRegistration() {
 		);
 	}
 
-	if (teamsError || gridError || driversError) {
+	if (teamsError || gridError || driversError || classError) {
 		return (
 			<div className="bg-f1-lightSilver py-10">
 				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
 					Erro ao carregar opções:{" "}
 					{teamsError?.message ||
 						gridError?.message ||
+						classError?.message ||
 						driversError?.message}
 				</div>
 			</div>
@@ -717,48 +735,68 @@ export function DriverRegistration() {
 								</div>
 							</Listbox>
 						</div>
-
 						<div>
-							<label className="block mb-1">Stream URL</label>
-							<input
-								name="stream"
-								value={formData.stream}
-								onChange={handleChange}
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
+							<label className="block mb-1 ">Classe *</label>
+							<Listbox
+								value={formData.class}
+								onChange={(value) =>
+									handleChange({
+										target: { name: "class", value },
+									} as React.ChangeEvent<HTMLSelectElement>)
+								}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.class
+												? formatEnum(formData.class)
+												: "Selecione"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
+										</span>
+									</ListboxButton>
 
-						<div>
-							<label className="block mb-1">Cidade</label>
-							<input
-								name="city"
-								value={formData.city}
-								onChange={handleChange}
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
+									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active ? "bg-f1-red/20" : ""
+												}`
+											}
+										>
+											Selecione
+										</ListboxOption>
 
-						<div>
-							<label className="block mb-1">Equipamento</label>
-							<input
-								name="equipment"
-								value={formData.equipment}
-								onChange={handleChange}
-								className="w-full p-2 border rounded h-11"
-							/>
+										{classData?.__type?.enumValues?.map(
+											(option) => (
+												<ListboxOption
+													key={option.name}
+													value={option.name}
+													className={({ active }) =>
+														`flex items-center gap-2 p-2 cursor-pointer ${
+															active
+																? "bg-f1-red/20"
+																: ""
+														}`
+													}
+												>
+													<span className="block truncate">
+														{formatEnum(
+															option.name
+														)}
+													</span>
+												</ListboxOption>
+											)
+										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
 						</div>
-
-						<div>
-							<label className="block mb-1">Telefone *</label>
-							<input
-								name="phone"
-								value={formData.phone}
-								onChange={handleChange}
-								required
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-
 						<div className="relative">
 							<label className="block mb-1">Equipe</label>
 							<Listbox value={teamId} onChange={setTeamId}>
@@ -813,7 +851,48 @@ export function DriverRegistration() {
 							</Listbox>
 						</div>
 
-						<div className="md:col-span-2 md:grid grid-cols-2 gap-4">
+						<div>
+							<label className="block mb-1">Stream URL</label>
+							<input
+								name="stream"
+								value={formData.stream}
+								onChange={handleChange}
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div>
+							<label className="block mb-1">Cidade</label>
+							<input
+								name="city"
+								value={formData.city}
+								onChange={handleChange}
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div>
+							<label className="block mb-1">Equipamento</label>
+							<input
+								name="equipment"
+								value={formData.equipment}
+								onChange={handleChange}
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div>
+							<label className="block mb-1">Telefone *</label>
+							<input
+								name="phone"
+								value={formData.phone}
+								onChange={handleChange}
+								required
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div className="md:col-span-1 md:grid grid-cols-1 gap-4">
 							<div>
 								<label className="block mb-1">Foto</label>
 								<input

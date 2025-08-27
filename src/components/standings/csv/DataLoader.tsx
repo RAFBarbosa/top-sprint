@@ -6,13 +6,17 @@ import useNormalizeString from "../../hooks/useNormalizeString";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
-	activeTab: "drivers" | "teams";
+	activeTab: "gridA" | "gridB";
 }
 
 export function DataLoader(props: DataLoaderProps) {
-	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader();
+	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader(
+		props.activeTab
+	);
 
-	// Memoize enhancedDrivers and enhancedTeams
+	const title = props.activeTab === "gridA" ? "Heat" : "Carbon";
+
+	// Memorize enhancedDrivers and enhancedTeams
 	const enhancedDrivers = useMemo(() => {
 		if (props.data && drivers && teams) {
 			return drivers.map((driver) => {
@@ -24,6 +28,7 @@ export function DataLoader(props: DataLoaderProps) {
 				return {
 					...driver,
 					grid: driverFromData?.grid || "",
+					class: driverFromData?.class || "",
 					photo: driverFromData?.photo?.url || "",
 					number: driverFromData?.number || "",
 					teamName: driverFromData?.team?.name || "",
@@ -62,26 +67,51 @@ export function DataLoader(props: DataLoaderProps) {
 
 	return (
 		<div className="w-full mx-auto">
-			{props.activeTab === "drivers" && (
+			<StandingsList
+				title={title}
+				data={enhancedDrivers}
+				drivers={enhancedDrivers}
+				teams={enhancedTeams}
+				oldData={oldDrivers}
+				valueKey="pts"
+				valueLabel="PTS"
+				activeTab={props.activeTab}
+			/>
+
+			{/* <StandingsList
+				title={title}
+				drivers={enhancedDrivers}
+				teams={enhancedTeams}
+				oldDrivers={oldDrivers}
+				oldTeams={oldTeams}
+				valueKey="pts"
+				valueLabel="PTS"
+				activeTab={props.activeTab}
+			/> */}
+			{/* {props.activeTab === "gridA" && (
 				<StandingsList
-					title="Pilotos"
+					title={title}
 					data={enhancedDrivers}
+					drivers={enhancedDrivers}
+					teams={enhancedTeams}
 					oldData={oldDrivers}
 					valueKey="pts"
 					valueLabel="PTS"
 					activeTab={props.activeTab}
 				/>
 			)}
-			{props.activeTab === "teams" && (
+			{props.activeTab === "gridB" && (
 				<StandingsList
-					title="Equipes"
+					title={title}
 					data={enhancedTeams}
+					drivers={enhancedDrivers}
+					teams={enhancedTeams}
 					oldData={oldTeams}
 					valueKey="pts"
 					valueLabel="PTS"
 					activeTab={props.activeTab}
 				/>
-			)}
+			)} */}
 		</div>
 	);
 }
