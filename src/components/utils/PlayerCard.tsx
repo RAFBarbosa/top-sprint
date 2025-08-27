@@ -252,9 +252,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									}`}
 								>
 									{data.class === "classA"
-										? "Class A"
+										? "Classe A"
 										: data.class === "classB"
-										? "Class B"
+										? "Classe B"
 										: data.class === "reserva"
 										? "Reserva"
 										: "Ex-Piloto"}
