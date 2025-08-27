@@ -15,7 +15,7 @@ export function Signature(props: SignatureProps) {
 	return (
 		<a href={signature.website} target="_blank">
 			<div
-				className={`flex items-center justify-center group cursor-pointer opacity-80 hover:opacity-100 transition-all duration-200 ${
+				className={`flex items-center justify-center group cursor-pointer opacity-80 hover:opacity-100 transition-all duration-200 font-signature ${
 					props.side === "left" && "flex-row-reverse"
 				}`}
 			>
