@@ -18,7 +18,7 @@ interface StandingCardProps {
 	badgeTitle: string;
 	valueKey: string;
 	valueLabel: string;
-	activeTab: "gridA" | "gridB";
+	activeGrid: "drivers" | "teams";
 	isActive: boolean;
 	onClick: () => void;
 	newData: { name: string }[]; // Add newData prop
@@ -30,6 +30,8 @@ export function StandingCard(props: StandingCardProps) {
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 	const isDrivers = true;
+
+	console.log(props);
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -89,11 +91,9 @@ export function StandingCard(props: StandingCardProps) {
 							? props.class === "classA"
 								? "hover:bg-f1-purple hover:text-white cursor-pointer"
 								: "hover:bg-f1-lighterPurple hover:text-white cursor-pointer"
-							: props.grid === "gridB"
-							? props.class === "classA"
-								? "hover:bg-f1-carbon hover:text-white cursor-pointer"
-								: "hover:bg-f1-silver hover:text-white cursor-pointer"
-							: ""
+							: props.grid === "gridB" && props.class === "classA"
+							? "hover:bg-f1-carbon hover:text-white cursor-pointer"
+							: "hover:bg-f1-silver hover:text-white cursor-pointer"
 						: ""
 				}`}
 			>
@@ -158,10 +158,11 @@ export function StandingCard(props: StandingCardProps) {
 								: Array.isArray(props.teamDrivers)
 								? props.teamDrivers.join(" / ")
 								: props.teamDrivers || "No drivers"}
+
 							{/* <img
 								src={props.teamLogo}
 								alt="Team Logo"
-								className="ml-2 inline-block h-4 w-4 translate-y-[-4px]"
+								className="ml-2 inline-block md:h-4 md:w-4 h-[14px] w-[14px] translate-y-[2px] group-hover:color-overlay-white"
 							/> */}
 						</span>
 					</div>

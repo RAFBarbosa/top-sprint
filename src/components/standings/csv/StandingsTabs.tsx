@@ -1,6 +1,6 @@
 interface StandingsTabsProps {
-	activeGrid: "gridA" | "gridB";
-	setActiveGrid: (grid: "gridA" | "gridB") => void;
+	activeGrid: "drivers" | "teams";
+	setActiveGrid: (grid: "drivers" | "teams") => void;
 }
 
 export function StandingsTabs({
@@ -8,17 +8,17 @@ export function StandingsTabs({
 	setActiveGrid,
 }: StandingsTabsProps) {
 	return (
-		<div className="flex justify-center items-center font-f1Title gap-5">
+		<div className="flex justify-center items-center font-f1Title gap-2">
 			<StandingsTab
 				label="Pilotos"
-				isActive={activeGrid === "gridA"}
-				onClick={() => setActiveGrid("gridA")}
+				isActive={activeGrid === "drivers"}
+				onClick={() => setActiveGrid("drivers")}
 			/>
 			<div className="w-[1px] bg-white/50 h-5" />
 			<StandingsTab
 				label="Equipes"
-				isActive={activeGrid === "gridB"}
-				onClick={() => setActiveGrid("gridB")}
+				isActive={activeGrid === "teams"}
+				onClick={() => setActiveGrid("teams")}
 			/>
 		</div>
 	);
@@ -36,10 +36,10 @@ function StandingsTab({
 	return (
 		<button
 			onClick={onClick}
-			className={`px-6 py-3 uppercase text-xs tracking-widest transition-all duration-200 hover:cursor-pointer ${
+			className={`px-5 py-3 uppercase text-xs tracking-widest transition-all duration-200 hover:cursor-pointer ${
 				isActive
-					? "text-white border-b-f1-redF1 border-b-2 border-t-2 border-t-f1-red/0"
-					: "text-gray-400 border-b-f1-red/0 border-b-2 border-t-2 border-t-f1-red/0"
+					? "text-white border-b-f1-white border-b-2"
+					: "text-gray-400 border-b-transparent border-b-2"
 			}`}
 		>
 			{label}

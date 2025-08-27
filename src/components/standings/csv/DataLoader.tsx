@@ -72,6 +72,7 @@ export function DataLoader(props: DataLoaderProps) {
 				data={enhancedDrivers}
 				drivers={enhancedDrivers}
 				teams={enhancedTeams}
+				oldTeams={oldTeams}
 				oldData={oldDrivers}
 				valueKey="pts"
 				valueLabel="PTS"
