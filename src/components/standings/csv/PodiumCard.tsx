@@ -20,9 +20,18 @@ interface PodiumCardProps {
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	const nameParts = props.name.split(" ");
-	const firstName = nameParts[0];
-	const secondName = nameParts.length > 1 && nameParts.slice(1).join(" ");
+	// const nameParts = props.name.split(" ");
+	// const firstName = nameParts[0];
+	// const secondName = nameParts.length > 1 && nameParts.slice(1).join(" ");
+	const [firstName, secondName] = (() => {
+		const nameParts = props.name.split(" ");
+		return [
+			nameParts[0].replace(/B$/, ""),
+			nameParts.length > 1
+				? nameParts.slice(1).join(" ").replace(/B$/, "")
+				: "",
+		];
+	})();
 
 	const isDrivers = true;
 
