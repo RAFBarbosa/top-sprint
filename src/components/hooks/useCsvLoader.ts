@@ -1,9 +1,30 @@
 import { useState, useEffect, useRef } from "react";
 import Papa from "papaparse";
-import { useGetStatsDataQuery } from "../../graphql/generated";
+import {
+	useGetStatsDataAQuery,
+	useGetStatsDataBQuery,
+} from "../../graphql/generated";
 
-const useCsvLoader = () => {
-	const { data, error, loading } = useGetStatsDataQuery();
+const useCsvLoader = (activeTab: "gridA" | "gridB") => {
+	const {
+		data: dataA,
+		error: errorA,
+		loading: loadingA,
+	} = useGetStatsDataAQuery({
+		skip: activeTab !== "gridA", // Skip if not Grid Heat (drivers)
+	});
+	const {
+		data: dataB,
+		error: errorB,
+		loading: loadingB,
+	} = useGetStatsDataBQuery({
+		skip: activeTab !== "gridB", // Skip if not Grid Carbon (teams)
+	});
+
+	const data = activeTab === "gridA" ? dataA : dataB;
+	const error = activeTab === "gridA" ? errorA : errorB;
+	const loading = activeTab === "gridA" ? loadingA : loadingB;
+
 	const [teams, setTeams] = useState<{ name: string; pts: string }[]>([]);
 	const [drivers, setDrivers] = useState<{ name: string; pts: string }[]>([]);
 	const [oldTeams, setOldTeams] = useState<{ name: string; pts: string }[]>(
@@ -47,12 +68,10 @@ const useCsvLoader = () => {
 		}[]
 	>([]);
 
-	// Use a ref to store the previous CSV data
 	const prevDataRef = useRef<any>();
 
 	useEffect(() => {
 		if (!loading && !error && data) {
-			// Check if the data has changed
 			if (data !== prevDataRef.current) {
 				prevDataRef.current = data;
 

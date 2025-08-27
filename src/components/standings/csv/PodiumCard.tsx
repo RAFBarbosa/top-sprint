@@ -8,11 +8,12 @@ interface PodiumCardProps {
 	name: string;
 	photo: string;
 	grid?: string;
+	class?: string;
 	points?: string;
 	teamName?: string;
 	teamColor?: string;
 	teamDrivers?: string;
-	activeTab: "drivers" | "teams";
+	activeTab: "gridA" | "gridB";
 	newData: { name: string }[]; // Add newData prop
 	oldData: { name: string }[]; // Add oldData prop
 }
@@ -22,7 +23,7 @@ export function PodiumCard(props: PodiumCardProps) {
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 && nameParts.slice(1).join(" ");
 
-	const isDrivers = props.activeTab === "drivers";
+	const isDrivers = true;
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -60,7 +61,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				</span>
 			);
 		} else {
-			return <span className="text-gray-500 font-bold">–</span>;
+			return <span className="text-f1-lightSilver font-bold">–</span>;
 		}
 	};
 
@@ -91,9 +92,13 @@ export function PodiumCard(props: PodiumCardProps) {
 				<div
 					className={`rounded-xl px-2 ${
 						props.grid === "gridA"
-							? "bg-f1-carbon"
+							? props.class === "classA"
+								? "bg-f1-purple"
+								: "bg-f1-lighterPurple"
 							: props.grid === "gridB"
-							? "bg-f1-red"
+							? props.class === "classA"
+								? "bg-f1-carbon"
+								: "bg-f1-silver"
 							: "bg-f1-silver"
 					} `}
 				>
@@ -140,9 +145,13 @@ export function PodiumCard(props: PodiumCardProps) {
 			<div
 				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider ${
 					props.grid === "gridA"
-						? "bg-f1-carbon"
+						? props.class === "classA"
+							? "bg-f1-purple"
+							: "bg-f1-lighterPurple"
 						: props.grid === "gridB"
-						? "bg-f1-red"
+						? props.class === "classA"
+							? "bg-f1-carbon"
+							: "bg-f1-silver"
 						: "bg-f1-silver"
 				}`}
 			>
@@ -162,14 +171,18 @@ export function PodiumCard(props: PodiumCardProps) {
 						: props.teamDrivers || "No drivers"}
 				</span>
 				{secondName && isDrivers && (
-					<span className="font-bold uppercase text-2xl leading-6">
+					<span
+						className={`font-bold uppercase leading-6 truncate ${
+							secondName.length > 9 ? "text-xl" : "text-2xl"
+						}`}
+					>
 						{secondName}
 					</span>
 				)}
 				<div
 					className={`font-light leading-3 mt-auto ${
 						isDrivers
-							? "text-left text-sm "
+							? "text-left text-sm"
 							: "text-center text-base"
 					}`}
 				>

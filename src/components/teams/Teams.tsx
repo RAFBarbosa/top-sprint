@@ -54,6 +54,7 @@ export function Teams() {
 									key={team.id}
 									name={team.name}
 									logo={team.photo?.url}
+									teamClass={team.class}
 									teamColor={team.color.hex}
 									gridA={gridA}
 									gridB={gridB}

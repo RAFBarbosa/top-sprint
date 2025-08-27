@@ -20,6 +20,7 @@ interface PlayerCardProps {
 		teamName: string;
 		teamLogo: string;
 		grid: string;
+		class: string;
 		badge: Array<{ url: string }>;
 		badgeTitle: string;
 		stats: {
@@ -217,14 +218,22 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								<span
 									className={
 										secondName
-											? ""
+											? secondName.length > 9
+												? "text-2xl leading-4"
+												: ""
 											: "font-bold uppercase text-4xl"
 									}
 								>
 									{firstName}
 								</span>
 								{secondName && (
-									<span className="font-bold uppercase text-4xl leading-tight">
+									<span
+										className={`font-bold uppercase leading-tight ${
+											secondName.length > 9
+												? "text-3xl"
+												: "text-4xl"
+										}`}
+									>
 										{secondName}
 									</span>
 								)}
@@ -232,18 +241,18 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							<div className="flex flex-col items-end gap-[2px]">
 								<h2
 									className={`font-semibold uppercase text-xs px-2 rounded leading-tight ${
-										data.grid === "gridA"
+										data.class === "classA"
 											? "bg-f1-carbon text-white"
-											: data.grid === "gridB"
+											: data.class === "classB"
 											? "bg-f1-red text-white"
 											: "bg-white text-f1-black"
 									}`}
 								>
-									{data.grid === "gridA"
-										? "Grid A"
-										: data.grid === "gridB"
-										? "Grid B"
-										: data.grid === "reserva"
+									{data.class === "classA"
+										? "Class A"
+										: data.class === "classB"
+										? "Class B"
+										: data.class === "reserva"
 										? "Reserva"
 										: "Ex-Piloto"}
 								</h2>

@@ -3,9 +3,9 @@ import useCsvLoader from "./useCsvLoader";
 import { useGetTeamsQuery } from "../../graphql/generated";
 import useNormalizeString from "./useNormalizeString";
 
-export function useEnhancedCards() {
+export function useEnhancedCards(activeTab: "gridA" | "gridB") {
 	const { data } = useGetTeamsQuery();
-	const { cards, stats } = useCsvLoader();
+	const { cards, stats } = useCsvLoader(activeTab);
 	const [enhancedCards, setEnhancedCards] = useState<any[]>([]);
 
 	useEffect(() => {
@@ -29,6 +29,7 @@ export function useEnhancedCards() {
 						...card,
 						stream: driverFromData?.stream || "",
 						grid: driverFromData?.grid || "",
+						class: driverFromData?.class || "",
 						city: driverFromData?.city || "",
 						equipment: driverFromData?.equipment || "",
 						photo: driverFromData?.photo?.url || "",

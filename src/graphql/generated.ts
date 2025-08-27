@@ -1643,6 +1643,7 @@ export type Calendar = Entity & Node & {
   /** Get the document in other stages */
   documentInStages: Array<Calendar>;
   flag?: Maybe<Asset>;
+  grid: Grid;
   /** List of Calendar versions */
   history: Array<Version>;
   /** The unique identifier */
@@ -1738,6 +1739,7 @@ export type CalendarCreateInput = {
   deleted: Scalars['Boolean'];
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetCreateOneInlineInput>;
+  grid: Grid;
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
@@ -1837,6 +1839,13 @@ export type CalendarManyWhereInput = {
   documentInStages_none?: InputMaybe<CalendarWhereStageInput>;
   documentInStages_some?: InputMaybe<CalendarWhereStageInput>;
   flag?: InputMaybe<AssetWhereInput>;
+  grid?: InputMaybe<Grid>;
+  /** All values that are contained in given list. */
+  grid_in?: InputMaybe<Array<InputMaybe<Grid>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  grid_not?: InputMaybe<Grid>;
+  /** All values that are not contained in given list. */
+  grid_not_in?: InputMaybe<Array<InputMaybe<Grid>>>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -1961,6 +1970,8 @@ export enum CalendarOrderByInput {
   DeletedDesc = 'deleted_DESC',
   DescriptionAsc = 'description_ASC',
   DescriptionDesc = 'description_DESC',
+  GridAsc = 'grid_ASC',
+  GridDesc = 'grid_DESC',
   IdAsc = 'id_ASC',
   IdDesc = 'id_DESC',
   LinkAsc = 'link_ASC',
@@ -1981,6 +1992,7 @@ export type CalendarUpdateInput = {
   deleted?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
   flag?: InputMaybe<AssetUpdateOneInlineInput>;
+  grid?: InputMaybe<Grid>;
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
@@ -2008,6 +2020,7 @@ export type CalendarUpdateManyInput = {
   date?: InputMaybe<Scalars['DateTime']>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   description?: InputMaybe<Scalars['String']>;
+  grid?: InputMaybe<Grid>;
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
@@ -2132,6 +2145,13 @@ export type CalendarWhereInput = {
   documentInStages_none?: InputMaybe<CalendarWhereStageInput>;
   documentInStages_some?: InputMaybe<CalendarWhereStageInput>;
   flag?: InputMaybe<AssetWhereInput>;
+  grid?: InputMaybe<Grid>;
+  /** All values that are contained in given list. */
+  grid_in?: InputMaybe<Array<InputMaybe<Grid>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  grid_not?: InputMaybe<Grid>;
+  /** All values that are not contained in given list. */
+  grid_not_in?: InputMaybe<Array<InputMaybe<Grid>>>;
   id?: InputMaybe<Scalars['ID']>;
   /** All values containing the given string. */
   id_contains?: InputMaybe<Scalars['ID']>;
@@ -2265,8 +2285,8 @@ export type CalendarWhereUniqueInput = {
 };
 
 export enum Class {
-  A = 'a',
-  B = 'b'
+  ClassA = 'classA',
+  ClassB = 'classB'
 }
 
 /** Representing a color value comprising of HEX, RGBA and css color values */
@@ -2776,12 +2796,12 @@ export type Driver = Entity & Node & {
   badge: Array<Asset>;
   badgeTitle: Array<BadgeTitle>;
   city?: Maybe<Scalars['String']>;
-  class: Class;
+  class?: Maybe<Class>;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
-  deleted: Scalars['Boolean'];
+  deleted?: Maybe<Scalars['Boolean']>;
   /** Get the document in other stages */
   documentInStages: Array<Driver>;
   equipment?: Maybe<Scalars['String']>;
@@ -2901,9 +2921,9 @@ export type DriverCreateInput = {
   badge?: InputMaybe<AssetCreateManyInlineInput>;
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
-  class: Class;
+  class?: InputMaybe<Class>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
-  deleted: Scalars['Boolean'];
+  deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
   grid?: InputMaybe<Grid>;
@@ -9535,6 +9555,7 @@ export enum SystemDateTimeFieldVariation {
 
 export type Team = Entity & Node & {
   __typename?: 'Team';
+  class?: Maybe<Class>;
   color?: Maybe<Color>;
   /** The time the document was created */
   createdAt: Scalars['DateTime'];
@@ -9645,6 +9666,7 @@ export type TeamConnection = {
 };
 
 export type TeamCreateInput = {
+  class?: InputMaybe<Class>;
   color?: InputMaybe<ColorInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   deleted: Scalars['Boolean'];
@@ -9687,6 +9709,13 @@ export type TeamManyWhereInput = {
   OR?: InputMaybe<Array<TeamWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<Class>;
+  /** All values that are contained in given list. */
+  class_in?: InputMaybe<Array<InputMaybe<Class>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  class_not?: InputMaybe<Class>;
+  /** All values that are not contained in given list. */
+  class_not_in?: InputMaybe<Array<InputMaybe<Class>>>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -9789,6 +9818,8 @@ export type TeamManyWhereInput = {
 };
 
 export enum TeamOrderByInput {
+  ClassAsc = 'class_ASC',
+  ClassDesc = 'class_DESC',
   CreatedAtAsc = 'createdAt_ASC',
   CreatedAtDesc = 'createdAt_DESC',
   DeletedAsc = 'deleted_ASC',
@@ -9804,6 +9835,7 @@ export enum TeamOrderByInput {
 }
 
 export type TeamUpdateInput = {
+  class?: InputMaybe<Class>;
   color?: InputMaybe<ColorInput>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   driver?: InputMaybe<DriverUpdateManyInlineInput>;
@@ -9829,6 +9861,7 @@ export type TeamUpdateManyInlineInput = {
 };
 
 export type TeamUpdateManyInput = {
+  class?: InputMaybe<Class>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
 };
@@ -9892,6 +9925,13 @@ export type TeamWhereInput = {
   OR?: InputMaybe<Array<TeamWhereInput>>;
   /** Contains search across all appropriate fields. */
   _search?: InputMaybe<Scalars['String']>;
+  class?: InputMaybe<Class>;
+  /** All values that are contained in given list. */
+  class_in?: InputMaybe<Array<InputMaybe<Class>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  class_not?: InputMaybe<Class>;
+  /** All values that are not contained in given list. */
+  class_not_in?: InputMaybe<Array<InputMaybe<Class>>>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   createdAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -11219,7 +11259,7 @@ export type CreateDriverMutationVariables = Exact<{
 }>;
 
 
-export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, class?: Class | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
 
 export type CreateHallOfFameMutationVariables = Exact<{
   data: HallOfFameCreateInput;
@@ -11240,7 +11280,7 @@ export type CreateTeamMutationVariables = Exact<{
 }>;
 
 
-export type CreateTeamMutation = { __typename?: 'Mutation', createTeam?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
+export type CreateTeamMutation = { __typename?: 'Mutation', createTeam?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
 
 export type UpdateBannerMutationVariables = Exact<{
   where: BannerWhereUniqueInput;
@@ -11264,7 +11304,7 @@ export type UpdateDriverMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+export type UpdateDriverMutation = { __typename?: 'Mutation', updateDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, class?: Class | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
 
 export type UpdateHallOfFameMutationVariables = Exact<{
   where: HallOfFameWhereUniqueInput;
@@ -11288,7 +11328,7 @@ export type UpdateTeamMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTeamMutation = { __typename?: 'Mutation', updateTeam?: { __typename?: 'Team', id: string, name?: string | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
+export type UpdateTeamMutation = { __typename?: 'Mutation', updateTeam?: { __typename?: 'Team', id: string, name?: string | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
 
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11308,12 +11348,12 @@ export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typ
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, grid: Grid, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetCalendarsRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11340,17 +11380,22 @@ export type GetSeasonRoundsQuery = { __typename?: 'Query', rounds: Array<{ __typ
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, class?: Class | null, number?: string | null, stream?: string | null, deleted?: boolean | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
 
 export type GetDriversRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, class?: Class | null, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
 
 export type GridOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GridOptionsQuery = { __typename?: 'Query', __type?: { __typename?: '__Type', enumValues?: Array<{ __typename?: '__EnumValue', name: string }> | null } | null };
+
+export type ClassOptionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ClassOptionsQuery = { __typename?: 'Query', __type?: { __typename?: '__Type', enumValues?: Array<{ __typename?: '__EnumValue', name: string }> | null } | null };
 
 export type GetRoundResultsQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -11367,7 +11412,7 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted: boolean, city?: string | null, equipment?: string | null, grid?: Grid | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, grid?: Grid | null, class?: Class | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, class?: Class | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11378,6 +11423,16 @@ export type GetDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, deleted: boolean, createdAt: any, csv?: { __typename?: 'Asset', url: string } | null }> };
+
+export type GetStatsDataAQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetStatsDataAQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null }> };
+
+export type GetStatsDataBQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetStatsDataBQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null }> };
 
 
 export const CreateAssetDocument = gql`
@@ -11526,6 +11581,7 @@ export const CreateDriverDocument = gql`
     name
     number
     grid
+    class
     stream
     deleted
     city
@@ -11799,6 +11855,7 @@ export const UpdateDriverDocument = gql`
     name
     number
     grid
+    class
     stream
     deleted
     city
@@ -12118,6 +12175,7 @@ export const GetCalendarsDocument = gql`
     round
     active
     deleted
+    grid
     description
     date
     link
@@ -12161,6 +12219,7 @@ export const GetCalendarsRegistrationDocument = gql`
     track
     round
     active
+    grid
     deleted
     description
     date
@@ -12375,6 +12434,7 @@ export const GetDriversDocument = gql`
     id
     grid
     name
+    class
     number
     stream
     deleted
@@ -12432,6 +12492,7 @@ export const GetDriversRegistrationDocument = gql`
   drivers(orderBy: name_ASC, stage: DRAFT, where: {deleted: false}) {
     id
     grid
+    class
     name
     number
     stream
@@ -12521,6 +12582,42 @@ export function useGridOptionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type GridOptionsQueryHookResult = ReturnType<typeof useGridOptionsQuery>;
 export type GridOptionsLazyQueryHookResult = ReturnType<typeof useGridOptionsLazyQuery>;
 export type GridOptionsQueryResult = Apollo.QueryResult<GridOptionsQuery, GridOptionsQueryVariables>;
+export const ClassOptionsDocument = gql`
+    query ClassOptions {
+  __type(name: "Class") {
+    enumValues {
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useClassOptionsQuery__
+ *
+ * To run a query within a React component, call `useClassOptionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClassOptionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClassOptionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useClassOptionsQuery(baseOptions?: Apollo.QueryHookOptions<ClassOptionsQuery, ClassOptionsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ClassOptionsQuery, ClassOptionsQueryVariables>(ClassOptionsDocument, options);
+      }
+export function useClassOptionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ClassOptionsQuery, ClassOptionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ClassOptionsQuery, ClassOptionsQueryVariables>(ClassOptionsDocument, options);
+        }
+export type ClassOptionsQueryHookResult = ReturnType<typeof useClassOptionsQuery>;
+export type ClassOptionsLazyQueryHookResult = ReturnType<typeof useClassOptionsLazyQuery>;
+export type ClassOptionsQueryResult = Apollo.QueryResult<ClassOptionsQuery, ClassOptionsQueryVariables>;
 export const GetRoundResultsDocument = gql`
     query GetRoundResults($id: ID!) {
   round(where: {id: $id}, stage: PUBLISHED) {
@@ -12620,6 +12717,7 @@ export const GetTeamsDocument = gql`
     city
     equipment
     grid
+    class
     team {
       name
       color {
@@ -12640,6 +12738,7 @@ export const GetTeamsDocument = gql`
   teams(stage: PUBLISHED) {
     id
     name
+    class
     deleted
     color {
       hex
@@ -12755,3 +12854,79 @@ export function useGetDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ge
 export type GetDataQueryHookResult = ReturnType<typeof useGetDataQuery>;
 export type GetDataLazyQueryHookResult = ReturnType<typeof useGetDataLazyQuery>;
 export type GetDataQueryResult = Apollo.QueryResult<GetDataQuery, GetDataQueryVariables>;
+export const GetStatsDataADocument = gql`
+    query GetStatsDataA {
+  datas(orderBy: publishedAt_DESC, first: 2, where: {grid: gridA}) {
+    id
+    csv {
+      url
+    }
+    grid
+  }
+}
+    `;
+
+/**
+ * __useGetStatsDataAQuery__
+ *
+ * To run a query within a React component, call `useGetStatsDataAQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStatsDataAQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStatsDataAQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetStatsDataAQuery(baseOptions?: Apollo.QueryHookOptions<GetStatsDataAQuery, GetStatsDataAQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStatsDataAQuery, GetStatsDataAQueryVariables>(GetStatsDataADocument, options);
+      }
+export function useGetStatsDataALazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStatsDataAQuery, GetStatsDataAQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStatsDataAQuery, GetStatsDataAQueryVariables>(GetStatsDataADocument, options);
+        }
+export type GetStatsDataAQueryHookResult = ReturnType<typeof useGetStatsDataAQuery>;
+export type GetStatsDataALazyQueryHookResult = ReturnType<typeof useGetStatsDataALazyQuery>;
+export type GetStatsDataAQueryResult = Apollo.QueryResult<GetStatsDataAQuery, GetStatsDataAQueryVariables>;
+export const GetStatsDataBDocument = gql`
+    query GetStatsDataB {
+  datas(orderBy: publishedAt_DESC, first: 2, where: {grid: gridB}) {
+    id
+    csv {
+      url
+    }
+    grid
+  }
+}
+    `;
+
+/**
+ * __useGetStatsDataBQuery__
+ *
+ * To run a query within a React component, call `useGetStatsDataBQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStatsDataBQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStatsDataBQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetStatsDataBQuery(baseOptions?: Apollo.QueryHookOptions<GetStatsDataBQuery, GetStatsDataBQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStatsDataBQuery, GetStatsDataBQueryVariables>(GetStatsDataBDocument, options);
+      }
+export function useGetStatsDataBLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStatsDataBQuery, GetStatsDataBQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStatsDataBQuery, GetStatsDataBQueryVariables>(GetStatsDataBDocument, options);
+        }
+export type GetStatsDataBQueryHookResult = ReturnType<typeof useGetStatsDataBQuery>;
+export type GetStatsDataBLazyQueryHookResult = ReturnType<typeof useGetStatsDataBLazyQuery>;
+export type GetStatsDataBQueryResult = Apollo.QueryResult<GetStatsDataBQuery, GetStatsDataBQueryVariables>;

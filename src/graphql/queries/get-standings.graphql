@@ -8,6 +8,7 @@ query GetTeams {
 		city
 		equipment
 		grid
+		class
 		team {
 			name
 			color {
@@ -28,6 +29,7 @@ query GetTeams {
 	teams(stage: PUBLISHED) {
 		id
 		name
+		class
 		deleted
 		color {
 			hex

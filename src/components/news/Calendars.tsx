@@ -2,6 +2,8 @@ import { useGetCalendarsQuery } from "../../graphql/generated";
 import GenericLogo from "/src/assets/img/white-logo.png";
 import { Calendar } from "./Calendar";
 import { Skeleton } from "@mui/material";
+import { useTab } from "../../contexts/TabContext";
+import { TabSwitch } from "../standings/csv/TabSwitch";
 
 const loadingSkeleton = () => {
 	return (
@@ -18,20 +20,42 @@ const loadingSkeleton = () => {
 
 export function Calendars() {
 	const { data, error, loading } = useGetCalendarsQuery();
+	const { activeTab } = useTab();
 
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
 
+	const filteredCalendars = data?.calendars.filter((calendar) => {
+		return calendar.grid === activeTab.id;
+	});
+
 	return (
 		<aside className="md:w-1/2">
 			<div className="mx-auto flex flex-col gap-6">
-				<span className="font-bold text-4xl border-b-10 pb-2">
-					Calendário
-				</span>
+				<div
+					className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-4 md:border-b-10 md:mb-6 ${
+						activeTab.id === "gridA"
+							? "border-f1-lighterPurple"
+							: "border-f1-carbon"
+					}`}
+				>
+					<h2
+						className={`w-full font-bold text-4xl border-b-10 pb-2 md:border-0 md:pb-0 ${
+							activeTab.id === "gridA"
+								? "border-f1-lighterPurple"
+								: "border-f1-carbon"
+						}`}
+					>
+						Calendário
+					</h2>
+					<div className="w-full md:w-auto flex justify-end">
+						<TabSwitch />
+					</div>
+				</div>
 
 				<div className="flex flex-wrap gap-4 w-full justify-between">
-					{data?.calendars && data.calendars.length > 0 ? (
-						data.calendars.map((data) => (
+					{filteredCalendars && filteredCalendars.length > 0 ? (
+						filteredCalendars.map((data) => (
 							<Calendar
 								key={data.id}
 								round={data.round || ""}

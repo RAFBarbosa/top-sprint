@@ -8,6 +8,8 @@ interface StandingCardProps {
 	name: string;
 	photo: string;
 	grid?: string;
+	class?: string;
+	standingTab?: string;
 	teamName?: string;
 	teamColor?: string;
 	teamLogo?: string;
@@ -16,7 +18,7 @@ interface StandingCardProps {
 	badgeTitle: string;
 	valueKey: string;
 	valueLabel: string;
-	activeTab: "drivers" | "teams";
+	activeTab: "gridA" | "gridB";
 	isActive: boolean;
 	onClick: () => void;
 	newData: { name: string }[]; // Add newData prop
@@ -27,7 +29,7 @@ export function StandingCard(props: StandingCardProps) {
 	const nameParts = props.name.split(" ");
 	const firstName = nameParts[0];
 	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
-	const isDrivers = props.activeTab === "drivers";
+	const isDrivers = true;
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -84,8 +86,14 @@ export function StandingCard(props: StandingCardProps) {
 				} ${
 					isDrivers
 						? props.grid === "gridA"
-							? "hover:bg-f1-carbon hover:text-white cursor-pointer"
-							: "hover:bg-f1-red hover:text-white cursor-pointer"
+							? props.class === "classA"
+								? "hover:bg-f1-purple hover:text-white cursor-pointer"
+								: "hover:bg-f1-lighterPurple hover:text-white cursor-pointer"
+							: props.grid === "gridB"
+							? props.class === "classA"
+								? "hover:bg-f1-carbon hover:text-white cursor-pointer"
+								: "hover:bg-f1-silver hover:text-white cursor-pointer"
+							: ""
 						: ""
 				}`}
 			>
@@ -171,10 +179,14 @@ export function StandingCard(props: StandingCardProps) {
 					<div
 						className={`font-light rounded-xl px-2 min-w-[70px] ${
 							props.grid === "gridA"
-								? "bg-f1-carbon"
+								? props.class === "classA"
+									? "bg-f1-purple"
+									: "bg-f1-lighterPurple"
 								: props.grid === "gridB"
-								? "bg-f1-red"
-								: "bg-f1-silver"
+								? props.class === "classA"
+									? "bg-f1-carbon"
+									: "bg-f1-silver"
+								: ""
 						} ${
 							isDrivers &&
 							"group-hover:bg-f1-bg-silver group-hover:text-f1-text transition-colors duration-200"

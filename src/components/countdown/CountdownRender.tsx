@@ -1,3 +1,4 @@
+import { useTab } from "../../contexts/TabContext";
 import Watch from "/src/assets/img/casio.png";
 
 interface CountdownRendererProps {
@@ -10,13 +11,23 @@ interface CountdownRendererProps {
 }
 
 export function CountdownRenderer(props: CountdownRendererProps) {
+	const { activeTab } = useTab();
+
 	if (props.completed) {
 		return (
 			<a href={props.link} target="_blank" className="hover:opacity-90">
-				<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center">
+				<div
+					className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${
+						activeTab.id === "gridA"
+							? "bg-f1-purple"
+							: "bg-f1-carbon"
+					}`}
+				>
 					<div className="flex flex-col w-full">
 						<span className="font-bold uppercase text-center">
-							Sprint e Corrida
+							{activeTab.id === "gridA"
+								? "Grid Heat"
+								: "Grid Carbon"}
 						</span>
 						<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
 						<div className="flex flex-col w-full justify-center mt-1">
@@ -34,10 +45,14 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 		);
 	} else {
 		return (
-			<div className="bg-rolex rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center">
+			<div
+				className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center	${
+					activeTab.id === "gridA" ? "bg-f1-purple" : "bg-f1-silver"
+				}`}
+			>
 				<div className="flex flex-col w-full">
 					<span className="font-bold uppercase text-center">
-						Sprint e Corrida
+						{activeTab.id === "gridA" ? "Grid Heat" : "Grid Carbon"}
 					</span>
 					<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
 					<div className="flex w-full justify-center mt-1">

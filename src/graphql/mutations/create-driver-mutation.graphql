@@ -4,6 +4,7 @@ mutation CreateDriver($data: DriverCreateInput!) {
 		name
 		number
 		grid
+		class
 		stream
 		deleted
 		city
