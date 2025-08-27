@@ -85,12 +85,12 @@ export function PodiumCard(props: PodiumCardProps) {
 			}`}
 		>
 			<div
-				className={`ml-5 text-2xl font-f1Title hidden md:block ${
+				className={`text-6xl font-f1Podium font-thin hidden md:block ${
 					props.position === 1
 						? isDrivers
-							? "mb-10"
+							? "mb-4 ml-7"
 							: "mb-15 ml-15 text-3xl"
-						: "mb-6"
+						: "ml-4"
 				}`}
 				style={{ color: props.teamColor }}
 			>
@@ -180,6 +180,7 @@ export function PodiumCard(props: PodiumCardProps) {
 						? props.teamDrivers.join(" / ")
 						: props.teamDrivers || "No drivers"}
 				</span>
+
 				{secondName && isDrivers && (
 					<span
 						className={`font-bold uppercase leading-6 truncate ${
@@ -197,6 +198,11 @@ export function PodiumCard(props: PodiumCardProps) {
 					}`}
 				>
 					{isDrivers ? props.teamName : props.name}
+					{/* <img
+						src={props.teamLogo}
+						alt="Team Logo"
+						className="ml-2 inline-block md:h-4 md:w-4 h-[14px] w-[14px] translate-y-[2px] group-hover:color-overlay-white"
+					/> */}
 				</div>
 			</div>
 		</div>
