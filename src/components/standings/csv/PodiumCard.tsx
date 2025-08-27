@@ -85,19 +85,19 @@ export function PodiumCard(props: PodiumCardProps) {
 			}`}
 		>
 			<div
-				className={`text-6xl font-f1Podium font-thin hidden md:block ${
+				className={`text-6xl font-f1Podium font-thin hidden md:block text-f1-lightCarbon ${
 					props.position === 1
 						? isDrivers
-							? "mb-4 ml-7"
+							? "mb-5 ml-7"
 							: "mb-15 ml-15 text-3xl"
-						: "ml-4"
+						: "mb-1 ml-4"
 				}`}
-				style={{ color: props.teamColor }}
+				// style={{ color: props.teamColor }}
 			>
 				{props.position}
 			</div>
 
-			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-2 mb-1 gap-2 text-white scale-90">
+			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-2 mb-2 gap-2 text-white">
 				<div>{renderPositionDifference()}</div>
 				<div
 					className={`rounded-xl px-2 ${
@@ -117,10 +117,10 @@ export function PodiumCard(props: PodiumCardProps) {
 				</div>
 			</div>
 
-			<div
-				className="w-full h-2 hidden md:block"
-				style={{ backgroundColor: props.teamColor }}
-			></div>
+			{/* <div
+				className="w-full h-2 hidden md:block transparent"
+				// style={{ backgroundColor: props.teamColor }}
+			/> */}
 
 			{/* <img
 				src={photo}
@@ -143,7 +143,10 @@ export function PodiumCard(props: PodiumCardProps) {
 			/>
 
 			<div
-				className={`absolute bottom-0 bg-white w-full -z-10 rounded-2xl ${
+				style={{
+					background: `linear-gradient(to bottom, ${props.teamColor} 0%, ${props.teamColor} 35%, #000 100%)`,
+				}}
+				className={`absolute bottom-0 w-full -z-10 rounded-2xl ${
 					props.position === 1
 						? isDrivers
 							? "h-[calc(67%+15px)]"
