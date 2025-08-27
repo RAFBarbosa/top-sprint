@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import bgCard from "/src/assets/img/bg-card.jpg";
 import bgCardChuva from "/src/assets/img/bg-card-chuva.jpg";
+import bgCardCarbon from "/src/assets/img/bg-card-carbon.jpg";
 import Logo from "/src/assets/img/logo.png";
 import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 import { Tooltip } from "react-tooltip";
@@ -104,7 +105,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							data.badgeTitle?.includes("reiDaChuva") ||
 							data.badgeTitle?.includes("mestreDaChuva")
 								? bgCardChuva
-								: bgCard
+								: data.grid === "gridA"
+								? bgCard
+								: bgCardCarbon
 						}
 						alt="Background"
 					/>

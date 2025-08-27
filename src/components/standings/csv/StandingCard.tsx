@@ -31,8 +31,6 @@ export function StandingCard(props: StandingCardProps) {
 	const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 	const isDrivers = true;
 
-	console.log(props);
-
 	const navigateToDriver = useNavigateToDriver();
 
 	// Calculate the position difference using the hook
