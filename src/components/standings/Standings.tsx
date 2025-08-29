@@ -49,7 +49,7 @@ export function Standings() {
 			<TabSwitch />
 
 			<div
-				className={` md:h-[350px] h-[380px] w-full absolute left-0 top-12 ${
+				className={`md:h-[396px] h-[380px] w-full absolute left-0 top-12 ${
 					activeTab.id === "gridA"
 						? "bg-radial-[at_50%_100%] from-f1-carbon to-f1-lighterPurple to-200%"
 						: activeTab.id === "gridB"

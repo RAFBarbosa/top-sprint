@@ -3,6 +3,8 @@ import { StandingCard } from "./StandingCard";
 import { Podium } from "./Podium";
 import { Skeleton } from "@mui/material";
 import { StandingsTabs } from "./StandingsTabs";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
+import { useSwipeable } from "react-swipeable";
 
 interface StandingsListProps {
 	title: string;
@@ -26,6 +28,13 @@ export function StandingsList(props: StandingsListProps) {
 	const [activeStandingTab, setActiveClass] = useState<"classA" | "classB">(
 		"classA"
 	);
+
+	const swipeHandlers = useSwipeable({
+		onSwipedLeft: () => setActiveClass("classB"),
+		onSwipedRight: () => setActiveClass("classA"),
+		preventDefaultTouchmoveEvent: true,
+		trackMouse: true,
+	});
 
 	useEffect(() => {
 		if (props.data.length > 0) {
@@ -85,29 +94,36 @@ export function StandingsList(props: StandingsListProps) {
 			</div>
 			{props.activeTab === "gridA" || "gridB" ? (
 				<div className="w-full mx-auto md:flex md:justify-between md:items-center md:gap-6 pt-8">
-					{/* Grid selector buttons for mobile */}
+					{/* Grid selector buttons for mobile - NEW DESIGN */}
 					<div className="block md:hidden">
-						<div className="flex justify-around items-center font-f1Title">
+						<div className="flex justify-center items-center font-f1Title mb-6">
 							<button
 								onClick={() => setActiveClass("classA")}
-								className={`px-6 py-3 uppercase text-[10px] tracking-widest transition-all duration-200 ${
+								className={`flex items-center p-1 rounded ${
 									activeStandingTab === "classA"
-										? "text-white border-b-f1-red border-b-2 border-t-2 border-t-f1-red/0"
-										: "text-gray-400 border-b-f1-red/0 border-b-2 border-t-2 border-t-f1-red/0"
+										? "bg-f1-transparent text-transparent"
+										: "text-f1-bg-silver border-1 border-f1-bg-silver"
 								}`}
 							>
-								Classe A
+								<ChevronLeftIcon className="h-7 w-7" />
 							</button>
-							<div className="w-[1px] bg-white/50 h-5" />
+
+							{/* <div className="w-px bg-gray-500 h-6 mx-1"/> */}
+							<span className="font-f1Title text-white uppercase text-xs mx-auto">
+								{activeStandingTab === "classA"
+									? "Classe A"
+									: "Classe B"}
+							</span>
+
 							<button
 								onClick={() => setActiveClass("classB")}
-								className={`px-6 py-3 uppercase text-[10px] tracking-widest transition-all duration-200 ${
+								className={`flex justify-end p-1 rounded ${
 									activeStandingTab === "classB"
-										? "text-white border-b-f1-red border-b-2 border-t-2 border-t-f1-red/0"
-										: "text-gray-400 border-b-f1-red/0 border-b-2 border-t-2 border-t-f1-red/0"
+										? "bg-transparent text-transparent"
+										: "text-f1-bg-silver border-1 border-b-f1-bg-silver"
 								}`}
 							>
-								Classe B
+								<ChevronRightIcon className="h-7 w-7" />
 							</button>
 						</div>
 					</div>
@@ -134,166 +150,341 @@ export function StandingsList(props: StandingsListProps) {
 						)}
 
 						{/* Show only active grid on mobile */}
-						<div className="md:hidden">
-							{activeGrid === "drivers" ? (
-								activeStandingTab === "classA" ? (
-									<ul className="flex flex-col gap-y-[2px] mt-6">
-										{classAData.map((item, index) => (
-											<li key={`classA-${index}`}>
-												<StandingCard
-													name={item.name}
-													position={index + 1}
-													valueKey={
-														item[props.valueKey]
-													}
-													valueLabel={
-														props.valueLabel
-													}
-													grid={props.activeTab}
-													class={item.class}
-													standingTab={"classA"}
-													photo={item.photo || ""}
-													teamName={
-														item.teamName || ""
-													}
-													teamLogo={
-														item.teamLogo || ""
-													}
-													teamColor={
-														item.teamColor || ""
-													}
-													teamDrivers={
-														item.drivers || ""
-													}
-													activeTab={props.activeTab}
-													activeGrid={activeGrid}
-													isActive={
-														activeCard === index + 1
-													}
-													onClick={() =>
-														handleCardClick(
-															index + 1
-														)
-													}
-													newData={props.data}
-													oldData={
-														props.oldData || []
-													}
-												/>
-											</li>
-										))}
-									</ul>
-								) : (
-									<ul className="flex flex-col gap-y-[2px] mt-6">
-										{classBData.map((item, index) => (
-											<li key={`classB-${index}`}>
-												<StandingCard
-													name={item.name}
-													position={index + 1}
-													valueKey={
-														item[props.valueKey]
-													}
-													valueLabel={
-														props.valueLabel
-													}
-													grid={props.activeTab}
-													class={item.class}
-													standingTab={"classB"}
-													photo={item.photo || ""}
-													teamName={
-														item.teamName || ""
-													}
-													teamLogo={
-														item.teamLogo || ""
-													}
-													teamColor={
-														item.teamColor || ""
-													}
-													teamDrivers={
-														item.drivers || ""
-													}
-													activeTab={props.activeTab}
-													activeGrid={activeGrid}
-													isActive={
-														activeCard === index + 1
-													}
-													onClick={() =>
-														handleCardClick(
-															index + 1
-														)
-													}
-													newData={props.data}
-													oldData={
-														props.oldData || []
-													}
-												/>
-											</li>
-										))}
-									</ul>
-								)
-							) : activeStandingTab === "classA" ? (
-								<ul className="flex flex-col gap-y-[2px] mt-6">
-									{classATeams.map((item, index) => (
-										<li key={`classA-${index}`}>
-											<StandingCard
-												name={item.name}
-												position={index + 1}
-												valueKey={item[props.valueKey]}
-												valueLabel={props.valueLabel}
-												grid={props.activeTab}
-												class={item.class}
-												standingTab={"classA"}
-												photo={item.photo || ""}
-												teamName={item.teamName || ""}
-												teamLogo={item.teamLogo || ""}
-												teamColor={item.teamColor || ""}
-												teamDrivers={item.drivers || ""}
-												activeTab={props.activeTab}
-												activeGrid={activeGrid}
-												isActive={
-													activeCard === index + 1
-												}
-												onClick={() =>
-													handleCardClick(index + 1)
-												}
-												newData={props.data}
-												oldData={props.oldData || []}
-											/>
-										</li>
-									))}
-								</ul>
-							) : (
-								<ul className="flex flex-col gap-y-[2px] mt-6">
-									{classBTeams.map((item, index) => (
-										<li key={`classB-${index}`}>
-											<StandingCard
-												name={item.name}
-												position={index + 1}
-												valueKey={item[props.valueKey]}
-												valueLabel={props.valueLabel}
-												grid={props.activeTab}
-												class={item.class}
-												standingTab={"classB"}
-												photo={item.photo || ""}
-												teamName={item.teamName || ""}
-												teamLogo={item.teamLogo || ""}
-												teamColor={item.teamColor || ""}
-												teamDrivers={item.drivers || ""}
-												activeTab={props.activeTab}
-												activeGrid={activeGrid}
-												isActive={
-													activeCard === index + 1
-												}
-												onClick={() =>
-													handleCardClick(index + 1)
-												}
-												newData={props.data}
-												oldData={props.oldData || []}
-											/>
-										</li>
-									))}
-								</ul>
-							)}
+						<div className="md:hidden" {...swipeHandlers}>
+							<div className="overflow-hidden">
+								<div
+									className="flex transition-transform duration-300 ease-in-out"
+									style={{
+										transform: `translateX(${
+											activeStandingTab === "classA"
+												? 0
+												: -100
+										}%)`,
+									}}
+								>
+									{/* Class A Content */}
+									<div className="w-full flex-shrink-0">
+										{activeGrid === "drivers" ? (
+											<ul className="flex flex-col gap-y-[2px]">
+												{classAData.map(
+													(item, index) => (
+														<li
+															key={`classA-${index}`}
+														>
+															<StandingCard
+																name={item.name}
+																position={
+																	index + 1
+																}
+																valueKey={
+																	item[
+																		props
+																			.valueKey
+																	]
+																}
+																valueLabel={
+																	props.valueLabel
+																}
+																grid={
+																	props.activeTab
+																}
+																class={
+																	item.class
+																}
+																standingTab={
+																	"classA"
+																}
+																photo={
+																	item.photo ||
+																	""
+																}
+																teamName={
+																	item.teamName ||
+																	""
+																}
+																teamLogo={
+																	item.teamLogo ||
+																	""
+																}
+																teamColor={
+																	item.teamColor ||
+																	""
+																}
+																teamDrivers={
+																	item.drivers ||
+																	""
+																}
+																activeTab={
+																	props.activeTab
+																}
+																activeGrid={
+																	activeGrid
+																}
+																isActive={
+																	activeCard ===
+																	index + 1
+																}
+																onClick={() =>
+																	handleCardClick(
+																		index +
+																			1
+																	)
+																}
+																newData={
+																	props.data
+																}
+																oldData={
+																	props.oldData ||
+																	[]
+																}
+															/>
+														</li>
+													)
+												)}
+											</ul>
+										) : (
+											<ul className="flex flex-col gap-y-[2px]">
+												{classATeams.map(
+													(item, index) => (
+														<li
+															key={`classA-${index}`}
+														>
+															<StandingCard
+																name={item.name}
+																position={
+																	index + 1
+																}
+																valueKey={
+																	item[
+																		props
+																			.valueKey
+																	]
+																}
+																valueLabel={
+																	props.valueLabel
+																}
+																grid={
+																	props.activeTab
+																}
+																class={
+																	item.class
+																}
+																standingTab={
+																	"classA"
+																}
+																photo={
+																	item.photo ||
+																	""
+																}
+																teamName={
+																	item.teamName ||
+																	""
+																}
+																teamLogo={
+																	item.teamLogo ||
+																	""
+																}
+																teamColor={
+																	item.teamColor ||
+																	""
+																}
+																teamDrivers={
+																	item.drivers ||
+																	""
+																}
+																activeTab={
+																	props.activeTab
+																}
+																activeGrid={
+																	activeGrid
+																}
+																isActive={
+																	activeCard ===
+																	index + 1
+																}
+																onClick={() =>
+																	handleCardClick(
+																		index +
+																			1
+																	)
+																}
+																newData={
+																	props.data
+																}
+																oldData={
+																	props.oldData ||
+																	[]
+																}
+															/>
+														</li>
+													)
+												)}
+											</ul>
+										)}
+									</div>
+
+									{/* Class B Content */}
+									<div className="w-full flex-shrink-0">
+										{activeGrid === "drivers" ? (
+											<ul className="flex flex-col gap-y-[2px]">
+												{classBData.map(
+													(item, index) => (
+														<li
+															key={`classB-${index}`}
+														>
+															<StandingCard
+																name={item.name}
+																position={
+																	index + 1
+																}
+																valueKey={
+																	item[
+																		props
+																			.valueKey
+																	]
+																}
+																valueLabel={
+																	props.valueLabel
+																}
+																grid={
+																	props.activeTab
+																}
+																class={
+																	item.class
+																}
+																standingTab={
+																	"classB"
+																}
+																photo={
+																	item.photo ||
+																	""
+																}
+																teamName={
+																	item.teamName ||
+																	""
+																}
+																teamLogo={
+																	item.teamLogo ||
+																	""
+																}
+																teamColor={
+																	item.teamColor ||
+																	""
+																}
+																teamDrivers={
+																	item.drivers ||
+																	""
+																}
+																activeTab={
+																	props.activeTab
+																}
+																activeGrid={
+																	activeGrid
+																}
+																isActive={
+																	activeCard ===
+																	index + 1
+																}
+																onClick={() =>
+																	handleCardClick(
+																		index +
+																			1
+																	)
+																}
+																newData={
+																	props.data
+																}
+																oldData={
+																	props.oldData ||
+																	[]
+																}
+															/>
+														</li>
+													)
+												)}
+											</ul>
+										) : (
+											<ul className="flex flex-col gap-y-[2px]">
+												{classBTeams.map(
+													(item, index) => (
+														<li
+															key={`classB-${index}`}
+														>
+															<StandingCard
+																name={item.name}
+																position={
+																	index + 1
+																}
+																valueKey={
+																	item[
+																		props
+																			.valueKey
+																	]
+																}
+																valueLabel={
+																	props.valueLabel
+																}
+																grid={
+																	props.activeTab
+																}
+																class={
+																	item.class
+																}
+																standingTab={
+																	"classB"
+																}
+																photo={
+																	item.photo ||
+																	""
+																}
+																teamName={
+																	item.teamName ||
+																	""
+																}
+																teamLogo={
+																	item.teamLogo ||
+																	""
+																}
+																teamColor={
+																	item.teamColor ||
+																	""
+																}
+																teamDrivers={
+																	item.drivers ||
+																	""
+																}
+																activeTab={
+																	props.activeTab
+																}
+																activeGrid={
+																	activeGrid
+																}
+																isActive={
+																	activeCard ===
+																	index + 1
+																}
+																onClick={() =>
+																	handleCardClick(
+																		index +
+																			1
+																	)
+																}
+																newData={
+																	props.data
+																}
+																oldData={
+																	props.oldData ||
+																	[]
+																}
+															/>
+														</li>
+													)
+												)}
+											</ul>
+										)}
+									</div>
+								</div>
+							</div>
 						</div>
 
 						{/* List from 4th to 10th for larger screens */}
