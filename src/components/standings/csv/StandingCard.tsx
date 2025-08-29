@@ -83,9 +83,10 @@ export function StandingCard(props: StandingCardProps) {
 				</span>
 			);
 		} else {
-			return <span className="text-gray-500 font-bold">–</span>;
+			return <span className="text-f1-lighterCarbon font-bold">–</span>;
 		}
 	};
+
 	return (
 		<button
 			onClick={handleCardClick}
