@@ -99,10 +99,10 @@ export function StandingsList(props: StandingsListProps) {
 						<div className="flex justify-center items-center font-f1Title mb-6">
 							<button
 								onClick={() => setActiveClass("classA")}
-								className={`flex items-center p-1 rounded ${
+								className={`flex items-center p-1 rounded border-1 ${
 									activeStandingTab === "classA"
-										? "bg-f1-transparent text-transparent"
-										: "text-f1-bg-silver border-1 border-f1-bg-silver"
+										? "border-transparent text-transparent"
+										: "text-f1-bg-silver border-f1-bg-silver"
 								}`}
 							>
 								<ChevronLeftIcon className="h-7 w-7" />
@@ -117,10 +117,10 @@ export function StandingsList(props: StandingsListProps) {
 
 							<button
 								onClick={() => setActiveClass("classB")}
-								className={`flex justify-end p-1 rounded ${
+								className={`flex justify-end p-1 rounded border-1 ${
 									activeStandingTab === "classB"
-										? "bg-transparent text-transparent"
-										: "text-f1-bg-silver border-1 border-b-f1-bg-silver"
+										? "border-transparent text-transparent"
+										: "text-f1-bg-silver border-f1-bg-silver"
 								}`}
 							>
 								<ChevronRightIcon className="h-7 w-7" />
