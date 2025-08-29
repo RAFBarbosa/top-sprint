@@ -13,16 +13,13 @@ interface PodiumCardProps {
 	teamName?: string;
 	teamColor?: string;
 	teamLogo?: string;
-	teamDrivers?: string;
-	activeTab: "gridA" | "gridB";
+	teamDrivers?: string[];
+	activeTab: "drivers" | "teams";
 	newData: { name: string }[]; // Add newData prop
 	oldData: { name: string }[]; // Add oldData prop
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	// const nameParts = props.name.split(" ");
-	// const firstName = nameParts[0];
-	// const secondName = nameParts.length > 1 && nameParts.slice(1).join(" ");
 	const [firstName, secondName] = (() => {
 		const nameParts = props.name.split(" ");
 		return [
@@ -33,7 +30,14 @@ export function PodiumCard(props: PodiumCardProps) {
 		];
 	})();
 
-	const isDrivers = true;
+	const isDrivers = props.activeTab === "drivers";
+
+	let cleanedTeamDrivers = props.teamDrivers || [];
+
+	if (!isDrivers) {
+		cleanedTeamDrivers =
+			props.teamDrivers?.map((driver) => driver.replace(/B$/, "")) || [];
+	}
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -81,18 +85,27 @@ export function PodiumCard(props: PodiumCardProps) {
 			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl transition-translate duration-200 ${
 				isDrivers
 					? "hover:-translate-y-1 cursor-pointer h-[280px]"
-					: "h-[320px]"
+					: "h-[264px] mt-4"
 			}`}
 		>
 			<div
-				className={`text-6xl font-f1Podium font-thin hidden md:block text-f1-lightCarbon ${
+				className={`text-6xl font-f1Podium font-thin hidden md:block ${
 					props.position === 1
 						? isDrivers
-							? "mb-5 ml-7"
-							: "mb-15 ml-15 text-3xl"
-						: "mb-1 ml-4"
+							? "mb-3 ml-7"
+							: "mb-6 ml-15 text-3xl"
+						: "-mb-1 ml-4"
 				}`}
-				// style={{ color: props.teamColor }}
+				style={{
+					color:
+						props.position <= 3
+							? props.position === 1
+								? "#FFD700"
+								: props.position === 2
+								? "#C0C0C0"
+								: "#CD7F32"
+							: props.teamColor,
+				}}
 			>
 				{props.position}
 			</div>
@@ -107,7 +120,7 @@ export function PodiumCard(props: PodiumCardProps) {
 								: "bg-f1-lighterPurple"
 							: props.grid === "gridB"
 							? props.class === "classA"
-								? "bg-f1-carbon"
+								? "bg-f1-lightCarbon"
 								: "bg-f1-silver"
 							: "bg-f1-silver"
 					} `}
@@ -117,18 +130,10 @@ export function PodiumCard(props: PodiumCardProps) {
 				</div>
 			</div>
 
-			{/* <div
-				className="w-full h-2 hidden md:block transparent"
-				// style={{ backgroundColor: props.teamColor }}
-			/> */}
-
-			{/* <img
-				src={photo}
-				alt={`${name} foto`}
-				className={`absolute w-full h-auto ${
-					isDrivers && `right-[-25px] ${position === 1 && "top-0"}`
-				}`}
-			/> */}
+			<div
+				className="w-full h-2 hidden md:block"
+				style={{ backgroundColor: props.teamColor }}
+			/>
 
 			<img
 				src={props.photo}
@@ -138,15 +143,15 @@ export function PodiumCard(props: PodiumCardProps) {
 						? `bottom-0 right-0 scale-70 ${
 								props.position === 1 ? "h-[330px]" : "h-[290px]"
 						  } w-auto translate-x-[70px] translate-y-[15px]`
-						: `bottom-0 right-0 scale-70 translate-x-[-74%] translate-y-[-27%]`
+						: `bottom-0 right-0 scale-70 translate-x-[-70%] translate-y-[-20%]`
 				}`}
 			/>
 
 			<div
-				style={{
-					background: `linear-gradient(to bottom, ${props.teamColor} 0%, ${props.teamColor} 35%, #000 100%)`,
-				}}
-				className={`absolute bottom-0 w-full -z-10 rounded-2xl ${
+				// style={{
+				// 	background: `linear-gradient(to bottom, ${props.teamColor} 0%, ${props.teamColor} 35%, #000 100%)`,
+				// }}
+				className={`absolute bottom-0 w-full -z-10 rounded-2xl bg-white ${
 					props.position === 1
 						? isDrivers
 							? "h-[calc(67%+15px)]"
@@ -161,10 +166,8 @@ export function PodiumCard(props: PodiumCardProps) {
 						? props.class === "classA"
 							? "bg-f1-purple"
 							: "bg-f1-lighterPurple"
-						: props.grid === "gridB"
-						? props.class === "classA"
-							? "bg-f1-carbon"
-							: "bg-f1-silver"
+						: props.class === "classA"
+						? "bg-f1-lightCarbon"
 						: "bg-f1-silver"
 				}`}
 			>
@@ -180,8 +183,8 @@ export function PodiumCard(props: PodiumCardProps) {
 					{isDrivers
 						? firstName
 						: Array.isArray(props.teamDrivers)
-						? props.teamDrivers.join(" / ")
-						: props.teamDrivers || "No drivers"}
+						? cleanedTeamDrivers.join(" / ")
+						: cleanedTeamDrivers || "No drivers"}
 				</span>
 
 				{secondName && isDrivers && (
