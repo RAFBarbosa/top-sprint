@@ -34,7 +34,7 @@ export function Standings() {
 	const [previousData, setPreviousData] = useState(data);
 
 	const { activeTab, setActiveTab } = useTab();
-	const legacyTab = activeTab.id === "gridA" ? "gridA" : "gridB";
+	// const { activeStanding, setActiveStanding } = useTab();
 
 	if (loading && !previousData) return loadingSkeleton();
 	if (error)
@@ -43,17 +43,6 @@ export function Standings() {
 				{error?.message || "An error occurred"}
 			</div>
 		);
-
-	// const [activeTab, setActiveTab] =
-	// 	useState<(typeof tabs)[number]["id"]>("drivers");
-
-	// if (loading) return loadingSkeleton();
-	// if (error)
-	// 	return (
-	// 		<div className="text-red-500 text-center py-6">
-	// 			{error?.message || "An error occurred"}
-	// 		</div>
-	// 	);
 
 	return (
 		<aside className="pb-10 flex flex-col relative bg-f1-lightSilver">
@@ -73,13 +62,14 @@ export function Standings() {
 
 			<div className="px-3 w-full md:max-w-screen-xl mx-auto z-10">
 				<div
-					className={`transition-opacity duration-300 md:min-h-212 min-h-200 ${
+					className={`transition-opacity duration-300 md:min-h-full min-h-full ${
 						isTabLoading ? "opacity-50" : "opacity-100"
 					}`}
 				>
 					<DataLoader
 						data={isTabLoading ? previousData : data}
-						activeTab={legacyTab}
+						activeTab={activeTab.id}
+						// activeStanding={activeStanding}
 					/>
 				</div>
 				{isTabLoading && (

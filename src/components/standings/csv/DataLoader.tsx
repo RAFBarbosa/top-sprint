@@ -56,6 +56,7 @@ export function DataLoader(props: DataLoaderProps) {
 				return {
 					...team,
 					photo: teamFromData?.photo?.url || "",
+					class: teamFromData?.class || "",
 					teamLogo: teamFromData?.photo?.url || "",
 					teamColor: teamFromData?.color?.hex || "",
 					drivers: teamDrivers || "",
