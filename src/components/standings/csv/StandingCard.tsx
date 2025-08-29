@@ -13,11 +13,12 @@ interface StandingCardProps {
 	teamName?: string;
 	teamColor?: string;
 	teamLogo?: string;
-	teamDrivers?: string;
+	teamDrivers?: string[];
 	badge: Array<{ url: string }>;
 	badgeTitle: string;
 	valueKey: string;
 	valueLabel: string;
+	activeTab: "gridA" | "gridB";
 	activeGrid: "drivers" | "teams";
 	isActive: boolean;
 	onClick: () => void;
@@ -35,10 +36,14 @@ export function StandingCard(props: StandingCardProps) {
 				: "",
 		];
 	})();
-	// const nameParts = props.name.split(" ");
-	// const firstName = nameParts[0];
-	// const secondName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
-	const isDrivers = true;
+	const isDrivers = props.activeGrid === "drivers";
+
+	let cleanedTeamDrivers = props.teamDrivers || [];
+
+	if (!isDrivers) {
+		cleanedTeamDrivers =
+			props.teamDrivers?.map((driver) => driver.replace(/B$/, "")) || [];
+	}
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -81,7 +86,6 @@ export function StandingCard(props: StandingCardProps) {
 			return <span className="text-gray-500 font-bold">–</span>;
 		}
 	};
-
 	return (
 		<button
 			onClick={handleCardClick}
@@ -99,7 +103,7 @@ export function StandingCard(props: StandingCardProps) {
 								? "hover:bg-f1-purple hover:text-white cursor-pointer"
 								: "hover:bg-f1-lighterPurple hover:text-white cursor-pointer"
 							: props.grid === "gridB" && props.class === "classA"
-							? "hover:bg-f1-carbon hover:text-white cursor-pointer"
+							? "hover:bg-f1-lightCarbon hover:text-white cursor-pointer"
 							: "hover:bg-f1-silver hover:text-white cursor-pointer"
 						: ""
 				}`}
@@ -163,8 +167,8 @@ export function StandingCard(props: StandingCardProps) {
 							{isDrivers
 								? props.teamName
 								: Array.isArray(props.teamDrivers)
-								? props.teamDrivers.join(" / ")
-								: props.teamDrivers || "No drivers"}
+								? cleanedTeamDrivers.join(" / ")
+								: cleanedTeamDrivers || "No drivers"}
 
 							{/* <img
 								src={props.teamLogo}

@@ -12,7 +12,7 @@ interface PodiumProps {
 		teamName: string;
 		[key: string]: string;
 	}[];
-	activeTab: "gridA" | "gridB";
+	activeTab: "drivers" | "teams";
 	newData: { name: string }[]; // Add newData prop
 	oldData: { name: string }[]; // Add oldData prop
 }
@@ -22,7 +22,7 @@ export function Podium(props: PodiumProps) {
 
 	return (
 		<div className="mb-1">
-			{props.activeTab === "gridA" || "gridB" ? (
+			{props.activeTab === "drivers" ? (
 				<div className="md:flex md:gap-x-2 ">
 					<div className="hidden md:block w-[31%]">
 						<PodiumCard
@@ -72,7 +72,7 @@ export function Podium(props: PodiumProps) {
 				</div>
 			) : (
 				<div className="md:flex md:justify-center">
-					<div className="md:w-2/3">
+					<div className="md:w-full">
 						<PodiumCard
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}
@@ -80,6 +80,7 @@ export function Podium(props: PodiumProps) {
 							points={props.topThree[0].pts}
 							position={1}
 							class={props.class}
+							grid={props.grid}
 							teamDrivers={props.topThree[0].drivers || ""}
 							activeTab={props.activeTab}
 							newData={props.newData}
