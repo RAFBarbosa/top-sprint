@@ -75,16 +75,16 @@ export function PodiumCard(props: PodiumCardProps) {
 				</span>
 			);
 		} else {
-			return <span className="text-f1-lightSilver font-bold">–</span>;
+			return <span className="text-f1-lighterCarbon font-bold">–</span>;
 		}
 	};
 
 	return (
 		<div
 			onClick={handleDriverClick}
-			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl transition-translate duration-200 ${
+			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl  ${
 				isDrivers
-					? "hover:-translate-y-1 cursor-pointer h-[280px]"
+					? "hover:-translate-y-1 cursor-pointer h-[280px] transition-translate duration-200"
 					: "h-[264px] mt-4"
 			}`}
 		>
@@ -110,7 +110,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				{props.position}
 			</div>
 
-			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-2 mb-2 gap-2 text-white">
+			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-4 mb-2 gap-2 text-white">
 				<div>{renderPositionDifference()}</div>
 				<div
 					className={`rounded-xl px-2 ${
