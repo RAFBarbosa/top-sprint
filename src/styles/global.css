@@ -96,6 +96,7 @@ body {
 	overflow: visible !important;
 	margin-left: 0 !important;
 	padding-left: 0 !important;
+	padding-bottom: 90px !important;
 }
 
 .swiper-wrapper {
@@ -116,6 +117,78 @@ body {
 /* First slide should have no left margin */
 .swiper-slide:first-child {
 	margin-left: 0 !important;
+}
+
+/* Custom navigation styling */
+.swiper-button-prev,
+.swiper-button-next {
+	position: absolute;
+	bottom: -50px; /* Adjust this value as needed */
+	z-index: 10;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #eb1c24;
+	color: white;
+	border: 1px solid #eb1c24;
+	border-radius: 4%;
+	width: 100px;
+	height: 50px;
+	transition: all 0.15s ease;
+	transform: translateY(230%); /* This pushes it completely outside */
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+	background: transparent;
+	color: #eb1c24;
+}
+
+.swiper-button-prev {
+	left: calc(50% - 104px);
+}
+
+.swiper-button-next {
+	left: calc(50% + 4px);
+}
+
+/* Make arrows smaller */
+.swiper-button-prev:after,
+.swiper-button-next:after {
+	font-size: 20px !important; /* Smaller arrow size */
+	font-weight: bold;
+}
+
+/* Mobile: centered arrows */
+@media (max-width: 949px) {
+	.swiper-button-prev {
+		left: calc(50% - 104px);
+	}
+
+	.swiper-button-next {
+		left: calc(50% + 4px);
+	}
+}
+
+/* Desktop (950px and up): arrows on the right side */
+@media (min-width: 950px) {
+	.swiper-button-prev,
+	.swiper-button-next {
+		transform: translateY(0); /* Reset transform */
+		bottom: 20px; /* Position from bottom */
+		top: auto;
+	}
+
+	.swiper-button-prev {
+		left: auto;
+		right: 128px; /* Position from right */
+	}
+
+	.swiper-button-next {
+		left: auto;
+		right: 20px; /* Position from right */
+	}
 }
 
 @theme {
