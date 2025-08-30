@@ -9,8 +9,12 @@ query GetCalendars {
 		round
 		active
 		deleted
-		winnerA
-		winnerB
+		winnerA {
+			name
+		}
+		winnerB {
+			name
+		}
 		map {
 			url
 		}
@@ -29,8 +33,12 @@ query GetCalendarsRegistration {
 		id
 		track
 		round
-		winnerA
-		winnerB
+		winnerA {
+			name
+		}
+		winnerB {
+			name
+		}
 		active
 		map {
 			url

@@ -17,8 +17,8 @@ interface CalendarProps {
 	flag: { url: string };
 	description: string;
 	link: string;
-	winnerA: string;
-	winnerB: string;
+	winnerA: string[];
+	winnerB: string[];
 	date: Date;
 	map?: { url: string };
 }
@@ -123,7 +123,7 @@ export function Calendar(props: CalendarProps) {
 	return (
 		<div
 			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 w-full md:min-h-[180px] md:h-full md:min-w-[250px] ${
-				isPastTwoHours && "hover:border-f1-red"
+				isPastTwoHours && " hover:border-f1-red"
 			} ${isFutureDate ? "cursor-pointer" : "cursor-pointer"}`}
 		>
 			<a
@@ -176,32 +176,39 @@ export function Calendar(props: CalendarProps) {
 						className="rounded-md w-[46px] h-auto border border-f1-black/70 self-center md:self-start md:mt-3 flex-shrink-0"
 					/>
 				</div>
-				<div className="hidden md:block bg-map-bg opacity-12 h-29 w-60 absolute bottom-2" />
+
+				{/* Background element - moved to not interfere with content */}
+				<div className="hidden md:block bg-map-bg opacity-12 h-29 w-60 absolute bottom-2 -z-10" />
+
 				<div className="hidden md:block py-4 h-33 px-2 z-10">
 					{isFutureDate ? (
 						<img
 							src={props.map?.url}
 							alt={`${props.track} map`}
-							className="w-full h-full object-contain mx-auto brightness-12 scale-80"
+							className="w-full h-full object-contain mx-auto scale-80"
 						/>
 					) : (
 						<div className="h-full flex flex-col gap-2 items-center justify-center">
 							<p className="font-f1Podium tracking-wider text-center bg-f1-bg-silver px-6">
 								Vencedores
 							</p>
-							<div className="flex flex-col">
-								<div className="flex gap-2 rounded bg-f1-bg-silver px-4">
-									<p className="font-black rounded-full">A</p>
-									<p className="font-semibold">
-										{props.winnerA}
-									</p>
-								</div>
-								<div className="flex gap-2 rounded bg-f1-bg-silver px-4">
-									<p className="font-black">B</p>
-									<p className="font-semibold">
-										{props.winnerB}
-									</p>
-								</div>
+							<div className="flex flex-col gap-1">
+								{props.winnerA && (
+									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
+										<p className="font-black">A</p>
+										<p className="font-semibold">
+											{props.winnerA.name.toString()}
+										</p>
+									</div>
+								)}
+								{props.winnerB && (
+									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
+										<p className="font-black">B</p>
+										<p className="font-semibold">
+											{props.winnerB.name.toString()}
+										</p>
+									</div>
+								)}
 							</div>
 						</div>
 					)}
