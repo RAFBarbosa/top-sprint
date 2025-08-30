@@ -25,7 +25,7 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 				{/* Content and image */}
 				<div className="group flex gap-4 items-center w-full flex-grow">
 					<div className="w-4/5 space-y-1">
-						<div className="leading-4 text-sm font-semibold group-hover:underline">
+						<div className="leading-4 text-base font-semibold group-hover:underline">
 							{props.content}
 						</div>
 					</div>
