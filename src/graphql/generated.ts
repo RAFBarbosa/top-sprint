@@ -1686,8 +1686,8 @@ export type Calendar = Entity & Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
-  winnerA?: Maybe<Scalars['String']>;
-  winnerB?: Maybe<Scalars['String']>;
+  winnerA?: Maybe<Driver>;
+  winnerB?: Maybe<Driver>;
 };
 
 
@@ -1748,6 +1748,18 @@ export type CalendarUpdatedByArgs = {
   locales?: InputMaybe<Array<Locale>>;
 };
 
+
+export type CalendarWinnerAArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
+
+export type CalendarWinnerBArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+};
+
 export type CalendarConnectInput = {
   /** Allow to specify document position in list of connected documents, will default to appending at end of list */
   position?: InputMaybe<ConnectPositionInput>;
@@ -1778,8 +1790,8 @@ export type CalendarCreateInput = {
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
-  winnerA?: InputMaybe<Scalars['String']>;
-  winnerB?: InputMaybe<Scalars['String']>;
+  winnerA?: InputMaybe<DriverCreateOneInlineInput>;
+  winnerB?: InputMaybe<DriverCreateOneInlineInput>;
 };
 
 export type CalendarCreateManyInlineInput = {
@@ -1994,44 +2006,8 @@ export type CalendarManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
-  winnerA?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  winnerA_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  winnerA_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  winnerA_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  winnerA_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  winnerA_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  winnerA_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  winnerA_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  winnerA_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  winnerA_starts_with?: InputMaybe<Scalars['String']>;
-  winnerB?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  winnerB_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  winnerB_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  winnerB_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  winnerB_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  winnerB_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  winnerB_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  winnerB_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  winnerB_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  winnerB_starts_with?: InputMaybe<Scalars['String']>;
+  winnerA?: InputMaybe<DriverWhereInput>;
+  winnerB?: InputMaybe<DriverWhereInput>;
 };
 
 export enum CalendarOrderByInput {
@@ -2058,11 +2034,7 @@ export enum CalendarOrderByInput {
   TrackAsc = 'track_ASC',
   TrackDesc = 'track_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
-  UpdatedAtDesc = 'updatedAt_DESC',
-  WinnerAAsc = 'winnerA_ASC',
-  WinnerADesc = 'winnerA_DESC',
-  WinnerBAsc = 'winnerB_ASC',
-  WinnerBDesc = 'winnerB_DESC'
+  UpdatedAtDesc = 'updatedAt_DESC'
 }
 
 export type CalendarUpdateInput = {
@@ -2076,8 +2048,8 @@ export type CalendarUpdateInput = {
   map?: InputMaybe<AssetUpdateOneInlineInput>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
-  winnerA?: InputMaybe<Scalars['String']>;
-  winnerB?: InputMaybe<Scalars['String']>;
+  winnerA?: InputMaybe<DriverUpdateOneInlineInput>;
+  winnerB?: InputMaybe<DriverUpdateOneInlineInput>;
 };
 
 export type CalendarUpdateManyInlineInput = {
@@ -2106,8 +2078,6 @@ export type CalendarUpdateManyInput = {
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
-  winnerA?: InputMaybe<Scalars['String']>;
-  winnerB?: InputMaybe<Scalars['String']>;
 };
 
 export type CalendarUpdateManyWithNestedWhereInput = {
@@ -2348,44 +2318,8 @@ export type CalendarWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
-  winnerA?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  winnerA_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  winnerA_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  winnerA_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  winnerA_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  winnerA_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  winnerA_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  winnerA_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  winnerA_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  winnerA_starts_with?: InputMaybe<Scalars['String']>;
-  winnerB?: InputMaybe<Scalars['String']>;
-  /** All values containing the given string. */
-  winnerB_contains?: InputMaybe<Scalars['String']>;
-  /** All values ending with the given string. */
-  winnerB_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are contained in given list. */
-  winnerB_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** Any other value that exists and is not equal to the given value. */
-  winnerB_not?: InputMaybe<Scalars['String']>;
-  /** All values not containing the given string. */
-  winnerB_not_contains?: InputMaybe<Scalars['String']>;
-  /** All values not ending with the given string */
-  winnerB_not_ends_with?: InputMaybe<Scalars['String']>;
-  /** All values that are not contained in given list. */
-  winnerB_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  /** All values not starting with the given string. */
-  winnerB_not_starts_with?: InputMaybe<Scalars['String']>;
-  /** All values starting with the given string. */
-  winnerB_starts_with?: InputMaybe<Scalars['String']>;
+  winnerA?: InputMaybe<DriverWhereInput>;
+  winnerB?: InputMaybe<DriverWhereInput>;
 };
 
 /** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
@@ -3045,6 +2979,8 @@ export type DriverCreateInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   class?: InputMaybe<Class>;
+  cmexjzv8m0wfw07n5ai8d7vdk?: InputMaybe<CalendarCreateManyInlineInput>;
+  cmexl5gg80wue07n5fj4jeczx?: InputMaybe<CalendarCreateManyInlineInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
@@ -3354,6 +3290,8 @@ export type DriverUpdateInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   class?: InputMaybe<Class>;
+  cmexjzv8m0wfw07n5ai8d7vdk?: InputMaybe<CalendarUpdateManyInlineInput>;
+  cmexl5gg80wue07n5fj4jeczx?: InputMaybe<CalendarUpdateManyInlineInput>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
@@ -11471,12 +11409,12 @@ export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typ
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, winnerA?: string | null, winnerB?: string | null, grid: Grid, description?: string | null, date?: any | null, link?: string | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, grid: Grid, description?: string | null, date?: any | null, link?: string | null, winnerA?: { __typename?: 'Driver', name?: string | null } | null, winnerB?: { __typename?: 'Driver', name?: string | null } | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetCalendarsRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, winnerA?: string | null, winnerB?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, winnerA?: { __typename?: 'Driver', name?: string | null } | null, winnerB?: { __typename?: 'Driver', name?: string | null } | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -12298,8 +12236,12 @@ export const GetCalendarsDocument = gql`
     round
     active
     deleted
-    winnerA
-    winnerB
+    winnerA {
+      name
+    }
+    winnerB {
+      name
+    }
     map {
       url
     }
@@ -12346,8 +12288,12 @@ export const GetCalendarsRegistrationDocument = gql`
     id
     track
     round
-    winnerA
-    winnerB
+    winnerA {
+      name
+    }
+    winnerB {
+      name
+    }
     active
     map {
       url
