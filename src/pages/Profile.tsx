@@ -182,7 +182,7 @@ export function Profile() {
 							</div>
 
 							{/* Right Half - Stats */}
-							<div className="md:w-1/2">
+							<div className="md:w-1/2 pb-4 md:pb-0">
 								<div className="md:grid md:grid-cols-2 md:gap-y-3 md:space-y-0">
 									{driverData?.city && (
 										<>
@@ -217,19 +217,20 @@ export function Profile() {
 											<p>{driverData.stats.totalWinsB}</p>
 										</>
 									)}
-									{driverData?.stats?.totalSprintWins && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Vitórias em Sprint
-											</p>
-											<p>
-												{
-													driverData.stats
-														.totalSprintWins
-												}
-											</p>
-										</>
-									)}
+									{driverData?.grid === "gridA" &&
+										driverData?.stats?.totalSprintWins && (
+											<>
+												<p className="font-bold mt-2 md:mt-0">
+													Vitórias em Sprint
+												</p>
+												<p>
+													{
+														driverData.stats
+															.totalSprintWins
+													}
+												</p>
+											</>
+										)}
 									{driverData?.stats?.totalPodiums && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
