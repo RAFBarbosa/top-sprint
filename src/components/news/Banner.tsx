@@ -14,11 +14,11 @@ export function Banner(props: BannerProps) {
 				target="_blank"
 				rel="noopener noreferrer"
 			>
-				<div className="text-sm font-bold mt-2 text-f1-red uppercase">
+				<div className="text-sm font-semibold mt-2 text-f1-red uppercase">
 					{props.title}
 				</div>
 				<div className="group-hover:underline">
-					<div className="text-2xl/6 md:text-3xl/8 font-bold mb-4">
+					<div className="text-2xl/6 md:text-3xl/8 font-semibold mb-4">
 						{props.content}
 					</div>
 					<div className="overflow-hidden">
