@@ -15,7 +15,7 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 				href={props.link || ""}
 				target="_blank"
 				rel="noopener noreferrer"
-				className="h-full grid place-items-center content-center"
+				className="h-full flex flex-col justify-between"
 			>
 				{/* Title */}
 				<div className="text-sm font-bold text-f1-red uppercase mb-2 w-full">
@@ -23,18 +23,18 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 				</div>
 
 				{/* Content and image */}
-				<div className="group flex gap-6 items-center w-full">
-					<div className="w-2/3 space-y-1">
-						<div className="leading-4 md:leading-5 text-base md:text-base font-semibold group-hover:underline">
+				<div className="group flex gap-4 items-center w-full flex-grow">
+					<div className="w-4/5 space-y-1">
+						<div className="leading-4 text-sm font-semibold group-hover:underline">
 							{props.content}
 						</div>
 					</div>
-					<div className="overflow-hidden w-1/3 flex items-center justify-center">
-						<div className="w-full h-24 flex items-center justify-center overflow-hidden rounded">
+					<div className="overflow-hidden w-1/5 flex items-center justify-center">
+						<div className="w-full h-[110px] flex items-center justify-center overflow-hidden rounded">
 							<img
 								src={props.photo?.url || GenericLogo}
 								alt={`${props.title} photo`}
-								className="min-h-full min-w-full object-cover transform transition-transform duration-150 group-hover:scale-105"
+								className="h-full w-auto rounded object-cover transform transition-transform duration-150 group-hover:scale-105" /* Changed to cover for portrait */
 							/>
 						</div>
 					</div>
