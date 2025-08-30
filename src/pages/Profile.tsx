@@ -271,18 +271,20 @@ export function Profile() {
 											</p>
 										</>
 									)}
-									{(driverData?.grid === "gridB" ||
-										driverData?.stats?.totalPointsB >
-											0) && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Pontos Classe B
-											</p>
-											<p>
-												{driverData.stats.totalPointsB}
-											</p>
-										</>
-									)}
+									{driverData?.grid === "gridB" &&
+										driverData?.stats?.totalPointsB > 0 && (
+											<>
+												<p className="font-bold mt-2 md:mt-0">
+													Pontos Classe B
+												</p>
+												<p>
+													{
+														driverData.stats
+															.totalPointsB
+													}
+												</p>
+											</>
+										)}
 									{driverData?.stats?.totalPart && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
