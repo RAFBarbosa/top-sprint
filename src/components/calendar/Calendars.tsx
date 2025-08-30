@@ -7,7 +7,9 @@ import { TabSwitch } from "../standings/csv/TabSwitch";
 
 // Import Swiper components
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
 
 const loadingSkeleton = () => {
 	return (
@@ -34,7 +36,7 @@ export function Calendars() {
 	});
 
 	return (
-		<aside className="bg-f1-bg-silver py-10">
+		<aside className="bg-f1-bg-silver pt-10">
 			<div className="flex flex-col overflow-hidden">
 				<div className="w-full mx-auto max-w-screen-xl px-3">
 					<div
@@ -54,7 +56,7 @@ export function Calendars() {
 				</div>
 
 				{/* Mobile view - grid layout */}
-				<div className="flex flex-wrap gap-4 w-full justify-between mt-10 px-3 md:px-0 md:hidden">
+				{/* <div className="flex flex-wrap gap-4 w-full justify-between mt-10 px-3 md:px-0 md:hidden">
 					{filteredCalendars && filteredCalendars.length > 0 ? (
 						filteredCalendars.map((data) => (
 							<Calendar
@@ -70,16 +72,16 @@ export function Calendars() {
 					) : (
 						<p>No calendar available</p>
 					)}
-				</div>
+				</div> */}
 
 				{/* Desktop view - carousel */}
 				{filteredCalendars && filteredCalendars.length > 0 && (
 					<div className="w-full mx-auto max-w-screen-xl px-3">
-						<div className="hidden md:block w-full mt-10 cursor-pointer overflow-visible">
+						<div className="w-full mt-10 cursor-pointer overflow-visible">
 							<Swiper
-								spaceBetween={16}
+								modules={[Navigation]}
 								slidesPerView={"auto"}
-								centeredSlides={false}
+								navigation={true}
 								className="!ml-0" // Force left alignment
 								breakpoints={{
 									640: {
