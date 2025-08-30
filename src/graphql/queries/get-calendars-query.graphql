@@ -9,6 +9,11 @@ query GetCalendars {
 		round
 		active
 		deleted
+		winnerA
+		winnerB
+		map {
+			url
+		}
 		grid
 		description
 		date
@@ -24,7 +29,12 @@ query GetCalendarsRegistration {
 		id
 		track
 		round
+		winnerA
+		winnerB
 		active
+		map {
+			url
+		}
 		grid
 		deleted
 		description

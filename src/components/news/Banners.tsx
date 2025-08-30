@@ -1,6 +1,7 @@
 import { useGetBannersQuery } from "../../graphql/generated";
 import GenericLogo from "/src/assets/img/white-logo.png";
 import { Banner } from "./Banner";
+import { SecondaryBanners } from "./SecondaryBanners"; // We'll create this
 import { Skeleton } from "@mui/material";
 
 const loadingSkeleton = () => {
@@ -36,28 +37,48 @@ export function Banners() {
 				new Date(a.createdAt).getTime()
 		);
 
-	// Get the most recent featured banner
+	// Get latest 2 secondary banners
+	const secondaryBanners =
+		data?.banners
+			?.filter((banner) => banner.category === "secundario")
+			?.sort(
+				(a, b) =>
+					new Date(b.createdAt).getTime() -
+					new Date(a.createdAt).getTime()
+			)
+			?.slice(0, 4) || [];
+
 	const latestFeaturedBanner = featuredBanners?.[0];
 
 	return (
-		<aside className="md:w-1/2 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col justify-between">
-			<div className="pr-2 md:sticky top-16 z-10">
-				{latestFeaturedBanner ? (
-					<Banner
-						key={latestFeaturedBanner.id}
-						link={latestFeaturedBanner.link || ""}
-						category={latestFeaturedBanner.category || ""}
-						title={latestFeaturedBanner.title || ""}
-						content={latestFeaturedBanner.content || ""}
-						photo={
-							latestFeaturedBanner.photo || { url: GenericLogo }
-						}
-					/>
-				) : (
-					<p>Nenhum banner em destaque encontrado</p>
-				)}
-			</div>
-			<div className="md:h-full h-2 bg-divider bg-cover opacity-10 mr-2 md:mr-5 mt-4"></div>
-		</aside>
+		<div className="flex flex-col md:flex-row gap-4 items-stretch">
+			{/* Primary Banner */}
+			<aside className="md:w-4/7 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col">
+				<div className="pr-2 md:sticky top-16 z-10">
+					{latestFeaturedBanner ? (
+						<Banner
+							key={latestFeaturedBanner.id}
+							link={latestFeaturedBanner.link || ""}
+							category={latestFeaturedBanner.category || ""}
+							title={latestFeaturedBanner.title || ""}
+							content={latestFeaturedBanner.content || ""}
+							photo={
+								latestFeaturedBanner.photo || {
+									url: GenericLogo,
+								}
+							}
+						/>
+					) : (
+						<p>Nenhum banner em destaque encontrado</p>
+					)}
+				</div>
+				<div className="md:h-full h-2 bg-divider bg-cover opacity-10 mr-2 md:mr-5 mt-4"></div>
+			</aside>
+
+			{/* Secondary Banners */}
+			<aside className="md:w-3/7 flex flex-col">
+				<SecondaryBanners banners={secondaryBanners} />
+			</aside>
+		</div>
 	);
 }

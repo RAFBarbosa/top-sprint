@@ -57,6 +57,7 @@ export type Asset = Entity & Node & {
   locale: Locale;
   /** Get the other localizations for this document */
   localizations: Array<Asset>;
+  mapCalendar: Array<Calendar>;
   /** The mime type of the file */
   mimeType?: Maybe<Scalars['String']>;
   photoBanner: Array<Banner>;
@@ -207,6 +208,20 @@ export type AssetLocalizationsArgs = {
 
 
 /** Asset system model */
+export type AssetMapCalendarArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  last?: InputMaybe<Scalars['Int']>;
+  locales?: InputMaybe<Array<Locale>>;
+  orderBy?: InputMaybe<CalendarOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<CalendarWhereInput>;
+};
+
+
+/** Asset system model */
 export type AssetPhotoBannerArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -334,6 +349,7 @@ export type AssetCreateInput = {
   imagePartner?: InputMaybe<PartnerCreateManyInlineInput>;
   /** Inline mutations for managing document localizations excluding the default locale */
   localizations?: InputMaybe<AssetCreateLocalizationsInput>;
+  mapCalendar?: InputMaybe<CalendarCreateManyInlineInput>;
   photoBanner?: InputMaybe<BannerCreateManyInlineInput>;
   photoDriver?: InputMaybe<DriverCreateManyInlineInput>;
   photoTeam?: InputMaybe<TeamCreateManyInlineInput>;
@@ -452,6 +468,9 @@ export type AssetManyWhereInput = {
   imagePartner_every?: InputMaybe<PartnerWhereInput>;
   imagePartner_none?: InputMaybe<PartnerWhereInput>;
   imagePartner_some?: InputMaybe<PartnerWhereInput>;
+  mapCalendar_every?: InputMaybe<CalendarWhereInput>;
+  mapCalendar_none?: InputMaybe<CalendarWhereInput>;
+  mapCalendar_some?: InputMaybe<CalendarWhereInput>;
   photoBanner_every?: InputMaybe<BannerWhereInput>;
   photoBanner_none?: InputMaybe<BannerWhereInput>;
   photoBanner_some?: InputMaybe<BannerWhereInput>;
@@ -575,6 +594,7 @@ export type AssetUpdateInput = {
   imagePartner?: InputMaybe<PartnerUpdateManyInlineInput>;
   /** Manage document localizations */
   localizations?: InputMaybe<AssetUpdateLocalizationsInput>;
+  mapCalendar?: InputMaybe<CalendarUpdateManyInlineInput>;
   photoBanner?: InputMaybe<BannerUpdateManyInlineInput>;
   photoDriver?: InputMaybe<DriverUpdateManyInlineInput>;
   photoTeam?: InputMaybe<TeamUpdateManyInlineInput>;
@@ -918,6 +938,9 @@ export type AssetWhereInput = {
   imagePartner_every?: InputMaybe<PartnerWhereInput>;
   imagePartner_none?: InputMaybe<PartnerWhereInput>;
   imagePartner_some?: InputMaybe<PartnerWhereInput>;
+  mapCalendar_every?: InputMaybe<CalendarWhereInput>;
+  mapCalendar_none?: InputMaybe<CalendarWhereInput>;
+  mapCalendar_some?: InputMaybe<CalendarWhereInput>;
   mimeType?: InputMaybe<Scalars['String']>;
   /** All values containing the given string. */
   mimeType_contains?: InputMaybe<Scalars['String']>;
@@ -1070,7 +1093,7 @@ export type Banner = Entity & Node & {
   createdAt: Scalars['DateTime'];
   /** User that created this document */
   createdBy?: Maybe<User>;
-  deleted: Scalars['Boolean'];
+  deleted?: Maybe<Scalars['Boolean']>;
   /** Get the document in other stages */
   documentInStages: Array<Banner>;
   /** List of Banner versions */
@@ -1165,7 +1188,7 @@ export type BannerCreateInput = {
   category: NewsCategory;
   content?: InputMaybe<Scalars['String']>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
-  deleted: Scalars['Boolean'];
+  deleted?: InputMaybe<Scalars['Boolean']>;
   link?: InputMaybe<Scalars['String']>;
   photo?: InputMaybe<AssetCreateOneInlineInput>;
   title?: InputMaybe<Scalars['String']>;
@@ -1649,6 +1672,7 @@ export type Calendar = Entity & Node & {
   /** The unique identifier */
   id: Scalars['ID'];
   link?: Maybe<Scalars['String']>;
+  map?: Maybe<Asset>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
   /** User that last published this document */
@@ -1662,6 +1686,8 @@ export type Calendar = Entity & Node & {
   updatedAt: Scalars['DateTime'];
   /** User that last updated this document */
   updatedBy?: Maybe<User>;
+  winnerA?: Maybe<Scalars['String']>;
+  winnerB?: Maybe<Scalars['String']>;
 };
 
 
@@ -1689,6 +1715,13 @@ export type CalendarHistoryArgs = {
   limit?: Scalars['Int'];
   skip?: Scalars['Int'];
   stageOverride?: InputMaybe<Stage>;
+};
+
+
+export type CalendarMapArgs = {
+  forceParentLocale?: InputMaybe<Scalars['Boolean']>;
+  locales?: InputMaybe<Array<Locale>>;
+  where?: InputMaybe<AssetSingleRelationWhereInput>;
 };
 
 
@@ -1741,9 +1774,12 @@ export type CalendarCreateInput = {
   flag?: InputMaybe<AssetCreateOneInlineInput>;
   grid: Grid;
   link?: InputMaybe<Scalars['String']>;
+  map?: InputMaybe<AssetCreateOneInlineInput>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<Scalars['DateTime']>;
+  winnerA?: InputMaybe<Scalars['String']>;
+  winnerB?: InputMaybe<Scalars['String']>;
 };
 
 export type CalendarCreateManyInlineInput = {
@@ -1884,6 +1920,7 @@ export type CalendarManyWhereInput = {
   link_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   link_starts_with?: InputMaybe<Scalars['String']>;
+  map?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -1957,6 +1994,44 @@ export type CalendarManyWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  winnerA?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  winnerA_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  winnerA_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  winnerA_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  winnerA_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  winnerA_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  winnerA_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  winnerA_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  winnerA_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  winnerA_starts_with?: InputMaybe<Scalars['String']>;
+  winnerB?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  winnerB_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  winnerB_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  winnerB_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  winnerB_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  winnerB_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  winnerB_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  winnerB_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  winnerB_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  winnerB_starts_with?: InputMaybe<Scalars['String']>;
 };
 
 export enum CalendarOrderByInput {
@@ -1983,7 +2058,11 @@ export enum CalendarOrderByInput {
   TrackAsc = 'track_ASC',
   TrackDesc = 'track_DESC',
   UpdatedAtAsc = 'updatedAt_ASC',
-  UpdatedAtDesc = 'updatedAt_DESC'
+  UpdatedAtDesc = 'updatedAt_DESC',
+  WinnerAAsc = 'winnerA_ASC',
+  WinnerADesc = 'winnerA_DESC',
+  WinnerBAsc = 'winnerB_ASC',
+  WinnerBDesc = 'winnerB_DESC'
 }
 
 export type CalendarUpdateInput = {
@@ -1994,8 +2073,11 @@ export type CalendarUpdateInput = {
   flag?: InputMaybe<AssetUpdateOneInlineInput>;
   grid?: InputMaybe<Grid>;
   link?: InputMaybe<Scalars['String']>;
+  map?: InputMaybe<AssetUpdateOneInlineInput>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
+  winnerA?: InputMaybe<Scalars['String']>;
+  winnerB?: InputMaybe<Scalars['String']>;
 };
 
 export type CalendarUpdateManyInlineInput = {
@@ -2024,6 +2106,8 @@ export type CalendarUpdateManyInput = {
   link?: InputMaybe<Scalars['String']>;
   round?: InputMaybe<Scalars['String']>;
   track?: InputMaybe<Scalars['String']>;
+  winnerA?: InputMaybe<Scalars['String']>;
+  winnerB?: InputMaybe<Scalars['String']>;
 };
 
 export type CalendarUpdateManyWithNestedWhereInput = {
@@ -2190,6 +2274,7 @@ export type CalendarWhereInput = {
   link_not_starts_with?: InputMaybe<Scalars['String']>;
   /** All values starting with the given string. */
   link_starts_with?: InputMaybe<Scalars['String']>;
+  map?: InputMaybe<AssetWhereInput>;
   publishedAt?: InputMaybe<Scalars['DateTime']>;
   /** All values greater than the given value. */
   publishedAt_gt?: InputMaybe<Scalars['DateTime']>;
@@ -2263,6 +2348,44 @@ export type CalendarWhereInput = {
   /** All values that are not contained in given list. */
   updatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['DateTime']>>>;
   updatedBy?: InputMaybe<UserWhereInput>;
+  winnerA?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  winnerA_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  winnerA_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  winnerA_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  winnerA_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  winnerA_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  winnerA_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  winnerA_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  winnerA_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  winnerA_starts_with?: InputMaybe<Scalars['String']>;
+  winnerB?: InputMaybe<Scalars['String']>;
+  /** All values containing the given string. */
+  winnerB_contains?: InputMaybe<Scalars['String']>;
+  /** All values ending with the given string. */
+  winnerB_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are contained in given list. */
+  winnerB_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** Any other value that exists and is not equal to the given value. */
+  winnerB_not?: InputMaybe<Scalars['String']>;
+  /** All values not containing the given string. */
+  winnerB_not_contains?: InputMaybe<Scalars['String']>;
+  /** All values not ending with the given string */
+  winnerB_not_ends_with?: InputMaybe<Scalars['String']>;
+  /** All values that are not contained in given list. */
+  winnerB_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  /** All values not starting with the given string. */
+  winnerB_not_starts_with?: InputMaybe<Scalars['String']>;
+  /** All values starting with the given string. */
+  winnerB_starts_with?: InputMaybe<Scalars['String']>;
 };
 
 /** The document in stages filter allows specifying a stage entry to cross compare the same document between different stages */
@@ -11245,7 +11368,7 @@ export type CreateBannerMutationVariables = Exact<{
 }>;
 
 
-export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, deleted: boolean, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type CreateBannerMutation = { __typename?: 'Mutation', createBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, deleted?: boolean | null, link?: string | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type CreateCalendarMutationVariables = Exact<{
   data: CalendarCreateInput;
@@ -11288,7 +11411,7 @@ export type UpdateBannerMutationVariables = Exact<{
 }>;
 
 
-export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, deleted: boolean, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type UpdateBannerMutation = { __typename?: 'Mutation', updateBanner?: { __typename?: 'Banner', id: string, title?: string | null, content?: string | null, deleted?: boolean | null, link?: string | null, category: NewsCategory, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateCalendarMutationVariables = Exact<{
   where: CalendarWhereUniqueInput;
@@ -11333,12 +11456,12 @@ export type UpdateTeamMutation = { __typename?: 'Mutation', updateTeam?: { __typ
 export type GetBannersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, deleted: boolean, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+export type GetBannersQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, deleted?: boolean | null, category: NewsCategory, createdAt: any, updatedAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetBannersRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetBannersRegistrationQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, deleted: boolean, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
+export type GetBannersRegistrationQuery = { __typename?: 'Query', banners: Array<{ __typename?: 'Banner', id: string, title?: string | null, content?: string | null, link?: string | null, deleted?: boolean | null, category: NewsCategory, createdAt: any, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetBannersCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -11348,12 +11471,12 @@ export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typ
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, grid: Grid, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, winnerA?: string | null, winnerB?: string | null, grid: Grid, description?: string | null, date?: any | null, link?: string | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetCalendarsRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, winnerA?: string | null, winnerB?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -12175,6 +12298,11 @@ export const GetCalendarsDocument = gql`
     round
     active
     deleted
+    winnerA
+    winnerB
+    map {
+      url
+    }
     grid
     description
     date
@@ -12218,7 +12346,12 @@ export const GetCalendarsRegistrationDocument = gql`
     id
     track
     round
+    winnerA
+    winnerB
     active
+    map {
+      url
+    }
     grid
     deleted
     description

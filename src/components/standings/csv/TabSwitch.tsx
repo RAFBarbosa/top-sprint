@@ -5,9 +5,16 @@ interface TabSwitchProps<T extends string> {
 	activeTab: T;
 	setActiveTab: React.Dispatch<React.SetStateAction<T>>;
 	tabs: ReadonlyArray<{ id: T; label: string }>;
+	decorationColor?: string;
+	textColor?: string;
+	borderColor?: string;
 }
 
-export function TabSwitch<T extends string>() {
+export function TabSwitch<T extends string>({
+	decorationColor = "decoration-f1-red",
+	textColor = "text-f1-text",
+	borderColor = "border-f1-text",
+}: TabSwitchProps<T>) {
 	const { activeTab, setActiveTab, tabs } = useTab();
 
 	return (
@@ -17,15 +24,17 @@ export function TabSwitch<T extends string>() {
 					<button
 						className={`cursor-pointer w-full md:w-auto px-4 ${
 							activeTab.id === tab.id
-								? "underline decoration-f1-red decoration-3"
+								? `underline ${decorationColor} decoration-3`
 								: "opacity-50 hover:opacity-100"
-						}`}
+						} ${textColor}`}
 						onClick={() => setActiveTab(tab.id)}
 					>
 						{tab.label}
 					</button>
 					{index < tabs.length - 1 && (
-						<div className="border-l h-5 border-f1-text opacity-30" />
+						<div
+							className={`border-l h-5 ${borderColor} opacity-30`}
+						/>
 					)}
 				</React.Fragment>
 			))}
