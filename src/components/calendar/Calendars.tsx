@@ -35,7 +35,7 @@ export function Calendars() {
 
 	return (
 		<aside className="bg-f1-bg-silver py-10">
-			<div className="mx-auto flex flex-col">
+			<div className="flex flex-col overflow-hidden">
 				<div className="w-full mx-auto max-w-screen-xl px-3">
 					<div
 						className={`border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center ${
@@ -74,63 +74,68 @@ export function Calendars() {
 
 				{/* Desktop view - carousel */}
 				{filteredCalendars && filteredCalendars.length > 0 && (
-					<div className="hidden md:block w-full mt-10 px-3 md:px-0 cursor-pointer overflow-visible">
-						<Swiper
-							spaceBetween={16}
-							slidesPerView={"auto"}
-							centeredSlides={true}
-							className="calendar-swiper"
-							// Remove initialSlide to let Swiper handle positioning
-							breakpoints={{
-								640: {
-									slidesPerView: "auto",
-									spaceBetween: 16,
-									centeredSlides: true,
-								},
-								768: {
-									slidesPerView: "auto",
-									spaceBetween: 16,
-									centeredSlides: true,
-								},
-								1024: {
-									slidesPerView: "auto",
-									spaceBetween: 16,
-									centeredSlides: true,
-								},
-								1280: {
-									slidesPerView: "auto",
-									spaceBetween: 16,
-									centeredSlides: true,
-								},
-							}}
-						>
-							{filteredCalendars.map((data) => (
-								<SwiperSlide
-									key={data.id}
-									className="!w-auto !h-auto max-w-[320px] self-start"
-								>
-									<div className="px-2 h-full">
-										<Calendar
-											round={data.round || ""}
-											track={data.track || ""}
-											description={data.description || ""}
-											date={data.date || ""}
-											winnerA={data.winnerA || ""}
-											winnerB={data.winnerB || ""}
-											link={data.link || ""}
-											map={
-												data.map || { url: GenericLogo }
-											}
-											flag={
-												data.flag || {
-													url: GenericLogo,
+					<div className="w-full mx-auto max-w-screen-xl px-3">
+						<div className="hidden md:block w-full mt-10 cursor-pointer overflow-visible">
+							<Swiper
+								spaceBetween={16}
+								slidesPerView={"auto"}
+								centeredSlides={false}
+								className="!ml-0" // Force left alignment
+								breakpoints={{
+									640: {
+										slidesPerView: "auto",
+										spaceBetween: 16,
+										centeredSlides: false,
+									},
+									768: {
+										slidesPerView: "auto",
+										spaceBetween: 16,
+										centeredSlides: false,
+									},
+									1024: {
+										slidesPerView: "auto",
+										spaceBetween: 16,
+										centeredSlides: false,
+									},
+									1280: {
+										slidesPerView: "auto",
+										spaceBetween: 16,
+										centeredSlides: false,
+									},
+								}}
+							>
+								{filteredCalendars.map((data) => (
+									<SwiperSlide
+										key={data.id}
+										className="!w-auto !h-auto max-w-[320px]"
+									>
+										<div className="px-2 h-full">
+											<Calendar
+												round={data.round || ""}
+												track={data.track || ""}
+												description={
+													data.description || ""
 												}
-											}
-										/>
-									</div>
-								</SwiperSlide>
-							))}
-						</Swiper>
+												date={data.date || ""}
+												winnerA={data.winnerA || ""}
+												winnerB={data.winnerB || ""}
+												link={data.link || ""}
+												map={
+													data.map || {
+														url: GenericLogo,
+													}
+												}
+												flag={
+													data.flag || {
+														url: GenericLogo,
+													}
+												}
+											/>
+										</div>
+									</SwiperSlide>
+								))}
+							</Swiper>
+						</div>
 					</div>
 				)}
 			</div>
