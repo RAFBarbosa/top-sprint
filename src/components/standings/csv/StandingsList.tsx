@@ -522,7 +522,7 @@ export function StandingsList(props: StandingsListProps) {
 										<li key={`heat-large-${index}`}>
 											<StandingCard
 												name={item.name}
-												position={index + 4}
+												position={index + 2}
 												valueKey={item[props.valueKey]}
 												valueLabel={props.valueLabel}
 												grid={props.activeTab}
@@ -536,10 +536,10 @@ export function StandingsList(props: StandingsListProps) {
 												activeTab={props.activeTab}
 												activeGrid={activeGrid}
 												isActive={
-													activeCard === index + 4
+													activeCard === index + 2
 												}
 												onClick={() =>
-													handleCardClick(index + 4)
+													handleCardClick(index + 2)
 												}
 												newData={props.data}
 												oldData={props.oldData || []}
@@ -605,7 +605,7 @@ export function StandingsList(props: StandingsListProps) {
 										<li key={`heat-large-${index}`}>
 											<StandingCard
 												name={item.name}
-												position={index + 4}
+												position={index + 2}
 												valueKey={item[props.valueKey]}
 												valueLabel={props.valueLabel}
 												grid={props.activeTab}
@@ -619,10 +619,10 @@ export function StandingsList(props: StandingsListProps) {
 												activeTab={props.activeTab}
 												activeGrid={activeGrid}
 												isActive={
-													activeCard === index + 4
+													activeCard === index + 2
 												}
 												onClick={() =>
-													handleCardClick(index + 4)
+													handleCardClick(index + 2)
 												}
 												newData={props.data}
 												oldData={props.oldData || []}

@@ -177,7 +177,7 @@ export function Calendar(props: CalendarProps) {
 					/>
 				</div>
 				<div className="hidden md:block bg-map-bg opacity-12 h-29 w-60 absolute bottom-2" />
-				<div className="py-4 h-33 px-2 z-10">
+				<div className="hidden md:block py-4 h-33 px-2 z-10">
 					{isFutureDate ? (
 						<img
 							src={props.map?.url}
