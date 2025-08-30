@@ -4,13 +4,6 @@ import { ptBR } from "date-fns/locale";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { addHours } from "date-fns";
 
-// Import Swiper styles and modules
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-
 interface CalendarProps {
 	round: string;
 	track: string;
@@ -23,64 +16,6 @@ interface CalendarProps {
 	map?: { url: string };
 }
 
-// This will be the container component that handles the carousel
-export function CalendarCarousel({ events }: { events: CalendarProps[] }) {
-	return (
-		<div className="w-full hidden md:block">
-			<Swiper
-				modules={[Navigation, Pagination]}
-				spaceBetween={16}
-				slidesPerView={1.5}
-				slidesPerGroup={1}
-				navigation
-				pagination={{ clickable: true }}
-				breakpoints={{
-					640: {
-						slidesPerView: 2,
-					},
-					768: {
-						slidesPerView: 2.5,
-						spaceBetween: 20,
-					},
-					1024: {
-						slidesPerView: 3,
-						spaceBetween: 20,
-					},
-					1280: {
-						slidesPerView: 3.5,
-						spaceBetween: 20,
-					},
-				}}
-				className="calendar-swiper"
-			>
-				{events.map((event, index) => (
-					<SwiperSlide key={index} className="md:h-full">
-						<Calendar {...event} />
-					</SwiperSlide>
-				))}
-			</Swiper>
-		</div>
-	);
-}
-
-// This will display the regular grid on mobile and the carousel items on desktop
-export function CalendarGrid({ events }: { events: CalendarProps[] }) {
-	return (
-		<>
-			{/* Mobile view - grid layout */}
-			<div className="flex flex-wrap gap-4 md:hidden">
-				{events.map((event, index) => (
-					<Calendar key={index} {...event} />
-				))}
-			</div>
-
-			{/* Desktop view - carousel */}
-			<CalendarCarousel events={events} />
-		</>
-	);
-}
-
-// Your original Calendar component with consistent sizing for MD screens
 export function Calendar(props: CalendarProps) {
 	const [isWithinTwoHours, setIsWithinTwoHours] = useState(false);
 	const [isFutureDate, setIsFutureDate] = useState(true);
