@@ -53,6 +53,8 @@ export function Profile() {
 	const driverData =
 		currentIndex !== null ? filteredDrivers[currentIndex] : null;
 
+	console.log(driverData);
+
 	return (
 		currentIndex !== null &&
 		filteredDrivers.length > 0 && (
@@ -208,8 +210,7 @@ export function Profile() {
 											<p>{driverData.stats.totalWins}</p>
 										</>
 									)}
-									{(driverData?.grid === "gridB" ||
-										driverData?.stats?.totalWinsB > 0) && (
+									{driverData?.stats?.totalWinsB > 0 && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
 												Vitórias em Corridas Classe B
@@ -259,9 +260,7 @@ export function Profile() {
 											</p>
 										</>
 									)}
-									{(driverData?.grid === "gridA" ||
-										driverData?.stats?.totalPointsA >
-											0) && (
+									{driverData?.stats?.totalPointsA > 0 && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
 												Pontos Classe A
@@ -271,20 +270,16 @@ export function Profile() {
 											</p>
 										</>
 									)}
-									{driverData?.grid === "gridB" &&
-										driverData?.stats?.totalPointsB > 0 && (
-											<>
-												<p className="font-bold mt-2 md:mt-0">
-													Pontos Classe B
-												</p>
-												<p>
-													{
-														driverData.stats
-															.totalPointsB
-													}
-												</p>
-											</>
-										)}
+									{driverData?.stats?.totalPointsB > 0 && (
+										<>
+											<p className="font-bold mt-2 md:mt-0">
+												Pontos Classe B
+											</p>
+											<p>
+												{driverData.stats.totalPointsB}
+											</p>
+										</>
+									)}
 									{driverData?.stats?.totalPart && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
