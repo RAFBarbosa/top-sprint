@@ -67,7 +67,7 @@ export default function Sidebar() {
 							Calendário
 						</NavLink>
 					</li>
-					<li>
+					<li className="hidden md:block">
 						<NavLink
 							to="/admin/painel/classificacao"
 							className={({ isActive }) =>
