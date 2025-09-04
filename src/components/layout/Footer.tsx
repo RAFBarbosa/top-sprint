@@ -2,13 +2,16 @@ import { Logo } from "./Logo";
 import { SocialIcon } from "react-social-icons";
 import { Signature } from "../utils/Signature";
 import { Partners } from "./Partners";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 
 export function Footer() {
+	const location = useLocation();
+	const isAdminPage = location.pathname.includes("/admin/");
+
 	return (
 		<footer className="bg-f1-carbon pb-6 text-white mt-auto">
-			<Partners />
+			{!isAdminPage && <Partners />}
 			<div className="flex flex-col-reverse md:flex-row justify-between md:max-w-screen-xl mx-auto px-3 pt-6">
 				<div className="flex flex-col items-center md:items-start gap-2 md:gap-1 h-full">
 					<div className="flex items-center gap-2 md:flex-col md:items-start">

@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 export function Header() {
 	const location = useLocation();
 	const isResultsPage = location.pathname.includes("/resultado/");
+	const isAdminPage = location.pathname.includes("/admin/");
 
 	return (
 		<header>
@@ -12,11 +13,12 @@ export function Header() {
 				<Menu />
 			</div>
 
-			{!isResultsPage && (
-				<div className="bg-f1-black mt-[56px] md:mt-[74px]">
-					<NextRaces />
-				</div>
-			)}
+			{!isResultsPage ||
+				(isAdminPage && (
+					<div className="bg-f1-black mt-[56px] md:mt-[74px]">
+						<NextRaces />
+					</div>
+				))}
 		</header>
 	);
 }

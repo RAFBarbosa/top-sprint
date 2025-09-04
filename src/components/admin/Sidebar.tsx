@@ -67,6 +67,18 @@ export default function Sidebar() {
 							Calendário
 						</NavLink>
 					</li>
+					<li>
+						<NavLink
+							to="/admin/painel/classificacao"
+							className={({ isActive }) =>
+								`block p-2 rounded hover:bg-f1-red/20 ${
+									isActive ? "bg-f1-red/20 font-bold" : ""
+								}`
+							}
+						>
+							Classificação
+						</NavLink>
+					</li>
 					{/* <li>
 						<NavLink
 							to="/admin/painel/campeoes"

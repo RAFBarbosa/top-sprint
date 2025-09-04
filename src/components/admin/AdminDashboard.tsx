@@ -30,7 +30,7 @@ export function AdminDashboard() {
 	const user = auth.currentUser;
 
 	return (
-		<div className="mx-auto p-6 w-full">
+		<div className="mx-auto p-6 w-full pt-25">
 			<div className="flex justify-between items-center mb-8 border-b border-gray-300 pb-4">
 				<div>
 					<h1 className="text-2xl font-bold mb-2">
