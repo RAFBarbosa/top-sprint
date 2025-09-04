@@ -3,6 +3,8 @@ import { StandingsList } from "./StandingsList";
 import useCsvLoader from "../../hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
 import useNormalizeString from "../../hooks/useNormalizeString";
+import { useLocation } from "react-router-dom";
+import { AdminStandings } from "../../admin/AdminStandings";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
@@ -10,6 +12,9 @@ interface DataLoaderProps {
 }
 
 export function DataLoader(props: DataLoaderProps) {
+	const location = useLocation();
+	const isAdminPage = location.pathname.includes("/admin/");
+
 	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader(
 		props.activeTab
 	);
@@ -68,17 +73,31 @@ export function DataLoader(props: DataLoaderProps) {
 
 	return (
 		<div className="w-full mx-auto">
-			<StandingsList
-				title={title}
-				data={enhancedDrivers}
-				drivers={enhancedDrivers}
-				teams={enhancedTeams}
-				oldTeams={oldTeams}
-				oldData={oldDrivers}
-				valueKey="pts"
-				valueLabel="PTS"
-				activeTab={props.activeTab}
-			/>
+			{isAdminPage ? (
+				<AdminStandings
+					title={title}
+					data={enhancedDrivers}
+					drivers={enhancedDrivers}
+					teams={enhancedTeams}
+					oldTeams={oldTeams}
+					oldData={oldDrivers}
+					valueKey="pts"
+					valueLabel="PTS"
+					activeTab={props.activeTab}
+				/>
+			) : (
+				<StandingsList
+					title={title}
+					data={enhancedDrivers}
+					drivers={enhancedDrivers}
+					teams={enhancedTeams}
+					oldTeams={oldTeams}
+					oldData={oldDrivers}
+					valueKey="pts"
+					valueLabel="PTS"
+					activeTab={props.activeTab}
+				/>
+			)}
 
 			{/* <StandingsList
 				title={title}
