@@ -3,9 +3,7 @@ import { Home } from "./pages/Home";
 import { Rules } from "./pages/Rules";
 import { Profile } from "./pages/Profile";
 import { Champions } from "./pages/Champions";
-import { Results } from "./pages/Results";
 import Drivers from "./pages/Drivers";
-import { Calendar } from "./pages/Calendar";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLogin } from "./components/admin/AdminLogin";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
@@ -16,6 +14,7 @@ import ResultsAdmin from "./pages/admin/ResultsAdmin";
 import DriversAdmin from "./pages/admin/DriversAdmin";
 import HallOfFameAdmin from "./pages/admin/HallOfFameAdmin";
 import { Standings } from "./components/standings/Standings";
+import { SessionResults } from "./components/results/SessionResults";
 
 export function Router() {
 	return (
@@ -25,8 +24,8 @@ export function Router() {
 			<Route path="/campeoes" element={<Champions />} />
 			<Route path="/pilotos" element={<Drivers />} />
 			<Route path="/pilotos/:driverName" element={<Profile />} />
-			<Route path="/resultados/:slug" element={<Calendar />} />
-			<Route path="/resultado/:id" element={<Results />} />
+			<Route path="/resultados" element={<SessionResults />} />
+			<Route path="/resultados/:id" element={<SessionResults />} />
 			<Route path="/admin" element={<AdminLogin />} />
 			<Route element={<ProtectedRoute />}>
 				<Route path="/admin/painel" element={<AdminDashboard />}>

@@ -1,0 +1,70 @@
+query GetResults {
+	results(where: { deleted: false }) {
+		deleted
+		id
+		link
+		calendar {
+			id
+		}
+		sprint {
+			url
+		}
+		quali {
+			url
+		}
+		race {
+			url
+		}
+		extras {
+			url
+		}
+		winnerSprint {
+			name
+			number
+			photo {
+				url
+			}
+			team {
+				name
+				photo {
+					url
+				}
+				color {
+					hex
+				}
+			}
+		}
+		winnerB {
+			name
+			number
+			photo {
+				url
+			}
+			team {
+				name
+				photo {
+					url
+				}
+				color {
+					hex
+				}
+			}
+		}
+		winnerA {
+			name
+			number
+			photo {
+				url
+			}
+			team {
+				name
+				photo {
+					url
+				}
+				color {
+					hex
+				}
+			}
+		}
+	}
+}

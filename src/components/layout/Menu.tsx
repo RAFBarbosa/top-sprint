@@ -15,6 +15,7 @@ import { useTab } from "../../contexts/TabContext";
 const menuItems = [
 	{ id: "/", label: "Inicio" },
 	// { id: "/resultados/atual", label: "Resultados" },
+	// { id: "/resultados", label: "Resultados" },
 	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
 	{ id: "/regras", label: "Regras e Formato" },
@@ -108,7 +109,7 @@ export function Menu() {
 
 			<div
 				className={`fixed top-0 right-0 bg-f1-red px-2 py-6 transition-transform duration-300 transform ${
-					isOpen ? "translate-y-[56px]" : "translate-y-[-398px]"
+					isOpen ? "translate-y-[56px]" : "translate-y-[-468px]"
 				} md:hidden w-full z-30`}
 			>
 				<ul className="space-y-2">
@@ -214,7 +215,11 @@ export function Menu() {
 								to={data.id}
 								onClick={handleLinkClick}
 								className={`text-lg h-full items-center flex px-4 hover:bg-f1-carbon transition-colors duration-300 ${
-									location.pathname === data.id &&
+									(location.pathname === data.id ||
+										(data.id === "/resultados" &&
+											location.pathname.startsWith(
+												"/resultados"
+											))) &&
 									"bg-f1-carbon"
 								}`}
 							>
