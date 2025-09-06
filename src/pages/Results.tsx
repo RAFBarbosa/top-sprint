@@ -5,7 +5,7 @@ import {
 	useGetDriversQuery,
 	useGetRoundResultsQuery,
 } from "../graphql/generated";
-import { SessionResultsTable } from "../components/results/SessionResult";
+import { SessionResultsTable } from "../components/results/SessionResults";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Skeleton } from "@mui/material";
