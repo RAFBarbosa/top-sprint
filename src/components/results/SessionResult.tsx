@@ -1,338 +1,395 @@
-import clsx from "clsx";
+    import { useGetResultsQuery } from "../../graphql/generated";
+    import { useState, useEffect, useCallback, useRef } from "react";
+    import useEmblaCarousel from "embla-carousel-react";
 
-const racePoints = [20, 16, 14, 12, 10, 8, 6, 4, 2, 1];
-const sprintPoints = [8, 7, 6, 5, 4, 3, 2, 1];
-const qualiPolePoint = 1;
-
-export function SessionResultsTable({ results, sessionType, showGridOrder }) {
-	let gridAFirstDriverAssigned = false;
-	let gridBFirstDriverAssigned = false;
-
-	const activeDrivers = results.filter(
-		(d) => d.grid !== "Reserva" && d.position !== "NC"
-	);
-
-	const gridARanked = activeDrivers
-		.filter((d) => d.grid === "gridA")
-		.sort((a, b) => parseInt(a.position) - parseInt(b.position));
-
-	const gridBRanked = activeDrivers
-		.filter((d) => d.grid === "gridB")
-		.sort((a, b) => parseInt(a.position) - parseInt(b.position));
-
-	const gridAWinner = gridARanked[0];
-	const gridBWinner = gridBRanked[0];
-
-	const fastestLapDriverA = gridARanked.find((driver) => driver.fastestLap);
-	const fastestLapDriverB = gridBRanked.find((driver) => driver.fastestLap);
-
-	const rows = results.map((driver) => {
-		const originalGrid = driver.grid;
-		const displayGrid = originalGrid === "Reserva" ? "Res" : originalGrid;
-		const gridPosition = parseInt(driver.gridPosition);
-		const overallPosition = parseInt(driver.position);
-
-		let points = 0;
-
-		if (originalGrid === "Reserva" || driver.position === "NC") {
-			points = 0;
-		} else {
-			const gridList =
-				originalGrid === "gridA" ? gridARanked : gridBRanked;
-			const gridPositionIndex = gridList.findIndex(
-				(d) => d.driverId === driver.driverId
-			);
-			const driverPlaceInGrid = gridPositionIndex + 1;
-
-			if (
-				sessionType === "race" &&
-				driverPlaceInGrid <= racePoints.length
-			) {
-				points = racePoints[driverPlaceInGrid - 1];
-				driver.fastestLap ? (points += 1) : points;
-			} else if (
-				sessionType === "sprint" &&
-				driverPlaceInGrid <= sprintPoints.length
-			) {
-				points = sprintPoints[driverPlaceInGrid - 1];
-			} else if (
-				sessionType === "quali" &&
-				originalGrid === "gridA" &&
-				!gridAFirstDriverAssigned
-			) {
-				points = qualiPolePoint;
-				gridAFirstDriverAssigned = true;
-			} else if (
-				sessionType === "quali" &&
-				originalGrid === "gridB" &&
-				!gridBFirstDriverAssigned
-			) {
-				points = qualiPolePoint;
-				gridBFirstDriverAssigned = true;
-			}
-		}
-
-		const gridList = originalGrid === "gridA" ? gridARanked : gridBRanked;
-		const posGrid =
-			originalGrid !== "Reserva" &&
-			driver.position !== "NC" &&
-			gridList.findIndex((d) => d.driverId === driver.driverId) + 1;
-
-		const positionChange =
-			sessionType === "race" &&
-			originalGrid !== "Reserva" &&
-			driver.position !== "NC"
-				? gridPosition - overallPosition
-				: null;
-
-		return {
-			id: driver.driverId,
-			position: driver.position,
-			grid: displayGrid,
-			driverName: driver.driverName,
-			driverGridPosition: posGrid,
-			teamName: driver.team?.name || "Reserva",
-			points,
-			positionChange,
-		};
-	});
-
-	const sortedRows = showGridOrder
-		? [...rows].sort((a, b) => {
-				const aIsNC = a.position === "NC";
-				const bIsNC = b.position === "NC";
-
-				if (aIsNC && bIsNC) return 0;
-				if (aIsNC) return 1;
-				if (bIsNC) return -1;
-
-				const gridComparison = a.grid.localeCompare(b.grid);
-				if (gridComparison !== 0) return gridComparison;
-
-				const aPos = a.driverGridPosition || 0;
-				const bPos = b.driverGridPosition || 0;
-				return aPos - bPos;
-		  })
-		: rows;
-
-	const headers = [
-		{ label: "Pos Geral", show: true },
-		{
-			label: "Δ",
-			show: sessionType === "race",
-			tooltip: showGridOrder
-				? "Diferença na posição dentro do grid"
-				: "Diferença entre posição de largada e final",
-		},
-		{ label: "Pos Grid", show: true },
-		{ label: "Piloto", show: true },
-		{ label: "Equipe", show: true },
-		{ label: "Pts", show: true },
-	];
-
-	return (
-		<div className="flex flex-col md:flex-row gap-2 items-center md:items-start">
-			<div className="flex gap-2 w-[280px] flex-row md:flex-col">
-				<h2 className="border-b border-black/10 py-4 text-xl font-bold uppercase mb-2">
-					Destaques
-				</h2>
-				<div className="flex md:flex-col gap-2 w-full">
-					<div className="border border-black/10">
-						<div className="bg-f1-carbon text-white text-center px-4 py-2 uppercase mb-5">
-							<h3 className="text-lg font-semibold">Grid A</h3>
-							<p className="text-sm -mt-1">
-								{[
-									"Carolinne Walker",
-									"Micaely Gusmão",
-									"Lesly Stoeberl",
-								].includes(gridAWinner?.driverName)
-									? sessionType !== "quali"
-										? "Vencedora"
-										: "Pole Position"
-									: sessionType !== "quali"
-									? "Vencedor"
-									: "Pole Position"}
-							</p>
-						</div>
-						{gridAWinner && (
-							<div>
-								<div className="flex-1 flex items-center justify-center w-9/10 mx-auto overflow-hidden">
-									<img
-										src={gridAWinner.photo?.url}
-										alt={gridAWinner.driverName}
-										className="max-w-full object-contain scale-140 transform translate-y-13"
-									/>
-								</div>
-								<div className="mb-1 -mt-10 py-3 bg-white relative text-center uppercase text-sm">
-									<div className="font-bold text-2xl">
-										{gridAWinner.driverName}
-									</div>
-									<div className="-mt-1">
-										{gridAWinner.team.name}
-									</div>
-								</div>
-								{sessionType === "race" && (
-									<div className="uppercase bg-f1-purple px-4 py-2 text-white flex gap-3 justify-between items-center">
-										<div>
-											<p className="font-bold">
-												{fastestLapDriverA?.driverName}
-											</p>
-											<p className="text-xs -mt-1">
-												{fastestLapDriverA?.team.name}
-											</p>
-										</div>
-										<p className="text-sm">+ 1 Ponto</p>
-									</div>
-								)}
-							</div>
-						)}
-					</div>
-					<div className="border border-black/10">
-						<div className="bg-f1-red text-white text-center px-4 py-2 uppercase mb-5">
-							<h3 className="text-lg font-semibold">Grid B</h3>
-							<p className="text-sm -mt-1">
-								{[
-									"Carolinne Walker",
-									"Micaely Gusmão",
-									"Lesly Stoeberl",
-								].includes(gridBWinner?.driverName)
-									? sessionType !== "quali"
-										? "Vencedora"
-										: "Pole Position"
-									: sessionType !== "quali"
-									? "Vencedor"
-									: "Pole Position"}
-							</p>
-						</div>
-						{gridBWinner && (
-							<div>
-								<div className="flex-1 flex items-center justify-center w-9/10 mx-auto overflow-hidden">
-									<img
-										src={gridBWinner.photo?.url}
-										alt={gridBWinner.driverName}
-										className="max-w-full object-contain scale-140 transform translate-y-13"
-									/>
-								</div>
-								<div className="mb-1 -mt-10 py-3 bg-white relative text-center uppercase text-sm text-f1-red">
-									<div className="font-bold text-2xl">
-										{gridBWinner.driverName}
-									</div>
-									<div className="-mt-1">
-										{gridBWinner.team.name}
-									</div>
-								</div>
-								{sessionType === "race" && (
-									<div className="uppercase bg-f1-purple px-4 py-2 text-white flex gap-3 justify-between items-center">
-										<div>
-											<p className="font-bold">
-												{fastestLapDriverB?.driverName}
-											</p>
-											<p className="text-xs -mt-1">
-												{fastestLapDriverB?.team.name}
-											</p>
-										</div>
-										<p className="text-sm">+ 1 Ponto</p>
-									</div>
-								)}
-							</div>
-						)}
-					</div>
-				</div>
-			</div>
-			<div className="flex-1 overflow-x-auto">
-				<table className="min-w-full">
-					<thead>
-						<tr className="font-semibold uppercase text-left border-b-1 border-f1-bg-silver">
-							{headers.map((h, i) =>
-								h.show ? (
-									<th
-										key={h.label}
-										className={clsx(
-											"pb-3 px-3",
-											i <= 1 && "w-[90px]",
-											h.tooltip && "cursor-help"
-										)}
-										title={h.tooltip}
-									>
-										{h.label}
-									</th>
-								) : null
-							)}
-						</tr>
-					</thead>
-					<tbody>
-						{sortedRows.map((row, index) => {
-							const isGridB = row.grid === "gridB";
-							const textColorClass = isGridB ? "text-f1-red" : "";
-
-							return (
-								<tr
-									key={row.id}
-									className={clsx(
-										index % 2 === 0
-											? "bg-white"
-											: "bg-f1-bg-silver",
-										"text-base"
-									)}
-								>
-									<td className="p-3 text-left">
-										{row.position}
-									</td>
-									{sessionType === "race" && (
-										<td className="p-3 text-left">
-											{row.positionChange !== null ? (
-												row.positionChange > 0 ? (
-													<span className="text-green-600">
-														▲ {row.positionChange}
-													</span>
-												) : row.positionChange < 0 ? (
-													<span className="text-red-600">
-														▼{" "}
-														{Math.abs(
-															row.positionChange
-														)}
-													</span>
-												) : (
-													"-"
-												)
-											) : (
-												"-"
-											)}
-										</td>
-									)}
-									<td
-										className={clsx(
-											"p-3 text-left",
-											textColorClass
-										)}
-									>
-										{row.grid === "gridA"
-											? "A "
-											: row.grid === "gridB"
-											? "B "
-											: "Res"}
-										{row.driverGridPosition}
-									</td>
-									<td className="p-3 text-left">
-										{row.driverName}
-									</td>
-									<td className="p-3 text-left">
-										{row.teamName}
-									</td>
-									<td
-										className={clsx(
-											"p-3 text-left",
-											textColorClass
-										)}
-									>
-										{row.points}
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	);
+  interface SessionResultProps {
+	calendarId: string | null;
+	calendarData?: any;
 }
+
+    // Component for individual image carousels
+    function ImageCarousel({
+        images,
+        title,
+    }: {
+        images: { url: string }[];
+        title: string;
+    }) {
+        const [emblaRef, emblaApi] = useEmblaCarousel({
+            loop: false, // Disable infinite loop
+            containScroll: "keepSnaps",
+            dragFree: true,
+        });
+        const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
+        const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
+        const [selectedIndex, setSelectedIndex] = useState(0);
+        const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+        const [isMounted, setIsMounted] = useState(false);
+
+        const scrollPrev = useCallback(
+            () => emblaApi && emblaApi.scrollPrev(),
+            [emblaApi]
+        );
+        const scrollNext = useCallback(
+            () => emblaApi && emblaApi.scrollNext(),
+            [emblaApi]
+        );
+        const scrollTo = useCallback(
+            (index: number) => emblaApi && emblaApi.scrollTo(index),
+            [emblaApi]
+        );
+
+        const onSelect = useCallback(() => {
+            if (!emblaApi) return;
+            setSelectedIndex(emblaApi.selectedScrollSnap());
+            setPrevBtnEnabled(emblaApi.canScrollPrev());
+            setNextBtnEnabled(emblaApi.canScrollNext());
+        }, [emblaApi]);
+
+        useEffect(() => {
+            if (!emblaApi || !isMounted) return;
+            onSelect();
+            setScrollSnaps(emblaApi.scrollSnapList());
+            emblaApi.on("select", onSelect);
+            emblaApi.on("reInit", onSelect);
+
+            return () => {
+                emblaApi.off("select", onSelect);
+                emblaApi.off("reInit", onSelect);
+            };
+        }, [emblaApi, onSelect, isMounted]);
+
+        useEffect(() => {
+            setIsMounted(true);
+        }, []);
+
+        const urls = images.map((img) => img.url);
+        const [lightboxOpen, setLightboxOpen] = useState(false);
+        const [lightboxIndex, setLightboxIndex] = useState(0);
+
+        const openLightbox = (index: number) => {
+            setLightboxIndex(index);
+            setLightboxOpen(true);
+        };
+
+        // Determine if we should use carousel based on screen size and number of images
+        const [isMobile, setIsMobile] = useState(false);
+
+        useEffect(() => {
+            const checkMobile = () => setIsMobile(window.innerWidth < 768);
+            checkMobile();
+            window.addEventListener("resize", checkMobile);
+            return () => window.removeEventListener("resize", checkMobile);
+        }, []);
+
+        const shouldUseCarousel = isMobile || images.length > 3;
+
+        // Don't render anything if there are no images
+        if (!images || images.length === 0) {
+            return null;
+        }
+
+        return (
+            <div className="my-6">
+                <h3 className="text-xl font-semibold mb-3">{title}</h3>
+
+                {/* Desktop grid for 3 or fewer images when not on mobile */}
+                {!shouldUseCarousel && (
+                    <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-4 px-2">
+                        {images.length <= 3 &&
+                            images.map((img, index) => (
+                                <div
+                                    key={index}
+                                    className="cursor-pointer w-full h-64 bg-f1-lightCarbon flex items-center justify-center rounded"
+                                    onClick={() => openLightbox(index)}
+                                >
+                                    <img
+                                        src={img.url}
+                                        alt={`${title} ${index + 1}`}
+                                        className="max-w-full max-h-full object-contain rounded"
+                                    />
+                                </div>
+                            ))}
+                    </div>
+                )}
+
+                {/* Carousel for mobile or when more than 3 images */}
+                {shouldUseCarousel && images.length > 0 && (
+                    <div className="relative">
+                        {/* Outer wrapper that allows overflow */}
+                        <div className="relative overflow-hidden md:overflow-visible">
+                            <div className="embla overflow-visible" ref={emblaRef}>
+                                <div className="embla__container flex cursor-pointer">
+                                    {images.map((img, index) => (
+                                        <div
+                                            key={index}
+                                            className="embla__slide flex-[0_0_100%] md:flex-[0_0_33.333%] min-w-0 gap-4 px-2"
+                                        >
+                                            <div
+                                                className="cursor-pointer w-full h-64 bg-f1-lightCarbon flex items-center justify-center rounded"
+                                                onClick={() => openLightbox(index)}
+                                            >
+                                                <img
+                                                    src={img.url}
+                                                    alt={`${title} ${index + 1}`}
+                                                    className="max-w-full max-h-full object-contain rounded"
+                                                    onLoad={() => {
+                                                        if (emblaApi) {
+                                                            setTimeout(
+                                                                () =>
+                                                                    emblaApi.reInit(),
+                                                                100
+                                                            );
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Dark overlays outside */}
+                            <div className="pointer-events-none absolute inset-y-0 left-0 -translate-x-full w-screen bg-white/88" />
+                            <div className="pointer-events-none absolute inset-y-0 right-0 translate-x-full w-screen bg-white/88" />
+                        </div>
+
+                        {/* Navigation arrows */}
+                        {images.length > 1 && (
+                            <>
+                                <button
+                                    className="embla__prev absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/70 text-white p-2 rounded-full disabled:opacity-30 z-20 cursor-pointer"
+                                    onClick={scrollPrev}
+                                    disabled={!prevBtnEnabled}
+                                >
+                                    <svg
+                                        className="w-6 h-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M15 19l-7-7 7-7"
+                                        />
+                                    </svg>
+                                </button>
+                                <button
+                                    className="embla__next absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/70 text-white p-2 rounded-full disabled:opacity-30 z-20 cursor-pointer"
+                                    onClick={scrollNext}
+                                    disabled={!nextBtnEnabled}
+                                >
+                                    <svg
+                                        className="w-6 h-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 5l7 7-7 7"
+                                        />
+                                    </svg>
+                                </button>
+                            </>
+                        )}
+                    </div>
+                )}
+
+                {/* Lightbox for this carousel */}
+                {lightboxOpen && (
+                    <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-50">
+                        <div className="flex-grow flex items-center justify-center">
+                            <img
+                                src={urls[lightboxIndex]}
+                                alt="Preview"
+                                className="max-h-[70vh] max-w-[90vw] rounded-lg"
+                            />
+                        </div>
+                        <div className="mt-4 flex gap-4 pb-4">
+                            <button
+                                onClick={() =>
+                                    setLightboxIndex(
+                                        (prev) =>
+                                            (prev - 1 + urls.length) % urls.length
+                                    )
+                                }
+                                className="px-4 py-2 bg-gray-700 text-white rounded cursor-pointer"
+                            >
+                                Anterior
+                            </button>
+                            <a
+                                href={urls[lightboxIndex]}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download
+                                className="px-4 py-2 bg-f1-red text-white rounded cursor-pointer"
+                            >
+                                Salvar
+                            </a>
+                            <button
+                                onClick={() =>
+                                    setLightboxIndex(
+                                        (prev) => (prev + 1) % urls.length
+                                    )
+                                }
+                                className="px-4 py-2 bg-gray-700 text-white rounded cursor-pointer"
+                            >
+                                Próximo
+                            </button>
+                            <button
+                                onClick={() => setLightboxOpen(false)}
+                                className="px-4 py-2 bg-gray-500 text-white rounded cursor-pointer"
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    export function SessionResult({ calendarId }: SessionResultProps) {
+        const { data, error, loading } = useGetResultsQuery({
+            variables: { calendarId: calendarId || "" },
+            skip: !calendarId,
+        });
+
+        if (!calendarId) {
+            return (
+                <div className="px-3 my-15 md:my-30 text-center">
+                    <h3 className="text-xl font-semibold text-f1-text">
+                        Selecione uma corrida no calendário acima para ver os
+                        resultados
+                    </h3>
+                </div>
+            );
+        }
+
+        if (loading) {
+            return (
+                <div className="my-5 text-center">
+                    <div className="animate-pulse">
+                        <div className="h-6 bg-f1-bg-silver rounded w-1/3 mx-auto mb-4"></div>
+                        <div className="h-4 bg-f1-bg-silver rounded w-1/2 mx-auto"></div>
+                    </div>
+                </div>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="my-5 text-center">
+                    <h3 className="text-xl font-semibold text-f1-red">
+                        Erro ao carregar resultados: {error.message}
+                    </h3>
+                </div>
+            );
+        }
+
+        const calendarResult = data?.results?.find(
+            (result) => result.calendar?.id === calendarId
+        );
+
+        if (!calendarResult) {
+            return (
+                <div className="my-5 text-center">
+                    <h2 className="text-2xl font-bold mb-2 text-f1-red">
+                        Resultados da Corrida
+                    </h2>
+                    <p className="text-f1-text">
+                        Nenhum resultado disponível para esta corrida.
+                    </p>
+                </div>
+            );
+        }
+
+        console.log(calendarResult);
+        return (
+            <div className="px-3 mx-auto max-w-screen-xl my-6">
+                <h2 className="text-2xl font-bold mb-4 text-f1-red">
+                    Resultados da Corrida
+                </h2>
+
+                {/* Winners */}
+                <div
+                    className={`grid grid-cols-1 gap-3 ${
+                        calendarResult.winnerSprint
+                            ? "md:grid-cols-3"
+                            : "md:grid-cols-2"
+                    }`}
+                >
+                    {calendarResult.winnerSprint && (
+                        <div className="bg-f1-bg-silver p-4 rounded-lg">
+                            <h4 className="font-semibold text-lg mb-2">
+                                Vencedor Sprint
+                            </h4>
+                            <p className="text-xl text-f1-red font-bold">
+                                {calendarResult.winnerSprint.name} (#
+                                {calendarResult.winnerSprint.number})
+                            </p>
+                            <p className="text-gray-600">
+                                Equipe: {calendarResult.winnerSprint.team.name}
+                            </p>
+                        </div>
+                    )}
+                    {calendarResult.winnerA && (
+                        <div className="bg-f1-bg-silver p-4 rounded-lg">
+                            <h4 className="font-semibold text-lg mb-2">
+                                Vencedor Corrida - Classe A
+                            </h4>
+                            <p className="text-xl text-f1-red font-bold">
+                                {calendarResult.winnerA.name} (#
+                                {calendarResult.winnerA.number})
+                            </p>
+                            <p className="text-gray-600">
+                                Equipe: {calendarResult.winnerA.team.name}
+                            </p>
+                        </div>
+                    )}
+                    {calendarResult.winnerB && (
+                        <div className="bg-f1-bg-silver p-4 rounded-lg">
+                            <h4 className="font-semibold text-lg mb-2">
+                                Vencedor Corrida - Classe B
+                            </h4>
+                            <p className="text-xl text-f1-red font-bold">
+                                {calendarResult.winnerB.name} (#
+                                {calendarResult.winnerB.number})
+                            </p>
+                            <p className="text-gray-600">
+                                Equipe: {calendarResult.winnerB.team.name}
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Sprint */}
+                {calendarResult.winnerSprint &&
+                    calendarResult.sprint &&
+                    calendarResult.sprint.length > 0 && (
+                        <ImageCarousel
+                            images={calendarResult.sprint}
+                            title="Sprint"
+                        />
+                    )}
+
+                {/* Quali */}
+                {calendarResult.quali && calendarResult.quali.length > 0 && (
+                    <ImageCarousel
+                        images={calendarResult.quali}
+                        title="Qualificação"
+                    />
+                )}
+
+                {/* Race */}
+                {calendarResult.race && calendarResult.race.length > 0 && (
+                    <ImageCarousel images={calendarResult.race} title="Corrida" />
+                )}
+            </div>
+        );
+    }
