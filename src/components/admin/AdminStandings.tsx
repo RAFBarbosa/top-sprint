@@ -250,7 +250,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 											</ul>
 										) : (
 											<ul className="flex flex-col gap-y-[2px]">
-												{classATeams.map(
+												{gridATeamsLarge.map(
 													(item, index) => (
 														<li
 															key={`classA-${index}`}
@@ -423,7 +423,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 											</ul>
 										) : (
 											<ul className="flex flex-col gap-y-[2px]">
-												{classBTeams.map(
+												{gridBTeamsLarge.map(
 													(item, index) => (
 														<li
 															key={`classB-${index}`}
@@ -476,16 +476,6 @@ export function AdminStandings(props: AdminStandingsProps) {
 																}
 																activeGrid={
 																	activeGrid
-																}
-																isActive={
-																	activeCard ===
-																	index + 2
-																}
-																onClick={() =>
-																	handleCardClick(
-																		index +
-																			2
-																	)
 																}
 																newData={
 																	props.data
