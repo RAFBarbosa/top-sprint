@@ -233,7 +233,7 @@ export function Calendars() {
 				{/* Desktop view - carousel */}
 				{filteredCalendars && filteredCalendars.length > 0 && (
 					<div className="w-full mx-auto max-w-screen-xl px-3">
-						<div className="w-full mt-10 cursor-pointer overflow-visible">
+						<div className="w-full mt-10 cursor-pointer overflow-visible relative">
 							<Swiper
 								modules={[Navigation]}
 								slidesPerView={"auto"}
@@ -293,6 +293,9 @@ export function Calendars() {
 									</SwiperSlide>
 								))}
 							</Swiper>
+							<div className="pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
+
+							<div className="pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
 						</div>
 					</div>
 				)}
