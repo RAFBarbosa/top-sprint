@@ -5,7 +5,7 @@ import { createUploadLink } from "apollo-upload-client";
 const uploadLink = createUploadLink({
 	uri: import.meta.env.VITE_API_URL, // Your GraphQL endpoint
 	headers: {
-		Authorization: `Bearer ${import.meta.env.VITE_API_ACCESS_TOKEN}`,
+		Authorization: `Bearer ${import.meta.env.VITE_API_ADMIN_TOKEN}`,
 	},
 });
 
