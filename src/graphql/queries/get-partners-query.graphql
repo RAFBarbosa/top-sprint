@@ -1,7 +1,8 @@
 query GetPartners {
 	partners(
+		stage: DRAFT
 		where: { active: true, deleted: false }
-		orderBy: publishedAt_ASC
+		orderBy: createdAt_ASC
 	) {
 		id
 		name
