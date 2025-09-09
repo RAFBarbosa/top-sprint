@@ -1,7 +1,7 @@
-import { initializeApp, FirebaseApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
+// src/components/auth/firebase.ts
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
-// Your Firebase config (from Firebase Console)
 const firebaseConfig = {
 	apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
 	authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -11,6 +11,5 @@ const firebaseConfig = {
 	appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app: FirebaseApp = initializeApp(firebaseConfig);
-export const auth: Auth = getAuth(app);
+export const app = initializeApp(firebaseConfig); // <-- this is missing in your case
+export const auth = getAuth(app);
