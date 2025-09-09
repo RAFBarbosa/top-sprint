@@ -22,7 +22,7 @@ query GetSeasonRounds($slug: String!) {
 }
 
 query GetDrivers {
-	drivers(where: { deleted: false }) {
+	drivers(stage: DRAFT, where: { deleted: false }) {
 		id
 		grid
 		name
