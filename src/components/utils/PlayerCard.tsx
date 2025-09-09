@@ -130,7 +130,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							<Tooltip
 								id="badge-tooltip"
 								place="top"
-								className="!z-50"
+								className="!z-60"
 							/>
 						</div>
 					)}
