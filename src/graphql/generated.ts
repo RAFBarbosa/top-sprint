@@ -12989,7 +12989,7 @@ export type UpdateTeamMutationResult = Apollo.MutationResult<UpdateTeamMutation>
 export type UpdateTeamMutationOptions = Apollo.BaseMutationOptions<UpdateTeamMutation, UpdateTeamMutationVariables>;
 export const GetBannersDocument = gql`
     query GetBanners {
-  banners(orderBy: createdAt_DESC, where: {deleted: false}) {
+  banners(stage: DRAFT, orderBy: createdAt_DESC, where: {deleted: false}) {
     id
     title
     content
@@ -13117,7 +13117,7 @@ export const GetCalendarsDocument = gql`
   calendars(
     orderBy: date_ASC
     where: {active: true, deleted: false}
-    stage: PUBLISHED
+    stage: DRAFT
   ) {
     id
     track
@@ -13226,7 +13226,7 @@ export type GetCalendarsRegistrationLazyQueryHookResult = ReturnType<typeof useG
 export type GetCalendarsRegistrationQueryResult = Apollo.QueryResult<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>;
 export const GetHallsOfFameDocument = gql`
     query GetHallsOfFame {
-  hallsOfFame(orderBy: createdAt_DESC, where: {deleted: false}) {
+  hallsOfFame(stage: DRAFT, orderBy: createdAt_DESC, where: {deleted: false}) {
     id
     season
     deleted
@@ -13304,7 +13304,11 @@ export type GetHallsOfFameRegistrationLazyQueryHookResult = ReturnType<typeof us
 export type GetHallsOfFameRegistrationQueryResult = Apollo.QueryResult<GetHallsOfFameRegistrationQuery, GetHallsOfFameRegistrationQueryVariables>;
 export const GetPartnersDocument = gql`
     query GetPartners {
-  partners(where: {active: true, deleted: false}, orderBy: publishedAt_ASC) {
+  partners(
+    stage: DRAFT
+    where: {active: true, deleted: false}
+    orderBy: createdAt_ASC
+  ) {
     id
     name
     altText
@@ -13349,7 +13353,7 @@ export type GetPartnersLazyQueryHookResult = ReturnType<typeof useGetPartnersLaz
 export type GetPartnersQueryResult = Apollo.QueryResult<GetPartnersQuery, GetPartnersQueryVariables>;
 export const GetResultsDocument = gql`
     query GetResults {
-  results(where: {deleted: false}) {
+  results(stage: DRAFT, where: {deleted: false}) {
     deleted
     id
     link
@@ -13496,7 +13500,7 @@ export type GetSeasonRoundsLazyQueryHookResult = ReturnType<typeof useGetSeasonR
 export type GetSeasonRoundsQueryResult = Apollo.QueryResult<GetSeasonRoundsQuery, GetSeasonRoundsQueryVariables>;
 export const GetDriversDocument = gql`
     query GetDrivers {
-  drivers(where: {deleted: false}) {
+  drivers(stage: DRAFT, where: {deleted: false}) {
     id
     grid
     name
@@ -13774,7 +13778,7 @@ export type GetSeasonsLazyQueryHookResult = ReturnType<typeof useGetSeasonsLazyQ
 export type GetSeasonsQueryResult = Apollo.QueryResult<GetSeasonsQuery, GetSeasonsQueryVariables>;
 export const GetTeamsDocument = gql`
     query GetTeams {
-  drivers(stage: PUBLISHED) {
+  drivers(stage: DRAFT, where: {deleted: false}) {
     id
     name
     number
@@ -13801,7 +13805,7 @@ export const GetTeamsDocument = gql`
     }
     badgeTitle
   }
-  teams(stage: PUBLISHED) {
+  teams(stage: DRAFT, where: {deleted: false}) {
     id
     name
     class
@@ -13844,7 +13848,7 @@ export type GetTeamsLazyQueryHookResult = ReturnType<typeof useGetTeamsLazyQuery
 export type GetTeamsQueryResult = Apollo.QueryResult<GetTeamsQuery, GetTeamsQueryVariables>;
 export const GetStatsDataDocument = gql`
     query GetStatsData {
-  datas(orderBy: publishedAt_DESC, first: 2, where: {deleted: false}) {
+  datas(stage: DRAFT, orderBy: createdAt_DESC, first: 2, where: {deleted: false}) {
     id
     grid
     csv {
@@ -13882,7 +13886,7 @@ export type GetStatsDataLazyQueryHookResult = ReturnType<typeof useGetStatsDataL
 export type GetStatsDataQueryResult = Apollo.QueryResult<GetStatsDataQuery, GetStatsDataQueryVariables>;
 export const GetDataDocument = gql`
     query GetData {
-  datas(orderBy: publishedAt_DESC, where: {deleted: false}) {
+  datas(stage: DRAFT, orderBy: createdAt_DESC, where: {deleted: false}) {
     id
     grid
     deleted
@@ -13922,7 +13926,12 @@ export type GetDataLazyQueryHookResult = ReturnType<typeof useGetDataLazyQuery>;
 export type GetDataQueryResult = Apollo.QueryResult<GetDataQuery, GetDataQueryVariables>;
 export const GetStatsDataADocument = gql`
     query GetStatsDataA {
-  datas(orderBy: publishedAt_DESC, first: 2, where: {grid: gridA}) {
+  datas(
+    stage: DRAFT
+    orderBy: createdAt_DESC
+    first: 2
+    where: {grid: gridA, deleted: false}
+  ) {
     id
     csv {
       url
@@ -13960,7 +13969,12 @@ export type GetStatsDataALazyQueryHookResult = ReturnType<typeof useGetStatsData
 export type GetStatsDataAQueryResult = Apollo.QueryResult<GetStatsDataAQuery, GetStatsDataAQueryVariables>;
 export const GetStatsDataBDocument = gql`
     query GetStatsDataB {
-  datas(orderBy: publishedAt_DESC, first: 2, where: {grid: gridB}) {
+  datas(
+    stage: DRAFT
+    orderBy: createdAt_DESC
+    first: 2
+    where: {grid: gridB, deleted: false}
+  ) {
     id
     csv {
       url

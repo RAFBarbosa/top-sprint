@@ -1,5 +1,5 @@
 query GetResults {
-	results(where: { deleted: false }) {
+	results(stage: DRAFT, where: { deleted: false }) {
 		deleted
 		id
 		link

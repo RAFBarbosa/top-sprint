@@ -1,5 +1,5 @@
 query GetBanners {
-	banners(orderBy: createdAt_DESC, where: { deleted: false }) {
+	banners(stage: DRAFT, orderBy: createdAt_DESC, where: { deleted: false }) {
 		id
 		title
 		content

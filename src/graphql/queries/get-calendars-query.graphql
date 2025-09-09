@@ -2,7 +2,7 @@ query GetCalendars {
 	calendars(
 		orderBy: date_ASC
 		where: { active: true, deleted: false }
-		stage: PUBLISHED
+		stage: DRAFT
 	) {
 		id
 		track

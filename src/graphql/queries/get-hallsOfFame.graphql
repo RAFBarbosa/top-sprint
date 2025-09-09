@@ -1,5 +1,9 @@
 query GetHallsOfFame {
-	hallsOfFame(orderBy: createdAt_DESC, where: { deleted: false }) {
+	hallsOfFame(
+		stage: DRAFT
+		orderBy: createdAt_DESC
+		where: { deleted: false }
+	) {
 		id
 		season
 		deleted

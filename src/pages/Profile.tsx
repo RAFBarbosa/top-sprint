@@ -53,8 +53,6 @@ export function Profile() {
 	const driverData =
 		currentIndex !== null ? filteredDrivers[currentIndex] : null;
 
-	console.log(driverData);
-
 	return (
 		currentIndex !== null &&
 		filteredDrivers.length > 0 && (
