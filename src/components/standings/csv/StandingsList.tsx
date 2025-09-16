@@ -15,7 +15,6 @@ interface StandingsListProps {
 	valueLabel: string;
 	activeTab: "gridA" | "gridB";
 	oldData?: any[];
-	oldDrivers?: any[];
 	oldTeams?: any[];
 }
 
@@ -144,8 +143,16 @@ export function StandingsList(props: StandingsListProps) {
 								activeTab={activeGrid}
 								grid={classAData[0].grid}
 								class={classAData[0].class}
-								newData={props.data}
-								oldData={props.oldData || []}
+								newData={
+									activeGrid === "drivers"
+										? props.data
+										: props.teams
+								}
+								oldData={
+									activeGrid === "drivers"
+										? props.oldData
+										: props.oldTeams
+								}
 							/>
 						)}
 
@@ -309,10 +316,10 @@ export function StandingsList(props: StandingsListProps) {
 																	)
 																}
 																newData={
-																	props.data
+																	props.teams
 																}
 																oldData={
-																	props.oldData ||
+																	props.oldTeams ||
 																	[]
 																}
 															/>
@@ -470,10 +477,10 @@ export function StandingsList(props: StandingsListProps) {
 																	)
 																}
 																newData={
-																	props.data
+																	props.teams
 																}
 																oldData={
-																	props.oldData ||
+																	props.oldTeams ||
 																	[]
 																}
 															/>
@@ -541,8 +548,8 @@ export function StandingsList(props: StandingsListProps) {
 												onClick={() =>
 													handleCardClick(index + 2)
 												}
-												newData={props.data}
-												oldData={props.oldData || []}
+												newData={props.teams}
+												oldData={props.oldTeams || []}
 											/>
 										</li>
 								  ))}
@@ -565,8 +572,16 @@ export function StandingsList(props: StandingsListProps) {
 								activeTab={activeGrid}
 								grid={classBData[0].grid}
 								class={classBData[0].class}
-								newData={props.data}
-								oldData={props.oldData || []}
+								newData={
+									activeGrid === "drivers"
+										? props.data
+										: props.teams
+								}
+								oldData={
+									activeGrid === "drivers"
+										? props.oldData
+										: props.oldTeams
+								}
 							/>
 						)}
 
@@ -624,8 +639,8 @@ export function StandingsList(props: StandingsListProps) {
 												onClick={() =>
 													handleCardClick(index + 2)
 												}
-												newData={props.data}
-												oldData={props.oldData || []}
+												newData={props.teams}
+												oldData={props.oldTeams || []}
 											/>
 										</li>
 								  ))}
