@@ -82,7 +82,7 @@ export function PodiumCard(props: PodiumCardProps) {
 	return (
 		<div
 			onClick={handleDriverClick}
-			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl  ${
+			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl ${
 				isDrivers
 					? "hover:-translate-y-1 cursor-pointer h-[280px] transition-translate duration-200"
 					: "h-[264px] mt-4"
@@ -143,7 +143,7 @@ export function PodiumCard(props: PodiumCardProps) {
 						? `bottom-0 right-0 scale-70 ${
 								props.position === 1 ? "h-[330px]" : "h-[290px]"
 						  } w-auto translate-x-[70px] translate-y-[15px]`
-						: `bottom-0 right-0 scale-70 translate-x-[-70%] translate-y-[-20%]`
+						: `bottom-0 right-0 scale-60 translate-x-[-70%] translate-y-[-20%]`
 				}`}
 			/>
 

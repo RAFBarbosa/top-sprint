@@ -218,13 +218,13 @@ export function StandingCard(props: StandingCardProps) {
 								alt={`${props.name} foto`}
 								style={{
 									objectFit: "cover",
-									width: isDrivers ? "auto" : "100%",
+									width: "auto",
 									height: isDrivers ? "130%" : "100%",
 									maxWidth: "100%",
 									maxHeight: "150%",
 									transform: isDrivers
 										? "translateY(7%)"
-										: "translateY(0%) translateX(-30%)",
+										: "translateY(0%) translateX(-15%)",
 								}}
 							/>
 						</div>
