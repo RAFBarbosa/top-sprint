@@ -167,8 +167,16 @@ export function AdminStandings(props: AdminStandingsProps) {
 											activeTab={activeGrid}
 											grid={classAData[0].grid}
 											class={classAData[0].class}
-											newData={props.data}
-											oldData={props.oldData || []}
+											newData={
+												activeGrid === "drivers"
+													? props.data
+													: props.teams
+											}
+											oldData={
+												activeGrid === "drivers"
+													? props.oldData
+													: props.oldTeams
+											}
 										/>
 										{activeGrid === "drivers" ? (
 											<ul className="flex flex-col gap-y-[2px]">
@@ -315,10 +323,10 @@ export function AdminStandings(props: AdminStandingsProps) {
 																	)
 																}
 																newData={
-																	props.data
+																	props.teams
 																}
 																oldData={
-																	props.oldData ||
+																	props.oldTeams ||
 																	[]
 																}
 															/>
@@ -340,8 +348,16 @@ export function AdminStandings(props: AdminStandingsProps) {
 											activeTab={activeGrid}
 											grid={classBData[0].grid}
 											class={classBData[0].class}
-											newData={props.data}
-											oldData={props.oldData || []}
+											newData={
+												activeGrid === "drivers"
+													? props.data
+													: props.teams
+											}
+											oldData={
+												activeGrid === "drivers"
+													? props.oldData
+													: props.oldTeams
+											}
 										/>
 										{activeGrid === "drivers" ? (
 											<ul className="flex flex-col gap-y-[2px]">
@@ -478,10 +494,10 @@ export function AdminStandings(props: AdminStandingsProps) {
 																	activeGrid
 																}
 																newData={
-																	props.data
+																	props.teams
 																}
 																oldData={
-																	props.oldData ||
+																	props.oldTeams ||
 																	[]
 																}
 															/>
