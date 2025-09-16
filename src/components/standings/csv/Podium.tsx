@@ -14,7 +14,7 @@ interface PodiumProps {
 	}[];
 	activeTab: "drivers" | "teams";
 	newData: { name: string }[]; // Add newData prop
-	oldData: { name: string }[]; // Add oldData prop
+	oldData?: { name: string }[]; // Add oldData prop
 }
 
 export function Podium(props: PodiumProps) {
@@ -23,7 +23,7 @@ export function Podium(props: PodiumProps) {
 	return (
 		<div className="mb-1">
 			{props.activeTab === "drivers" ? (
-				<div className="md:flex md:gap-x-2 ">
+				<div className="md:flex md:gap-x-2">
 					<div className="hidden md:block w-[31%]">
 						<PodiumCard
 							name={props.topThree[1].name}
