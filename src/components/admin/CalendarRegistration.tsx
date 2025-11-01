@@ -1,12 +1,20 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
+import {
+	Listbox,
+	ListboxButton,
+	ListboxOption,
+	ListboxOptions,
+} from "@headlessui/react";
 import {
 	useCreateCalendarMutation,
 	useGetCalendarsRegistrationQuery,
 	useUpdateCalendarMutation,
 	useCreateAssetMutation,
 	GetCalendarsRegistrationDocument,
+	useGetDriversQuery,
 } from "../../graphql/generated";
 import { format } from "date-fns";
+import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { ptBR } from "date-fns/locale";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
@@ -23,6 +31,10 @@ export function CalendarRegistration() {
 		description: "",
 		date: "",
 		link: "",
+		winnerA: "",
+		winnerB: "",
+		winnerAId: "",
+		winnerBId: "",
 		active: true,
 	});
 
@@ -44,6 +56,13 @@ export function CalendarRegistration() {
 
 	const { data: calendarsData, error: calendarsError } =
 		useGetCalendarsRegistrationQuery();
+
+	// Add drivers query
+	const {
+		data: driversData,
+		loading: driversLoading,
+		error: driversError,
+	} = useGetDriversQuery();
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -101,6 +120,10 @@ export function CalendarRegistration() {
 			description: calendar.description,
 			date: isoToDatetimeLocal(calendar.date),
 			link: calendar.link || "",
+			winnerA: calendar.winnerA?.name || "",
+			winnerB: calendar.winnerB?.name || "",
+			winnerAId: calendar.winnerA?.id || "",
+			winnerBId: calendar.winnerB?.id || "",
 			active: calendar.active,
 		});
 	};
@@ -114,6 +137,10 @@ export function CalendarRegistration() {
 			description: "",
 			date: "",
 			link: "",
+			winnerA: "",
+			winnerB: "",
+			winnerAId: "",
+			winnerBId: "",
 			active: true,
 		});
 		setFlagFile(null);
@@ -197,6 +224,15 @@ export function CalendarRegistration() {
 				throw new Error("URL deve começar com http/https");
 			}
 
+			// Prepare winner connections
+			const winnerAData = formData.winnerAId
+				? { connect: { id: formData.winnerAId } }
+				: { disconnect: true };
+
+			const winnerBData = formData.winnerBId
+				? { connect: { id: formData.winnerBId } }
+				: { disconnect: true };
+
 			if (isEditing && selectedCalendar) {
 				// Update existing calendar
 				const result = await updateCalendar({
@@ -208,6 +244,8 @@ export function CalendarRegistration() {
 							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
+							winnerA: winnerAData,
+							winnerB: winnerBData,
 							active: formData.active,
 							flag: flagId
 								? { connect: { id: flagId } }
@@ -232,6 +270,8 @@ export function CalendarRegistration() {
 							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
+							winnerA: winnerAData,
+							winnerB: winnerBData,
 							active: formData.active,
 							flag: flagId ? { connect: { id: flagId } } : null,
 						},
@@ -302,6 +342,8 @@ export function CalendarRegistration() {
 					description: calendar.description,
 					date: calendar.date,
 					link: calendar.link,
+					winnerA: calendar.winnerA?.name || "",
+					winnerB: calendar.winnerB?.name || "",
 			  }).some(([_, value]) =>
 					value
 						?.toString()
@@ -310,6 +352,21 @@ export function CalendarRegistration() {
 			  )
 			: true;
 	});
+
+	// Helper function to format enum values
+	const formatEnum = (text: string) =>
+		text
+			.replace(/([A-Z])/g, " $1")
+			.replace(/^./, (str) => str.toUpperCase());
+
+	// Filter drivers by grid and class
+	const getFilteredDrivers = () => {
+		if (!driversData?.drivers) return [];
+
+		return driversData.drivers.filter((driver) => {
+			return !driver.deleted;
+		});
+	};
 
 	if (calendarsError) {
 		return (
@@ -586,6 +643,165 @@ export function CalendarRegistration() {
 								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
+
+						{/* Vencedor A Field */}
+						<div>
+							<label className="block mb-1">Vencedor A</label>
+							<Listbox
+								value={formData.winnerA}
+								onChange={(value) => {
+									// Find the selected driver to get both name and ID
+									const selectedDriver =
+										getFilteredDrivers().find(
+											(driver) => driver.name === value
+										);
+									setFormData({
+										...formData,
+										winnerA: value,
+										winnerAId: selectedDriver?.id || "",
+									});
+								}}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.winnerA ||
+												"Selecione um piloto"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
+										</span>
+									</ListboxButton>
+
+									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										{driversLoading ? (
+											<div className="p-2 text-center">
+												Carregando...
+											</div>
+										) : getFilteredDrivers().length > 0 ? (
+											getFilteredDrivers().map(
+												(driver) => (
+													<ListboxOption
+														key={driver.id}
+														value={driver.name}
+														className={({
+															active,
+														}) =>
+															`flex items-center gap-2 p-2 cursor-pointer ${
+																active
+																	? "bg-f1-red/20"
+																	: ""
+															}`
+														}
+													>
+														<div className="flex flex-col">
+															<span>
+																{driver.name}
+															</span>
+															<span className="text-xs text-gray-500">
+																#{driver.number}{" "}
+																•{" "}
+																{
+																	driver.team
+																		?.name
+																}
+															</span>
+														</div>
+													</ListboxOption>
+												)
+											)
+										) : (
+											<div className="p-2 text-gray-500">
+												Nenhum piloto encontrado
+											</div>
+										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
+						</div>
+
+						{/* Vencedor B Field */}
+						<div>
+							<label className="block mb-1">Vencedor B</label>
+							<Listbox
+								value={formData.winnerB}
+								onChange={(value) => {
+									// Find the selected driver to get both name and ID
+									const selectedDriver =
+										getFilteredDrivers().find(
+											(driver) => driver.name === value
+										);
+									setFormData({
+										...formData,
+										winnerB: value,
+										winnerBId: selectedDriver?.id || "",
+									});
+								}}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.winnerB ||
+												"Selecione um piloto"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
+										</span>
+									</ListboxButton>
+
+									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										{driversLoading ? (
+											<div className="p-2 text-center">
+												Carregando...
+											</div>
+										) : getFilteredDrivers().length > 0 ? (
+											getFilteredDrivers().map(
+												(driver) => (
+													<ListboxOption
+														key={driver.id}
+														value={driver.name}
+														className={({
+															active,
+														}) =>
+															`flex items-center gap-2 p-2 cursor-pointer ${
+																active
+																	? "bg-f1-red/20"
+																	: ""
+															}`
+														}
+													>
+														<div className="flex flex-col">
+															<span>
+																{driver.name}
+															</span>
+															<span className="text-xs text-gray-500">
+																#{driver.number}{" "}
+																•{" "}
+																{
+																	driver.team
+																		?.name
+																}
+															</span>
+														</div>
+													</ListboxOption>
+												)
+											)
+										) : (
+											<div className="p-2 text-gray-500">
+												Nenhum piloto encontrado
+											</div>
+										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
+						</div>
+
 						<div className="md:col-span-2">
 							<label className="block mb-1">Bandeira</label>
 							<input

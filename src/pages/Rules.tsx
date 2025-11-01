@@ -53,29 +53,40 @@ export function Rules() {
 			</div>
 			<div className="flex flex-col md:flex-row items-start mb-10 max-w-screen-xl px-3 mx-auto">
 				<div className="w-full md:w-1/2 space-y-4 px-3">
-					<div className="font-bold text-xl">
-						<p>O campeonato utilizará F1 25.</p>
-						<p>
-							As corridas acontecerão todas as quartas-feiras às
-							22h.
-						</p>
-					</div>
-					<p>
-						A <strong>Top Sprint</strong> inclui{" "}
-						<strong>corridas Sprint</strong>{" "}
-						{/* e de{" "}
-						<strong>desempenho realista</strong>, ambas  */}
-						com o objetivo de criar oportunidades para quem está
-						atrás no campeonato, oferecendo mais emoção nas disputas
-						por posições e pontos.
+					<p className="font-bold text-lg">
+						O campeonato utilizará F1 25.
 					</p>
-					<p>Os dias de corrida serão divididos em duas etapas:</p>
-					<div className="space-y-2">
+					<div>
+						<p className="font-bold text-lg">
+							As corridas acontecerão sempre às:
+						</p>
+
+						<ul className="ml-5 list-disc space-y-1">
+							<li>
+								<i>Grid Academy:</i> Segundas-feiras às 22h. às
+								22h.
+							</li>
+							<li>
+								<i>Grid Heat:</i> Quartas-feiras às 22h.
+							</li>
+							<li>
+								<i>Grid Carbon:</i> Quintas-feiras às 22h.
+							</li>
+						</ul>
+					</div>
+					{/* <p>
+						A <strong>Top Sprint</strong> inclui
+						<strong>corridas Sprint</strong> com o objetivo de criar
+						oportunidades para quem está atrás no campeonato,
+						oferecendo mais emoção nas disputas por posições e
+						pontos.
+					</p> */}
+
+					{/* <div className="space-y-2">
 						<strong className="block text-xl">
 							Primeira Etapa (Sprint):
 						</strong>
 						<ul className="ml-5 list-disc space-y-1">
-							{/* <li>Grid: Qualificatória de 1 volta</li> */}
 							<li>
 								Grid Semi-Invertido: *
 								<ul>
@@ -91,8 +102,8 @@ export function Rules() {
 							</li>
 							<li>Duração: 5 Voltas</li>
 						</ul>
-					</div>
-					<div className="space-y-2">
+					</div> */}
+					{/* <div className="space-y-2">
 						<strong className="block text-xl">
 							Segunda Etapa (Corrida):
 						</strong>
@@ -105,6 +116,18 @@ export function Rules() {
 							qualificatória de uma volta para definir o grid da
 							Sprint.
 						</p>
+						
+					</div> */}
+					<div>
+						<p className="font-bold text-lg">Detalhes da sessão:</p>
+						<ul className="ml-5 list-disc space-y-1">
+							<li>
+								<i>Grid:</i> Qualificatória Curta (18 minutos)
+							</li>
+							<li>
+								<i>Duração:</i> 50% do circuito
+							</li>
+						</ul>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
 							perdê-la."
@@ -152,22 +175,40 @@ export function Rules() {
 								boxes e assistências de DRS e ERS.
 							</p>
 							<p>
-								<strong>Lobby:</strong> As configurações para o
-								lobby estão descritas abaixo:
+								<strong>Sala:</strong> As configurações para a
+								sala estão descritas abaixo:
 							</p>
 							<div className="md:flex md:space-x-10">
 								<ul className="list-disc ml-5">
-									<li>Dificuldade da IA: 50%</li>
-									<li>Dano: Completo</li>
-									<li>Clima: Dinâmico</li>
-									<li>Safety Car: Ligado e Reduzido</li>
-									<li>Regras e Bandeiras: Ligado</li>
+									<li>
+										<i>Dificuldade da IA:</i> 50%
+									</li>
+									<li>
+										<i>Dano:</i> Completo
+									</li>
+									<li>
+										<i>Clima:</i> Dinâmico
+									</li>
+									<li>
+										<i>Safety Car:</i> Ligado e Reduzido
+									</li>
+									<li>
+										<i>Regras e Bandeiras:</i> Ligado
+									</li>
 								</ul>
 								<ul className="list-disc ml-5">
-									<li>Corte de curvas: Rígido</li>
-									<li>Volta de apresentação: Desligado</li>
-									<li>Largada: Manual</li>
-									<li>Regra de Parque Fechado: Ligado</li>
+									<li>
+										<i>Corte de curvas:</i> Rígido
+									</li>
+									<li>
+										<i>Volta de apresentação:</i> Desligado
+									</li>
+									<li>
+										<i>Largada:</i> Manual
+									</li>
+									<li>
+										<i>Regra de Parque Fechado:</i> Ligado
+									</li>
 								</ul>
 							</div>
 						</div>
@@ -263,18 +304,18 @@ export function Rules() {
 					</div>
 					<div className="flex flex-col justify-center max-w-screen-sm mx-auto mb-4">
 						<div className="border border-f1-carbon/50 rounded-2xl pt-3">
-							<table className="min-w-full text-left">
+							<table className="min-w-full text-center">
 								<thead>
 									<tr className="border-b border-b-f1-carbon/50">
 										<th className="px-4 pb-4 uppercase">
 											Posição
 										</th>
 										<th className="px-4 pb-4 uppercase">
-											Corrida Principal
+											Pontos
 										</th>
-										<th className="px-4 pb-4 uppercase">
+										{/* <th className="px-4 pb-4 uppercase">
 											Sprint
-										</th>
+										</th> */}
 									</tr>
 								</thead>
 								<tbody>
@@ -303,10 +344,17 @@ export function Rules() {
 											>
 												{position}
 											</td>
-											<td className="px-4 py-4">
+											<td
+												className={`px-4 py-4 ${
+													index ===
+													racePoints.length - 1
+														? "rounded-br-2xl"
+														: ""
+												}`}
+											>
 												{racePoints[index]}
 											</td>
-											<td
+											{/* <td
 												className={`px-4 py-4 ${
 													index ===
 													sprintPoints.length - 1
@@ -315,28 +363,22 @@ export function Rules() {
 												}`}
 											>
 												{sprintPoints[index]}
-											</td>
+											</td> */}
 										</tr>
 									))}
 								</tbody>
 							</table>
 						</div>
-						<div className="px-4 mt-4">
+						<div className="mt-4">
 							<p className="mb-2 font-bold text-xl">
 								Pontos extra para ambos os grids:
 							</p>
 							<div className="space-y-1">
 								<p>
-									<strong>
-										Melhor volta na corrida principal:
-									</strong>{" "}
-									1 ponto
+									<strong>Volta mais rápida:</strong> 1 ponto
 								</p>
 								<p>
-									<strong>
-										Pole position na corrida principal:
-									</strong>{" "}
-									1 ponto
+									<strong>Pole position:</strong> 1 ponto
 								</p>
 								<p>
 									<strong>Presença por corrida:</strong> 1
