@@ -8,6 +8,12 @@ mutation CreateCalendar($data: CalendarCreateInput!) {
 		date
 		active
 		link
+		winnerA {
+			name
+		}
+		winnerB {
+			name
+		}
 		flag {
 			id
 			url

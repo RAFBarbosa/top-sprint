@@ -3073,11 +3073,11 @@ export type DriverCreateInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   class?: InputMaybe<Class>;
-  cmexjzv8m0wfw07n5ai8d7vdk?: InputMaybe<CalendarCreateManyInlineInput>;
-  cmexl5gg80wue07n5fj4jeczx?: InputMaybe<CalendarCreateManyInlineInput>;
   cmf6i6v5d0gel07mzcfqc681z?: InputMaybe<ResultCreateManyInlineInput>;
   cmf6i7il60gfp07mz9tso9bq1?: InputMaybe<ResultCreateManyInlineInput>;
   cmf6i79310gf507mzclzo3p3p?: InputMaybe<ResultCreateManyInlineInput>;
+  cmfbnhavf0ekr07n329xs7kz0?: InputMaybe<CalendarCreateManyInlineInput>;
+  cmfbnhrro0elv07n3fc5ba2zm?: InputMaybe<CalendarCreateManyInlineInput>;
   createdAt?: InputMaybe<Scalars['DateTime']>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
@@ -3387,11 +3387,11 @@ export type DriverUpdateInput = {
   badgeTitle?: InputMaybe<Array<BadgeTitle>>;
   city?: InputMaybe<Scalars['String']>;
   class?: InputMaybe<Class>;
-  cmexjzv8m0wfw07n5ai8d7vdk?: InputMaybe<CalendarUpdateManyInlineInput>;
-  cmexl5gg80wue07n5fj4jeczx?: InputMaybe<CalendarUpdateManyInlineInput>;
   cmf6i6v5d0gel07mzcfqc681z?: InputMaybe<ResultUpdateManyInlineInput>;
   cmf6i7il60gfp07mz9tso9bq1?: InputMaybe<ResultUpdateManyInlineInput>;
   cmf6i79310gf507mzclzo3p3p?: InputMaybe<ResultUpdateManyInlineInput>;
+  cmfbnhavf0ekr07n329xs7kz0?: InputMaybe<CalendarUpdateManyInlineInput>;
+  cmfbnhrro0elv07n3fc5ba2zm?: InputMaybe<CalendarUpdateManyInlineInput>;
   deleted?: InputMaybe<Scalars['Boolean']>;
   equipment?: InputMaybe<Scalars['String']>;
   fullTime?: InputMaybe<Scalars['Boolean']>;
@@ -12196,7 +12196,7 @@ export type CreateCalendarMutationVariables = Exact<{
 }>;
 
 
-export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, deleted: boolean, description?: string | null, date?: any | null, active: boolean, link?: string | null, createdAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type CreateCalendarMutation = { __typename?: 'Mutation', createCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, deleted: boolean, description?: string | null, date?: any | null, active: boolean, link?: string | null, createdAt: any, winnerA?: { __typename?: 'Driver', name?: string | null } | null, winnerB?: { __typename?: 'Driver', name?: string | null } | null, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type CreateDriverMutationVariables = Exact<{
   data: DriverCreateInput;
@@ -12240,7 +12240,7 @@ export type UpdateCalendarMutationVariables = Exact<{
 }>;
 
 
-export type UpdateCalendarMutation = { __typename?: 'Mutation', updateCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, deleted: boolean, date?: any | null, link?: string | null, updatedAt: any, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
+export type UpdateCalendarMutation = { __typename?: 'Mutation', updateCalendar?: { __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, description?: string | null, deleted: boolean, date?: any | null, link?: string | null, updatedAt: any, winnerA?: { __typename?: 'Driver', name?: string | null } | null, winnerB?: { __typename?: 'Driver', name?: string | null } | null, flag?: { __typename?: 'Asset', id: string, url: string } | null } | null };
 
 export type UpdateDriverMutationVariables = Exact<{
   where: DriverWhereUniqueInput;
@@ -12489,6 +12489,12 @@ export const CreateCalendarDocument = gql`
     date
     active
     link
+    winnerA {
+      name
+    }
+    winnerB {
+      name
+    }
     flag {
       id
       url
@@ -12761,6 +12767,12 @@ export const UpdateCalendarDocument = gql`
     description
     deleted
     date
+    winnerA {
+      name
+    }
+    winnerB {
+      name
+    }
     link
     flag {
       id
