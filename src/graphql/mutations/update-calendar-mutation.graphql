@@ -9,6 +9,12 @@ mutation UpdateCalendar(
 		description
 		deleted
 		date
+		winnerA {
+			name
+		}
+		winnerB {
+			name
+		}
 		link
 		flag {
 			id
