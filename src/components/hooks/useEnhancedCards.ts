@@ -3,7 +3,7 @@ import useCsvLoader from "./useCsvLoader";
 import { useGetTeamsQuery } from "../../graphql/generated";
 import useNormalizeString from "./useNormalizeString";
 
-export function useEnhancedCards(activeTab: "gridA" | "gridB") {
+export function useEnhancedCards(activeTab: "gridA" | "gridB" | "gridC") {
 	const { data } = useGetTeamsQuery();
 	const { cards, stats } = useCsvLoader(activeTab);
 	const [enhancedCards, setEnhancedCards] = useState<any[]>([]);

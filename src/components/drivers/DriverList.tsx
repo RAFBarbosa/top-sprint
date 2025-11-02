@@ -21,7 +21,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 						: ""
 				}`}
 			>
-				<TabSwitch />
+				{/* <TabSwitch /> */}
 			</div>
 			<h2 className="text-xl font-bold my-4">
 				<div

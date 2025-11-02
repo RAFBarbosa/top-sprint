@@ -8,7 +8,7 @@ import { AdminStandings } from "../../admin/AdminStandings";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
-	activeTab: "gridA" | "gridB";
+	activeTab: "gridA" | "gridB" | "gridC";
 }
 
 export function DataLoader(props: DataLoaderProps) {
@@ -19,7 +19,12 @@ export function DataLoader(props: DataLoaderProps) {
 		props.activeTab
 	);
 
-	const title = props.activeTab === "gridA" ? "Heat" : "Carbon";
+	const title =
+		props.activeTab === "gridA"
+			? "Heat"
+			: props.activeTab === "gridB"
+			? "Carbon"
+			: "Academy";
 
 	// Memorize enhancedDrivers and enhancedTeams
 	const enhancedDrivers = useMemo(() => {
