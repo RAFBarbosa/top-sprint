@@ -2,6 +2,7 @@ import useNormalizeString from "../../hooks/useNormalizeString";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
+import { splitNameWithSuffix } from "../../../components/utils/nameFormatter";
 
 interface PodiumCardProps {
 	position: number;
@@ -20,15 +21,16 @@ interface PodiumCardProps {
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	const [firstName, secondName] = (() => {
-		const nameParts = props.name.split(" ");
-		return [
-			nameParts[0].replace(/B$/, ""),
-			nameParts.length > 1
-				? nameParts.slice(1).join(" ").replace(/B$/, "")
-				: "",
-		];
-	})();
+	const { firstName, lastName, suffix } = splitNameWithSuffix(props.name);
+	// const [firstName, secondName] = (() => {
+	// 	const nameParts = props.name.split(" ");
+	// 	return [
+	// 		nameParts[0].replace(/-B$/, ""),
+	// 		nameParts.length > 1
+	// 			? nameParts.slice(1).join(" ").replace(/-B$/, "")
+	// 			: "",
+	// 	];
+	// })();
 
 	const isDrivers = props.activeTab === "drivers";
 
@@ -122,7 +124,11 @@ export function PodiumCard(props: PodiumCardProps) {
 							? props.class === "classA"
 								? "bg-f1-lightCarbon"
 								: "bg-f1-silver"
-							: "bg-f1-silver"
+							: props.grid === "gridC"
+							? props.class === "classA"
+								? "bg-f1-academy-darker"
+								: "bg-f1-academy-dark"
+							: ""
 					} `}
 				>
 					<span className="font-bold">{props.points}</span>{" "}
@@ -166,15 +172,21 @@ export function PodiumCard(props: PodiumCardProps) {
 						? props.class === "classA"
 							? "bg-f1-purple"
 							: "bg-f1-lighterPurple"
-						: props.class === "classA"
-						? "bg-f1-lightCarbon"
-						: "bg-f1-silver"
-				}`}
+						: props.grid === "gridB"
+						? props.class === "classA"
+							? "bg-f1-lightCarbon"
+							: "bg-f1-silver"
+						: props.grid === "gridC"
+						? props.class === "classA"
+							? "bg-f1-academy-darker"
+							: "bg-f1-academy-dark"
+						: ""
+				} `}
 			>
 				<span
 					className={`${
 						isDrivers
-							? secondName
+							? lastName
 								? "font-semibold"
 								: "font-bold uppercase text-2xl"
 							: "font-bold uppercase text-2xl text-center"
@@ -187,13 +199,13 @@ export function PodiumCard(props: PodiumCardProps) {
 						: cleanedTeamDrivers || "No drivers"}
 				</span>
 
-				{secondName && isDrivers && (
+				{lastName && isDrivers && (
 					<span
 						className={`font-bold uppercase leading-6 truncate ${
-							secondName.length > 9 ? "text-xl" : "text-2xl"
+							lastName.length > 9 ? "text-xl" : "text-2xl"
 						}`}
 					>
-						{secondName}
+						{lastName}
 					</span>
 				)}
 				<div

@@ -35,10 +35,13 @@ export const DriverList: React.FC<DriverListProps> = ({
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{drivers.map((driver) => {
 					const nameParts = driver.name.split(" ");
-					const firstName = nameParts[0].replace(/B$/, "");
+					const firstName = nameParts[0].replace(/-[BC]$/, "");
 					const secondName =
 						nameParts.length > 1
-							? nameParts.slice(1).join(" ").replace(/B$/, "")
+							? nameParts
+									.slice(1)
+									.join(" ")
+									.replace(/-[BC]$/, "")
 							: "";
 
 					return (
