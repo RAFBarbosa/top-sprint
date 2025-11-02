@@ -51,10 +51,10 @@ export function Standings() {
 			<div
 				className={`md:h-[396px] h-[380px] w-full absolute left-0 ${
 					activeTab.id === "gridA"
-						? "bg-radial-[at_50%_100%] from-f1-carbon to-f1-lighterPurple to-200%"
+						? "bg-radial-[at_50%_100%] from-f1-carbon to-f1-lighterPurple to-150%"
 						: activeTab.id === "gridB"
 						? "bg-radial-[at_50%_100%] from-f1-silver to-f1-text to-70%"
-						: "bg-radial-[at_50%_100%] from-f1-silver to-f1-text to-70%"
+						: "bg-radial-[at_50%_100%] from-f1-carbon to-f1-academy-dark to-150%"
 				}`}
 			>
 				<div className="h-22 bg-divider bg-cover opacity-5 absolute left-0 bottom-0 w-full" />

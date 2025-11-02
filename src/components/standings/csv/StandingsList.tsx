@@ -13,7 +13,7 @@ interface StandingsListProps {
 	teams: any[];
 	valueKey: string;
 	valueLabel: string;
-	activeTab: "gridA" | "gridB";
+	activeTab: "gridA" | "gridB" | "gridC";
 	oldData?: any[];
 	oldTeams?: any[];
 }
@@ -51,10 +51,10 @@ export function StandingsList(props: StandingsListProps) {
 	const classBTeams = props.teams.filter((item) => item.class === "classB");
 
 	// List from 4th to 10th for larger screens (md and above)
-	const gridADataLarge = classAData.slice(3);
-	const gridBDataLarge = classBData.slice(3);
-	const gridATeamsLarge = classATeams.slice(1);
-	const gridBTeamsLarge = classBTeams.slice(1);
+	const classADataLarge = classAData.slice(3);
+	const classBDataLarge = classBData.slice(3);
+	const classATeamsLarge = classATeams.slice(1);
+	const classBTeamsLarge = classBTeams.slice(1);
 
 	if (isLoading) {
 		return (
@@ -91,7 +91,7 @@ export function StandingsList(props: StandingsListProps) {
 					setActiveGrid={setActiveGrid}
 				/>
 			</div>
-			{props.activeTab === "gridA" || "gridB" ? (
+			{["gridA", "gridB", "gridC"].includes(props.activeTab) ? (
 				<div className="w-full mx-auto md:flex md:justify-between md:items-center md:gap-6 pt-8">
 					{/* Grid selector buttons for mobile - NEW DESIGN */}
 					<div className="block md:hidden">
@@ -497,7 +497,7 @@ export function StandingsList(props: StandingsListProps) {
 						{/* List from 4th to 10th for larger screens */}
 						<ul className="hidden md:flex flex-col gap-y-[2px] mt-6 md:mt-0">
 							{activeGrid === "drivers"
-								? gridADataLarge.map((item, index) => (
+								? classADataLarge.map((item, index) => (
 										<li key={`heat-large-${index}`}>
 											<StandingCard
 												name={item.name}
@@ -525,7 +525,7 @@ export function StandingsList(props: StandingsListProps) {
 											/>
 										</li>
 								  ))
-								: gridATeamsLarge.map((item, index) => (
+								: classATeamsLarge.map((item, index) => (
 										<li key={`heat-large-${index}`}>
 											<StandingCard
 												name={item.name}
@@ -588,7 +588,7 @@ export function StandingsList(props: StandingsListProps) {
 						{/* List from 4th to 10th for larger screens */}
 						<ul className="hidden md:flex flex-col gap-y-[2px] mt-6 md:mt-0">
 							{activeGrid === "drivers"
-								? gridBDataLarge.map((item, index) => (
+								? classBDataLarge.map((item, index) => (
 										<li key={`heat-large-${index}`}>
 											<StandingCard
 												name={item.name}
@@ -616,7 +616,7 @@ export function StandingsList(props: StandingsListProps) {
 											/>
 										</li>
 								  ))
-								: gridBTeamsLarge.map((item, index) => (
+								: classBTeamsLarge.map((item, index) => (
 										<li key={`heat-large-${index}`}>
 											<StandingCard
 												name={item.name}

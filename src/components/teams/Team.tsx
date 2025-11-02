@@ -119,7 +119,9 @@ export function Team({
 									/>
 								</div>
 								<p className="text-center -mt-5 text-lg md:text-xl uppercase font-semibold leading-5 relative z-10 bg-white">
-									{driver.name.replace(/B\s*$/i, "").trim()}
+									{driver.name
+										.replace(/-[BC]\s*$/i, "")
+										.trim()}
 								</p>
 								<p className="text-center pt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10 bg-white">
 									{driver.number}
@@ -186,7 +188,9 @@ export function Team({
 									/>
 								</div>
 								<p className="text-center -mt-5 text-lg md:text-xl uppercase font-semibold leading-5 relative z-10 bg-white">
-									{driver.name.replace(/B\s*$/i, "").trim()}
+									{driver.name
+										.replace(/-[BC]\s*$/i, "")
+										.trim()}
 								</p>
 								<p className="text-center pt-1 text-lg md:text-xl uppercase italic leading-5 relative z-10 bg-white">
 									{driver.number}

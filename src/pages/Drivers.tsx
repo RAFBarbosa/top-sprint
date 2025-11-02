@@ -49,6 +49,14 @@ const Drivers: React.FC = () => {
 		},
 	};
 
+	// Get class names based on active grid
+	const getClassName = (classType: "classA" | "classB") => {
+		if (activeTab.id === "gridC") {
+			return classType === "classA" ? "Classe C" : "Classe D";
+		}
+		return classType === "classA" ? "Classe A" : "Classe B";
+	};
+
 	return (
 		<div id="pilotos" className="bg-f1-lightSilver w-full pb-8">
 			<Divider className="max-w-screen-xl mx-auto" />
@@ -66,11 +74,11 @@ const Drivers: React.FC = () => {
 			</div>
 			<div className="max-w-screen-xl mx-auto bg-white rounded p-6 space-y-6">
 				<DriverList
-					gridName="Classe A"
+					gridName={getClassName("classA")}
 					drivers={gridDriversMap[activeTab.id].classA}
 				/>
 				<DriverList
-					gridName="Classe B"
+					gridName={getClassName("classB")}
 					drivers={gridDriversMap[activeTab.id].classB}
 				/>
 				{/* <DriverList
