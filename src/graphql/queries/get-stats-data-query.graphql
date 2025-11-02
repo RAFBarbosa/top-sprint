@@ -53,3 +53,18 @@ query GetStatsDataB {
 		grid
 	}
 }
+
+query GetStatsDataC {
+	datas(
+		stage: DRAFT
+		orderBy: createdAt_DESC
+		first: 2
+		where: { grid: gridC, deleted: false }
+	) {
+		id
+		csv {
+			url
+		}
+		grid
+	}
+}

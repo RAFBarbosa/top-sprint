@@ -156,10 +156,10 @@ export function Profile() {
 					</div>
 
 					{/* Split Layout Container */}
-					<div className="w-full p-1 bg-white md:rounded md:pb-8 px-3">
-						<div className="mb-4">
+					<div className="w-full bg-white md:rounded md:py-8 px-3 pt-4">
+						{/* <div className="mb-4">
 							<TabSwitch />
-						</div>
+						</div> */}
 						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-4">
 							{/* Left Half - Fixed Card */}
 							<div className="md:w-1/2 flex justify-center md:justify-end">

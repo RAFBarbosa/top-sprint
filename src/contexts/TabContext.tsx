@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from "react";
 
 // contexts/TabContext.tsx
 type TabType = {
-	id: "gridA" | "gridB";
+	id: "gridA" | "gridB" | "gridC";
 	label: string;
 };
 
@@ -20,6 +20,7 @@ export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 	const tabs = [
 		{ id: "gridA", label: "Heat" },
 		{ id: "gridB", label: "Carbon" },
+		{ id: "gridC", label: "Academy" },
 	] as const;
 
 	const [activeTabId, setActiveTabId] = useState<TabType["id"]>("gridA");

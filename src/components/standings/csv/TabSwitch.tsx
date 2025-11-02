@@ -5,39 +5,61 @@ interface TabSwitchProps<T extends string> {
 	activeTab: T;
 	setActiveTab: React.Dispatch<React.SetStateAction<T>>;
 	tabs: ReadonlyArray<{ id: T; label: string }>;
-	decorationColor?: string;
 	textColor?: string;
 	borderColor?: string;
 }
 
 export function TabSwitch<T extends string>({
-	decorationColor = "decoration-f1-red",
-	textColor = "text-f1-text",
-	borderColor = "border-f1-text",
+	textColor = "text-white",
+	borderColor = "border-white",
 }: TabSwitchProps<T>) {
 	const { activeTab, setActiveTab, tabs } = useTab();
 
+	const getTabColor = (tabId: string) => {
+		switch (tabId) {
+			case "gridA": // Heat
+				return "bg-purple-600";
+			case "gridB": // Carbon
+				return "bg-f1-lightSilver";
+			case "gridC": // Academy
+				return "bg-emerald-400";
+			default:
+				return "bg-white";
+		}
+	};
+
 	return (
-		<div className="py-2.5 flex justify-center items-center underline-offset-14 font-semibold text-xl w-full">
+		<ul className="flex gap-2 cursor-pointer items-center">
 			{tabs.map((tab, index) => (
 				<React.Fragment key={tab.id}>
-					<button
-						className={`cursor-pointer w-full md:w-auto px-4 ${
-							activeTab.id === tab.id
-								? `underline ${decorationColor} decoration-3`
-								: "opacity-50 hover:opacity-100"
-						} ${textColor}`}
-						onClick={() => setActiveTab(tab.id)}
-					>
-						{tab.label}
-					</button>
+					<li className="relative px-2 py-1 group">
+						<button
+							className={`relative cursor-pointer ${textColor} ${
+								activeTab.id === tab.id
+									? "opacity-100"
+									: "opacity-50 hover:opacity-100"
+							}`}
+							onClick={() => setActiveTab(tab.id)}
+						>
+							{tab.label}
+							<span
+								className={`absolute bottom-0 left-0 h-0.5 ${getTabColor(
+									tab.id
+								)} ${
+									activeTab.id === tab.id
+										? "w-full"
+										: "w-0 group-hover:w-full transition-all duration-150 ease-out"
+								}`}
+							></span>
+						</button>
+					</li>
 					{index < tabs.length - 1 && (
 						<div
-							className={`border-l h-5 ${borderColor} opacity-30`}
+							className={`border-l h-3 ${borderColor} opacity-30`}
 						/>
 					)}
 				</React.Fragment>
 			))}
-		</div>
+		</ul>
 	);
 }
