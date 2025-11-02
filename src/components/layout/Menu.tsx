@@ -11,6 +11,7 @@ import useNavigateToDriver from "../hooks/useNavigateToDriver";
 import useNormalizeString from "../hooks/useNormalizeString";
 import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
+import { GridMenu } from "./GridMenu";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
@@ -103,11 +104,12 @@ export function Menu() {
 				</button>
 
 				{/* Mobile */}
-				<button className="text-xl font-semibold md:hidden z-50">
-					<Link to="/" onClick={handleLinkClick}>
+				<div className="text-xl font-semibold md:hidden z-50 self-center mt-2">
+					{/* <Link to="/" onClick={handleLinkClick}>
 						Liga Top Sprint
-					</Link>
-				</button>
+					</Link> */}
+					<GridMenu />
+				</div>
 				<button
 					className="text-3xl md:hidden z-50 w-[40px] h-[50px] mr-3 md:mr-0"
 					onClick={() => setIsOpen(!isOpen)}

@@ -13,7 +13,7 @@ interface AdminStandingsProps {
 	teams: any[];
 	valueKey: string;
 	valueLabel: string;
-	activeTab: "gridA" | "gridB";
+	activeTab: "gridA" | "gridB" | "gridC";
 	oldData?: any[];
 	oldDrivers?: any[];
 	oldTeams?: any[];
@@ -92,7 +92,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 			<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center">
 				Classificação {props.title}
 			</h2>
-			{props.activeTab === "gridA" || "gridB" ? (
+			{props.activeTab === "gridA" || "gridB" || "gridC" ? (
 				<div className="w-full mx-auto pt-8">
 					<div className="">
 						<div className="flex justify-center items-center font-f1Title mb-6 ">
