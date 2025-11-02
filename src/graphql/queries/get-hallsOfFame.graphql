@@ -1,7 +1,7 @@
 query GetHallsOfFame {
 	hallsOfFame(
 		stage: DRAFT
-		orderBy: createdAt_DESC
+		orderBy: updatedAt_DESC
 		where: { deleted: false }
 	) {
 		id
