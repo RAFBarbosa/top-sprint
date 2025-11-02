@@ -30,7 +30,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 	};
 
 	return (
-		<div className="w-full">
+		<div className="w-full px-3">
 			<h2
 				className={`font-extrabold text-3xl tracking-wide mb-6 ${
 					// className={`font-f1Title text-lg tracking-wider ${
@@ -45,7 +45,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 				className={`grid gap-x-6 gap-y-3 ${
 					gridName == "Reservas e Ex-Pilotos"
 						? "md:grid-cols-4"
-						: "md:grid-cols-2"
+						: "md:grid-cols-4"
 				}`}
 			>
 				{drivers.map((driver) => {
