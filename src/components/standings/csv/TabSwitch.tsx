@@ -22,7 +22,7 @@ export function TabSwitch<T extends string>({
 			case "gridB": // Carbon
 				return "bg-f1-lightSilver";
 			case "gridC": // Academy
-				return "bg-emerald-400";
+				return "bg-f1-academy";
 			default:
 				return "bg-white";
 		}

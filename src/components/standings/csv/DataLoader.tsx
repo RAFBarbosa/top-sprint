@@ -103,41 +103,6 @@ export function DataLoader(props: DataLoaderProps) {
 					activeTab={props.activeTab}
 				/>
 			)}
-
-			{/* <StandingsList
-				title={title}
-				drivers={enhancedDrivers}
-				teams={enhancedTeams}
-				oldDrivers={oldDrivers}
-				oldTeams={oldTeams}
-				valueKey="pts"
-				valueLabel="PTS"
-				activeTab={props.activeTab}
-			/> */}
-			{/* {props.activeTab === "gridA" && (
-				<StandingsList
-					title={title}
-					data={enhancedDrivers}
-					drivers={enhancedDrivers}
-					teams={enhancedTeams}
-					oldData={oldDrivers}
-					valueKey="pts"
-					valueLabel="PTS"
-					activeTab={props.activeTab}
-				/>
-			)}
-			{props.activeTab === "gridB" && (
-				<StandingsList
-					title={title}
-					data={enhancedTeams}
-					drivers={enhancedDrivers}
-					teams={enhancedTeams}
-					oldData={oldTeams}
-					valueKey="pts"
-					valueLabel="PTS"
-					activeTab={props.activeTab}
-				/>
-			)} */}
 		</div>
 	);
 }

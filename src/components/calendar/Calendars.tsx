@@ -43,7 +43,9 @@ export function Calendars() {
 						className={`border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center ${
 							activeTab.id === "gridA"
 								? "border-f1-lighterPurple"
-								: "border-f1-carbon"
+								: activeTab.id === "gridB"
+								? "border-f1-carbon"
+								: "border-f1-academy"
 						}`}
 					>
 						<h2 className="font-bold text-3xl md:text-4xl">
