@@ -208,10 +208,13 @@ body {
 	--color-f1-lightCarbon: #1c1c25;
 	--color-f1-lighterCarbon: #43434a;
 	--color-f1-text: #15151e;
-	--color-f1-heat: #8e0046;
-	--color-f1-purple: #2c0e43;
-	--color-f1-lighterPurple: #48176d;
+	--color-f1-heat: #c90a72;
+	--color-f1-purple: #48176d;
+	--color-f1-lighterPurple: #4b1f81;
 	--color-rolex: #006341;
+	--color-f1-academy: #11bf5b;
+	--color-f1-academy-dark: #0a7236;
+	--color-f1-academy-darker: #064c24;
 
 	--background-image-divider: url(../assets/img/divider.png);
 	--background-image-map-bg: url(../assets/img/map-bg.png);

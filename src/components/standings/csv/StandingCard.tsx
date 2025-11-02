@@ -1,7 +1,8 @@
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import useNormalizeString from "../../hooks/useNormalizeString";
-import { usePositionDifference } from "../../hooks/usePositionDifference"; // Import the hook
+import { usePositionDifference } from "../../hooks/usePositionDifference";
+import { splitNameWithSuffix } from "../../utils/nameFormatter";
 
 interface StandingCardProps {
 	position: number;
@@ -18,7 +19,7 @@ interface StandingCardProps {
 	badgeTitle: string;
 	valueKey: string;
 	valueLabel: string;
-	activeTab: "gridA" | "gridB";
+	activeTab: "gridA" | "gridB" | "gridC";
 	activeGrid: "drivers" | "teams";
 	isActive: boolean;
 	onClick: () => void;
@@ -30,9 +31,12 @@ export function StandingCard(props: StandingCardProps) {
 	const [firstName, secondName] = (() => {
 		const nameParts = props.name.split(" ");
 		return [
-			nameParts[0].replace(/B$/, ""),
+			nameParts[0].replace(/-[BC]$/, ""),
 			nameParts.length > 1
-				? nameParts.slice(1).join(" ").replace(/B$/, "")
+				? nameParts
+						.slice(1)
+						.join(" ")
+						.replace(/-[BC]$/, "")
 				: "",
 		];
 	})();
@@ -42,7 +46,8 @@ export function StandingCard(props: StandingCardProps) {
 
 	if (!isDrivers) {
 		cleanedTeamDrivers =
-			props.teamDrivers?.map((driver) => driver.replace(/B$/, "")) || [];
+			props.teamDrivers?.map((driver) => driver.replace(/-[BC]$/, "")) ||
+			[];
 	}
 
 	const navigateToDriver = useNavigateToDriver();
@@ -103,9 +108,15 @@ export function StandingCard(props: StandingCardProps) {
 							? props.class === "classA"
 								? "hover:bg-f1-purple hover:text-white cursor-pointer"
 								: "hover:bg-f1-lighterPurple hover:text-white cursor-pointer"
-							: props.grid === "gridB" && props.class === "classA"
-							? "hover:bg-f1-lightCarbon hover:text-white cursor-pointer"
-							: "hover:bg-f1-silver hover:text-white cursor-pointer"
+							: props.grid === "gridB"
+							? props.class === "classA"
+								? "hover:bg-f1-lightCarbon hover:text-white cursor-pointer"
+								: "hover:bg-f1-silver hover:text-white cursor-pointer"
+							: props.grid === "gridC"
+							? props.class === "classA"
+								? "hover:bg-f1-academy-darker hover:text-white cursor-pointer"
+								: "hover:bg-f1-academy-dark hover:text-white cursor-pointer"
+							: ""
 						: ""
 				}`}
 			>
@@ -199,6 +210,10 @@ export function StandingCard(props: StandingCardProps) {
 								? props.class === "classA"
 									? "bg-f1-carbon"
 									: "bg-f1-silver"
+								: props.grid === "gridC"
+								? props.class === "classA"
+									? "bg-f1-academy-darker"
+									: "bg-f1-academy-dark"
 								: ""
 						} ${
 							isDrivers &&

@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import {
 	useGetStatsDataAQuery,
 	useGetStatsDataBQuery,
+	useGetStatsDataCQuery,
 } from "../../graphql/generated";
 
 const useCsvLoader = (activeTab: "gridA" | "gridB" | "gridC") => {
@@ -11,19 +12,37 @@ const useCsvLoader = (activeTab: "gridA" | "gridB" | "gridC") => {
 		error: errorA,
 		loading: loadingA,
 	} = useGetStatsDataAQuery({
-		skip: activeTab !== "gridA", // Skip if not Grid Heat (drivers)
+		skip: activeTab !== "gridA",
 	});
 	const {
 		data: dataB,
 		error: errorB,
 		loading: loadingB,
 	} = useGetStatsDataBQuery({
-		skip: activeTab !== "gridB", // Skip if not Grid Carbon (teams)
+		skip: activeTab !== "gridB",
+	});
+	const {
+		data: dataC,
+		error: errorC,
+		loading: loadingC,
+	} = useGetStatsDataCQuery({
+		skip: activeTab !== "gridC",
 	});
 
-	const data = activeTab === "gridA" ? dataA : dataB;
-	const error = activeTab === "gridA" ? errorA : errorB;
-	const loading = activeTab === "gridA" ? loadingA : loadingB;
+	const data =
+		activeTab === "gridA" ? dataA : activeTab === "gridB" ? dataB : dataC;
+	const error =
+		activeTab === "gridA"
+			? errorA
+			: activeTab === "gridB"
+			? errorB
+			: errorC;
+	const loading =
+		activeTab === "gridA"
+			? loadingA
+			: activeTab === "gridB"
+			? loadingB
+			: loadingC;
 
 	const [teams, setTeams] = useState<{ name: string; pts: string }[]>([]);
 	const [drivers, setDrivers] = useState<{ name: string; pts: string }[]>([]);
