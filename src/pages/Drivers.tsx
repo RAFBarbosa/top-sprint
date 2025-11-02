@@ -10,6 +10,7 @@ const Drivers: React.FC = () => {
 
 	const gridA = enhancedCards.filter((driver) => driver.grid === "gridA");
 	const gridB = enhancedCards.filter((driver) => driver.grid === "gridB");
+	const gridC = enhancedCards.filter((driver) => driver.grid === "gridC");
 	const reserves = enhancedCards.filter(
 		(driver) => driver.grid === "reserva" || driver.grid === "inativo"
 	);
@@ -26,6 +27,12 @@ const Drivers: React.FC = () => {
 	const gridBClassBFiltered = gridB.filter(
 		(driver) => driver.class === "classB"
 	);
+	const gridCClassAFiltered = gridC.filter(
+		(driver) => driver.class === "classA"
+	);
+	const gridCClassBFiltered = gridC.filter(
+		(driver) => driver.class === "classB"
+	);
 
 	const gridDriversMap = {
 		gridA: {
@@ -35,6 +42,10 @@ const Drivers: React.FC = () => {
 		gridB: {
 			classA: gridBClassAFiltered,
 			classB: gridBClassBFiltered,
+		},
+		gridC: {
+			classA: gridCClassAFiltered,
+			classB: gridCClassBFiltered,
 		},
 	};
 

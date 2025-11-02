@@ -3781,6 +3781,7 @@ export type EntityWhereInput = {
 export enum Grid {
   GridA = 'gridA',
   GridB = 'gridB',
+  GridC = 'gridC',
   Inativo = 'inativo',
   Removido = 'removido',
   Reserva = 'reserva'
@@ -12383,6 +12384,11 @@ export type GetStatsDataBQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetStatsDataBQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null }> };
 
+export type GetStatsDataCQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetStatsDataCQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null }> };
+
 
 export const CreateAssetDocument = gql`
     mutation createAsset {
@@ -13238,7 +13244,7 @@ export type GetCalendarsRegistrationLazyQueryHookResult = ReturnType<typeof useG
 export type GetCalendarsRegistrationQueryResult = Apollo.QueryResult<GetCalendarsRegistrationQuery, GetCalendarsRegistrationQueryVariables>;
 export const GetHallsOfFameDocument = gql`
     query GetHallsOfFame {
-  hallsOfFame(stage: DRAFT, orderBy: createdAt_DESC, where: {deleted: false}) {
+  hallsOfFame(stage: DRAFT, orderBy: updatedAt_DESC, where: {deleted: false}) {
     id
     season
     deleted
@@ -14022,3 +14028,46 @@ export function useGetStatsDataBLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type GetStatsDataBQueryHookResult = ReturnType<typeof useGetStatsDataBQuery>;
 export type GetStatsDataBLazyQueryHookResult = ReturnType<typeof useGetStatsDataBLazyQuery>;
 export type GetStatsDataBQueryResult = Apollo.QueryResult<GetStatsDataBQuery, GetStatsDataBQueryVariables>;
+export const GetStatsDataCDocument = gql`
+    query GetStatsDataC {
+  datas(
+    stage: DRAFT
+    orderBy: createdAt_DESC
+    first: 2
+    where: {grid: gridC, deleted: false}
+  ) {
+    id
+    csv {
+      url
+    }
+    grid
+  }
+}
+    `;
+
+/**
+ * __useGetStatsDataCQuery__
+ *
+ * To run a query within a React component, call `useGetStatsDataCQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStatsDataCQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetStatsDataCQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetStatsDataCQuery(baseOptions?: Apollo.QueryHookOptions<GetStatsDataCQuery, GetStatsDataCQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetStatsDataCQuery, GetStatsDataCQueryVariables>(GetStatsDataCDocument, options);
+      }
+export function useGetStatsDataCLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStatsDataCQuery, GetStatsDataCQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStatsDataCQuery, GetStatsDataCQueryVariables>(GetStatsDataCDocument, options);
+        }
+export type GetStatsDataCQueryHookResult = ReturnType<typeof useGetStatsDataCQuery>;
+export type GetStatsDataCLazyQueryHookResult = ReturnType<typeof useGetStatsDataCLazyQuery>;
+export type GetStatsDataCQueryResult = Apollo.QueryResult<GetStatsDataCQuery, GetStatsDataCQueryVariables>;

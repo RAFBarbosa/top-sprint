@@ -5,7 +5,7 @@ import {
 	useGetStatsDataBQuery,
 } from "../../graphql/generated";
 
-const useCsvLoader = (activeTab: "gridA" | "gridB") => {
+const useCsvLoader = (activeTab: "gridA" | "gridB" | "gridC") => {
 	const {
 		data: dataA,
 		error: errorA,
