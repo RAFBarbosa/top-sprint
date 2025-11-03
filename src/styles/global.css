@@ -218,6 +218,7 @@ body {
 
 	--background-image-divider: url(../assets/img/divider.png);
 	--background-image-map-bg: url(../assets/img/grid.png);
+	--background-image-dot-pattern: url(../assets/img/dot-pattern.png);
 }
 
 ::-webkit-scrollbar {
