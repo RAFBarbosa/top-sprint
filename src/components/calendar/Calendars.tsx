@@ -51,9 +51,6 @@ export function Calendars() {
 						<h2 className="font-bold text-3xl md:text-4xl">
 							Calendário
 						</h2>
-						{/* <div className="w-full md:w-auto flex justify-end">
-							<TabSwitch />
-						</div> */}
 					</div>
 				</div>
 
