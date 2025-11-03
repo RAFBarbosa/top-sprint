@@ -116,15 +116,12 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 			{/* Team logo - behind everything, positioned at top */}
 			<img
-				className="w-25 h-25 object-cover absolute top-5 left-1/2 transform -translate-x-1/2 z-0 opacity-80 drop-shadow-lg transition-all duration-200 group-hover:scale-95 group-hover:top-[18px]"
+				className="w-25 h-25 object-cover absolute top-5 left-1/2 transform -translate-x-1/2 z-0 opacity-80 drop-shadow-lg transition-all duration-200 group-hover:scale-95 group-hover:-translate-y-1"
 				src={driver.team?.photo?.url}
 				alt={driver.team?.name}
 			/>
 
 			<div className="flex items-center justify-between p-4 relative z-10 text-white drop-shadow-lg">
-				{/* <h3 className="font-f1Title text-sm uppercase text-white">
-					{driver.team?.name}
-				</h3> */}
 				<div className="flex flex-col items-center">
 					<span className="text-xs uppercase font-semibold">
 						Classe
@@ -133,12 +130,9 @@ export function DriverCard({ driver }: DriverCardProps) {
 						{getClassLabel().split(" ")[1]}{" "}
 					</span>
 				</div>
-				{/* <p className="text-xs font-semibold uppercase text-white mt-1">
-					{getGridTitle()}
-				</p> */}
 				<div className="relative">
 					<div className="w-10 h-8 flex items-center justify-center">
-						<span className="text-xl uppercase italic font-bold leading-5 text-white">
+						<span className="text-xl uppercase italic font-bold leading-5 text-white tracking-wider">
 							#{driver.number}
 						</span>
 					</div>
@@ -147,21 +141,13 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 			{/* Foto do piloto */}
 			<div className="flex-1 flex items-center justify-center p-4 relative z-10">
-				{/* {imageLoading && (
-					<Skeleton
-						variant="rounded"
-						width={160}
-						height={160}
-						className="absolute"
-					/>
-				)} */}
 				<img
 					src={
 						driver.photo?.url ||
 						"https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84"
 					}
 					alt={driver.name}
-					className={`w-55 h-55 object-cover transition-all duration-200 group-hover:scale-106 group-hover:top-5 absolute top-3 z-0 ${
+					className={`w-55 h-55 object-cover transition-all duration-200 group-hover:scale-106 group-hover:translate-y-2 absolute top-3 z-0 ${
 						!imageLoading ? "opacity-100" : "opacity-0"
 					}`}
 					style={{

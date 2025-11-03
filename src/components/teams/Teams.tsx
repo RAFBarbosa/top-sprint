@@ -117,37 +117,42 @@ export function Teams() {
 							spaceBetween={12}
 							slidesOffsetBefore={12}
 							slidesOffsetAfter={12}
+							lazyPreloadPrevNext={2} // Only preload 2 slides ahead/behind
 							breakpoints={{
 								640: {
 									slidesPerView: "auto",
 									spaceBetween: 12,
 									slidesOffsetBefore: 12,
 									slidesOffsetAfter: 12,
+									lazyPreloadPrevNext: 3,
 								},
 								768: {
 									slidesPerView: "auto",
 									spaceBetween: 12,
 									slidesOffsetBefore: 12,
 									slidesOffsetAfter: 12,
+									lazyPreloadPrevNext: 4,
 								},
 								1024: {
 									slidesPerView: "auto",
 									spaceBetween: 12,
 									slidesOffsetBefore: 12,
 									slidesOffsetAfter: 12,
+									lazyPreloadPrevNext: 5,
 								},
 								1280: {
 									slidesPerView: "auto",
 									spaceBetween: 12,
 									slidesOffsetBefore: 12,
 									slidesOffsetAfter: 12,
+									lazyPreloadPrevNext: 6,
 								},
 							}}
 						>
 							{driverCards.map((card, index) => (
 								<SwiperSlide
 									key={sortedDrivers[index].id}
-									className="!w-45 !h-auto !mr-3" // w-45 + mr-3 (12px)
+									className="!w-45 !h-auto !mr-3 swiper-lazy"
 								>
 									<div className="h-full">{card}</div>
 								</SwiperSlide>
