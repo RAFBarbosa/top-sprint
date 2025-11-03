@@ -100,7 +100,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 	return (
 		<div
-			className="rounded-lg shadow-md flex flex-col h-68 w-45 mx-auto cursor-pointer hover:opacity-90 transition-all relative group mb-8 md:mb-0"
+			className="rounded-lg shadow-md flex flex-col h-68 w-45 mx-auto cursor-pointer transition-all relative group mb-8 md:mb-0 overflow-hidden"
 			style={{ backgroundColor: driver.teamColor }}
 			onClick={handleDriverClick}
 		>
@@ -116,7 +116,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 			{/* Team logo - behind everything, positioned at top */}
 			<img
-				className="w-25 h-25 object-cover absolute top-5 left-1/2 transform -translate-x-1/2 z-0 opacity-80 drop-shadow-lg transition-all duration-200 group-hover:scale-95" // Added hover:scale-90
+				className="w-25 h-25 object-cover absolute top-5 left-1/2 transform -translate-x-1/2 z-0 opacity-80 drop-shadow-lg transition-all duration-200 group-hover:scale-95 group-hover:top-[18px]"
 				src={driver.team?.photo?.url}
 				alt={driver.team?.name}
 			/>
@@ -161,7 +161,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 						"https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84"
 					}
 					alt={driver.name}
-					className={`w-55 h-55 object-cover transition-all duration-200 group-hover:scale-106 absolute top-3 z-0 ${
+					className={`w-55 h-55 object-cover transition-all duration-200 group-hover:scale-106 group-hover:top-5 absolute top-3 z-0 ${
 						!imageLoading ? "opacity-100" : "opacity-0"
 					}`}
 					style={{
