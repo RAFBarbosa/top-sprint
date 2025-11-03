@@ -86,6 +86,21 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 		const badgeUrls = data.badge?.map((badge) => badge.url) || [];
 
+		// Class labeling logic based on grid
+		const getClassLabel = () => {
+			if (data.grid === "gridC") {
+				return data.class === "classA" ? "Classe C" : "Classe D";
+			} else {
+				return data.class === "classA"
+					? "Classe A"
+					: data.class === "classB"
+					? "Classe B"
+					: data.class === "reserva"
+					? "Reserva"
+					: "Ex-Piloto";
+			}
+		};
+
 		return (
 			<div
 				ref={ref}
@@ -224,18 +239,25 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								<span
 									className={
 										secondName
-											? secondName.length > 9
+											? firstName.length > 10
+												? "text-3xl leading-4"
+												: secondName
 												? "text-2xl leading-4"
 												: ""
-											: "font-bold uppercase text-4xl"
+											: `font-bold uppercase ${
+													firstName.length > 10
+														? "text-3xl"
+														: "text-4xl"
+											  }`
 									}
 								>
 									{firstName}
 								</span>
+
 								{secondName && (
 									<span
-										className={`font-bold uppercase leading-tight ${
-											secondName.length > 9
+										className={`font-bold uppercase ${
+											secondName.length > 10
 												? "text-3xl"
 												: "text-4xl"
 										}`}
@@ -254,13 +276,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 											: "bg-white text-f1-black"
 									}`}
 								>
-									{data.class === "classA"
-										? "Classe A"
-										: data.class === "classB"
-										? "Classe B"
-										: data.class === "reserva"
-										? "Reserva"
-										: "Ex-Piloto"}
+									{getClassLabel()}
 								</h2>
 								<p className="text-4xl italic mr-1">
 									{data.num}
