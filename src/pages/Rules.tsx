@@ -435,8 +435,16 @@ export function Rules() {
 							<ul className="list-disc ml-5">
 								<li>
 									<strong>-2 pontos</strong>: Quando o piloto
-									atrasar outro piloto (rodar, tirar da pista)
-									sem danos ou com dano mínimo (verde claro).
+									causar impactos leves na corrida corrida de
+									outro piloto sem danos ao carro. (Exemplo:
+									forçá-lo a sair da pista).
+								</li>
+								<li>
+									<strong>-3 pontos</strong>: Quando o piloto
+									causar impactos severos na corrida corrida
+									de outro piloto sem danos ao carro.
+									(Exemplo: fazer o carro de outro piloto
+									rodar).
 								</li>
 								<li>
 									<strong>-4 pontos</strong>: Quando o piloto
@@ -444,18 +452,18 @@ export function Rules() {
 									piloto a ir ao pit.
 								</li>
 								<li>
-									<strong>-6 pontos</strong>: Quando o piloto
+									<strong>-8 pontos</strong>: Quando o piloto
 									der NC (não completar) no carro do outro
 									piloto ou múltiplos carros com danos.
 								</li>
 							</ul>
 						</div>
-						<p>
+						{/* <p>
 							<strong>
 								As penalidades para a Sprint são reduzidas: 1,
 								2, ou 3 pontos.
 							</strong>
-						</p>
+						</p> */}
 					</div>
 
 					<div className="w-full md:w-1/2 space-y-2">
