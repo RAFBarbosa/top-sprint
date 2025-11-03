@@ -87,19 +87,6 @@ export function Teams() {
 		);
 	});
 
-	console.log(
-		"Drivers ordenados por classe e equipe:",
-		sortedDrivers.map((d) => {
-			const team = teamsData?.teams.find((t) => t.name === d.team?.name);
-			return {
-				name: d.name,
-				team: d.team?.name,
-				class: team?.class,
-				number: d.number,
-			};
-		})
-	);
-
 	return (
 		<aside className="py-10 px-3 overflow-hidden">
 			<div className="md:max-w-screen-xl md:px-0 mx-auto">
