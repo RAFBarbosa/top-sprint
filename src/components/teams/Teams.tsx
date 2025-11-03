@@ -1,8 +1,13 @@
 import { useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
-import Carousel from "../utils/Carousel";
-// import GenericLogo from "/src/assets/img/white-logo.png";
-import { Team } from "./Team";
+import { DriverCard } from "./DriverCard";
 import { Skeleton } from "@mui/material";
+import { useTab } from "../../contexts/TabContext";
+
+// Import Swiper components
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 const loadingSkeleton = () => (
 	<div className="px-3 w-full md:max-w-screen-xl mx-auto">
@@ -20,6 +25,7 @@ const loadingSkeleton = () => (
 export function Teams() {
 	const { data: teamsData, error, loading } = useGetTeamsQuery();
 	const { data: driversData } = useGetDriversQuery();
+	const { activeTab } = useTab();
 
 	if (loading || !driversData) return loadingSkeleton();
 	if (error)
@@ -29,40 +35,95 @@ export function Teams() {
 			</div>
 		);
 
+	// Filtra drivers pelo grid ativo
+	const filteredDrivers = driversData.drivers.filter(
+		(driver) => driver.grid === activeTab.id
+	);
+
+	// Ordena os drivers por equipe para que pilotos do mesmo time fiquem em sequência
+	const sortedDrivers = [...filteredDrivers].sort((a, b) => {
+		const teamA = a.team?.name || "";
+		const teamB = b.team?.name || "";
+
+		if (teamA < teamB) return -1;
+		if (teamA > teamB) return 1;
+		return 0;
+	});
+
+	// Cria um array de DriverCards individuais
+	const driverCards = sortedDrivers.map((driver) => {
+		const driverTeam = teamsData?.teams.find(
+			(team) => team.name === driver.team?.name
+		);
+
+		return (
+			<DriverCard
+				key={driver.id}
+				driver={{
+					...driver,
+					teamColor: driverTeam?.color?.hex,
+					team: {
+						...driver.team,
+						class: driverTeam?.class,
+						photo: driverTeam?.photo,
+					},
+				}}
+			/>
+		);
+	});
+
+	console.log(
+		"Drivers ordenados por equipe:",
+		sortedDrivers.map((d) => ({
+			name: d.name,
+			team: d.team?.name,
+			number: d.number,
+		}))
+	);
+
 	return (
-		<aside className="py-10 px-3">
+		<aside className="py-10 px-3 overflow-hidden">
 			<div className="md:max-w-screen-xl md:px-0 mx-auto">
-				<div className="border-t-8 border-r-8 border-f1-silver rounded-tr-3xl pt-4 relative">
-					<div className="font-bold text-4xl pr-4 absolute bg-white -top-[28px]">
-						Equipes e Pilotos
+				<div className="w-full mx-auto max-w-screen-xl px-3">
+					<div
+						className={`border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center ${
+							activeTab.id === "gridA"
+								? "border-f1-lighterPurple"
+								: activeTab.id === "gridB"
+								? "border-f1-carbon"
+								: "border-f1-academy"
+						}`}
+					>
+						<h2 className="font-bold text-3xl md:text-4xl">
+							Equipes e Pilotos
+						</h2>
 					</div>
-					<Carousel slidesToShowDesktop={1} slidesToShowMobile={1}>
-						{teamsData?.teams.map((team) => {
-							const teamDrivers = driversData.drivers.filter(
-								(driver) => driver.team?.name === team.name
-							);
-
-							const gridA = teamDrivers.filter(
-								(d) => d.grid === "gridA"
-							);
-							const gridB = teamDrivers.filter(
-								(d) => d.grid === "gridB"
-							);
-
-							return (
-								<Team
-									key={team.id}
-									name={team.name}
-									logo={team.photo?.url}
-									teamClass={team.class}
-									teamColor={team.color.hex}
-									gridA={gridA}
-									gridB={gridB}
-								/>
-							);
-						})}
-					</Carousel>
 				</div>
+
+				{/* Swiper Carousel */}
+				{driverCards.length > 0 && (
+					<div className="w-full mt-10 cursor-pointer overflow-visible relative px-2">
+						<Swiper
+							modules={[Navigation]}
+							slidesPerView={"auto"}
+							navigation={true}
+							className="!ml-0"
+							spaceBetween={12}
+							freeMode={true}
+						>
+							{driverCards.map((card, index) => (
+								<SwiperSlide
+									key={sortedDrivers[index].id}
+									className="!w-[192px] !h-auto" // 180px (w-45) + 12px gap
+								>
+									<div className="h-full">{card}</div>
+								</SwiperSlide>
+							))}
+						</Swiper>
+						<div className="pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-white/88 z-10" />
+						<div className="pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-white/88 z-10" />
+					</div>
+				)}
 			</div>
 		</aside>
 	);
