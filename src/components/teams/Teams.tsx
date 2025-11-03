@@ -40,13 +40,28 @@ export function Teams() {
 		(driver) => driver.grid === activeTab.id
 	);
 
-	// Ordena os drivers por equipe para que pilotos do mesmo time fiquem em sequência
+	// Ordena os drivers: primeiro por classe (A antes de B), depois por equipe em ordem alfabética
 	const sortedDrivers = [...filteredDrivers].sort((a, b) => {
-		const teamA = a.team?.name || "";
-		const teamB = b.team?.name || "";
+		const teamA = teamsData?.teams.find(
+			(team) => team.name === a.team?.name
+		);
+		const teamB = teamsData?.teams.find(
+			(team) => team.name === b.team?.name
+		);
 
-		if (teamA < teamB) return -1;
-		if (teamA > teamB) return 1;
+		const classA = teamA?.class || "";
+		const classB = teamB?.class || "";
+		const teamNameA = a.team?.name || "";
+		const teamNameB = b.team?.name || "";
+
+		// Primeiro ordena por classe (Class A vem antes de Class B)
+		if (classA === "classA" && classB === "classB") return -1;
+		if (classA === "classB" && classB === "classA") return 1;
+
+		// Se mesma classe, ordena por nome da equipe em ordem alfabética
+		if (teamNameA < teamNameB) return -1;
+		if (teamNameA > teamNameB) return 1;
+
 		return 0;
 	});
 
@@ -73,12 +88,16 @@ export function Teams() {
 	});
 
 	console.log(
-		"Drivers ordenados por equipe:",
-		sortedDrivers.map((d) => ({
-			name: d.name,
-			team: d.team?.name,
-			number: d.number,
-		}))
+		"Drivers ordenados por classe e equipe:",
+		sortedDrivers.map((d) => {
+			const team = teamsData?.teams.find((t) => t.name === d.team?.name);
+			return {
+				name: d.name,
+				team: d.team?.name,
+				class: team?.class,
+				number: d.number,
+			};
+		})
 	);
 
 	return (
@@ -102,19 +121,46 @@ export function Teams() {
 
 				{/* Swiper Carousel */}
 				{driverCards.length > 0 && (
-					<div className="w-full mt-10 cursor-pointer overflow-visible relative px-2">
+					<div className="w-full mt-10 cursor-pointer overflow-visible relative">
 						<Swiper
 							modules={[Navigation]}
 							slidesPerView={"auto"}
 							navigation={true}
 							className="!ml-0"
 							spaceBetween={12}
-							freeMode={true}
+							slidesOffsetBefore={12}
+							slidesOffsetAfter={12}
+							breakpoints={{
+								640: {
+									slidesPerView: "auto",
+									spaceBetween: 12,
+									slidesOffsetBefore: 12,
+									slidesOffsetAfter: 12,
+								},
+								768: {
+									slidesPerView: "auto",
+									spaceBetween: 12,
+									slidesOffsetBefore: 12,
+									slidesOffsetAfter: 12,
+								},
+								1024: {
+									slidesPerView: "auto",
+									spaceBetween: 12,
+									slidesOffsetBefore: 12,
+									slidesOffsetAfter: 12,
+								},
+								1280: {
+									slidesPerView: "auto",
+									spaceBetween: 12,
+									slidesOffsetBefore: 12,
+									slidesOffsetAfter: 12,
+								},
+							}}
 						>
 							{driverCards.map((card, index) => (
 								<SwiperSlide
 									key={sortedDrivers[index].id}
-									className="!w-[192px] !h-auto" // 180px (w-45) + 12px gap
+									className="!w-45 !h-auto !mr-3" // w-45 + mr-3 (12px)
 								>
 									<div className="h-full">{card}</div>
 								</SwiperSlide>
