@@ -45,6 +45,15 @@ export function StandingsList(props: StandingsListProps) {
 		setActiveCard((prev) => (prev === index ? null : index));
 	};
 
+	// Class labeling logic based on active tab
+	const getClassLabel = (className: "classA" | "classB") => {
+		if (props.activeTab === "gridC") {
+			return className === "classA" ? "Classe C" : "Classe D";
+		} else {
+			return className === "classA" ? "Classe A" : "Classe B";
+		}
+	};
+
 	const classAData = props.data.filter((item) => item.class === "classA");
 	const classBData = props.data.filter((item) => item.class === "classB");
 	const classATeams = props.teams.filter((item) => item.class === "classA");
@@ -109,9 +118,7 @@ export function StandingsList(props: StandingsListProps) {
 
 							{/* <div className="w-px bg-gray-500 h-6 mx-1"/> */}
 							<span className="font-f1Title text-white uppercase text-xs mx-auto">
-								{activeStandingTab === "classA"
-									? "Classe A"
-									: "Classe B"}
+								{getClassLabel(activeStandingTab)}
 							</span>
 
 							<button
@@ -129,7 +136,7 @@ export function StandingsList(props: StandingsListProps) {
 
 					<div className="md:flex-1 md:max-w-1/2">
 						<h2 className="hidden md:block font-f1Title uppercase tracking-widest text-white text-xs md:text-base text-center">
-							Classe A
+							{getClassLabel("classA")}
 						</h2>
 
 						{/* Podium for top 3 drivers - always visible on desktop */}
@@ -558,7 +565,7 @@ export function StandingsList(props: StandingsListProps) {
 
 					<div className="hidden md:block md:flex-1 md:max-w-1/2 mt-10 md:mt-0">
 						<h2 className="font-f1Title uppercase tracking-widest text-f1-text md:text-white text-xs md:text-base text-center">
-							Classe B
+							{getClassLabel("classB")}
 						</h2>
 
 						{/* Podium for top 3 drivers - always visible on desktop */}
