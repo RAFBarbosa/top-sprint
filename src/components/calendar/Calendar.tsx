@@ -113,7 +113,7 @@ export function Calendar(props: CalendarProps) {
 
 				<div
 					className={`bg-map-bg h-29 w-60 absolute bottom-2 -z-10 ${
-						isFutureDate ? "opacity-12" : "opacity-8"
+						isFutureDate ? "opacity-35" : "opacity-20"
 					}`}
 				/>
 

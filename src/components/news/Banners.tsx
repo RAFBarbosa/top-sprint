@@ -72,7 +72,7 @@ export function Banners() {
 						<p>Nenhum banner em destaque encontrado</p>
 					)}
 				</div>
-				<div className="md:h-full h-2 bg-divider bg-cover opacity-10 mr-2 md:mr-5 mt-4"></div>
+				<div className="md:h-full h-2 bg-map-bg bg-cover opacity-20 mr-2 md:mr-5 mt-4"></div>
 			</aside>
 
 			{/* Secondary Banners */}

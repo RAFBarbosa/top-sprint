@@ -217,7 +217,7 @@ body {
 	--color-f1-academy-darker: #064c24;
 
 	--background-image-divider: url(../assets/img/divider.png);
-	--background-image-map-bg: url(../assets/img/map-bg.png);
+	--background-image-map-bg: url(../assets/img/grid.png);
 }
 
 ::-webkit-scrollbar {
