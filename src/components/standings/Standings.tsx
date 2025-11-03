@@ -57,6 +57,15 @@ export function Standings() {
 						: "bg-radial-[at_50%_100%] from-f1-carbon to-f1-academy-dark to-150%"
 				}`}
 			>
+				<div
+					className="absolute inset-0 rounded-lg z-0 pointer-events-none"
+					style={{
+						backgroundColor: "rgba(0, 0, 0, 0.10)",
+						backgroundImage:
+							"radial-gradient(circle at .1px .1px, rgba(0, 0, 0, .5) 1px, transparent 0)",
+						backgroundSize: "3px 3px",
+					}}
+				/>
 				<div className="h-22 bg-divider bg-cover opacity-5 absolute left-0 bottom-0 w-full" />
 			</div>
 

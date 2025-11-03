@@ -63,8 +63,7 @@ export function Rules() {
 
 						<ul className="ml-5 list-disc space-y-1">
 							<li>
-								<i>Grid Academy:</i> Segundas-feiras às 22h. às
-								22h.
+								<i>Grid Academy:</i> Segundas-feiras às 22h.
 							</li>
 							<li>
 								<i>Grid Heat:</i> Quartas-feiras às 22h.
@@ -371,9 +370,9 @@ export function Rules() {
 						</div>
 						<div className="mt-4">
 							<p className="mb-2 font-bold text-xl">
-								Pontos extra para ambos os grids:
+								Pontos extra para ambas as classes:
 							</p>
-							<div className="space-y-1">
+							<div className="space-y-1 md:space-y-0 md:flex md:justify-between w-full">
 								<p>
 									<strong>Volta mais rápida:</strong> 1 ponto
 								</p>
