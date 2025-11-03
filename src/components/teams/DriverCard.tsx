@@ -107,7 +107,8 @@ export function DriverCard({ driver }: DriverCardProps) {
 				className="absolute inset-0 rounded-lg z-0 pointer-events-none opacity-10"
 				style={{
 					backgroundColor: "rgba(0, 0, 0, 0.3)",
-					backgroundImage: "url('/src/assets/img/dot-pattern.png')",
+					backgroundImage:
+						"url('../../src/assets/img/dot-pattern.png')",
 					backgroundSize: "2px 2px",
 				}}
 			/>
