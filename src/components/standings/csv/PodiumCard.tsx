@@ -21,16 +21,19 @@ interface PodiumCardProps {
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	const { firstName, lastName, suffix } = splitNameWithSuffix(props.name);
-	// const [firstName, secondName] = (() => {
-	// 	const nameParts = props.name.split(" ");
-	// 	return [
-	// 		nameParts[0].replace(/-B$/, ""),
-	// 		nameParts.length > 1
-	// 			? nameParts.slice(1).join(" ").replace(/-B$/, "")
-	// 			: "",
-	// 	];
-	// })();
+	// const { firstName, lastName, suffix } = splitNameWithSuffix(props.name);
+	const [firstName, lastName] = (() => {
+		const nameParts = props.name.split(" ");
+		return [
+			nameParts[0].replace(/-[BC]$/, ""),
+			nameParts.length > 1
+				? nameParts
+						.slice(1)
+						.join(" ")
+						.replace(/-[BC]$/, "")
+				: "",
+		];
+	})();
 
 	const isDrivers = props.activeTab === "drivers";
 
@@ -38,7 +41,8 @@ export function PodiumCard(props: PodiumCardProps) {
 
 	if (!isDrivers) {
 		cleanedTeamDrivers =
-			props.teamDrivers?.map((driver) => driver.replace(/B$/, "")) || [];
+			props.teamDrivers?.map((driver) => driver.replace(/-[BC]$/, "")) ||
+			[];
 	}
 
 	const navigateToDriver = useNavigateToDriver();
