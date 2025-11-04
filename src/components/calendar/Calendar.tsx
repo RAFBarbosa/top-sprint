@@ -55,6 +55,31 @@ export function Calendar(props: CalendarProps) {
 	const isPastDate = new Date(props.date) < new Date();
 	const isPastTwoHours = isPastDate && !isWithinTwoHours;
 
+	// Add name filtering logic - remove any suffix with -
+	const filterDriverName = (name: string) => {
+		return name.replace(/-.*$/, "");
+	};
+
+	// Helper function to extract and filter names from winner objects
+	const getFilteredWinnerName = (winner: any) => {
+		if (!winner) return "";
+
+		// If winner has a name property, use that
+		if (winner.name) {
+			return filterDriverName(winner.name.toString());
+		}
+
+		// If winner is an array of objects with name properties
+		if (Array.isArray(winner)) {
+			return winner
+				.map((w) => (w.name ? filterDriverName(w.name.toString()) : ""))
+				.join(" / ");
+		}
+
+		// Fallback: try to convert to string and filter
+		return filterDriverName(winner.toString());
+	};
+
 	return (
 		<div
 			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 w-full min-h-[180px] h-full min-w-[250px] ${
@@ -134,7 +159,10 @@ export function Calendar(props: CalendarProps) {
 									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
 										<p className="font-black">A</p>
 										<p className="font-semibold">
-											{props.winnerA.name.toString()}
+											{/* Use the helper function to handle objects */}
+											{getFilteredWinnerName(
+												props.winnerA
+											)}
 										</p>
 									</div>
 								)}
@@ -142,7 +170,10 @@ export function Calendar(props: CalendarProps) {
 									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
 										<p className="font-black">B</p>
 										<p className="font-semibold">
-											{props.winnerB.name.toString()}
+											{/* Use the helper function to handle objects */}
+											{getFilteredWinnerName(
+												props.winnerB
+											)}
 										</p>
 									</div>
 								)}
