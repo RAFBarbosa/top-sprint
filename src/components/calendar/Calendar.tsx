@@ -82,7 +82,7 @@ export function Calendar(props: CalendarProps) {
 
 	return (
 		<div
-			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 w-full min-h-[180px] h-full w-[250px] ${
+			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
 				isPastTwoHours && " hover:border-f1-red"
 			} ${isFutureDate ? "cursor-pointer" : "cursor-pointer"}`}
 		>
