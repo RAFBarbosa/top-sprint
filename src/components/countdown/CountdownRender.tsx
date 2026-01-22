@@ -19,18 +19,18 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 				<div
 					className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${
 						activeTab.id === "gridA"
-							? "bg-f1-purple"
-							: activeTab.id === "gridB"
 							? "bg-f1-silver"
-							: "bg-f1-academy-darker"
+							: activeTab.id === "gridB"
+							? "bg-f1-academy-darker"
+							: "bg-f1-silver"
 					}`}
 				>
 					<div className="flex flex-col w-full">
 						<span className="font-bold uppercase text-center">
 							{activeTab.id === "gridA"
-								? "Grid Heat"
+								? "Top Sprint"
 								: activeTab.id === "gridB"
-								? "Grid Carbon"
+								? "Academy"
 								: "Grid Academy"}
 						</span>
 						<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
@@ -52,18 +52,18 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 			<div
 				className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center	${
 					activeTab.id === "gridA"
-						? "bg-f1-purple"
-						: activeTab.id === "gridB"
 						? "bg-f1-silver"
-						: "bg-f1-academy-darker"
+						: activeTab.id === "gridB"
+						? "bg-f1-academy-darker"
+						: "bg-f1-silver"
 				}`}
 			>
 				<div className="flex flex-col w-full">
 					<span className="font-bold uppercase text-center">
 						{activeTab.id === "gridA"
-							? "Grid Heat"
+							? "Top Sprint"
 							: activeTab.id === "gridB"
-							? "Grid Carbon"
+							? "Academy"
 							: "Grid Academy"}
 					</span>
 					<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
