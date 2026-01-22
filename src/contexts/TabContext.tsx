@@ -1,14 +1,14 @@
 import { createContext, useContext, useState } from "react";
+import { GRIDS, GridId } from "../components/config/grids";
 
-// contexts/TabContext.tsx
 type TabType = {
-	id: "gridA" | "gridB" | "gridC";
+	id: GridId;
 	label: string;
 };
 
 interface TabContextType {
 	activeTab: TabType;
-	setActiveTab: (tab: TabType["id"]) => void;
+	setActiveTab: (tab: GridId) => void;
 	tabs: readonly TabType[];
 }
 
@@ -17,13 +17,9 @@ const TabContext = createContext<TabContextType | undefined>(undefined);
 export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
-	const tabs = [
-		{ id: "gridA", label: "Heat" },
-		{ id: "gridB", label: "Carbon" },
-		{ id: "gridC", label: "Academy" },
-	] as const;
+	const tabs = GRIDS.map(({ id, label }) => ({ id, label })) as const;
 
-	const [activeTabId, setActiveTabId] = useState<TabType["id"]>("gridA");
+	const [activeTabId, setActiveTabId] = useState<GridId>(tabs[0].id);
 
 	const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0];
 

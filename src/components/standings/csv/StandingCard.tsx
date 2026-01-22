@@ -2,13 +2,13 @@ import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import useNormalizeString from "../../hooks/useNormalizeString";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
-import { splitNameWithSuffix } from "../../utils/nameFormatter";
+import { GridId, getGridConfig, getGridColors } from "../../config/grids";
 
 interface StandingCardProps {
 	position: number;
 	name: string;
 	photo: string;
-	grid?: string;
+	grid?: GridId;
 	class?: string;
 	standingTab?: string;
 	teamName?: string;
@@ -19,12 +19,12 @@ interface StandingCardProps {
 	badgeTitle: string;
 	valueKey: string;
 	valueLabel: string;
-	activeTab: "gridA" | "gridB" | "gridC";
+	activeTab: GridId;
 	activeGrid: "drivers" | "teams";
 	isActive: boolean;
 	onClick: () => void;
-	newData: { name: string }[]; // Add newData prop
-	oldData: { name: string }[]; // Add oldData prop
+	newData: { name: string }[];
+	oldData: { name: string }[];
 }
 
 export function StandingCard(props: StandingCardProps) {
@@ -40,19 +40,15 @@ export function StandingCard(props: StandingCardProps) {
 				: "",
 		];
 	})();
+
 	const isDrivers = props.activeGrid === "drivers";
 
-	let cleanedTeamDrivers = props.teamDrivers || [];
-
-	if (!isDrivers) {
-		cleanedTeamDrivers =
-			props.teamDrivers?.map((driver) => driver.replace(/-[BC]$/, "")) ||
-			[];
-	}
+	const cleanedTeamDrivers = !isDrivers
+		? props.teamDrivers?.map((driver) => driver.replace(/-[BC]$/, "")) || []
+		: props.teamDrivers || [];
 
 	const navigateToDriver = useNavigateToDriver();
 
-	// Calculate the position difference using the hook
 	const positionDifference = usePositionDifference(
 		props.newData,
 		props.oldData,
@@ -65,7 +61,39 @@ export function StandingCard(props: StandingCardProps) {
 		}
 	};
 
-	// Arrow logic
+	const getColorClasses = () => {
+		if (!props.activeTab)
+			return {
+				colorClass: "bg-gray-500",
+				hoverClass: "hover:bg-gray-600 hover:text-white",
+			};
+
+		if (props.class) {
+			const colors = getGridColors(props.activeTab, props.class);
+			if (colors) {
+				return {
+					colorClass: colors.colorClass,
+					hoverClass: colors.hoverClass,
+				};
+			}
+		}
+
+		const gridConfig = getGridConfig(props.activeTab);
+		if (gridConfig) {
+			return {
+				colorClass: gridConfig.accentColor,
+				hoverClass: gridConfig.hoverPrimaryColor,
+			};
+		}
+
+		return {
+			colorClass: "bg-gray-500",
+			hoverClass: "hover:bg-gray-600 hover:text-white",
+		};
+	};
+
+	const { colorClass, hoverClass } = getColorClasses();
+
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
 			return (
@@ -87,38 +115,41 @@ export function StandingCard(props: StandingCardProps) {
 					{Math.abs(positionDifference)}
 				</span>
 			);
-		} else {
-			return <span className="text-f1-lighterCarbon font-bold">–</span>;
 		}
+		return <span className="text-f1-lighterCarbon font-bold">–</span>;
 	};
+
+	const getDisplayInfo = () => {
+		if (isDrivers) {
+			return {
+				primaryName: firstName,
+				secondaryName: secondName,
+				detail: props.teamName,
+			};
+		}
+
+		return {
+			primaryName: firstName,
+			secondaryName: secondName,
+			detail: cleanedTeamDrivers.join(" / ") || "No drivers",
+		};
+	};
+
+	const displayInfo = getDisplayInfo();
 
 	return (
 		<button
 			onClick={handleCardClick}
-			className="tracking-wide overflow-hidden w-full group"
+			className={`tracking-wide overflow-hidden w-full group ${
+				isDrivers ? "md:cursor-pointer" : ""
+			}`}
 		>
 			<div
 				className={`flex px-2 md:p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
 					props.isActive
 						? "bg-f1-silver text-white h-32 md:h-15 py-4"
 						: "bg-white py-2"
-				} ${
-					isDrivers
-						? props.grid === "gridA"
-							? props.class === "classA"
-								? "hover:bg-f1-purple hover:text-white cursor-pointer"
-								: "hover:bg-f1-lighterPurple hover:text-white cursor-pointer"
-							: props.grid === "gridB"
-							? props.class === "classA"
-								? "hover:bg-f1-lightCarbon hover:text-white cursor-pointer"
-								: "hover:bg-f1-silver hover:text-white cursor-pointer"
-							: props.grid === "gridC"
-							? props.class === "classA"
-								? "hover:bg-f1-academy-darker hover:text-white cursor-pointer"
-								: "hover:bg-f1-academy-dark hover:text-white cursor-pointer"
-							: ""
-						: ""
-				}`}
+				} ${isDrivers ? hoverClass : ""}`}
 			>
 				<div className="flex items-center flex-grow z-30 h-full md:h-4">
 					<span
@@ -151,21 +182,21 @@ export function StandingCard(props: StandingCardProps) {
 							<span
 								className={`leading-7 ${
 									isDrivers
-										? secondName
+										? displayInfo.secondaryName
 											? "font-regular"
 											: "font-bold uppercase"
 										: "font-bold"
 								}`}
 							>
-								{firstName}
+								{displayInfo.primaryName}
 							</span>
-							{secondName && (
+							{displayInfo.secondaryName && (
 								<span
 									className={`font-bold md:ml-1
 										${isDrivers ? "uppercase" : "ml-1"} 
 										${!props.isActive && "ml-1"}`}
 								>
-									{secondName}
+									{displayInfo.secondaryName}
 								</span>
 							)}
 						</div>
@@ -176,17 +207,7 @@ export function StandingCard(props: StandingCardProps) {
 								"bg-f1-silver rounded-lg pr-1 md:bg-transparent"
 							}`}
 						>
-							{isDrivers
-								? props.teamName
-								: Array.isArray(props.teamDrivers)
-								? cleanedTeamDrivers.join(" / ")
-								: cleanedTeamDrivers || "No drivers"}
-
-							{/* <img
-								src={props.teamLogo}
-								alt="Team Logo"
-								className="ml-2 inline-block md:h-4 md:w-4 h-[14px] w-[14px] translate-y-[2px] group-hover:color-overlay-white"
-							/> */}
+							{displayInfo.detail}
 						</span>
 					</div>
 				</div>
@@ -201,24 +222,10 @@ export function StandingCard(props: StandingCardProps) {
 				>
 					<div className="pl-2">{renderPositionDifference()}</div>
 					<div
-						className={`font-light rounded-xl px-2 min-w-[70px] ${
-							props.grid === "gridA"
-								? props.class === "classA"
-									? "bg-f1-purple"
-									: "bg-f1-lighterPurple"
-								: props.grid === "gridB"
-								? props.class === "classA"
-									? "bg-f1-carbon"
-									: "bg-f1-silver"
-								: props.grid === "gridC"
-								? props.class === "classA"
-									? "bg-f1-academy-darker"
-									: "bg-f1-academy-dark"
-								: ""
-						} ${
+						className={`font-light rounded-xl px-2 min-w-[70px] ${colorClass} ${
 							isDrivers &&
 							"group-hover:bg-f1-bg-silver group-hover:text-f1-text transition-colors duration-200"
-						} `}
+						}`}
 					>
 						<span className="font-bold">{props.valueKey}</span>{" "}
 						{props.valueKey === "1" ? "PT" : props.valueLabel}

@@ -5,19 +5,18 @@ import Car4Bg from "/src/assets/img/car4-bg.png";
 
 export function Rules() {
 	const racePoints = [
+		"25 pontos",
+		"22 pontos",
 		"20 pontos",
+		"18 pontos",
 		"16 pontos",
+		"15 pontos",
 		"14 pontos",
+		"13 pontos",
 		"12 pontos",
+		"11 pontos",
 		"10 pontos",
-		"8 pontos",
-		"6 pontos",
-		"4 pontos",
-		"2 pontos",
-		"1 ponto",
-	];
-
-	const sprintPoints = [
+		"9 pontos",
 		"8 pontos",
 		"7 pontos",
 		"6 pontos",
@@ -26,6 +25,29 @@ export function Rules() {
 		"3 pontos",
 		"2 pontos",
 		"1 ponto",
+	];
+
+	const sprintPoints = [
+		"16 pontos",
+		"15 pontos",
+		"14 pontos",
+		"13 pontos",
+		"12 pontos",
+		"11 pontos",
+		"10 pontos",
+		"9 pontos",
+		"8 pontos",
+		"7 pontos",
+		"6 pontos",
+		"5 pontos",
+		"4 pontos",
+		"3 pontos",
+		"2 pontos",
+		"1 ponto",
+		"0 pontos",
+		"0 pontos",
+		"0 pontos",
+		"0 pontos",
 		"0 pontos",
 		"0 pontos",
 	];
@@ -42,7 +64,7 @@ export function Rules() {
 				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
 					As regras utilizadas serão baseadas no{" "}
 					<a
-						href="https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmbylqzb10o8107mzfm9zewqg"
+						href="https://docs.google.com/document/d/1IVOIGzItkJyCKvMbu20eRvRnxLWoQDppAZrZX9b1zBY/edit?usp=sharing"
 						target="_blank"
 						className="text-f1-red font-bold underline"
 					>
@@ -56,30 +78,28 @@ export function Rules() {
 					<p className="font-bold text-lg">
 						O campeonato utilizará F1 25.
 					</p>
+					<p>
+						A <strong>Top Sprint</strong> inclui
+						<strong>corridas Sprint</strong> com o objetivo de criar
+						oportunidades para quem está atrás no campeonato,
+						oferecendo mais emoção nas disputas por posições e
+						pontos.
+					</p>
 					<div>
+					
 						<p className="font-bold text-lg">
 							As corridas acontecerão sempre às:
 						</p>
 
 						<ul className="ml-5 list-disc space-y-1">
 							<li>
+								<i>Grid Top Sprint:</i> Quintas-feiras às 22h.
+							</li>
+							<li>
 								<i>Grid Academy:</i> Segundas-feiras às 22h.
-							</li>
-							<li>
-								<i>Grid Heat:</i> Quartas-feiras às 22h.
-							</li>
-							<li>
-								<i>Grid Carbon:</i> Quintas-feiras às 22h.
 							</li>
 						</ul>
 					</div>
-					{/* <p>
-						A <strong>Top Sprint</strong> inclui
-						<strong>corridas Sprint</strong> com o objetivo de criar
-						oportunidades para quem está atrás no campeonato,
-						oferecendo mais emoção nas disputas por posições e
-						pontos.
-					</p> */}
 
 					{/* <div className="space-y-2">
 						<strong className="block text-xl">
@@ -121,11 +141,12 @@ export function Rules() {
 						<p className="font-bold text-lg">Detalhes da sessão:</p>
 						<ul className="ml-5 list-disc space-y-1">
 							<li>
-								<i>Grid:</i> Qualificatória Curta (18 minutos)
+								<i>Grid:</i> Qualificatória curta (18 minutos)
 							</li>
 							<li>
 								<i>Duração:</i> 50% do circuito
 							</li>
+							<li>Dias de Sprint: Ambos os grids invertidos + 35% corrida principal</li>
 						</ul>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
@@ -230,11 +251,23 @@ export function Rules() {
 					<div className="w-full flex flex-col md:flex-row">
 						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
 							<p>
-								Nas raras ocasiões onde pouca gente for
-								participar da etapa. A direção pode convidar
-								ex-pilotos <strong>Top Sprint</strong> para
-								completar o grid.
+								Em caso de ausência de um piloto, a direção pode convidar ex-pilotos <strong>Top Sprint</strong> para completar o grid e pontuar para a equipe do piloto ausente.
 							</p>
+							<ul className="list-disc ml-5">
+								<li>
+									Para evitar disputas importantes com reservas, a posição final de reservas será 4 posições atrás da posição em que cruzaram a linha de chegada.
+								</li>
+								<li>
+									Infrações cometidas pelo piloto reserva, serão aplicadas na pontuação final que ele irá ganhar para a equipe.
+								</li>
+								
+								<li>
+									De forma geral, <strong>Pilotos Reserva Top Sprint</strong> que já fizeram parte do grid em questão, deverão ter prioridade como piloto reserva.
+								</li>
+								<li>
+									Como exceção a direção pode considerar pilotos externos caso exista vídeos de corridas do piloto proposto.
+								</li>
+							</ul>
 							{/* <p>
 								Para evitar colisões com Reservas, na contagem
 								da pontuação, a posição do reserva será
@@ -244,7 +277,7 @@ export function Rules() {
 									titulares seguintes subirão uma posição.
 								</i>
 							</p> */}
-							<p>
+							{/* <p>
 								<b>Terceiro Piloto:</b> A pedido dos jogadores,
 								vamos introduzir uma forma de um piloto que
 								souber que vai faltar, convidar um terceiro
@@ -281,7 +314,7 @@ export function Rules() {
 									Pilotos reservas e Terceiro Pilotos não
 									poderão participar da última etapa.
 								</i>
-							</p>
+							</p> */}
 						</div>
 						<figure className="md:block w-full md:w-1/2 pr-3">
 							<img
@@ -310,11 +343,12 @@ export function Rules() {
 											Posição
 										</th>
 										<th className="px-4 pb-4 uppercase">
-											Pontos
-										</th>
-										{/* <th className="px-4 pb-4 uppercase">
 											Sprint
-										</th> */}
+										</th>
+										<th className="px-4 pb-4 uppercase">
+											Corrida Principal
+										</th>
+										
 									</tr>
 								</thead>
 								<tbody>
@@ -329,6 +363,16 @@ export function Rules() {
 										"8",
 										"9",
 										"10",
+										"11",
+										"12",
+										"13",
+										"14",
+										"15",
+										"16",
+										"17",
+										"18",
+										"19",
+										"20",
 									].map((position, index, arr) => (
 										<tr
 											key={index}
@@ -346,6 +390,16 @@ export function Rules() {
 											<td
 												className={`px-4 py-4 ${
 													index ===
+													sprintPoints.length - 1
+														? ""
+														: ""
+												}`}
+											>
+												{sprintPoints[index]}
+											</td>
+											<td
+												className={`px-4 py-4 ${
+													index ===
 													racePoints.length - 1
 														? "rounded-br-2xl"
 														: ""
@@ -353,16 +407,6 @@ export function Rules() {
 											>
 												{racePoints[index]}
 											</td>
-											{/* <td
-												className={`px-4 py-4 ${
-													index ===
-													sprintPoints.length - 1
-														? "rounded-br-2xl"
-														: ""
-												}`}
-											>
-												{sprintPoints[index]}
-											</td> */}
 										</tr>
 									))}
 								</tbody>
@@ -409,7 +453,7 @@ export function Rules() {
 						<div className="space-y-2">
 							<p>
 								<strong>
-									As corridas precisam ser gravadas caso os
+									As corridas precisam ser gravadas na camera onboard caso os
 									pilotos queiram abrir tickets ou se
 									defender.
 								</strong>
@@ -434,27 +478,18 @@ export function Rules() {
 						<div>
 							<ul className="list-disc ml-5">
 								<li>
-									<strong>-2 pontos</strong>: Quando o piloto
-									causar impactos leves na corrida corrida de
-									outro piloto sem danos ao carro. (Exemplo:
-									forçá-lo a sair da pista).
+									<strong>Impacto Leve -2 pontos</strong>: Quando o piloto causar prejuízo momentâneo sem danos físicos ao carro do adversário.
+									(Exemplo: Forçar o outro piloto para fora da pista perdendo posições ou tempo, ou rodar parcialmente o piloto.)
 								</li>
 								<li>
-									<strong>-3 pontos</strong>: Quando o piloto
-									causar impactos severos na corrida corrida
-									de outro piloto sem danos ao carro.
-									(Exemplo: fazer o carro de outro piloto
-									rodar).
+									<strong>Impacto Severo (-3 pontos)</strong>: Quando o piloto causar perda de controle do adversário sem danos físicos ao carro.
+(Exemplo: Fazer o adversário rodar e ficar na contramão, perder múltiplas posições ou perder diversos segundos.)
 								</li>
 								<li>
-									<strong>-4 pontos</strong>: Quando o piloto
-									causar danos (amarelo ou maior) que forcem o
-									piloto a ir ao pit.
+									<strong>Dano Material (-4 pontos)</strong>: Quando o incidente resultar em danos mecânicos (nível amarelo ou superior) que obriguem o adversário a realizar um pit stop não planejado.
 								</li>
 								<li>
-									<strong>-8 pontos</strong>: Quando o piloto
-									der NC (não completar) no carro do outro
-									piloto ou múltiplos carros com danos.
+									<strong>Incidente Crítico (-8 pontos)</strong>: Quando o piloto causar o abandono (NC - Não Completou) de outro competidor ou provocar danos severos em múltiplos carros.
 								</li>
 							</ul>
 						</div>
@@ -475,6 +510,7 @@ export function Rules() {
 									de causar o incidente.
 								</strong>
 							</p>
+							<p>Agravantes ou atenuntes de penalidades podem ser aplicados e estão detalhados no manual de regras.</p>
 							{/* <p>
 								<strong>
 									Incidentes envolvendo múltiplos carros:
@@ -518,7 +554,7 @@ export function Rules() {
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 								As regras utilizadas serão baseadas no{" "}
 								<a
-									href="https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmbylqzb10o8107mzfm9zewqg"
+									href="https://docs.google.com/document/d/1IVOIGzItkJyCKvMbu20eRvRnxLWoQDppAZrZX9b1zBY/edit?usp=sharing"
 									target="_blank"
 									className="text-f1-red font-bold underline"
 								>

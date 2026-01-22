@@ -3,6 +3,7 @@ import { TabSwitch } from "../standings/csv/TabSwitch";
 import { Socials } from "../utils/Socials";
 import { useState } from "react";
 import { ArrowDropDown } from "@mui/icons-material";
+import { getGridColor } from "../config/grids";
 
 export function GridMenu() {
 	const { activeTab, tabs, setActiveTab } = useTab();
@@ -13,25 +14,14 @@ export function GridMenu() {
 		setIsMobileDropdownOpen(false);
 	};
 
-	const getTabColor = (tabId: string) => {
-		switch (tabId) {
-			case "gridA": // Heat
-				return "bg-purple-600";
-			case "gridB": // Carbon
-				return "bg-f1-lightSilver";
-			case "gridC": // Academy
-				return "bg-f1-academy";
-			default:
-				return "bg-white";
-		}
-	};
+	const getTabColor = (tabId: string) => getGridColor(tabId);
 
 	return (
 		<div className="md:bg-f1-carbon text-white h-9 md:h-11">
 			<div className="max-w-screen-xl flex justify-between mx-auto px-3">
 				<div className="flex md:gap-4 items-center">
 					<h3 className="font-semibold uppercase hidden md:block">
-						Grids Top Sprint
+						Grids
 					</h3>
 					<h3 className="font-semibold md:hidden">Grid</h3>
 

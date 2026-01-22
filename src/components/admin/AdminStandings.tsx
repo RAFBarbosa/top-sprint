@@ -99,7 +99,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 				/>
 			</div>
 			<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center">
-				Classificação {props.title}
+				{props.title}
 			</h2>
 			{props.activeTab === "gridA" || "gridB" || "gridC" ? (
 				<div className="w-full mx-auto pt-8">

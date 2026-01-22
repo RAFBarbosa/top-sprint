@@ -2,13 +2,13 @@ import useNormalizeString from "../../hooks/useNormalizeString";
 import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import { splitNameWithSuffix } from "../../../components/utils/nameFormatter";
+import { getGridConfig, getGridColors, GridId } from "../../config/grids";
 
 interface PodiumCardProps {
 	position: number;
 	name: string;
 	photo: string;
-	grid?: string;
+	grid?: GridId;
 	class?: string;
 	points?: string;
 	teamName?: string;
@@ -16,12 +16,11 @@ interface PodiumCardProps {
 	teamLogo?: string;
 	teamDrivers?: string[];
 	activeTab: "drivers" | "teams";
-	newData: { name: string }[]; // Add newData prop
-	oldData: { name: string }[]; // Add oldData prop
+	newData: { name: string }[];
+	oldData: { name: string }[];
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	// const { firstName, lastName, suffix } = splitNameWithSuffix(props.name);
 	const [firstName, lastName] = (() => {
 		const nameParts = props.name.split(" ");
 		return [
@@ -51,14 +50,28 @@ export function PodiumCard(props: PodiumCardProps) {
 		isDrivers && navigateToDriver(useNormalizeString(props.name));
 	};
 
-	// Calculate the position difference using the hook
 	const positionDifference = usePositionDifference(
 		props.newData,
 		props.oldData,
 		props.name
 	);
 
-	// Arrow logic
+	const getColorClass = () => {
+		if (!props.grid) return "bg-gray-500";
+
+		if (props.class) {
+			const colors = getGridColors(props.grid, props.class);
+			if (colors?.colorClass) {
+				return colors.colorClass;
+			}
+		}
+
+		const gridConfig = getGridConfig(props.grid);
+		return gridConfig?.accentColor || "bg-gray-500";
+	};
+
+	const colorClass = getColorClass();
+
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
 			return (
@@ -119,21 +132,7 @@ export function PodiumCard(props: PodiumCardProps) {
 			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-4 mb-2 gap-2 text-white">
 				<div>{renderPositionDifference()}</div>
 				<div
-					className={`rounded-xl px-2 ${
-						props.grid === "gridA"
-							? props.class === "classA"
-								? "bg-f1-purple"
-								: "bg-f1-lighterPurple"
-							: props.grid === "gridB"
-							? props.class === "classA"
-								? "bg-f1-lightCarbon"
-								: "bg-f1-silver"
-							: props.grid === "gridC"
-							? props.class === "classA"
-								? "bg-f1-academy-darker"
-								: "bg-f1-academy-dark"
-							: ""
-					} `}
+					className={`rounded-xl px-2 pointer-events-none ${colorClass}`}
 				>
 					<span className="font-bold">{props.points}</span>{" "}
 					{props.points === "1" ? "PT" : "PTS"}
@@ -158,9 +157,6 @@ export function PodiumCard(props: PodiumCardProps) {
 			/>
 
 			<div
-				// style={{
-				// 	background: `linear-gradient(to bottom, ${props.teamColor} 0%, ${props.teamColor} 35%, #000 100%)`,
-				// }}
 				className={`absolute bottom-0 w-full -z-10 rounded-2xl bg-white ${
 					props.position === 1
 						? isDrivers
@@ -171,21 +167,7 @@ export function PodiumCard(props: PodiumCardProps) {
 			/>
 
 			<div
-				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider ${
-					props.grid === "gridA"
-						? props.class === "classA"
-							? "bg-f1-purple"
-							: "bg-f1-lighterPurple"
-						: props.grid === "gridB"
-						? props.class === "classA"
-							? "bg-f1-lightCarbon"
-							: "bg-f1-silver"
-						: props.grid === "gridC"
-						? props.class === "classA"
-							? "bg-f1-academy-darker"
-							: "bg-f1-academy-dark"
-						: ""
-				} `}
+				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none ${colorClass}`}
 			>
 				<span
 					className={`${
@@ -220,11 +202,6 @@ export function PodiumCard(props: PodiumCardProps) {
 					}`}
 				>
 					{isDrivers ? props.teamName : props.name}
-					{/* <img
-						src={props.teamLogo}
-						alt="Team Logo"
-						className="ml-2 inline-block md:h-4 md:w-4 h-[14px] w-[14px] translate-y-[2px] group-hover:color-overlay-white"
-					/> */}
 				</div>
 			</div>
 		</div>

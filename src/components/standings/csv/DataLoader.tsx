@@ -5,26 +5,28 @@ import { GetTeamsQuery } from "../../../graphql/generated";
 import useNormalizeString from "../../hooks/useNormalizeString";
 import { useLocation } from "react-router-dom";
 import { AdminStandings } from "../../admin/AdminStandings";
+import { GridId } from "../../config/grids";
+import { getGridConfig } from "../../config/grids";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
-	activeTab: "gridA" | "gridB" | "gridC";
+	activeTab: GridId;
 }
 
 export function DataLoader(props: DataLoaderProps) {
 	const location = useLocation();
 	const isAdminPage = location.pathname.includes("/admin/");
 
-	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader(
-		props.activeTab
-	);
+	// ✅ FIXED: Pass gridId as an object property
+	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader({ 
+		gridId: props.activeTab 
+	});
 
-	const title =
-		props.activeTab === "gridA"
-			? "Heat"
-			: props.activeTab === "gridB"
-			? "Carbon"
-			: "Academy";
+	const gridConfig = getGridConfig(props.activeTab);
+
+	const title = gridConfig?.standingsTitle ?? "";
+
+	const normalizeString = (str: string) => str.toLowerCase().trim();
 
 	// Memorize enhancedDrivers and enhancedTeams
 	const enhancedDrivers = useMemo(() => {
@@ -32,8 +34,8 @@ export function DataLoader(props: DataLoaderProps) {
 			return drivers.map((driver) => {
 				const driverFromData = props.data?.drivers.find(
 					(driverFromData) =>
-						useNormalizeString(driverFromData.name) ===
-						useNormalizeString(driver.name)
+						normalizeString(driverFromData.name) ===
+						normalizeString(driver.name)
 				);
 				return {
 					...driver,
@@ -55,8 +57,8 @@ export function DataLoader(props: DataLoaderProps) {
 			return teams.map((team) => {
 				const teamFromData = props.data?.teams.find(
 					(teamFromData) =>
-						useNormalizeString(teamFromData.name) ===
-						useNormalizeString(team.name)
+						normalizeString(teamFromData.name) ===
+						normalizeString(team.name)
 				);
 
 				const teamDrivers = enhancedDrivers

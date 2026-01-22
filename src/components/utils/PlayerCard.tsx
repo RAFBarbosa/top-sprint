@@ -276,7 +276,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 											: "bg-white text-f1-black"
 									}`}
 								>
-									{getClassLabel()}
+									{/* {getClassLabel()} */}
 								</h2>
 								<p className="text-4xl italic mr-1">
 									{data.num}

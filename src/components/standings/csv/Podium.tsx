@@ -1,7 +1,8 @@
 import { PodiumCard } from "./PodiumCard";
+import { GridId } from "../../config/grids"; // Import GridId for type safety
 
 interface PodiumProps {
-	grid?: string;
+	grid?: GridId; // Changed to GridId
 	class?: string;
 	topThree: {
 		name: string;
@@ -13,8 +14,8 @@ interface PodiumProps {
 		[key: string]: string;
 	}[];
 	activeTab: "drivers" | "teams";
-	newData: { name: string }[]; // Add newData prop
-	oldData?: { name: string }[]; // Add oldData prop
+	newData: { name: string }[];
+	oldData?: { name: string }[];
 }
 
 export function Podium(props: PodiumProps) {
@@ -24,7 +25,8 @@ export function Podium(props: PodiumProps) {
 		<div className="mb-1">
 			{props.activeTab === "drivers" ? (
 				<div className="md:flex md:gap-x-2">
-					<div className="hidden md:block w-[31%]">
+					{/* Position 2 - Show on ALL screens */}
+					<div className="w-full md:w-[31%] mb-2 md:mb-0">
 						<PodiumCard
 							name={props.topThree[1].name}
 							photo={props.topThree[1].photo}
@@ -39,7 +41,8 @@ export function Podium(props: PodiumProps) {
 							oldData={props.oldData || []}
 						/>
 					</div>
-					<div className="md:block md:w-[38%]">
+					{/* Position 1 */}
+					<div className="w-full md:w-[38%] mb-2 md:mb-0 md:mx-auto">
 						<PodiumCard
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}
@@ -54,7 +57,8 @@ export function Podium(props: PodiumProps) {
 							oldData={props.oldData || []}
 						/>
 					</div>
-					<div className="hidden md:block w-[31%]">
+					{/* Position 3 - Show on ALL screens */}
+					<div className="w-full md:w-[31%]">
 						<PodiumCard
 							name={props.topThree[2].name}
 							photo={props.topThree[2].photo}
@@ -72,7 +76,7 @@ export function Podium(props: PodiumProps) {
 				</div>
 			) : (
 				<div className="md:flex md:justify-center">
-					<div className="md:w-full">
+					<div className="w-full">
 						<PodiumCard
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}

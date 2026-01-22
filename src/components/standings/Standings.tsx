@@ -1,9 +1,9 @@
 import { Skeleton } from "@mui/material";
 import { useGetTeamsQuery } from "../../graphql/generated";
 import DataLoader from "./csv/DataLoader";
-import { TabSwitch } from "./csv/TabSwitch";
 import { useState } from "react";
 import { useTab } from "../../contexts/TabContext";
+import { getGridConfig } from "../config/grids";
 
 const loadingSkeleton = () => {
 	return (
@@ -34,7 +34,8 @@ export function Standings() {
 	const [previousData, setPreviousData] = useState(data);
 
 	const { activeTab, setActiveTab } = useTab();
-	// const { activeStanding, setActiveStanding } = useTab();
+
+	const gridConfig = getGridConfig(activeTab.id);
 
 	if (loading && !previousData) return loadingSkeleton();
 	if (error)
@@ -46,21 +47,15 @@ export function Standings() {
 
 	return (
 		<aside className="pb-10 flex flex-col relative bg-f1-lightSilver">
-			{/* <TabSwitch /> */}
-
 			<div
-				className={`md:h-[396px] h-[380px] w-full absolute left-0 ${
-					activeTab.id === "gridA"
-						? "bg-radial-[at_50%_100%] from-f1-carbon to-f1-lighterPurple to-150%"
-						: activeTab.id === "gridB"
-						? "bg-radial-[at_50%_100%] from-f1-silver to-f1-text to-70%"
-						: "bg-radial-[at_50%_100%] from-f1-carbon to-f1-academy-dark to-150%"
+				className={`md:h-[396px] h-[280px] w-full absolute left-0 ${
+					gridConfig?.standingsBgClass ?? ""
 				}`}
 			>
 				<div
 					className="absolute inset-0 rounded-lg z-0 pointer-events-none"
 					style={{
-						backgroundColor: "rgba(0, 0, 0, 0.10)",
+						backgroundColor: "rgba(0, 0, 0, 0.05)",
 						backgroundImage:
 							"radial-gradient(circle at .1px .1px, rgba(0, 0, 0, .5) 1px, transparent 0)",
 						backgroundSize: "3px 3px",
@@ -78,7 +73,6 @@ export function Standings() {
 					<DataLoader
 						data={isTabLoading ? previousData : data}
 						activeTab={activeTab.id}
-						// activeStanding={activeStanding}
 					/>
 				</div>
 				{isTabLoading && (
