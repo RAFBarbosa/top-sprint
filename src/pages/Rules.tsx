@@ -80,7 +80,7 @@ export function Rules() {
 					</p>
 					<p>
 						A <strong>Top Sprint</strong> inclui
-						<strong>corridas Sprint</strong> com o objetivo de criar
+						<strong> corridas Sprint</strong> com o objetivo de criar
 						oportunidades para quem está atrás no campeonato,
 						oferecendo mais emoção nas disputas por posições e
 						pontos.
