@@ -1,32 +1,17 @@
 import { useTab } from "../../../contexts/TabContext";
 import React from "react";
+import { getGridColor } from "../../config/grids";
 
-interface TabSwitchProps<T extends string> {
-	activeTab: T;
-	setActiveTab: React.Dispatch<React.SetStateAction<T>>;
-	tabs: ReadonlyArray<{ id: T; label: string }>;
+interface TabSwitchProps {
 	textColor?: string;
 	borderColor?: string;
 }
 
-export function TabSwitch<T extends string>({
+export function TabSwitch({
 	textColor = "text-white",
 	borderColor = "border-white",
-}: TabSwitchProps<T>) {
+}: TabSwitchProps) {
 	const { activeTab, setActiveTab, tabs } = useTab();
-
-	const getTabColor = (tabId: string) => {
-		switch (tabId) {
-			case "gridA": // Heat
-				return "bg-purple-600";
-			case "gridB": // Carbon
-				return "bg-f1-lightSilver";
-			case "gridC": // Academy
-				return "bg-f1-academy";
-			default:
-				return "bg-white";
-		}
-	};
 
 	return (
 		<ul className="flex gap-2 cursor-pointer items-center">
@@ -43,7 +28,7 @@ export function TabSwitch<T extends string>({
 						>
 							{tab.label}
 							<span
-								className={`absolute bottom-0 left-0 h-0.5 ${getTabColor(
+								className={`absolute bottom-0 left-0 h-0.5 ${getGridColor(
 									tab.id
 								)} ${
 									activeTab.id === tab.id
@@ -53,6 +38,7 @@ export function TabSwitch<T extends string>({
 							></span>
 						</button>
 					</li>
+
 					{index < tabs.length - 1 && (
 						<div
 							className={`border-l h-3 ${borderColor} opacity-30`}

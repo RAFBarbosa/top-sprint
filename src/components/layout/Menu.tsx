@@ -8,15 +8,12 @@ import {
 } from "@mui/icons-material";
 import { useEnhancedCards } from "../hooks/useEnhancedCards";
 import useNavigateToDriver from "../hooks/useNavigateToDriver";
-import useNormalizeString from "../hooks/useNormalizeString";
 import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 
 const menuItems = [
 	{ id: "/", label: "Inicio" },
-	// { id: "/resultados/atual", label: "Resultados" },
-	// { id: "/resultados", label: "Resultados" },
 	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
 	{ id: "/regras", label: "Regras e Formato" },
@@ -39,6 +36,16 @@ const smoothScrolling = () => {
 	});
 };
 
+// Helper function for normalization (same as in useEnhancedCards)
+const normalizeString = (str: string): string => {
+	return str
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/\s+/g, ' ')
+		.trim();
+};
+
 export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
 	const location = useLocation();
@@ -46,26 +53,13 @@ export function Menu() {
 
 	const { activeTab, setActiveTab } = useTab();
 
-	const enhancedDrivers = useEnhancedCards(activeTab.id);
+	// ✅ This should work now with your updated useEnhancedCards
+	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
 
 	// Get drivers only for the currently active grid
-	const activeGridDrivers = enhancedDrivers.filter(
-		(driver) => driver.grid === activeTab.id
-	);
-
-	// Get grid name based on active tab
-	const getGridName = () => {
-		switch (activeTab.id) {
-			case "gridA":
-				return "Grid Heat";
-			case "gridB":
-				return "Grid Carbon";
-			case "gridC":
-				return "Grid Academy";
-			default:
-				return "Pilotos";
-		}
-	};
+	const activeGridDrivers = Array.isArray(enhancedCards) 
+	? enhancedCards.filter((driver) => driver.grid === activeTab.id)
+	: [];
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
@@ -76,17 +70,16 @@ export function Menu() {
 		setIsOpen(false);
 
 		// Find the driver to determine which grid they belong to
-		const driver = enhancedDrivers.find(
+		const driver = enhancedCards?.find(
 			(driver) =>
-				useNormalizeString(driver.name) ===
-				useNormalizeString(driverName)
+				normalizeString(driver.name) === normalizeString(driverName)
 		);
 
 		// Set the active tab to the driver's grid if found
 		if (driver && driver.grid !== activeTab.id) {
 			setActiveTab(driver.grid);
 		}
-		navigateToDriver(useNormalizeString(driverName));
+		navigateToDriver(normalizeString(driverName));
 	};
 
 	const handleAllDriversClick = () => {
@@ -105,9 +98,6 @@ export function Menu() {
 
 				{/* Mobile */}
 				<div className="text-xl font-semibold md:hidden z-50 self-center mt-2">
-					{/* <Link to="/" onClick={handleLinkClick}>
-						Liga Top Sprint
-					</Link> */}
 					<GridMenu />
 				</div>
 				<button
@@ -203,13 +193,19 @@ export function Menu() {
 									<div className="fixed left-0 z-50 hidden group-hover:block w-full py-8 bg-f1-carbon">
 										<div className="flex flex-col max-w-screen-xl mx-auto gap-10">
 											<div className="flex justify-between gap-6">
-												<MenuDriverList
-													gridName={getGridName()}
-													drivers={activeGridDrivers}
-													onDriverClick={
-														handleDriverClick
-													}
-												/>
+												{/* Show loading state or drivers list */}
+												{loading ? (
+													<div className="text-white p-4">Carregando pilotos...</div>
+												) : error ? (
+													<div className="text-red-300 p-4">Erro ao carregar pilotos</div>
+												) : !Array.isArray(enhancedCards) ? (
+													<div className="text-yellow-300 p-4">Dados de pilotos inválidos</div>
+												) : (
+													<MenuDriverList
+														drivers={activeGridDrivers}
+														onDriverClick={handleDriverClick}
+													/>
+												)}
 											</div>
 										</div>
 									</div>

@@ -14,7 +14,7 @@ export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
 	const { activeTab, setActiveTab } = useTab();
 
-	const enhancedCards = useEnhancedCards(activeTab.id);
+	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
