@@ -13,7 +13,7 @@ import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 
 const menuItems = [
-	{ id: "/", label: "Inicio" },
+	{ id: "/", label: "início" },
 	{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 	{ id: "/campeoes", label: "Mural dos Campeões" },
 	{ id: "/regras", label: "Regras e Formato" },
