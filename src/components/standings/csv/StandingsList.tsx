@@ -28,7 +28,7 @@ export function StandingsList(props: StandingsListProps) {
 	const [activeCard, setActiveCard] = useState<number | null>(1);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [activeGrid, setActiveGrid] = useState<"drivers" | "teams">(
-		"drivers"
+		"drivers",
 	);
 
 	const gridConfig = getGridConfig(props.activeTab);
@@ -52,7 +52,7 @@ export function StandingsList(props: StandingsListProps) {
 		setActiveClassIndex((prev) => (prev + 1) % classes.length);
 	const prevClass = () =>
 		setActiveClassIndex(
-			(prev) => (prev - 1 + classes.length) % classes.length
+			(prev) => (prev - 1 + classes.length) % classes.length,
 		);
 
 	const swipeHandlers = useSwipeable({
@@ -93,22 +93,22 @@ export function StandingsList(props: StandingsListProps) {
 	// Memoized data
 	const currentClassData = useMemo(
 		() => getClassData(props.data, activeClass),
-		[props.data, activeClass]
+		[props.data, activeClass],
 	);
 
 	const currentClassTeams = useMemo(
 		() => getClassData(props.teams, activeClass),
-		[props.teams, activeClass]
+		[props.teams, activeClass],
 	);
 
 	const allClassesData = useMemo(
 		() => getAllClassesData(props.data),
-		[props.data, classes, hasClasses, props.activeTab]
+		[props.data, classes, hasClasses, props.activeTab],
 	);
 
 	const allClassesTeams = useMemo(
 		() => getAllClassesData(props.teams),
-		[props.teams, classes, hasClasses, props.activeTab]
+		[props.teams, classes, hasClasses, props.activeTab],
 	);
 
 	// Generic render functions
@@ -134,7 +134,7 @@ export function StandingsList(props: StandingsListProps) {
 		item: any,
 		index: number,
 		classId: string,
-		position: number
+		position: number,
 	) => {
 		const isFirstPlaceMobile = position === 1 && isMobile;
 
@@ -173,7 +173,7 @@ export function StandingsList(props: StandingsListProps) {
 	const renderList = (
 		data: any[],
 		classId: string = "single",
-		startIndex: number = 0
+		startIndex: number = 0,
 	) => {
 		return (
 			<ul className="flex flex-col gap-y-[2px]">
@@ -182,8 +182,8 @@ export function StandingsList(props: StandingsListProps) {
 						item,
 						index,
 						classId,
-						startIndex + index + 1
-					)
+						startIndex + index + 1,
+					),
 				)}
 			</ul>
 		);

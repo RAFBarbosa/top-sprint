@@ -18,8 +18,8 @@ export function DataLoader(props: DataLoaderProps) {
 	const isAdminPage = location.pathname.includes("/admin/");
 
 	// ✅ FIXED: Pass gridId as an object property
-	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader({ 
-		gridId: props.activeTab 
+	const { teams, drivers, oldTeams, oldDrivers } = useCsvLoader({
+		gridId: props.activeTab,
 	});
 
 	const gridConfig = getGridConfig(props.activeTab);
@@ -35,7 +35,7 @@ export function DataLoader(props: DataLoaderProps) {
 				const driverFromData = props.data?.drivers.find(
 					(driverFromData) =>
 						normalizeString(driverFromData.name) ===
-						normalizeString(driver.name)
+						normalizeString(driver.name),
 				);
 				return {
 					...driver,
@@ -58,7 +58,7 @@ export function DataLoader(props: DataLoaderProps) {
 				const teamFromData = props.data?.teams.find(
 					(teamFromData) =>
 						normalizeString(teamFromData.name) ===
-						normalizeString(team.name)
+						normalizeString(team.name),
 				);
 
 				const teamDrivers = enhancedDrivers

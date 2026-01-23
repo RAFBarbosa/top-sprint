@@ -143,7 +143,7 @@ export function Calendar(props: CalendarProps) {
 				/>
 
 				<div className="py-4 h-33 px-2 z-10">
-					{isFutureDate ? (
+					{isFutureDate || (!props.winnerA && !props.winnerB) ? (
 						<img
 							src={props.map?.url}
 							alt={`${props.track} map`}
@@ -152,16 +152,16 @@ export function Calendar(props: CalendarProps) {
 					) : (
 						<div className="h-full flex flex-col gap-2 items-center justify-center">
 							<p className="font-f1Podium tracking-wider text-center bg-f1-bg-silver px-6">
-								Vencedores
+								Vencedor
 							</p>
 							<div className="flex flex-col gap-1">
 								{props.winnerA && (
 									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
-										<p className="font-black">A</p>
+										<p className="font-black"></p>
 										<p className="font-semibold">
 											{/* Use the helper function to handle objects */}
 											{getFilteredWinnerName(
-												props.winnerA
+												props.winnerA,
 											)}
 										</p>
 									</div>
@@ -172,7 +172,7 @@ export function Calendar(props: CalendarProps) {
 										<p className="font-semibold">
 											{/* Use the helper function to handle objects */}
 											{getFilteredWinnerName(
-												props.winnerB
+												props.winnerB,
 											)}
 										</p>
 									</div>

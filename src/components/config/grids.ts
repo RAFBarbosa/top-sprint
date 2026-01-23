@@ -38,7 +38,7 @@ export const GRIDS: readonly GridConfig[] = [
 		hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
 		hoverAccentColor: "hover:bg-f1-academy-dark hover:text-white",
 		standingsBgClass:
-			"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy-dark to-80%",
+			"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 		standingsTitle: "Academy",
 		// classes: [
 		// 	{
