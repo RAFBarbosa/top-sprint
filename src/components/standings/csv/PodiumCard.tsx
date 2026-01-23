@@ -53,7 +53,7 @@ export function PodiumCard(props: PodiumCardProps) {
 	const positionDifference = usePositionDifference(
 		props.newData,
 		props.oldData,
-		props.name
+		props.name,
 	);
 
 	const getColorClass = () => {
@@ -121,8 +121,8 @@ export function PodiumCard(props: PodiumCardProps) {
 							? props.position === 1
 								? "#FFD700"
 								: props.position === 2
-								? "#C0C0C0"
-								: "#CD7F32"
+									? "#C0C0C0"
+									: "#CD7F32"
 							: props.teamColor,
 				}}
 			>
@@ -151,8 +151,8 @@ export function PodiumCard(props: PodiumCardProps) {
 					isDrivers
 						? `bottom-0 right-0 scale-70 ${
 								props.position === 1 ? "h-[330px]" : "h-[290px]"
-						  } w-auto translate-x-[70px] translate-y-[15px]`
-						: `bottom-0 right-0 scale-60 translate-x-[-70%] translate-y-[-20%]`
+							} w-auto translate-x-[70px] translate-y-[15px]`
+						: `bottom-0 left-1/2 -translate-x-1/2 scale-60 translate-y-[-20%]`
 				}`}
 			/>
 
@@ -181,8 +181,8 @@ export function PodiumCard(props: PodiumCardProps) {
 					{isDrivers
 						? firstName
 						: Array.isArray(props.teamDrivers)
-						? cleanedTeamDrivers.join(" / ")
-						: cleanedTeamDrivers || "No drivers"}
+							? cleanedTeamDrivers.join(" / ")
+							: cleanedTeamDrivers || "No drivers"}
 				</span>
 
 				{lastName && isDrivers && (
