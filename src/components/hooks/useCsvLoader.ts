@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Papa from "papaparse";
-import {
-	useGetStatsDataQuery,
-} from "../../graphql/generated";
+import { useGetStatsDataQuery } from "../../graphql/generated";
 import { GridId } from "../config/grids";
 
 // Helper function to normalize header names for comparison
@@ -11,14 +9,17 @@ const normalizeHeader = (header: string): string => {
 		.toLowerCase()
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "")
-		.replace(/\s+/g, ' ')
+		.replace(/\s+/g, " ")
 		.trim();
 };
 
 // Function to find the correct header index
-const findHeaderIndex = (actualHeaders: string[], targetHeaders: string[]): number => {
+const findHeaderIndex = (
+	actualHeaders: string[],
+	targetHeaders: string[],
+): number => {
 	const normalizedActualHeaders = actualHeaders.map(normalizeHeader);
-	
+
 	for (const target of targetHeaders) {
 		const normalizedTarget = normalizeHeader(target);
 		const index = normalizedActualHeaders.indexOf(normalizedTarget);
@@ -32,48 +33,59 @@ const findHeaderIndex = (actualHeaders: string[], targetHeaders: string[]): numb
 // Function to calculate position changes between old and new data
 const calculatePositionChanges = <T extends { name: string; pts: string }>(
 	currentData: T[],
-	oldData: T[]
+	oldData: T[],
 ): (T & { positionChange: number })[] => {
-	return currentData.map(currentItem => {
-		const oldItem = oldData.find(old => 
-			normalizeHeader(old.name) === normalizeHeader(currentItem.name)
+	return currentData.map((currentItem) => {
+		const oldItem = oldData.find(
+			(old) =>
+				normalizeHeader(old.name) === normalizeHeader(currentItem.name),
 		);
-		
+
 		if (!oldItem) {
 			return { ...currentItem, positionChange: 0 };
 		}
-		
-		const currentSorted = [...currentData].sort((a, b) => 
-			parseFloat(b.pts) - parseFloat(a.pts)
+
+		const currentSorted = [...currentData].sort(
+			(a, b) => parseFloat(b.pts) - parseFloat(a.pts),
 		);
-		const oldSorted = [...oldData].sort((a, b) => 
-			parseFloat(b.pts) - parseFloat(a.pts)
+		const oldSorted = [...oldData].sort(
+			(a, b) => parseFloat(b.pts) - parseFloat(a.pts),
 		);
-		
-		const currentPosition = currentSorted.findIndex(item => 
-			normalizeHeader(item.name) === normalizeHeader(currentItem.name)
+
+		const currentPosition = currentSorted.findIndex(
+			(item) =>
+				normalizeHeader(item.name) ===
+				normalizeHeader(currentItem.name),
 		);
-		const oldPosition = oldSorted.findIndex(item => 
-			normalizeHeader(item.name) === normalizeHeader(oldItem.name)
+		const oldPosition = oldSorted.findIndex(
+			(item) =>
+				normalizeHeader(item.name) === normalizeHeader(oldItem.name),
 		);
-		
+
 		const positionChange = oldPosition - currentPosition;
-		
+
 		return { ...currentItem, positionChange };
 	});
 };
 
 // Cache for CSV processing results (in-memory cache, not Apollo cache)
-const csvProcessCache = new Map<string, {
-	data: any;
-	timestamp: number;
-}>();
+const csvProcessCache = new Map<
+	string,
+	{
+		data: any;
+		timestamp: number;
+	}
+>();
 
 // Cache duration: 5 minutes
 const CACHE_DURATION = 5 * 60 * 1000;
 
 // Process CSV data function with caching
-const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolean = false) => {
+const processCsvData = async (
+	csvUrl: string,
+	cacheKey: string,
+	isOldCsv: boolean = false,
+) => {
 	// Clean old cache entries
 	const now = Date.now();
 	for (const [key, cached] of csvProcessCache.entries()) {
@@ -84,7 +96,7 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 
 	// Check cache first
 	const cached = csvProcessCache.get(cacheKey);
-	if (cached && (now - cached.timestamp < CACHE_DURATION)) {
+	if (cached && now - cached.timestamp < CACHE_DURATION) {
 		return cached.data;
 	}
 
@@ -106,34 +118,60 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 				complete: (results) => {
 					const rows = results.data as Record<string, string>[];
 					const headers = results.meta.fields || [];
-					
+
 					if (!headers || headers.length === 0) {
 						resolve({});
 						return;
 					}
 
 					// Find indices for each data type
-					const teamNameIdx = findHeaderIndex(headers, ["Pontos Equipes"]);
-					const driverNameIdx = findHeaderIndex(headers, ["Pontos Pilotos"]);
-					
+					const teamNameIdx = findHeaderIndex(headers, [
+						"Pontos Equipes",
+					]);
+					const driverNameIdx = findHeaderIndex(headers, [
+						"Pontos Pilotos",
+					]);
+
 					// Cards data
-					const cardNameIdx = findHeaderIndex(headers, ["Carta Nome"]);
-					const cardPrevRatingIdx = findHeaderIndex(headers, ["Anterior"]);
-					const racecraftIdx = findHeaderIndex(headers, ["Racecraft"]);
-					const awarenessIdx = findHeaderIndex(headers, ["Awareness"]);
+					const cardNameIdx = findHeaderIndex(headers, [
+						"Carta Nome",
+					]);
+					const cardPrevRatingIdx = findHeaderIndex(headers, [
+						"Anterior",
+					]);
+					const cardRatingIdx = findHeaderIndex(headers, ["Atual"]);
+					const racecraftIdx = findHeaderIndex(headers, [
+						"Racecraft",
+					]);
+					const awarenessIdx = findHeaderIndex(headers, [
+						"Awareness",
+					]);
 					const paceIdx = findHeaderIndex(headers, ["Pace"]);
-					const experienceIdx = findHeaderIndex(headers, ["Experience", " Experience"]);
-					const bestCardIdx = findHeaderIndex(headers, ["Melhor Carta"]);
-					
+					const experienceIdx = findHeaderIndex(headers, [
+						"Experience",
+						" Experience",
+					]);
+					const bestCardIdx = findHeaderIndex(headers, [
+						"Melhor Carta",
+					]);
+
 					// Stats data
-					const participationsIdx = findHeaderIndex(headers, ["Presencas"]);
+					const participationsIdx = findHeaderIndex(headers, [
+						"Presencas",
+					]);
 					const pointsIdx = findHeaderIndex(headers, ["Pontos"]);
 					const avgIdx = findHeaderIndex(headers, ["Media"]);
 					const polesIdx = findHeaderIndex(headers, ["Poles"]);
 					const fastestLapIdx = findHeaderIndex(headers, ["VR"]);
-					const raceWinsIdx = findHeaderIndex(headers, ["Vitorias GP"]);
-					const sprintWinsIdx = findHeaderIndex(headers, ["Vitorias Sprint"]);
-					const champWinsIdx = findHeaderIndex(headers, ["Vitoria Campeonato"]);
+					const raceWinsIdx = findHeaderIndex(headers, [
+						"Vitorias GP",
+					]);
+					const sprintWinsIdx = findHeaderIndex(headers, [
+						"Vitorias Sprint",
+					]);
+					const champWinsIdx = findHeaderIndex(headers, [
+						"Vitoria Campeonato",
+					]);
 					const podiumsIdx = findHeaderIndex(headers, ["Podios"]);
 
 					// Find points columns
@@ -144,7 +182,11 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							let hasNumericData = false;
 							for (let i = 0; i < Math.min(3, rows.length); i++) {
 								const value = rows[i]?.[headers[colIdx]];
-								if (value && value.trim() !== '' && !isNaN(parseFloat(value))) {
+								if (
+									value &&
+									value.trim() !== "" &&
+									!isNaN(parseFloat(value))
+								) {
 									hasNumericData = true;
 									break;
 								}
@@ -163,7 +205,11 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							let hasNumericData = false;
 							for (let i = 0; i < Math.min(3, rows.length); i++) {
 								const value = rows[i]?.[headers[colIdx]];
-								if (value && value.trim() !== '' && !isNaN(parseFloat(value))) {
+								if (
+									value &&
+									value.trim() !== "" &&
+									!isNaN(parseFloat(value))
+								) {
 									hasNumericData = true;
 									break;
 								}
@@ -179,7 +225,7 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 					if (driverPtsIdx === -1) driverPtsIdx = 4;
 
 					const result: any = {};
-					
+
 					if (isOldCsv) {
 						const teamsData: { name: string; pts: string }[] = [];
 						const driversData: { name: string; pts: string }[] = [];
@@ -188,12 +234,18 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							if (teamNameIdx !== -1 && teamPtsIdx !== -1) {
 								const teamName = row[headers[teamNameIdx]];
 								const teamPts = row[headers[teamPtsIdx]];
-								
-								if (teamName && teamName.trim() !== '' && teamName !== 'N/A' &&
-									teamPts && teamPts.trim() !== '' && teamPts !== 'N/A') {
+
+								if (
+									teamName &&
+									teamName.trim() !== "" &&
+									teamName !== "N/A" &&
+									teamPts &&
+									teamPts.trim() !== "" &&
+									teamPts !== "N/A"
+								) {
 									teamsData.push({
 										name: teamName.trim(),
-										pts: teamPts.trim()
+										pts: teamPts.trim(),
 									});
 								}
 							}
@@ -201,12 +253,18 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							if (driverNameIdx !== -1 && driverPtsIdx !== -1) {
 								const driverName = row[headers[driverNameIdx]];
 								const driverPts = row[headers[driverPtsIdx]];
-								
-								if (driverName && driverName.trim() !== '' && driverName !== 'N/A' &&
-									driverPts && driverPts.trim() !== '' && driverPts !== 'N/A') {
+
+								if (
+									driverName &&
+									driverName.trim() !== "" &&
+									driverName !== "N/A" &&
+									driverPts &&
+									driverPts.trim() !== "" &&
+									driverPts !== "N/A"
+								) {
 									driversData.push({
 										name: driverName.trim(),
-										pts: driverPts.trim()
+										pts: driverPts.trim(),
 									});
 								}
 							}
@@ -217,7 +275,8 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 					} else {
 						const teamsData: { name: string; pts: string }[] = [];
 						const driversData: { name: string; pts: string }[] = [];
-						const fastestLapData: { name: string; qty: string }[] = [];
+						const fastestLapData: { name: string; qty: string }[] =
+							[];
 						const poleData: { name: string; qty: string }[] = [];
 						const cardData: any[] = [];
 						const statsData: any[] = [];
@@ -226,12 +285,18 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							if (teamNameIdx !== -1 && teamPtsIdx !== -1) {
 								const teamName = row[headers[teamNameIdx]];
 								const teamPts = row[headers[teamPtsIdx]];
-								
-								if (teamName && teamName.trim() !== '' && teamName !== 'N/A' &&
-									teamPts && teamPts.trim() !== '' && teamPts !== 'N/A') {
+
+								if (
+									teamName &&
+									teamName.trim() !== "" &&
+									teamName !== "N/A" &&
+									teamPts &&
+									teamPts.trim() !== "" &&
+									teamPts !== "N/A"
+								) {
 									teamsData.push({
 										name: teamName.trim(),
-										pts: teamPts.trim()
+										pts: teamPts.trim(),
 									});
 								}
 							}
@@ -239,25 +304,38 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							if (driverNameIdx !== -1 && driverPtsIdx !== -1) {
 								const driverName = row[headers[driverNameIdx]];
 								const driverPts = row[headers[driverPtsIdx]];
-								
-								if (driverName && driverName.trim() !== '' && driverName !== 'N/A' &&
-									driverPts && driverPts.trim() !== '' && driverPts !== 'N/A') {
+
+								if (
+									driverName &&
+									driverName.trim() !== "" &&
+									driverName !== "N/A" &&
+									driverPts &&
+									driverPts.trim() !== "" &&
+									driverPts !== "N/A"
+								) {
 									driversData.push({
 										name: driverName.trim(),
-										pts: driverPts.trim()
+										pts: driverPts.trim(),
 									});
 								}
 							}
 
 							if (fastestLapIdx !== -1 && driverNameIdx !== -1) {
-								const fastestLapValue = row[headers[fastestLapIdx]];
+								const fastestLapValue =
+									row[headers[fastestLapIdx]];
 								const driverName = row[headers[driverNameIdx]];
-								
-								if (fastestLapValue && fastestLapValue.trim() !== '' && fastestLapValue !== 'N/A' &&
-									driverName && driverName.trim() !== '' && driverName !== 'N/A') {
+
+								if (
+									fastestLapValue &&
+									fastestLapValue.trim() !== "" &&
+									fastestLapValue !== "N/A" &&
+									driverName &&
+									driverName.trim() !== "" &&
+									driverName !== "N/A"
+								) {
 									fastestLapData.push({
 										name: driverName.trim(),
-										qty: fastestLapValue.trim()
+										qty: fastestLapValue.trim(),
 									});
 								}
 							}
@@ -265,56 +343,164 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 							if (polesIdx !== -1 && driverNameIdx !== -1) {
 								const poleValue = row[headers[polesIdx]];
 								const driverName = row[headers[driverNameIdx]];
-								
-								if (poleValue && poleValue.trim() !== '' && poleValue !== 'N/A' &&
-									driverName && driverName.trim() !== '' && driverName !== 'N/A') {
+
+								if (
+									poleValue &&
+									poleValue.trim() !== "" &&
+									poleValue !== "N/A" &&
+									driverName &&
+									driverName.trim() !== "" &&
+									driverName !== "N/A"
+								) {
 									poleData.push({
 										name: driverName.trim(),
-										qty: poleValue.trim()
+										qty: poleValue.trim(),
 									});
 								}
 							}
 
-							if (cardNameIdx !== -1 && racecraftIdx !== -1 && 
-								awarenessIdx !== -1 && paceIdx !== -1 && 
-								experienceIdx !== -1 && bestCardIdx !== -1 && 
-								cardPrevRatingIdx !== -1) {
-								
+							if (
+								cardNameIdx !== -1 &&
+								racecraftIdx !== -1 &&
+								awarenessIdx !== -1 &&
+								paceIdx !== -1 &&
+								experienceIdx !== -1 &&
+								bestCardIdx !== -1 &&
+								cardPrevRatingIdx !== -1 &&
+								cardRatingIdx !== -1
+							) {
 								const cardName = row[headers[cardNameIdx]];
-								if (cardName && cardName.trim() !== '' && cardName !== 'N/A') {
+								if (
+									cardName &&
+									cardName.trim() !== "" &&
+									cardName !== "N/A"
+								) {
 									cardData.push({
 										name: cardName.trim(),
-										num: '',
-										racecraft: (row[headers[racecraftIdx]] || '').trim(),
-										awareness: (row[headers[awarenessIdx]] || '').trim(),
-										pace: (row[headers[paceIdx]] || '').trim(),
-										experience: (row[headers[experienceIdx]] || '').trim(),
-										rating: (row[headers[bestCardIdx]] || '').trim(),
-										prevRating: (row[headers[cardPrevRatingIdx]] || '').trim()
+										num: "",
+										racecraft: (
+											row[headers[racecraftIdx]] || ""
+										).trim(),
+										awareness: (
+											row[headers[awarenessIdx]] || ""
+										).trim(),
+										pace: (
+											row[headers[paceIdx]] || ""
+										).trim(),
+										experience: (
+											row[headers[experienceIdx]] || ""
+										).trim(),
+										bestRating: (
+											row[headers[bestCardIdx]] || ""
+										).trim(),
+										prevRating: (
+											row[headers[cardPrevRatingIdx]] ||
+											""
+										).trim(),
+										rating: (
+											row[headers[cardRatingIdx]] || ""
+										).trim(),
 									});
 								}
 							}
 
-							if (driverNameIdx !== -1 && participationsIdx !== -1 && 
-								pointsIdx !== -1 && avgIdx !== -1) {
-								
+							if (
+								driverNameIdx !== -1 &&
+								participationsIdx !== -1 &&
+								pointsIdx !== -1 &&
+								avgIdx !== -1
+							) {
 								const driverName = row[headers[driverNameIdx]];
-								if (driverName && driverName.trim() !== '' && driverName !== 'N/A') {
+								if (
+									driverName &&
+									driverName.trim() !== "" &&
+									driverName !== "N/A"
+								) {
 									statsData.push({
 										name: driverName.trim(),
-										championships: champWinsIdx !== -1 ? (row[headers[champWinsIdx]] || '0').trim() : '0',
-										totalPart: participationsIdx !== -1 ? (row[headers[participationsIdx]] || '0').trim() : '0',
-										totalPoints: pointsIdx !== -1 ? (row[headers[pointsIdx]] || '0').trim() : '0',
-										pointsPerDay: avgIdx !== -1 ? (row[headers[avgIdx]] || '0').trim() : '0',
-										raceFinishedPercentage: '',
-										poles: polesIdx !== -1 ? (row[headers[polesIdx]] || '0').trim() : '0',
-										fastestLaps: fastestLapIdx !== -1 ? (row[headers[fastestLapIdx]] || '0').trim() : '0',
-										totalWins: raceWinsIdx !== -1 ? (row[headers[raceWinsIdx]] || '0').trim() : '0',
-										totalSprintWins: sprintWinsIdx !== -1 ? (row[headers[sprintWinsIdx]] || '0').trim() : '0',
-										totalPodiums: podiumsIdx !== -1 ? (row[headers[podiumsIdx]] || '0').trim() : '0',
-										totalPointsNoBonus: '',
-										totalPointsPerDayNoBonus: '',
-										powerRanking: ''
+										championships:
+											champWinsIdx !== -1
+												? (
+														row[
+															headers[
+																champWinsIdx
+															]
+														] || "0"
+													).trim()
+												: "0",
+										totalPart:
+											participationsIdx !== -1
+												? (
+														row[
+															headers[
+																participationsIdx
+															]
+														] || "0"
+													).trim()
+												: "0",
+										totalPoints:
+											pointsIdx !== -1
+												? (
+														row[
+															headers[pointsIdx]
+														] || "0"
+													).trim()
+												: "0",
+										pointsPerDay:
+											avgIdx !== -1
+												? (
+														row[headers[avgIdx]] ||
+														"0"
+													).trim()
+												: "0",
+										raceFinishedPercentage: "",
+										poles:
+											polesIdx !== -1
+												? (
+														row[
+															headers[polesIdx]
+														] || "0"
+													).trim()
+												: "0",
+										fastestLaps:
+											fastestLapIdx !== -1
+												? (
+														row[
+															headers[
+																fastestLapIdx
+															]
+														] || "0"
+													).trim()
+												: "0",
+										totalWins:
+											raceWinsIdx !== -1
+												? (
+														row[
+															headers[raceWinsIdx]
+														] || "0"
+													).trim()
+												: "0",
+										totalSprintWins:
+											sprintWinsIdx !== -1
+												? (
+														row[
+															headers[
+																sprintWinsIdx
+															]
+														] || "0"
+													).trim()
+												: "0",
+										totalPodiums:
+											podiumsIdx !== -1
+												? (
+														row[
+															headers[podiumsIdx]
+														] || "0"
+													).trim()
+												: "0",
+										totalPointsNoBonus: "",
+										totalPointsPerDayNoBonus: "",
+										powerRanking: "",
 									});
 								}
 							}
@@ -331,7 +517,7 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 					// Cache the processed result
 					csvProcessCache.set(cacheKey, {
 						data: result,
-						timestamp: Date.now()
+						timestamp: Date.now(),
 					});
 
 					resolve(result);
@@ -339,7 +525,7 @@ const processCsvData = async (csvUrl: string, cacheKey: string, isOldCsv: boolea
 				error: (parseError: unknown) => {
 					console.error("Error parsing CSV:", parseError);
 					resolve({});
-				}
+				},
 			});
 		});
 
@@ -363,7 +549,7 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 		fastestLaps: { name: string; qty: string }[];
 		poles: { name: string; qty: string }[];
 		cards: any[];
-        stats: any[];
+		stats: any[];
 	}>({
 		teams: [],
 		drivers: [],
@@ -372,7 +558,7 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 		fastestLaps: [],
 		poles: [],
 		cards: [],
-		stats: []
+		stats: [],
 	});
 
 	const [loading, setLoading] = useState<boolean>(true);
@@ -384,12 +570,17 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 
 	// Use GetStatsDataQuery with cache-and-network for best UX
 	// This shows cached data immediately, then fetches fresh data
-	const { data, loading: queryLoading, error: queryError, refetch } = useGetStatsDataQuery({
-		variables: { 
-			gridId: gridId
+	const {
+		data,
+		loading: queryLoading,
+		error: queryError,
+		refetch,
+	} = useGetStatsDataQuery({
+		variables: {
+			gridId: gridId,
 		},
 		skip: !gridId,
-		fetchPolicy: 'cache-and-network', // BEST PRACTICE: Show cached, fetch fresh
+		fetchPolicy: "cache-and-network", // BEST PRACTICE: Show cached, fetch fresh
 		// This ensures the query is re-run when gridId changes
 		notifyOnNetworkStatusChange: true, // This makes loading update during refetch
 	});
@@ -404,20 +595,20 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 			}
 
 			// Create a unique key for this grid's data
-			const dataKey = `${gridId}-${data.datas[0]?.id || 'no-data'}`;
+			const dataKey = `${gridId}-${data.datas[0]?.id || "no-data"}`;
 
 			// Check if we need to process new data
 			// We process if: 1) It's the initial mount, 2) Grid changed, or 3) Data changed
-			const shouldProcess = 
-				isInitialMountRef.current || 
-				prevGridIdRef.current !== gridId || 
+			const shouldProcess =
+				isInitialMountRef.current ||
+				prevGridIdRef.current !== gridId ||
 				data !== prevDataRef.current[dataKey];
 
 			if (shouldProcess) {
 				isInitialMountRef.current = false;
 				prevGridIdRef.current = gridId;
 				prevDataRef.current[dataKey] = data;
-				
+
 				setLoading(true);
 				setError(null);
 
@@ -434,31 +625,43 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 					const oldCsvUrl = oldDataItem?.csv?.url;
 
 					if (!currentCsvUrl) {
-						throw new Error(`No current CSV URL found for ${gridId}`);
+						throw new Error(
+							`No current CSV URL found for ${gridId}`,
+						);
 					}
 
 					// Create cache keys for CSV processing
 					const currentCacheKey = `${gridId}-current-${currentDataItem.id}`;
-					const oldCacheKey = oldCsvUrl ? `${gridId}-old-${oldDataItem?.id}` : null;
+					const oldCacheKey = oldCsvUrl
+						? `${gridId}-old-${oldDataItem?.id}`
+						: null;
 
 					// Load current CSV data (with caching)
-					const currentData = await processCsvData(currentCsvUrl, currentCacheKey, false);
-					
+					const currentData = await processCsvData(
+						currentCsvUrl,
+						currentCacheKey,
+						false,
+					);
+
 					// Load old CSV data if available (with caching)
 					let oldData = { teams: [], drivers: [] };
 					if (oldCsvUrl && oldCacheKey) {
-						oldData = await processCsvData(oldCsvUrl, oldCacheKey, true) as any;
+						oldData = (await processCsvData(
+							oldCsvUrl,
+							oldCacheKey,
+							true,
+						)) as any;
 					}
 
 					// Calculate position changes for teams and drivers
 					const teamsWithChanges = calculatePositionChanges(
 						currentData.teams || [],
-						oldData.teams || []
+						oldData.teams || [],
 					);
-					
+
 					const driversWithChanges = calculatePositionChanges(
 						currentData.drivers || [],
-						oldData.drivers || []
+						oldData.drivers || [],
 					);
 
 					// Update state with all data for this grid
@@ -470,12 +673,14 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 						fastestLaps: currentData.fastestLaps || [],
 						poles: currentData.poles || [],
 						cards: currentData.cards || [],
-						stats: currentData.stats || []
+						stats: currentData.stats || [],
 					});
-
-
 				} catch (err: unknown) {
-					setError(err instanceof Error ? err.message : `Failed to load CSV data for ${gridId}`);
+					setError(
+						err instanceof Error
+							? err.message
+							: `Failed to load CSV data for ${gridId}`,
+					);
 				} finally {
 					setLoading(false);
 				}
@@ -505,16 +710,16 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 		poles: csvData.poles,
 		cards: csvData.cards,
 		stats: csvData.stats,
-		
+
 		// Loading and error states
 		loading: queryLoading || loading,
 		error: queryError?.message || error,
-		
+
 		// Grid info
 		gridId,
-		
+
 		// Refresh function
-		refresh: refreshData
+		refresh: refreshData,
 	};
 };
 
