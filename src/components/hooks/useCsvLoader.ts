@@ -124,15 +124,20 @@ const processCsvData = async (
 						return;
 					}
 
+					// DEBUG: Log all headers to see what we're working with
+					console.log("CSV Headers:", headers);
+					console.log("First row sample:", rows[0]);
+
 					// Find indices for each data type
 					const teamNameIdx = findHeaderIndex(headers, [
 						"Pontos Equipes",
 					]);
 					const driverNameIdx = findHeaderIndex(headers, [
 						"Pontos Pilotos",
+						"Carta Nome",
 					]);
 
-					// Cards data
+					// Cards data - FIXED: Better header matching
 					const cardNameIdx = findHeaderIndex(headers, [
 						"Carta Nome",
 					]);
@@ -149,20 +154,26 @@ const processCsvData = async (
 					const paceIdx = findHeaderIndex(headers, ["Pace"]);
 					const experienceIdx = findHeaderIndex(headers, [
 						"Experience",
-						" Experience",
+						" Experience", // Handle leading space
 					]);
 					const bestCardIdx = findHeaderIndex(headers, [
 						"Melhor Carta",
 					]);
 
-					// Stats data
+					// Stats data - FIXED: Match actual CSV headers
 					const participationsIdx = findHeaderIndex(headers, [
 						"Presencas",
 					]);
 					const pointsIdx = findHeaderIndex(headers, ["Pontos"]);
 					const avgIdx = findHeaderIndex(headers, ["Media"]);
+					const avgQualiIdx = findHeaderIndex(headers, [
+						"Media Quali",
+					]);
 					const polesIdx = findHeaderIndex(headers, ["Poles"]);
 					const fastestLapIdx = findHeaderIndex(headers, ["VR"]);
+					const posGanhasIdx = findHeaderIndex(headers, [
+						"Pos Ganhas",
+					]);
 					const raceWinsIdx = findHeaderIndex(headers, [
 						"Vitorias GP",
 					]);
@@ -172,7 +183,34 @@ const processCsvData = async (
 					const champWinsIdx = findHeaderIndex(headers, [
 						"Vitoria Campeonato",
 					]);
+					const teamWinsIdx = findHeaderIndex(headers, [
+						"Vitoria Equipe",
+					]);
 					const podiumsIdx = findHeaderIndex(headers, ["Podios"]);
+					const temporadasIdx = findHeaderIndex(headers, [
+						"Temporadas",
+					]);
+					const tempoIdx = findHeaderIndex(headers, ["Tempo"]);
+
+					console.log("Column indices found:", {
+						cardNameIdx,
+						cardPrevRatingIdx,
+						cardRatingIdx,
+						racecraftIdx,
+						awarenessIdx,
+						paceIdx,
+						experienceIdx,
+						bestCardIdx,
+						participationsIdx,
+						pointsIdx,
+						avgIdx,
+						polesIdx,
+						fastestLapIdx,
+						raceWinsIdx,
+						sprintWinsIdx,
+						champWinsIdx,
+						podiumsIdx,
+					});
 
 					// Find points columns
 					let teamPtsIdx = -1;
@@ -281,7 +319,7 @@ const processCsvData = async (
 						const cardData: any[] = [];
 						const statsData: any[] = [];
 
-						rows.forEach((row) => {
+						rows.forEach((row, rowIndex) => {
 							if (teamNameIdx !== -1 && teamPtsIdx !== -1) {
 								const teamName = row[headers[teamNameIdx]];
 								const teamPts = row[headers[teamPtsIdx]];
@@ -359,6 +397,7 @@ const processCsvData = async (
 								}
 							}
 
+							// Cards data collection
 							if (
 								cardNameIdx !== -1 &&
 								racecraftIdx !== -1 &&
@@ -375,7 +414,7 @@ const processCsvData = async (
 									cardName.trim() !== "" &&
 									cardName !== "N/A"
 								) {
-									cardData.push({
+									const cardItem = {
 										name: cardName.trim(),
 										num: "",
 										racecraft: (
@@ -400,23 +439,34 @@ const processCsvData = async (
 										rating: (
 											row[headers[cardRatingIdx]] || ""
 										).trim(),
-									});
+									};
+
+									// DEBUG for first few rows
+									if (rowIndex < 3) {
+										console.log(
+											`Card row ${rowIndex}:`,
+											cardItem,
+										);
+									}
+
+									cardData.push(cardItem);
 								}
 							}
 
+							// Stats data collection
 							if (
-								driverNameIdx !== -1 &&
+								cardNameIdx !== -1 &&
 								participationsIdx !== -1 &&
 								pointsIdx !== -1 &&
 								avgIdx !== -1
 							) {
-								const driverName = row[headers[driverNameIdx]];
+								const driverName = row[headers[cardNameIdx]];
 								if (
 									driverName &&
 									driverName.trim() !== "" &&
 									driverName !== "N/A"
 								) {
-									statsData.push({
+									const statsItem = {
 										name: driverName.trim(),
 										championships:
 											champWinsIdx !== -1
@@ -453,7 +503,7 @@ const processCsvData = async (
 														"0"
 													).trim()
 												: "0",
-										raceFinishedPercentage: "",
+										raceFinishedPercentage: "", // Not in CSV
 										poles:
 											polesIdx !== -1
 												? (
@@ -498,10 +548,20 @@ const processCsvData = async (
 														] || "0"
 													).trim()
 												: "0",
-										totalPointsNoBonus: "",
-										totalPointsPerDayNoBonus: "",
-										powerRanking: "",
-									});
+										totalPointsNoBonus: "", // Not in CSV
+										totalPointsPerDayNoBonus: "", // Not in CSV
+										powerRanking: "", // Not in CSV
+									};
+
+									// DEBUG for first few rows
+									if (rowIndex < 3) {
+										console.log(
+											`Stats row ${rowIndex}:`,
+											statsItem,
+										);
+									}
+
+									statsData.push(statsItem);
 								}
 							}
 						});
@@ -512,6 +572,8 @@ const processCsvData = async (
 						result.poles = poleData;
 						result.cards = cardData;
 						result.stats = statsData;
+
+						console.log("Processed CSV result:", result);
 					}
 
 					// Cache the processed result
@@ -699,6 +761,8 @@ const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 			refetch({ gridId });
 		}
 	};
+
+	// console.log("useCsvLoader:", { gridId, loading, error, csvData });
 
 	return {
 		// Data for the selected grid
