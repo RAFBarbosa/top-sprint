@@ -125,8 +125,8 @@ const processCsvData = async (
 					}
 
 					// DEBUG: Log all headers to see what we're working with
-					console.log("CSV Headers:", headers);
-					console.log("First row sample:", rows[0]);
+					// console.log("CSV Headers:", headers);
+					// console.log("First row sample:", rows[0]);
 
 					// Find indices for each data type
 					const teamNameIdx = findHeaderIndex(headers, [
@@ -192,25 +192,25 @@ const processCsvData = async (
 					]);
 					const tempoIdx = findHeaderIndex(headers, ["Tempo"]);
 
-					console.log("Column indices found:", {
-						cardNameIdx,
-						cardPrevRatingIdx,
-						cardRatingIdx,
-						racecraftIdx,
-						awarenessIdx,
-						paceIdx,
-						experienceIdx,
-						bestCardIdx,
-						participationsIdx,
-						pointsIdx,
-						avgIdx,
-						polesIdx,
-						fastestLapIdx,
-						raceWinsIdx,
-						sprintWinsIdx,
-						champWinsIdx,
-						podiumsIdx,
-					});
+					// console.log("Column indices found:", {
+					// 	cardNameIdx,
+					// 	cardPrevRatingIdx,
+					// 	cardRatingIdx,
+					// 	racecraftIdx,
+					// 	awarenessIdx,
+					// 	paceIdx,
+					// 	experienceIdx,
+					// 	bestCardIdx,
+					// 	participationsIdx,
+					// 	pointsIdx,
+					// 	avgIdx,
+					// 	polesIdx,
+					// 	fastestLapIdx,
+					// 	raceWinsIdx,
+					// 	sprintWinsIdx,
+					// 	champWinsIdx,
+					// 	podiumsIdx,
+					// });
 
 					// Find points columns
 					let teamPtsIdx = -1;
@@ -442,12 +442,12 @@ const processCsvData = async (
 									};
 
 									// DEBUG for first few rows
-									if (rowIndex < 3) {
-										console.log(
-											`Card row ${rowIndex}:`,
-											cardItem,
-										);
-									}
+									// if (rowIndex < 3) {
+									// 	console.log(
+									// 		`Card row ${rowIndex}:`,
+									// 		cardItem,
+									// 	);
+									// }
 
 									cardData.push(cardItem);
 								}
@@ -554,12 +554,12 @@ const processCsvData = async (
 									};
 
 									// DEBUG for first few rows
-									if (rowIndex < 3) {
-										console.log(
-											`Stats row ${rowIndex}:`,
-											statsItem,
-										);
-									}
+									// if (rowIndex < 3) {
+									// 	console.log(
+									// 		`Stats row ${rowIndex}:`,
+									// 		statsItem,
+									// 	);
+									// }
 
 									statsData.push(statsItem);
 								}
@@ -573,7 +573,7 @@ const processCsvData = async (
 						result.cards = cardData;
 						result.stats = statsData;
 
-						console.log("Processed CSV result:", result);
+						// console.log("Processed CSV result:", result);
 					}
 
 					// Cache the processed result
@@ -585,7 +585,7 @@ const processCsvData = async (
 					resolve(result);
 				},
 				error: (parseError: unknown) => {
-					console.error("Error parsing CSV:", parseError);
+					// console.error("Error parsing CSV:", parseError);
 					resolve({});
 				},
 			});
@@ -593,7 +593,7 @@ const processCsvData = async (
 
 		return result;
 	} catch (fetchError: unknown) {
-		console.error("Error fetching CSV:", fetchError);
+		// console.error("Error fetching CSV:", fetchError);
 		return {};
 	}
 };
