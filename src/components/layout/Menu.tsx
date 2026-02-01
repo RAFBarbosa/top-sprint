@@ -18,7 +18,7 @@ const menuItems = [
 	{ id: "/campeoes", label: "Mural dos Campeões" },
 	{ id: "/regras", label: "Regras e Formato" },
 	{
-		id: "https://docs.google.com/forms/d/e/1FAIpQLSfHN50Fhz16wKABFaKlBa-iLFSeDVENnuZyZ7pK40qXJkL5Nw/viewform",
+		id: "https://marvelous-barracuda-f24.notion.site/2d9a6519acc080199dc7e431afd52d5a?pvs=105",
 		label: "Abrir Ticket",
 		external: true,
 	},
@@ -42,7 +42,7 @@ const normalizeString = (str: string): string => {
 		.toLowerCase()
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "")
-		.replace(/\s+/g, ' ')
+		.replace(/\s+/g, " ")
 		.trim();
 };
 
@@ -57,9 +57,9 @@ export function Menu() {
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
 
 	// Get drivers only for the currently active grid
-	const activeGridDrivers = Array.isArray(enhancedCards) 
-	? enhancedCards.filter((driver) => driver.grid === activeTab.id)
-	: [];
+	const activeGridDrivers = Array.isArray(enhancedCards)
+		? enhancedCards.filter((driver) => driver.grid === activeTab.id)
+		: [];
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
@@ -72,7 +72,7 @@ export function Menu() {
 		// Find the driver to determine which grid they belong to
 		const driver = enhancedCards?.find(
 			(driver) =>
-				normalizeString(driver.name) === normalizeString(driverName)
+				normalizeString(driver.name) === normalizeString(driverName),
 		);
 
 		// Set the active tab to the driver's grid if found
@@ -176,7 +176,7 @@ export function Menu() {
 									key={data.id}
 									className={`relative h-full group ${
 										location.pathname.startsWith(
-											"/pilotos"
+											"/pilotos",
 										) && "bg-f1-carbon"
 									}`}
 								>
@@ -195,15 +195,28 @@ export function Menu() {
 											<div className="flex justify-between gap-6">
 												{/* Show loading state or drivers list */}
 												{loading ? (
-													<div className="text-white p-4">Carregando pilotos...</div>
+													<div className="text-white p-4">
+														Carregando pilotos...
+													</div>
 												) : error ? (
-													<div className="text-red-300 p-4">Erro ao carregar pilotos</div>
-												) : !Array.isArray(enhancedCards) ? (
-													<div className="text-yellow-300 p-4">Dados de pilotos inválidos</div>
+													<div className="text-red-300 p-4">
+														Erro ao carregar pilotos
+													</div>
+												) : !Array.isArray(
+														enhancedCards,
+												  ) ? (
+													<div className="text-yellow-300 p-4">
+														Dados de pilotos
+														inválidos
+													</div>
 												) : (
 													<MenuDriverList
-														drivers={activeGridDrivers}
-														onDriverClick={handleDriverClick}
+														drivers={
+															activeGridDrivers
+														}
+														onDriverClick={
+															handleDriverClick
+														}
 													/>
 												)}
 											</div>
@@ -218,7 +231,7 @@ export function Menu() {
 										(location.pathname === data.id ||
 											(data.id === "/resultados" &&
 												location.pathname.startsWith(
-													"/resultados"
+													"/resultados",
 												))) &&
 										"bg-f1-carbon"
 									}`}

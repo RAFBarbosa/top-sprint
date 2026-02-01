@@ -28,6 +28,8 @@ export function DataLoader(props: DataLoaderProps) {
 
 	const normalizeString = (str: string) => str.toLowerCase().trim();
 
+	console.log("Props Data:", props.data);
+
 	// Memorize enhancedDrivers and enhancedTeams
 	const enhancedDrivers = useMemo(() => {
 		if (props.data && drivers && teams) {
@@ -77,6 +79,8 @@ export function DataLoader(props: DataLoaderProps) {
 		}
 		return [];
 	}, [props.data, teams, enhancedDrivers]);
+
+	// console.log("Enhanced Drivers:", enhancedDrivers);
 
 	return (
 		<div className="w-full mx-auto">
