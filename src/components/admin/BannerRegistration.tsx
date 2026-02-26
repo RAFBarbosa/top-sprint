@@ -222,7 +222,7 @@ export function BannerRegistration() {
 					const formData = new FormData();
 					const finalKey = uploadData.key.replace(
 						"${filename}",
-						encodeURIComponent(photoFile.name)
+						encodeURIComponent(photoFile.name),
 					);
 					formData.append("key", finalKey);
 					formData.append("policy", uploadData.policy);
@@ -233,7 +233,7 @@ export function BannerRegistration() {
 					if (uploadData.securityToken) {
 						formData.append(
 							"x-amz-security-token",
-							uploadData.securityToken
+							uploadData.securityToken,
 						);
 					}
 					formData.append("file", photoFile);
@@ -249,7 +249,7 @@ export function BannerRegistration() {
 					setUploadProgress(100);
 				} catch (uploadError) {
 					throw new Error(
-						`Falha no upload da foto: ${uploadError.message}`
+						`Falha no upload da foto: ${uploadError.message}`,
 					);
 				}
 			}
@@ -329,7 +329,11 @@ export function BannerRegistration() {
 			}
 
 			// Reset form after success
-			resetForm();
+			if (isEditing) {
+				setPhotoFile(null);
+			} else {
+				resetForm();
+			}
 			setUploadProgress(null);
 
 			// Clear success message after 5 seconds
@@ -348,7 +352,7 @@ export function BannerRegistration() {
 	};
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -365,12 +369,12 @@ export function BannerRegistration() {
 						link: banner.link,
 						category: banner.category,
 						date: banner.createdAt,
-				  }).some(([_, value]) =>
+					}).some(([_, value]) =>
 						value
 							?.toString()
 							.toLowerCase()
-							.includes(searchTerm.toLowerCase())
-				  )
+							.includes(searchTerm.toLowerCase()),
+					)
 				: true;
 
 			// Filter by category
@@ -469,7 +473,7 @@ export function BannerRegistration() {
 												{formatEnum(option.name)}
 											</span>
 										</ListboxOption>
-									)
+									),
 								)}
 							</ListboxOptions>
 						</div>
@@ -497,7 +501,7 @@ export function BannerRegistration() {
 												<span className="text-xs text-gray-500">
 													•{" "}
 													{formatEnum(
-														banner.category
+														banner.category,
 													)}
 												</span>
 											)}
@@ -505,7 +509,7 @@ export function BannerRegistration() {
 												<span className="text-xs text-gray-500">
 													•{" "}
 													{formatDateWithCapitalizedMonth(
-														banner.createdAt
+														banner.createdAt,
 													)}
 												</span>
 											)}
@@ -526,7 +530,7 @@ export function BannerRegistration() {
 											onClick={() =>
 												handleDeleteClick(
 													banner.id,
-													banner.deleted
+													banner.deleted,
 												)
 											}
 											className=" text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
@@ -625,8 +629,8 @@ export function BannerRegistration() {
 								status.type === "error"
 									? "bg-red-100 border border-red-400 text-red-700"
 									: status.type === "success"
-									? "bg-green-100 border border-green-400 text-green-700"
-									: "bg-blue-100 border border-blue-400 text-blue-700"
+										? "bg-green-100 border border-green-400 text-green-700"
+										: "bg-blue-100 border border-blue-400 text-blue-700"
 							}`}
 						>
 							<div className="flex items-center gap-2">
@@ -721,11 +725,11 @@ export function BannerRegistration() {
 												>
 													<span className="block truncate">
 														{formatEnum(
-															option.name
+															option.name,
 														)}
 													</span>
 												</ListboxOption>
-											)
+											),
 										)}
 									</ListboxOptions>
 								</div>
@@ -785,8 +789,8 @@ export function BannerRegistration() {
 								? "Atualizando..."
 								: "Cadastrando..."
 							: isEditing
-							? "Atualizar"
-							: "Cadastrar"}
+								? "Atualizar"
+								: "Cadastrar"}
 					</button>
 				</form>
 			</div>

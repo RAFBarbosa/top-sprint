@@ -154,7 +154,7 @@ export function TeamRegistration() {
 					const formData = new FormData();
 					const finalKey = uploadData.key.replace(
 						"${filename}",
-						encodeURIComponent(logoFile.name)
+						encodeURIComponent(logoFile.name),
 					);
 					formData.append("key", finalKey);
 					formData.append("policy", uploadData.policy);
@@ -165,7 +165,7 @@ export function TeamRegistration() {
 					if (uploadData.securityToken) {
 						formData.append(
 							"x-amz-security-token",
-							uploadData.securityToken
+							uploadData.securityToken,
 						);
 					}
 					formData.append("file", logoFile);
@@ -181,7 +181,7 @@ export function TeamRegistration() {
 					setUploadProgress(100);
 				} catch (uploadError) {
 					throw new Error(
-						`Falha no upload do logo: ${uploadError.message}`
+						`Falha no upload do logo: ${uploadError.message}`,
 					);
 				}
 			}
@@ -241,7 +241,11 @@ export function TeamRegistration() {
 			}
 
 			// Reset form after success
-			resetForm();
+			if (isEditing) {
+				setLogoFile(null);
+			} else {
+				resetForm();
+			}
 			setUploadProgress(null);
 
 			// Clear success message after 5 seconds
@@ -260,7 +264,7 @@ export function TeamRegistration() {
 	};
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -355,7 +359,7 @@ export function TeamRegistration() {
 											e.stopPropagation();
 											handleDeleteClick(
 												team.id,
-												team.deleted
+												team.deleted,
 											);
 										}}
 										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
@@ -453,8 +457,8 @@ export function TeamRegistration() {
 								status.type === "error"
 									? "bg-red-100 border border-red-400 text-red-700"
 									: status.type === "success"
-									? "bg-green-100 border border-green-400 text-green-700"
-									: "bg-blue-100 border border-blue-400 text-blue-700"
+										? "bg-green-100 border border-green-400 text-green-700"
+										: "bg-blue-100 border border-blue-400 text-blue-700"
 							}`}
 						>
 							<div className="flex items-center gap-2">
@@ -549,8 +553,8 @@ export function TeamRegistration() {
 								? "Atualizando..."
 								: "Cadastrando..."
 							: isEditing
-							? "Atualizar"
-							: "Cadastrar"}
+								? "Atualizar"
+								: "Cadastrar"}
 					</button>
 				</form>
 			</div>

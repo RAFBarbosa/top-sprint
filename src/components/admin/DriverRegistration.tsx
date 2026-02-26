@@ -16,6 +16,7 @@ import {
 	useClassOptionsQuery,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { hasGridClasses, getGridClasses, GridId } from "../config/grids";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
 	Dialog,
@@ -156,11 +157,7 @@ export function DriverRegistration() {
 			phone: driver.phone,
 		});
 
-		// Find the team in teamsData that matches the driver's team name
-		const matchingTeam = teamsData?.teams?.find(
-			(team) => team.name === driver.team?.name
-		);
-		setTeamId(matchingTeam?.id || "");
+		setTeamId(driver.team?.id || "");
 	};
 
 	const resetForm = () => {
@@ -180,17 +177,17 @@ export function DriverRegistration() {
 		setPhotoFile(null);
 	};
 
-	useEffect(() => {
-		if (isEditing && selectedDriver?.team && !teamId) {
-			// Fallback: Try to match by team name if ID isn't available
-			const matchingTeam = teamsData?.teams?.find(
-				(team) => team.name === selectedDriver.team.name
-			);
-			if (matchingTeam) {
-				setTeamId(matchingTeam.id);
-			}
-		}
-	}, [isEditing, selectedDriver, teamsData, teamId]);
+	// useEffect(() => {
+	// 	if (isEditing && selectedDriver?.team && !teamId) {
+	// 		// Fallback: Try to match by team name if ID isn't available
+	// 		const matchingTeam = teamsData?.teams?.find(
+	// 			(team) => team.name === selectedDriver.team.name,
+	// 		);
+	// 		if (matchingTeam) {
+	// 			setTeamId(matchingTeam.id);
+	// 		}
+	// 	}
+	// }, [isEditing, selectedDriver, teamsData, teamId]);
 
 	if (teamsError) {
 		return (
@@ -237,7 +234,7 @@ export function DriverRegistration() {
 					const formData = new FormData();
 					const finalKey = uploadData.key.replace(
 						"${filename}",
-						encodeURIComponent(photoFile.name)
+						encodeURIComponent(photoFile.name),
 					);
 					formData.append("key", finalKey);
 					formData.append("policy", uploadData.policy);
@@ -248,7 +245,7 @@ export function DriverRegistration() {
 					if (uploadData.securityToken) {
 						formData.append(
 							"x-amz-security-token",
-							uploadData.securityToken
+							uploadData.securityToken,
 						);
 					}
 					formData.append("file", photoFile);
@@ -264,7 +261,7 @@ export function DriverRegistration() {
 					setUploadProgress(100);
 				} catch (uploadError) {
 					throw new Error(
-						`Falha no upload da foto: ${uploadError.message}`
+						`Falha no upload da foto: ${uploadError.message}`,
 					);
 				}
 			}
@@ -276,10 +273,12 @@ export function DriverRegistration() {
 				throw new Error(`Grid inválido: ${formData.grid}`);
 			}
 
-			const validClasses =
-				classData?.__type?.enumValues?.map((v) => v.name) || [];
-			if (!validClasses.includes(formData.class)) {
-				throw new Error(`Classe inválida: ${formData.class}`);
+			if (hasGridClasses(formData.grid as GridId)) {
+				const validClasses =
+					classData?.__type?.enumValues?.map((v) => v.name) || [];
+				if (!validClasses.includes(formData.class)) {
+					throw new Error(`Classe inválida: ${formData.class}`);
+				}
 			}
 
 			if (formData.stream && !formData.stream.startsWith("http")) {
@@ -299,14 +298,14 @@ export function DriverRegistration() {
 					variables: {
 						where: { id: selectedDriver.id },
 						data: {
-							name: formData.name, // Direct string value
+							name: formData.name,
 							number: formData.number || null,
-							grid: formData.grid,
-							class: formData.class,
+							grid: formData.grid || null,
+							class: formData.class || null,
 							stream: formData.stream || null,
 							city: formData.city || null,
 							equipment: formData.equipment || null,
-							phone: formData.phone,
+							phone: formData.phone || null,
 							photo: photoId
 								? { connect: { id: photoId } }
 								: undefined,
@@ -330,12 +329,12 @@ export function DriverRegistration() {
 						data: {
 							name: formData.name,
 							number: formData.number || null,
-							grid: formData.grid,
-							class: formData.class,
+							grid: formData.grid || null,
+							class: formData.class || null,
 							stream: formData.stream || null,
 							city: formData.city || null,
 							equipment: formData.equipment || null,
-							phone: formData.phone,
+							phone: formData.phone || null,
 							photo: photoId
 								? { connect: { id: photoId } }
 								: null,
@@ -369,7 +368,11 @@ export function DriverRegistration() {
 			}
 
 			// Reset form after success
-			resetForm();
+			if (isEditing) {
+				setPhotoFile(null);
+			} else {
+				resetForm();
+			}
 			setUploadProgress(null);
 
 			// Clear success message after 5 seconds
@@ -387,7 +390,7 @@ export function DriverRegistration() {
 	};
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -405,12 +408,12 @@ export function DriverRegistration() {
 						equipment: driver.equipment,
 						phone: driver.phone,
 						team: driver.team?.name,
-				  }).some(([_, value]) =>
+					}).some(([_, value]) =>
 						value
 							?.toString()
 							.toLowerCase()
-							.includes(searchTerm.toLowerCase())
-				  )
+							.includes(searchTerm.toLowerCase()),
+					)
 				: true;
 
 			// Filter by grid position
@@ -538,7 +541,7 @@ export function DriverRegistration() {
 											onClick={() =>
 												handleDeleteClick(
 													driver.id,
-													driver.deleted
+													driver.deleted,
 												)
 											}
 											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
@@ -637,8 +640,8 @@ export function DriverRegistration() {
 								status.type === "error"
 									? "bg-red-100 border border-red-400 text-red-700"
 									: status.type === "success"
-									? "bg-green-100 border border-green-400 text-green-700"
-									: "bg-blue-100 border border-blue-400 text-blue-700"
+										? "bg-green-100 border border-green-400 text-green-700"
+										: "bg-blue-100 border border-blue-400 text-blue-700"
 							}`}
 						>
 							<div className="flex items-center gap-2">
@@ -677,11 +680,16 @@ export function DriverRegistration() {
 							<label className="block mb-1 ">Grid *</label>
 							<Listbox
 								value={formData.grid}
-								onChange={(value) =>
-									handleChange({
-										target: { name: "grid", value },
-									} as React.ChangeEvent<HTMLSelectElement>)
-								}
+								onChange={(value) => {
+									const gridHasClasses = hasGridClasses(
+										value as GridId,
+									);
+									setFormData((prev) => ({
+										...prev,
+										grid: value,
+										class: gridHasClasses ? prev.class : "",
+									}));
+								}}
 							>
 								<div className="relative">
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
@@ -725,19 +733,27 @@ export function DriverRegistration() {
 												>
 													<span className="block truncate">
 														{formatEnum(
-															option.name
+															option.name,
 														)}
 													</span>
 												</ListboxOption>
-											)
+											),
 										)}
 									</ListboxOptions>
 								</div>
 							</Listbox>
 						</div>
 						<div>
-							<label className="block mb-1 ">Classe *</label>
+							<label
+								className={`block mb-1 ${!formData.grid || !hasGridClasses(formData.grid as GridId) ? "text-gray-400" : ""}`}
+							>
+								Classe
+							</label>
 							<Listbox
+								disabled={
+									!formData.grid ||
+									!hasGridClasses(formData.grid as GridId)
+								}
 								value={formData.class}
 								onChange={(value) =>
 									handleChange({
@@ -746,11 +762,28 @@ export function DriverRegistration() {
 								}
 							>
 								<div className="relative">
-									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+									<ListboxButton
+										className={`w-full p-2 border rounded flex items-center justify-between h-11 ${!formData.grid || !hasGridClasses(formData.grid as GridId) ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "cursor-pointer"}`}
+									>
 										<span className="block truncate">
-											{formData.class
-												? formatEnum(formData.class)
-												: "Selecione"}
+											{!formData.grid
+												? "Selecione um grid"
+												: !hasGridClasses(
+															formData.grid as GridId,
+													  )
+													? "Sem classes neste grid"
+													: formData.class
+														? getGridClasses(
+																formData.grid as GridId,
+															).find(
+																(c) =>
+																	c.id ===
+																	formData.class,
+															)?.label ||
+															formatEnum(
+																formData.class,
+															)
+														: "Selecione"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
 											<ChevronUpDownIcon
@@ -772,27 +805,25 @@ export function DriverRegistration() {
 											Selecione
 										</ListboxOption>
 
-										{classData?.__type?.enumValues?.map(
-											(option) => (
-												<ListboxOption
-													key={option.name}
-													value={option.name}
-													className={({ active }) =>
-														`flex items-center gap-2 p-2 cursor-pointer ${
-															active
-																? "bg-f1-red/20"
-																: ""
-														}`
-													}
-												>
-													<span className="block truncate">
-														{formatEnum(
-															option.name
-														)}
-													</span>
-												</ListboxOption>
-											)
-										)}
+										{getGridClasses(
+											formData.grid as GridId,
+										).map((cls) => (
+											<ListboxOption
+												key={cls.id}
+												value={cls.id}
+												className={({ active }) =>
+													`flex items-center gap-2 p-2 cursor-pointer ${
+														active
+															? "bg-f1-red/20"
+															: ""
+													}`
+												}
+											>
+												<span className="block truncate">
+													{cls.label}
+												</span>
+											</ListboxOption>
+										))}
 									</ListboxOptions>
 								</div>
 							</Listbox>
@@ -806,7 +837,7 @@ export function DriverRegistration() {
 											<img
 												src={
 													teamsData?.teams?.find(
-														(t) => t.id === teamId
+														(t) => t.id === teamId,
 													)?.photo?.url
 												}
 												alt=""
@@ -815,7 +846,7 @@ export function DriverRegistration() {
 											<span>
 												{
 													teamsData?.teams?.find(
-														(t) => t.id === teamId
+														(t) => t.id === teamId,
 													)?.name
 												}
 											</span>
@@ -945,8 +976,8 @@ export function DriverRegistration() {
 								? "Atualizando..."
 								: "Cadastrando..."
 							: isEditing
-							? "Atualizar"
-							: "Cadastrar"}
+								? "Atualizar"
+								: "Cadastrar"}
 					</button>
 				</form>
 			</div>

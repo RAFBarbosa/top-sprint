@@ -23,6 +23,7 @@ query GetHallsOfFameRegistration {
 		season
 		deleted
 		photo {
+			id
 			url
 		}
 	}

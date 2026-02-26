@@ -67,6 +67,30 @@ export default function Sidebar() {
 							Calendário
 						</NavLink>
 					</li>
+					<li>
+						<NavLink
+							to="/admin/painel/parceiros"
+							className={({ isActive }) =>
+								`block p-2 rounded hover:bg-f1-red/20 ${
+									isActive ? "bg-f1-red/20 font-bold" : ""
+								}`
+							}
+						>
+							Parceiros
+						</NavLink>
+					</li>
+					<li>
+						<NavLink
+							to="/admin/painel/campeoes"
+							className={({ isActive }) =>
+								`block p-2 rounded hover:bg-f1-red/20 ${
+									isActive ? "bg-f1-red/20 font-bold" : ""
+								}`
+							}
+						>
+							Mural dos Campeões
+						</NavLink>
+					</li>
 					<li className="hidden md:block">
 						<NavLink
 							to="/admin/painel/classificacao"
@@ -79,18 +103,6 @@ export default function Sidebar() {
 							Classificação
 						</NavLink>
 					</li>
-					{/* <li>
-						<NavLink
-							to="/admin/painel/campeoes"
-							className={({ isActive }) =>
-								`block p-2 rounded hover:bg-f1-red/20 ${
-									isActive ? "bg-f1-red/20 font-bold" : ""
-								}`
-							}
-						>
-							Campeões
-						</NavLink>
-					</li> */}
 				</ul>
 			</nav>
 

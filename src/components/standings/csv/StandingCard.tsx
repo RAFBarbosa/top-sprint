@@ -52,7 +52,7 @@ export function StandingCard(props: StandingCardProps) {
 	const positionDifference = usePositionDifference(
 		props.newData,
 		props.oldData,
-		props.name
+		props.name,
 	);
 
 	const handleCardClick = () => {
@@ -202,7 +202,7 @@ export function StandingCard(props: StandingCardProps) {
 						</div>
 
 						<span
-							className={`md:ml-2 text-sm font-light flex md:self-center ${
+							className={`md:ml-2 text-sm font-light flex text-start ${
 								props.isActive &&
 								"bg-f1-silver rounded-lg pr-1 md:bg-transparent"
 							}`}

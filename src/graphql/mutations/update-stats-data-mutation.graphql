@@ -1,6 +1,7 @@
 mutation UpdateData($where: DataWhereUniqueInput!, $data: DataUpdateInput!) {
 	updateData(where: $where, data: $data) {
 		id
+		title
 		deleted
 		grid
 		csv {

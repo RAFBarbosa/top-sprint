@@ -72,6 +72,7 @@ query GetDriversRegistration {
 		equipment
 		phone
 		team {
+			id
 			name
 			color {
 				hex

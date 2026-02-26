@@ -1,10 +1,10 @@
 enum Grid {
-  gridA
-  gridB
-  gridC
+	gridA
+	gridB
+	gridC
 }
 
-query GetStatsData($gridId: Grid!) {  # Use Grid type, not String
+query GetStatsData($gridId: Grid!) {
 	datas(
 		stage: DRAFT
 		orderBy: createdAt_DESC
@@ -12,6 +12,7 @@ query GetStatsData($gridId: Grid!) {  # Use Grid type, not String
 		where: { deleted: false, grid: $gridId }
 	) {
 		id
+		title
 		grid
 		csv {
 			url
@@ -22,6 +23,7 @@ query GetStatsData($gridId: Grid!) {  # Use Grid type, not String
 query GetData {
 	datas(stage: DRAFT, orderBy: createdAt_DESC, where: { deleted: false }) {
 		id
+		title
 		grid
 		deleted
 		createdAt

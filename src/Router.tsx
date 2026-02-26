@@ -15,6 +15,7 @@ import DriversAdmin from "./pages/admin/DriversAdmin";
 import HallOfFameAdmin from "./pages/admin/HallOfFameAdmin";
 import { Standings } from "./components/standings/Standings";
 import { SessionResults } from "./components/results/SessionResults";
+import PartnerAdmin from "./pages/admin/PartnerAdmin";
 
 export function Router() {
 	return (
@@ -32,6 +33,7 @@ export function Router() {
 					<Route path="pilotos" element={<DriversAdmin />} />
 					<Route path="equipes" element={<TeamsAdmin />} />
 					<Route path="calendarios" element={<CalendarAdmin />} />
+					<Route path="parceiros" element={<PartnerAdmin />} />
 					<Route path="resultados" element={<ResultsAdmin />} />
 					<Route path="noticias" element={<NewsAdmin />} />
 					<Route path="campeoes" element={<HallOfFameAdmin />} />
