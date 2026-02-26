@@ -28,8 +28,6 @@ export function DataLoader(props: DataLoaderProps) {
 
 	const normalizeString = (str: string) => str.toLowerCase().trim();
 
-	console.log("Props Data:", props.data);
-
 	// Memorize enhancedDrivers and enhancedTeams
 	const enhancedDrivers = useMemo(() => {
 		if (props.data && drivers && teams) {

@@ -1,5 +1,5 @@
-import LogoSemFundo from "/src/assets/img/white-logo.png";
+import { tenant } from "../config/tenants";
 
 export function Logo() {
-	return <img src={LogoSemFundo} className="" alt="Logo Top Sprint" />;
+	return <img src={tenant.logo.url} alt={tenant.logo.alt} />;
 }

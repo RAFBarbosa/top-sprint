@@ -1,4 +1,7 @@
-export type GridId = "gridA" | "gridB";
+// src/config/grids.ts
+import { tenant } from "./tenants";
+
+export type GridId = string;
 
 export interface GridConfig {
 	id: GridId;
@@ -18,45 +21,10 @@ export interface GridConfig {
 	classLabels?: Record<string, string>;
 }
 
-export const GRIDS: readonly GridConfig[] = [
-	{
-		id: "gridA",
-		label: "Top Sprint",
-		primaryColor: "bg-f1-red",
-		accentColor: "bg-f1-lightCarbon",
-		hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
-		hoverAccentColor: "hover:bg-f1-red hover:text-white",
-		standingsBgClass:
-			"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
-		standingsTitle: "",
-	},
-	{
-		id: "gridB",
-		label: "Academy",
-		primaryColor: "bg-f1-academy",
-		accentColor: "bg-f1-academy-blue",
-		hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
-		hoverAccentColor: "hover:bg-f1-academy-dark hover:text-white",
-		standingsBgClass:
-			"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
-		standingsTitle: "Academy",
-		// classes: [
-		// 	{
-		// 		id: "classA",
-		// 		label: "Classe C",
-		// 		classColor: "bg-f1-academy-blue",
-		// 		classHoverColor: "hover:bg-f1-academy-blue hover:text-white",
-		// 	},
-		// 	{
-		// 		id: "classB",
-		// 		label: "Classe D",
-		// 		classColor: "bg-f1-academy-dark",
-		// 		classHoverColor: "hover:bg-f1-academy-dark hover:text-white",
-		// 	},
-		// ],
-	},
-];
+// Everything else in your app still imports GRIDS from here — nothing breaks
+export const GRIDS = tenant.grids;
 
+// All your existing helpers stay exactly the same below this line
 export const getGridColor = (gridId: string) =>
 	GRIDS.find((g) => g.id === gridId)?.primaryColor ?? "bg-white";
 
