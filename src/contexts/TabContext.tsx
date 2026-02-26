@@ -19,7 +19,9 @@ export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const tabs = GRIDS.map(({ id, label }) => ({ id, label })) as const;
 
-	const [activeTabId, setActiveTabId] = useState<GridId>(tabs[0].id);
+	const [activeTabId, setActiveTabId] = useState<GridId>(
+		tabs.length > 0 ? tabs[0].id : "",
+	);
 
 	const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0];
 
