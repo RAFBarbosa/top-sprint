@@ -1,6 +1,7 @@
 mutation CreateData($data: DataCreateInput!) {
 	createData(data: $data) {
 		id
+		title
 		grid
 		deleted
 		csv {

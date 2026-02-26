@@ -12,6 +12,7 @@ import {
 	useCreateAssetMutation,
 	GetCalendarsRegistrationDocument,
 	useGetDriversQuery,
+	useGridOptionsQuery,
 } from "../../graphql/generated";
 import { format } from "date-fns";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
@@ -36,6 +37,7 @@ export function CalendarRegistration() {
 		winnerAId: "",
 		winnerBId: "",
 		active: true,
+		grid: "",
 	});
 
 	const [flagFile, setFlagFile] = useState<File | null>(null);
@@ -47,6 +49,10 @@ export function CalendarRegistration() {
 	const [selectedCalendar, setSelectedCalendar] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [gridFilter, setGridFilter] = useState("");
+	const [activeFilter, setActiveFilter] = useState<
+		"all" | "active" | "inactive"
+	>("all");
 
 	const [createCalendar, { loading: createCalendarLoading }] =
 		useCreateCalendarMutation();
@@ -88,6 +94,8 @@ export function CalendarRegistration() {
 		setItemToDelete(null);
 	};
 
+	const { data: gridData, loading: gridLoading } = useGridOptionsQuery();
+
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
 			await updateCalendar({
@@ -107,7 +115,7 @@ export function CalendarRegistration() {
 		const pad = (num: number) => num.toString().padStart(2, "0");
 
 		return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-			date.getDate()
+			date.getDate(),
 		)}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 	};
 
@@ -125,6 +133,7 @@ export function CalendarRegistration() {
 			winnerAId: calendar.winnerA?.id || "",
 			winnerBId: calendar.winnerB?.id || "",
 			active: calendar.active,
+			grid: calendar.grid || "",
 		});
 	};
 
@@ -142,6 +151,7 @@ export function CalendarRegistration() {
 			winnerAId: "",
 			winnerBId: "",
 			active: true,
+			grid: "",
 		});
 		setFlagFile(null);
 	};
@@ -188,7 +198,7 @@ export function CalendarRegistration() {
 					const formData = new FormData();
 					const finalKey = uploadData.key.replace(
 						"${filename}",
-						encodeURIComponent(flagFile.name)
+						encodeURIComponent(flagFile.name),
 					);
 					formData.append("key", finalKey);
 					formData.append("policy", uploadData.policy);
@@ -199,7 +209,7 @@ export function CalendarRegistration() {
 					if (uploadData.securityToken) {
 						formData.append(
 							"x-amz-security-token",
-							uploadData.securityToken
+							uploadData.securityToken,
 						);
 					}
 					formData.append("file", flagFile);
@@ -215,7 +225,7 @@ export function CalendarRegistration() {
 					setUploadProgress(100);
 				} catch (uploadError) {
 					throw new Error(
-						`Falha no upload da bandeira: ${uploadError.message}`
+						`Falha no upload da bandeira: ${uploadError.message}`,
 					);
 				}
 			}
@@ -241,6 +251,7 @@ export function CalendarRegistration() {
 						data: {
 							track: formData.track,
 							round: formData.round,
+							grid: formData.grid || null,
 							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
@@ -267,6 +278,7 @@ export function CalendarRegistration() {
 						data: {
 							track: formData.track,
 							round: formData.round,
+							grid: formData.grid || null,
 							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
@@ -302,7 +314,13 @@ export function CalendarRegistration() {
 				});
 			}
 
-			resetForm();
+			if (isEditing) {
+				// Stay on the same item, just clear the file input
+				setFlagFile(null);
+			} else {
+				// Only reset fully when creating new
+				resetForm();
+			}
 			setUploadProgress(null);
 
 			setTimeout(() => {
@@ -320,7 +338,7 @@ export function CalendarRegistration() {
 	};
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -332,10 +350,17 @@ export function CalendarRegistration() {
 					const dateA = new Date(a.date).getTime();
 					const dateB = new Date(b.date).getTime();
 					return dateB - dateA;
-			  })
+				})
 			: []
 	).filter((calendar) => {
-		return searchTerm
+		const matchesGrid = gridFilter ? calendar.grid === gridFilter : true;
+		const matchesActive =
+			activeFilter === "all"
+				? true
+				: activeFilter === "active"
+					? calendar.active === true
+					: calendar.active === false;
+		const matchesSearch = searchTerm
 			? Object.entries({
 					track: calendar.track,
 					round: calendar.round,
@@ -344,13 +369,14 @@ export function CalendarRegistration() {
 					link: calendar.link,
 					winnerA: calendar.winnerA?.name || "",
 					winnerB: calendar.winnerB?.name || "",
-			  }).some(([_, value]) =>
+				}).some(([_, value]) =>
 					value
 						?.toString()
 						.toLowerCase()
-						.includes(searchTerm.toLowerCase())
-			  )
+						.includes(searchTerm.toLowerCase()),
+				)
 			: true;
+		return matchesGrid && matchesSearch && matchesActive;
 	});
 
 	// Helper function to format enum values
@@ -363,9 +389,14 @@ export function CalendarRegistration() {
 	const getFilteredDrivers = () => {
 		if (!driversData?.drivers) return [];
 
-		return driversData.drivers.filter((driver) => {
-			return !driver.deleted;
-		});
+		return driversData.drivers
+			.filter((driver) => {
+				const matchesGrid = formData.grid
+					? driver.grid === formData.grid
+					: true;
+				return !driver.deleted && matchesGrid;
+			})
+			.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 	};
 
 	if (calendarsError) {
@@ -392,7 +423,32 @@ export function CalendarRegistration() {
 		<div className="flex flex-col md:flex-row w-full">
 			{/* Calendar Sidebar */}
 			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
-				<div className="mb-4">
+				<div className="mb-4 space-y-2">
+					{/* Active filter - segmented control */}
+					<div className="flex rounded border overflow-hidden text-sm">
+						{[
+							{ label: "Todos", value: "all" },
+							{ label: "Ativos", value: "active" },
+							{ label: "Inativos", value: "inactive" },
+						].map(({ label, value }) => (
+							<button
+								key={value}
+								type="button"
+								onClick={() =>
+									setActiveFilter(
+										value as "all" | "active" | "inactive",
+									)
+								}
+								className={`flex-1 py-2 cursor-pointer transition-colors duration-120 ${
+									activeFilter === value
+										? "bg-f1-red text-white font-medium"
+										: "bg-white text-gray-600 hover:bg-f1-red/10"
+								}`}
+							>
+								{label}
+							</button>
+						))}
+					</div>
 					<input
 						type="text"
 						placeholder="Buscar etapas (pista, rodada, data)..."
@@ -400,6 +456,46 @@ export function CalendarRegistration() {
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
+					<Listbox value={gridFilter} onChange={setGridFilter}>
+						<div className="relative">
+							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+								<span className="block truncate">
+									{gridFilter
+										? formatEnum(gridFilter)
+										: "Todos os grids"}
+								</span>
+								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+									<ChevronUpDownIcon
+										className="h-5 w-5 text-f1-silver"
+										aria-hidden="true"
+									/>
+								</span>
+							</ListboxButton>
+							<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+								<ListboxOption
+									value=""
+									className={({ active }) =>
+										`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+									}
+								>
+									Todos os grids
+								</ListboxOption>
+								{gridData?.__type?.enumValues?.map((option) => (
+									<ListboxOption
+										key={option.name}
+										value={option.name}
+										className={({ active }) =>
+											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+										}
+									>
+										<span className="block truncate">
+											{formatEnum(option.name)}
+										</span>
+									</ListboxOption>
+								))}
+							</ListboxOptions>
+						</div>
+					</Listbox>
 				</div>
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
@@ -429,7 +525,7 @@ export function CalendarRegistration() {
 											<span className="text-xs text-gray-500">
 												•{" "}
 												{formatDateWithCapitalizedMonth(
-													calendar.date
+													calendar.date,
 												)}
 											</span>
 										</div>
@@ -448,7 +544,7 @@ export function CalendarRegistration() {
 											onClick={() =>
 												handleDeleteClick(
 													calendar.id,
-													calendar.deleted
+													calendar.deleted,
 												)
 											}
 											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
@@ -568,8 +664,8 @@ export function CalendarRegistration() {
 								status.type === "error"
 									? "bg-red-100 border border-red-400 text-red-700"
 									: status.type === "success"
-									? "bg-green-100 border border-green-400 text-green-700"
-									: "bg-blue-100 border border-blue-400 text-blue-700"
+										? "bg-green-100 border border-green-400 text-green-700"
+										: "bg-blue-100 border border-blue-400 text-blue-700"
 							}`}
 						>
 							<div className="flex items-center gap-2">
@@ -621,13 +717,10 @@ export function CalendarRegistration() {
 								name="date"
 								value={formData.date}
 								onChange={(e) => {
-									const isoDate = new Date(
-										e.target.value
-									).toISOString();
-									setFormData({
-										...formData,
+									setFormData((prev) => ({
+										...prev,
 										date: e.target.value,
-									});
+									}));
 								}}
 								required
 								className="w-full p-2 border rounded h-11"
@@ -644,29 +737,96 @@ export function CalendarRegistration() {
 							/>
 						</div>
 
-						{/* Vencedor A Field */}
 						<div>
-							<label className="block mb-1">Vencedor A</label>
+							<label className="block mb-1">Grid</label>
 							<Listbox
-								value={formData.winnerA}
+								value={formData.grid}
 								onChange={(value) => {
-									// Find the selected driver to get both name and ID
-									const selectedDriver =
-										getFilteredDrivers().find(
-											(driver) => driver.name === value
-										);
-									setFormData({
-										...formData,
-										winnerA: value,
-										winnerAId: selectedDriver?.id || "",
-									});
+									setFormData((prev) => ({
+										...prev,
+										grid: value,
+										winnerA: "",
+										winnerAId: "",
+									}));
 								}}
 							>
 								<div className="relative">
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
+											{formData.grid
+												? formatEnum(formData.grid)
+												: "Selecione um grid"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
+										</span>
+									</ListboxButton>
+
+									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+											}
+										>
+											Todos os grids
+										</ListboxOption>
+										{gridData?.__type?.enumValues?.map(
+											(option) => (
+												<ListboxOption
+													key={option.name}
+													value={option.name}
+													className={({ active }) =>
+														`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+													}
+												>
+													<span className="block truncate">
+														{formatEnum(
+															option.name,
+														)}
+													</span>
+												</ListboxOption>
+											),
+										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
+						</div>
+
+						{/* Vencedor A Field */}
+						<div>
+							<label
+								className={`block mb-1 ${!formData.grid ? "text-gray-400" : ""}`}
+							>
+								Vencedor
+							</label>
+							<Listbox
+								disabled={!formData.grid}
+								value={formData.winnerA}
+								onChange={(value) => {
+									const selectedDriver =
+										getFilteredDrivers().find(
+											(driver) => driver.name === value,
+										);
+									setFormData((prev) => ({
+										...prev,
+										winnerA: value,
+										winnerAId: selectedDriver?.id || "",
+									}));
+								}}
+							>
+								<div className="relative">
+									<ListboxButton
+										className={`w-full p-2 border rounded flex items-center justify-between h-11 ${!formData.grid ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "cursor-pointer"}`}
+									>
+										<span className="block truncate">
 											{formData.winnerA ||
-												"Selecione um piloto"}
+												(formData.grid
+													? "Selecione um piloto"
+													: "Selecione um grid")}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
 											<ChevronUpDownIcon
@@ -711,7 +871,7 @@ export function CalendarRegistration() {
 															</span>
 														</div>
 													</ListboxOption>
-												)
+												),
 											)
 										) : (
 											<div className="p-2 text-gray-500">
@@ -724,7 +884,7 @@ export function CalendarRegistration() {
 						</div>
 
 						{/* Vencedor B Field */}
-						<div>
+						{/* <div>
 							<label className="block mb-1">Vencedor B</label>
 							<Listbox
 								value={formData.winnerB}
@@ -800,7 +960,7 @@ export function CalendarRegistration() {
 									</ListboxOptions>
 								</div>
 							</Listbox>
-						</div>
+						</div> */}
 
 						<div className="md:col-span-2">
 							<label className="block mb-1">Bandeira</label>
@@ -857,8 +1017,8 @@ export function CalendarRegistration() {
 								? "Atualizando..."
 								: "Cadastrando..."
 							: isEditing
-							? "Atualizar"
-							: "Cadastrar"}
+								? "Atualizar"
+								: "Cadastrar"}
 					</button>
 				</form>
 			</div>

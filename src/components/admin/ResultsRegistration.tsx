@@ -40,6 +40,8 @@ export function ResultsRegistration() {
 		id: string;
 		deleted: boolean;
 	} | null>(null);
+	const [title, setTitle] = useState("");
+	const [gridFilter, setGridFilter] = useState("");
 
 	// GraphQL operations
 	const [updateData] = useUpdateDataMutation();
@@ -93,7 +95,7 @@ export function ResultsRegistration() {
 				const formData = new FormData();
 				const finalKey = uploadData.key.replace(
 					"${filename}",
-					encodeURIComponent(csvFile.name)
+					encodeURIComponent(csvFile.name),
 				);
 				formData.append("key", finalKey);
 				formData.append("policy", uploadData.policy);
@@ -104,7 +106,7 @@ export function ResultsRegistration() {
 				if (uploadData.securityToken) {
 					formData.append(
 						"x-amz-security-token",
-						uploadData.securityToken
+						uploadData.securityToken,
 					);
 				}
 				formData.append("file", csvFile);
@@ -124,9 +126,10 @@ export function ResultsRegistration() {
 					variables: {
 						where: { id: selectedData.id },
 						data: {
-							grid: { set: grid },
+							grid: grid || undefined,
 							csv: csvId ? { connect: { id: csvId } } : undefined,
-							deleted: { set: selectedData.deleted || false },
+							title: title || null,
+							deleted: selectedData.deleted || false,
 						},
 					},
 				});
@@ -136,6 +139,7 @@ export function ResultsRegistration() {
 						data: {
 							grid,
 							csv: csvId ? { connect: { id: csvId } } : null,
+							title: title || null,
 							deleted: false,
 						},
 					},
@@ -162,11 +166,15 @@ export function ResultsRegistration() {
 					: "Dados cadastrados com sucesso!",
 			});
 
-			// Reset form
-			setCsvFile(null);
-			setGrid("");
-			setSelectedData(null);
-			setIsEditing(false);
+			if (isEditing) {
+				setCsvFile(null);
+			} else {
+				setCsvFile(null);
+				setGrid("");
+				setTitle("");
+				setSelectedData(null);
+				setIsEditing(false);
+			}
 			setUploadProgress(null);
 
 			setTimeout(() => {
@@ -185,6 +193,7 @@ export function ResultsRegistration() {
 		setSelectedData(dataItem);
 		setIsEditing(true);
 		setGrid(dataItem.grid);
+		setTitle(dataItem.title || "");
 	};
 
 	const resetForm = () => {
@@ -192,6 +201,7 @@ export function ResultsRegistration() {
 		setIsEditing(false);
 		setGrid("");
 		setCsvFile(null);
+		setTitle("");
 	};
 
 	// Delete functionality
@@ -253,39 +263,82 @@ export function ResultsRegistration() {
 		<div className="flex flex-col md:flex-row w-full">
 			{/* Data Sidebar */}
 			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
-				{/* <div className="mb-4 space-y-2">
-					<input
-						type="text"
-						placeholder="Buscar resultados..."
-						className="w-full p-2 border rounded h-11"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
-				</div> */}
+				<div className="mb-4 space-y-2">
+					<Listbox value={gridFilter} onChange={setGridFilter}>
+						<div className="relative">
+							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+								<span className="block truncate">
+									{gridFilter
+										? formatEnum(gridFilter)
+										: "Todos os grids"}
+								</span>
+								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+									<ChevronUpDownIcon
+										className="h-5 w-5 text-f1-silver"
+										aria-hidden="true"
+									/>
+								</span>
+							</ListboxButton>
+							<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+								<ListboxOption
+									value=""
+									className={({ active }) =>
+										`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+									}
+								>
+									Todos os grids
+								</ListboxOption>
+								{gridOptions.map((option) => (
+									<ListboxOption
+										key={option}
+										value={option}
+										className={({ active }) =>
+											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+										}
+									>
+										<span className="block truncate">
+											{formatEnum(option)}
+										</span>
+									</ListboxOption>
+								))}
+							</ListboxOptions>
+						</div>
+					</Listbox>
+				</div>
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
-					{data?.datas?.filter((dataItem) =>
-						searchTerm
-							? dataItem.grid
-									.toLowerCase()
-									.includes(searchTerm.toLowerCase()) ||
-							  dataItem.csv?.url
-									?.toLowerCase()
-									.includes(searchTerm.toLowerCase())
-							: true
+					{data?.datas?.filter(
+						(dataItem) =>
+							(gridFilter
+								? dataItem.grid === gridFilter
+								: true) &&
+							(searchTerm
+								? dataItem.grid
+										.toLowerCase()
+										.includes(searchTerm.toLowerCase()) ||
+									dataItem.csv?.url
+										?.toLowerCase()
+										.includes(searchTerm.toLowerCase())
+								: true),
 					).length > 0 ? (
 						data?.datas
-							?.filter((dataItem) =>
-								searchTerm
-									? dataItem.grid
-											.toLowerCase()
-											.includes(
-												searchTerm.toLowerCase()
-											) ||
-									  dataItem.csv?.url
-											?.toLowerCase()
-											.includes(searchTerm.toLowerCase())
-									: true
+							?.filter(
+								(dataItem) =>
+									(gridFilter
+										? dataItem.grid === gridFilter
+										: true) &&
+									(searchTerm
+										? dataItem.grid
+												.toLowerCase()
+												.includes(
+													searchTerm.toLowerCase(),
+												) ||
+											dataItem.csv?.url
+												?.toLowerCase()
+												.includes(
+													searchTerm.toLowerCase(),
+												)
+										: true),
 							)
 							.map((dataItem) => (
 								<li key={dataItem.id}>
@@ -300,13 +353,22 @@ export function ResultsRegistration() {
 										}`}
 									>
 										<div className="flex flex-col items-start">
-											<span className="truncate max-w-40">
-												{formatEnum(dataItem.grid)}
-											</span>
+											<div>
+												<span className="truncate max-w-40">
+													{formatEnum(dataItem.grid)}
+												</span>
+												{dataItem.csv?.url && (
+													<span className="text-sm">
+														{dataItem.title
+															? ` - ${dataItem.title}`
+															: ""}
+													</span>
+												)}
+											</div>
 											{dataItem.csv?.url && (
 												<span className="text-xs text-gray-500">
 													{formatDateWithCapitalizedMonth(
-														dataItem.createdAt
+														dataItem.createdAt,
 													)}
 												</span>
 											)}
@@ -317,7 +379,7 @@ export function ResultsRegistration() {
 												onClick={(e) =>
 													handleDeleteClick(
 														dataItem.id,
-														dataItem.deleted
+														dataItem.deleted,
 													)
 												}
 												className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
@@ -417,8 +479,8 @@ export function ResultsRegistration() {
 								status.type === "error"
 									? "bg-red-100 border border-red-400 text-red-700"
 									: status.type === "success"
-									? "bg-green-100 border border-green-400 text-green-700"
-									: "bg-blue-100 border border-blue-400 text-blue-700"
+										? "bg-green-100 border border-green-400 text-green-700"
+										: "bg-blue-100 border border-blue-400 text-blue-700"
 							}`}
 						>
 							<div className="flex items-center gap-2">
@@ -432,6 +494,16 @@ export function ResultsRegistration() {
 
 					<div className="grid-cols-1 gap-4">
 						<div>
+							<label className="block mb-1">Título</label>
+							<input
+								type="text"
+								value={title}
+								onChange={(e) => setTitle(e.target.value)}
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div className="mt-4">
 							<label className="block mb-1">Grid *</label>
 							<Listbox value={grid} onChange={setGrid}>
 								<div className="relative">
@@ -504,7 +576,7 @@ export function ResultsRegistration() {
 								{isEditing &&
 									selectedData?.csv?.url &&
 									!csvFile && (
-										<div className="md:flex gap-4 mt-1">
+										<div className="flex gap-1 mt-1 items-baseline">
 											<span className="">
 												Arquivo atual:
 											</span>
