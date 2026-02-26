@@ -1,18 +1,11 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import {
-	Listbox,
-	ListboxButton,
-	ListboxOption,
-	ListboxOptions,
-} from "@headlessui/react";
-import {
-	useCreateTeamMutation,
-	useGetTeamsQuery,
+	useCreatePartnerMutation,
+	useUpdatePartnerMutation,
+	useGetPartnersRegistrationQuery,
 	useCreateAssetMutation,
-	useUpdateTeamMutation,
-	GetTeamsDocument,
+	GetPartnersRegistrationDocument,
 } from "../../graphql/generated";
-import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
 	Dialog,
@@ -21,11 +14,11 @@ import {
 	Description,
 } from "@headlessui/react";
 
-export function TeamRegistration() {
-	// State management
+export function PartnerRegistration() {
 	const [formData, setFormData] = useState({
 		name: "",
-		color: "#000000",
+		link: "",
+		active: true,
 	});
 
 	const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -34,19 +27,27 @@ export function TeamRegistration() {
 		message: string;
 	}>({ type: "idle", message: "" });
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-	const [selectedTeam, setSelectedTeam] = useState<any>(null);
+	const [selectedPartner, setSelectedPartner] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
-
-	const [updateTeam, { loading: updateTeamLoading }] =
-		useUpdateTeamMutation();
-	const [createAsset] = useCreateAssetMutation();
+	const [activeFilter, setActiveFilter] = useState<
+		"all" | "active" | "inactive"
+	>("all");
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
 		id: string;
 		deleted: boolean;
 	} | null>(null);
+
+	const [createPartner, { loading: createPartnerLoading }] =
+		useCreatePartnerMutation();
+	const [updatePartner, { loading: updatePartnerLoading }] =
+		useUpdatePartnerMutation();
+	const [createAsset] = useCreateAssetMutation();
+
+	const { data: partnersData, error: partnersError } =
+		useGetPartnersRegistrationQuery();
 
 	const handleDeleteClick = (id: string, deleted: boolean) => {
 		setItemToDelete({ id, deleted });
@@ -68,7 +69,7 @@ export function TeamRegistration() {
 
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
-			await updateTeam({
+			await updatePartner({
 				variables: {
 					where: { id },
 					data: { deleted: !currentDeleted },
@@ -79,122 +80,93 @@ export function TeamRegistration() {
 		}
 	};
 
-	const [createTeam, { loading: createTeamLoading }] = useCreateTeamMutation({
-		update: (cache, { data }) => {
-			const newTeam = data?.createTeam;
-			if (!newTeam) return;
-
-			const existingData = cache.readQuery({
-				query: GetTeamsDocument,
-			});
-
-			if (existingData) {
-				cache.writeQuery({
-					query: GetTeamsDocument,
-					data: {
-						teams: [newTeam, ...existingData.teams],
-					},
-				});
-			}
-		},
-	});
-
-	// Queries
-	const {
-		data: teamsData,
-		loading: teamsLoading,
-		error: teamsError,
-	} = useGetTeamsQuery();
-
-	const handleSelectTeam = (team: any) => {
-		setSelectedTeam(team);
+	const handleSelectPartner = (partner: any) => {
+		setSelectedPartner(partner);
 		setIsEditing(true);
 		setFormData({
-			name: team.name,
-			color: team.color?.hex || "#000000",
+			name: partner.name || "",
+			link: partner.link || "",
+			active: partner.active,
 		});
 	};
 
 	const resetForm = () => {
-		setSelectedTeam(null);
+		setSelectedPartner(null);
 		setIsEditing(false);
 		setFormData({
 			name: "",
-			color: "#000000",
+			link: "",
+			active: true,
 		});
 		setLogoFile(null);
 	};
 
-	const handleTeam = async (event: FormEvent) => {
+	const handlePartner = async (event: FormEvent) => {
 		event.preventDefault();
 		setStatus({ type: "loading", message: "Enviando dados..." });
 
 		try {
-			// Validate required fields
 			if (!formData.name) throw new Error("Nome é obrigatório");
+			if (formData.link && !formData.link.startsWith("http")) {
+				throw new Error("URL deve começar com http/https");
+			}
 
 			let logoId = null;
 			if (logoFile) {
-				try {
-					setStatus({
-						type: "loading",
-						message: "Enviando logo...",
-					});
+				setStatus({ type: "loading", message: "Enviando imagem..." });
 
-					const assetResult = await createAsset({
-						variables: { data: {} },
-					});
+				const assetResult = await createAsset({
+					variables: { data: {} },
+				});
 
-					const asset = assetResult.data?.createAsset;
-					const uploadData = asset?.upload?.requestPostData;
-					if (!asset?.id || !uploadData?.url) {
-						throw new Error("Failed to get upload data");
-					}
+				const asset = assetResult.data?.createAsset;
+				const uploadData = asset?.upload?.requestPostData;
+				if (!asset?.id || !uploadData?.url) {
+					throw new Error("Failed to get upload data");
+				}
 
-					const formData = new FormData();
-					const finalKey = uploadData.key.replace(
-						"${filename}",
-						encodeURIComponent(logoFile.name),
-					);
-					formData.append("key", finalKey);
-					formData.append("policy", uploadData.policy);
-					formData.append("x-amz-algorithm", uploadData.algorithm);
-					formData.append("x-amz-credential", uploadData.credential);
-					formData.append("x-amz-date", uploadData.date);
-					formData.append("x-amz-signature", uploadData.signature);
-					if (uploadData.securityToken) {
-						formData.append(
-							"x-amz-security-token",
-							uploadData.securityToken,
-						);
-					}
-					formData.append("file", logoFile);
-
-					const uploadResponse = await fetch(uploadData.url, {
-						method: "POST",
-						body: formData,
-					});
-
-					if (!uploadResponse.ok) throw new Error("Upload failed");
-
-					logoId = asset.id;
-					setUploadProgress(100);
-				} catch (uploadError) {
-					throw new Error(
-						`Falha no upload do logo: ${uploadError.message}`,
+				const formDataUpload = new FormData();
+				const finalKey = uploadData.key.replace(
+					"${filename}",
+					encodeURIComponent(logoFile.name),
+				);
+				formDataUpload.append("key", finalKey);
+				formDataUpload.append("policy", uploadData.policy);
+				formDataUpload.append("x-amz-algorithm", uploadData.algorithm);
+				formDataUpload.append(
+					"x-amz-credential",
+					uploadData.credential,
+				);
+				formDataUpload.append("x-amz-date", uploadData.date);
+				formDataUpload.append("x-amz-signature", uploadData.signature);
+				if (uploadData.securityToken) {
+					formDataUpload.append(
+						"x-amz-security-token",
+						uploadData.securityToken,
 					);
 				}
+				formDataUpload.append("file", logoFile);
+
+				const uploadResponse = await fetch(uploadData.url, {
+					method: "POST",
+					body: formDataUpload,
+				});
+
+				if (!uploadResponse.ok) throw new Error("Upload failed");
+
+				logoId = asset.id;
+				setUploadProgress(100);
 			}
 
-			if (isEditing && selectedTeam) {
-				// Update existing team
-				const result = await updateTeam({
+			if (isEditing && selectedPartner) {
+				const result = await updatePartner({
 					variables: {
-						where: { id: selectedTeam.id },
+						where: { id: selectedPartner.id },
 						data: {
 							name: formData.name,
-							color: { hex: formData.color },
-							photo: logoId
+							link: formData.link || null,
+							active: formData.active,
+							footerLogo: logoId
 								? { connect: { id: logoId } }
 								: undefined,
 						},
@@ -205,27 +177,33 @@ export function TeamRegistration() {
 
 				setStatus({
 					type: "success",
-					message: "Equipe atualizada com sucesso!",
+					message: "Parceiro atualizado com sucesso!",
 				});
 			} else {
-				// Create new team
-				const result = await createTeam({
+				const result = await createPartner({
 					variables: {
 						data: {
 							name: formData.name,
-							color: { hex: formData.color },
-							photo: logoId ? { connect: { id: logoId } } : null,
+							link: formData.link || null,
+							active: formData.active,
+							deleted: false,
+							footerLogo: logoId
+								? { connect: { id: logoId } }
+								: undefined,
 						},
 					},
 					update(cache, { data }) {
 						const existing = cache.readQuery({
-							query: GetTeamsDocument,
+							query: GetPartnersRegistrationDocument,
 						});
-						if (existing && data?.createTeam) {
+						if (existing && data?.createPartner) {
 							cache.writeQuery({
-								query: GetTeamsDocument,
+								query: GetPartnersRegistrationDocument,
 								data: {
-									teams: [data.createTeam, ...existing.teams],
+									partners: [
+										data.createPartner,
+										...existing.partners,
+									],
 								},
 							});
 						}
@@ -236,11 +214,10 @@ export function TeamRegistration() {
 
 				setStatus({
 					type: "success",
-					message: "Equipe cadastrada com sucesso!",
+					message: "Parceiro cadastrado com sucesso!",
 				});
 			}
 
-			// Reset form after success
 			if (isEditing) {
 				setLogoFile(null);
 			} else {
@@ -248,7 +225,6 @@ export function TeamRegistration() {
 			}
 			setUploadProgress(null);
 
-			// Clear success message after 5 seconds
 			setTimeout(() => {
 				setStatus({ type: "idle", message: "" });
 			}, 5000);
@@ -257,44 +233,41 @@ export function TeamRegistration() {
 			setStatus({
 				type: "error",
 				message:
-					error.message || "Erro desconhecido ao cadastrar equipe",
+					error.message || "Erro desconhecido ao cadastrar parceiro",
 			});
 			setUploadProgress(null);
 		}
 	};
 
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-	) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	// Filter teams based on search term
-	const filteredTeams =
-		teamsData?.teams?.filter((team) => {
-			return searchTerm
-				? team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-						(team.color?.hex &&
-							team.color.hex
-								.toLowerCase()
-								.includes(searchTerm.toLowerCase()))
+	const filteredPartners = (partnersData?.partners ?? []).filter(
+		(partner) => {
+			const matchesActive =
+				activeFilter === "all"
+					? true
+					: activeFilter === "active"
+						? partner.active === true
+						: partner.active === false;
+
+			const matchesSearch = searchTerm
+				? [partner.name, partner.link].some((val) =>
+						val?.toLowerCase().includes(searchTerm.toLowerCase()),
+					)
 				: true;
-		}) || [];
 
-	if (teamsLoading) {
-		return (
-			<div className="bg-f1-lightSilver py-10 flex justify-center">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
-			</div>
-		);
-	}
+			return matchesActive && matchesSearch;
+		},
+	);
 
-	if (teamsError) {
+	if (partnersError) {
 		return (
 			<div className="bg-f1-lightSilver py-10">
 				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-					Erro ao carregar equipes: {teamsError.message}
+					Erro ao carregar parceiros: {partnersError.message}
 				</div>
 			</div>
 		);
@@ -302,12 +275,38 @@ export function TeamRegistration() {
 
 	return (
 		<div className="flex flex-col md:flex-row w-full">
-			{/* Teams Sidebar */}
+			{/* Partners Sidebar */}
 			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
-				<div className="mb-4">
+				<div className="mb-4 space-y-2">
+					{/* Active filter - segmented control */}
+					<div className="flex rounded border overflow-hidden text-sm">
+						{[
+							{ label: "Todos", value: "all" },
+							{ label: "Ativos", value: "active" },
+							{ label: "Inativos", value: "inactive" },
+						].map(({ label, value }) => (
+							<button
+								key={value}
+								type="button"
+								onClick={() =>
+									setActiveFilter(
+										value as "all" | "active" | "inactive",
+									)
+								}
+								className={`flex-1 py-2 cursor-pointer transition-colors duration-120 ${
+									activeFilter === value
+										? "bg-f1-red text-white font-medium"
+										: "bg-white text-gray-600 hover:bg-f1-red/10"
+								}`}
+							>
+								{label}
+							</button>
+						))}
+					</div>
+
 					<input
 						type="text"
-						placeholder="Buscar equipes (nome, cor, etc)..."
+						placeholder="Buscar parceiros (nome, link)..."
 						className="w-full p-2 border rounded h-11"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
@@ -315,42 +314,34 @@ export function TeamRegistration() {
 				</div>
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
-					{filteredTeams.length > 0 ? (
-						filteredTeams.map((team) => (
-							<li key={team.id}>
+					{filteredPartners.length > 0 ? (
+						filteredPartners.map((partner) => (
+							<li key={partner.id}>
 								<div
-									onClick={() => handleSelectTeam(team)}
+									onClick={() => handleSelectPartner(partner)}
 									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
-										selectedTeam?.id === team.id
+										selectedPartner?.id === partner.id
 											? "bg-f1-red/20 font-bold"
 											: ""
 									}`}
 								>
 									<div className="flex items-center gap-2">
-										{team.photo?.url && (
+										{partner.footerLogo?.url && (
 											<img
-												src={team.photo.url}
-												alt={team.name}
-												className="w-8 h-8 rounded-full object-cover"
+												src={partner.footerLogo.url}
+												alt={partner.name}
+												className="w-8 h-8 object-contain"
 											/>
 										)}
-										<div className="flex items-center gap-2">
-											{team.color?.hex && (
-												<>
-													<span
-														className="w-[5px] h-[13px]"
-														style={{
-															backgroundColor:
-																team.color.hex,
-														}}
-													></span>
-												</>
-											)}
-										</div>
 										<div className="flex flex-col items-start">
-											<span className="truncate max-w-40">
-												{team.name}
+											<span className="truncate max-w-36">
+												{partner.name}
 											</span>
+											{/* {!partner.active && (
+												<span className="text-xs text-gray-400">
+													• Inativo
+												</span>
+											)} */}
 										</div>
 									</div>
 
@@ -358,13 +349,13 @@ export function TeamRegistration() {
 										onClick={(e) => {
 											e.stopPropagation();
 											handleDeleteClick(
-												team.id,
-												team.deleted,
+												partner.id,
+												partner.deleted,
 											);
 										}}
 										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 										title={
-											team.deleted
+											partner.deleted
 												? "Restaurar"
 												: "Excluir"
 										}
@@ -376,34 +367,31 @@ export function TeamRegistration() {
 						))
 					) : (
 						<li className="p-2 text-gray-500 text-center">
-							Nenhuma equipe encontrada
+							Nenhum parceiro encontrado
 						</li>
 					)}
 				</ul>
 			</div>
 
+			{/* Delete Modal */}
 			<Dialog
 				open={isDeleteModalOpen}
 				onClose={cancelDelete}
 				className="relative z-50"
 			>
-				{/* Backdrop */}
 				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-
-				{/* Modal container */}
 				<div className="fixed inset-0 flex items-center justify-center p-4">
 					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
 						<DialogTitle className="text-lg font-bold">
 							{itemToDelete?.deleted
-								? "Restaurar Equipe"
-								: "Excluir Equipe"}
+								? "Restaurar Parceiro"
+								: "Excluir Parceiro"}
 						</DialogTitle>
 						<Description className="mt-1">
 							{itemToDelete?.deleted
-								? "Deseja restaurar esta equipe?"
-								: "Tem certeza que deseja excluir esta equipe?"}
+								? "Deseja restaurar este parceiro?"
+								: "Tem certeza que deseja excluir este parceiro?"}
 						</Description>
-
 						<div className="mt-6 flex justify-end gap-2">
 							<button
 								onClick={cancelDelete}
@@ -431,22 +419,43 @@ export function TeamRegistration() {
 			{/* Registration Form */}
 			<div className="mx-auto max-w-3xl w-full">
 				<form
-					onSubmit={handleTeam}
+					onSubmit={handlePartner}
 					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
 				>
 					<div className="flex justify-between items-center mb-6">
-						<h2 className="text-2xl font-bold">
-							{isEditing
-								? "Editar Equipe"
-								: "Cadastrar Nova Equipe"}
-						</h2>
+						<div>
+							<h2 className="text-2xl font-bold">
+								{isEditing
+									? "Editar Parceiro"
+									: "Cadastrar Novo Parceiro"}
+							</h2>
+							<div className="flex items-center justify-start gap-2 mt-4">
+								<span className="text-sm font-medium">
+									Ativo
+								</span>
+								<label className="relative inline-flex items-center cursor-pointer">
+									<input
+										type="checkbox"
+										checked={formData.active}
+										onChange={(e) =>
+											setFormData((prev) => ({
+												...prev,
+												active: e.target.checked,
+											}))
+										}
+										className="sr-only peer"
+									/>
+									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+								</label>
+							</div>
+						</div>
 						{isEditing && (
 							<button
 								type="button"
 								onClick={resetForm}
-								className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+								className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
 							>
-								Nova Equipe
+								Novo Parceiro
 							</button>
 						)}
 					</div>
@@ -471,7 +480,7 @@ export function TeamRegistration() {
 					)}
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div className="md:col-span-2">
+						<div>
 							<label className="block mb-1">Nome *</label>
 							<input
 								name="name"
@@ -482,26 +491,15 @@ export function TeamRegistration() {
 							/>
 						</div>
 
-						<div className="md:col-span-2">
-							<label className="block mb-1 md:col-span-2">
-								Cor
-							</label>
-							<div className="flex items-center gap-2">
-								<input
-									type="color"
-									name="color"
-									value={formData.color}
-									onChange={handleChange}
-									className="w-10 h-10 cursor-pointer"
-								/>
-								<input
-									type="text"
-									name="color"
-									value={formData.color}
-									onChange={handleChange}
-									className="w-full p-2 border rounded h-11"
-								/>
-							</div>
+						<div>
+							<label className="block mb-1">Link</label>
+							<input
+								name="link"
+								value={formData.link}
+								onChange={handleChange}
+								placeholder="https://..."
+								className="w-full p-2 border rounded h-11"
+							/>
 						</div>
 
 						<div className="md:col-span-2">
@@ -522,16 +520,18 @@ export function TeamRegistration() {
 							)}
 						</div>
 
-						{isEditing && selectedTeam?.photo?.url && !logoFile && (
-							<div className="md:col-span-2 flex gap-4 items-center">
-								<span className="">Logo atual:</span>
-								<img
-									src={selectedTeam.photo.url}
-									alt={`Logo de ${selectedTeam.name}`}
-									className="h-16 w-16 object-contain border border-gray-300"
-								/>
-							</div>
-						)}
+						{isEditing &&
+							selectedPartner?.footerLogo?.url &&
+							!logoFile && (
+								<div className="md:col-span-2 flex gap-4 items-center">
+									<span>Logo atual:</span>
+									<img
+										src={selectedPartner.footerLogo.url}
+										alt={`Logo de ${selectedPartner.name}`}
+										className="h-12 object-contain border border-gray-300 p-1"
+									/>
+								</div>
+							)}
 
 						{uploadProgress !== null && (
 							<div className="md:col-span-2 w-full bg-gray-200 rounded-full h-2.5">
@@ -545,10 +545,10 @@ export function TeamRegistration() {
 
 					<button
 						type="submit"
-						disabled={createTeamLoading || updateTeamLoading}
+						disabled={createPartnerLoading || updatePartnerLoading}
 						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 					>
-						{createTeamLoading || updateTeamLoading
+						{createPartnerLoading || updatePartnerLoading
 							? isEditing
 								? "Atualizando..."
 								: "Cadastrando..."

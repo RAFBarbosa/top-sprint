@@ -1,0 +1,15 @@
+mutation UpdatePartner(
+	$where: PartnerWhereUniqueInput!
+	$data: PartnerUpdateInput!
+) {
+	updatePartner(where: $where, data: $data) {
+		id
+		name
+		deleted
+		footerLogo {
+			url
+		}
+		link
+		active
+	}
+}

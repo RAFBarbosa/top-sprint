@@ -1,0 +1,12 @@
+mutation CreatePartner($data: PartnerCreateInput!) {
+	createPartner(data: $data) {
+		id
+		name
+		deleted
+		footerLogo {
+			url
+		}
+		link
+		active
+	}
+}

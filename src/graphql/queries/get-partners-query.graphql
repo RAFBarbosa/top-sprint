@@ -18,3 +18,16 @@ query GetPartners {
 		active
 	}
 }
+
+query GetPartnersRegistration {
+	partners(stage: DRAFT, orderBy: createdAt_ASC, where: { deleted: false }) {
+		id
+		name
+		deleted
+		footerLogo {
+			url
+		}
+		link
+		active
+	}
+}
