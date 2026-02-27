@@ -1,7 +1,5 @@
 // src/config/tenants.ts
 import { GridConfig } from "./grids";
-import topSprintLogo from "../assets/img/white-logo.png";
-import feliplayLogo from "../assets/img/feliplay-logo.png";
 
 export type TenantId = "topSprint" | "feliplay" | "brazuka";
 
@@ -30,7 +28,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 		id: "topSprint",
 		name: "Top Sprint",
 		logo: {
-			url: topSprintLogo,
+			url: "/logos/topsprint.png",
 			alt: "Logo Top Sprint",
 		},
 		grids: [
@@ -74,7 +72,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 		id: "feliplay",
 		name: "Feliplay",
 		logo: {
-			url: feliplayLogo,
+			url: "/logos/feliplay.png",
 			alt: "Logo Feliplay",
 		},
 		grids: [
