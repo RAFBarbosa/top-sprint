@@ -16,7 +16,12 @@ import {
 	useClassOptionsQuery,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
-import { hasGridClasses, getGridClasses, GridId } from "../config/grids";
+import {
+	hasGridClasses,
+	getGridClasses,
+	GridId,
+	getGridConfig,
+} from "../config/grids";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
 	Dialog,
@@ -24,6 +29,7 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
+import { tenant } from "../config/tenants";
 
 export function DriverRegistration() {
 	// State management
@@ -51,7 +57,15 @@ export function DriverRegistration() {
 	const [gridFilter, setGridFilter] = useState("");
 
 	const [updateDriver, { loading: updateDriverLoading }] =
-		useUpdateDriverMutation();
+		useUpdateDriverMutation({
+			refetchQueries: [
+				{
+					query: GetDriversRegistrationDocument,
+					variables: {},
+				},
+			],
+			awaitRefetchQueries: true,
+		});
 	const [createAsset] = useCreateAssetMutation();
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -93,25 +107,8 @@ export function DriverRegistration() {
 
 	const [createDriver, { loading: createDriverLoading }] =
 		useCreateDriverMutation({
-			update: (cache, { data }) => {
-				const newDriver = data?.createDriver;
-				if (!newDriver) return;
-
-				const existingData = cache.readQuery({
-					query: GetDriversRegistrationDocument,
-					variables: { stage: "DRAFT" },
-				});
-
-				if (existingData) {
-					cache.writeQuery({
-						query: GetDriversRegistrationDocument,
-						variables: { stage: "DRAFT" },
-						data: {
-							drivers: [newDriver, ...existingData.drivers],
-						},
-					});
-				}
-			},
+			refetchQueries: [{ query: GetDriversRegistrationDocument }],
+			awaitRefetchQueries: true,
 		});
 
 	// Queries
@@ -134,7 +131,9 @@ export function DriverRegistration() {
 		data: driversData,
 		loading: driversLoading,
 		error: driversError,
-	} = useGetDriversRegistrationQuery();
+	} = useGetDriversRegistrationQuery({
+		fetchPolicy: "network-only",
+	});
 
 	// Helper functions
 	const formatEnum = (text: string) =>
@@ -143,7 +142,6 @@ export function DriverRegistration() {
 			.replace(/^./, (str) => str.toUpperCase());
 
 	const handleSelectDriver = (driver: any) => {
-		console.log(driver);
 		setSelectedDriver(driver);
 		setIsEditing(true);
 		setFormData({
@@ -328,6 +326,7 @@ export function DriverRegistration() {
 					variables: {
 						data: {
 							name: formData.name,
+							deleted: false,
 							number: formData.number || null,
 							grid: formData.grid || null,
 							class: formData.class || null,
@@ -340,22 +339,6 @@ export function DriverRegistration() {
 								: null,
 							team: teamId ? { connect: { id: teamId } } : null,
 						},
-					},
-					update(cache, { data }) {
-						const existing = cache.readQuery({
-							query: GetDriversRegistrationDocument,
-						});
-						if (existing && data?.createDriver) {
-							cache.writeQuery({
-								query: GetDriversRegistrationDocument,
-								data: {
-									drivers: [
-										data.createDriver,
-										...existing.drivers,
-									],
-								},
-							});
-						}
 					},
 				});
 
@@ -530,13 +513,35 @@ export function DriverRegistration() {
 									</div>
 
 									<div className="flex gap-4">
-										{driver.photo?.url && (
+										<div
+											className={`w-12 h-12 flex-shrink-0 ${
+												driver.grid &&
+												(getGridConfig(driver.grid)
+													?.photoStyle ??
+													tenant.defaultPhotoStyle) ===
+													"round"
+													? "rounded-full scale-100"
+													: "scale-100"
+											}`}
+										>
 											<img
-												src={driver.photo.url}
+												src={
+													driver.photo?.url ||
+													tenant.fallbackDriverPhoto
+												}
 												alt={driver.name}
-												className="w-8 h-8 rounded-full object-cover scale-400 translate-y-9"
+												className={`w-full h-full object-cover ${
+													driver.grid &&
+													(getGridConfig(driver.grid)
+														?.photoStyle ??
+														tenant.defaultPhotoStyle) ===
+														"round"
+														? "object-center"
+														: "scale-300 translate-y-12 object-top"
+												}`}
 											/>
-										)}
+										</div>
+
 										<button
 											onClick={() =>
 												handleDeleteClick(

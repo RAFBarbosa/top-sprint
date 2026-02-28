@@ -1,44 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 	<head>
 		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta
-			name="description"
-			content="Liga Top Sprint: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil. Tudo sobre automobilismo virtual, com foco em corridas e simuladores de F1."
-		/>
-		<meta
-			name="keywords"
-			content="Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Liga Top Sprint, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador"
-		/>
-		<meta name="author" content="Liga Top Sprint" />
-		<meta name="theme-color" content="#ffffff" />
-		<meta name="msapplication-TileColor" content="#da532c" />
+		<meta name="description" content="<%- description %>" />
+		<meta name="keywords" content="<%- keywords %>" />
+		<meta name="author" content="<%- name %>" />
+		<meta name="theme-color" content="<%- themeColor %>" />
+		<meta name="msapplication-TileColor" content="<%- themeColor %>" />
 
 		<!-- Open Graph -->
-		<meta
-			property="og:title"
-			content="Liga Top Sprint - Fórmula 1 Virtual"
-		/>
-		<meta
-			property="og:description"
-			content="Junte-se à Liga Top Sprint e participe de corridas emocionantes no mundo do automobilismo virtual."
-		/>
+		<meta property="og:title" content="<%- ogTitle %>" />
+		<meta property="og:description" content="<%- description %>" />
 		<meta property="og:image" content="/media-logo.png" />
-		<meta property="og:url" content="https://www.ligatopsprint.com" />
+		<meta property="og:url" content="<%- url %>" />
 		<meta property="og:type" content="website" />
 
 		<!-- Twitter Card -->
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta
-			name="twitter:title"
-			content="Liga Top Sprint - Fórmula 1 Virtual"
-		/>
-		<meta
-			name="twitter:description"
-			content="Corridas intensas no mundo da Fórmula 1 virtual e automobilismo simulado."
-		/>
+		<meta name="twitter:title" content="<%- ogTitle %>" />
+		<meta name="twitter:description" content="<%- description %>" />
 		<meta name="twitter:image" content="/media-logo.png" />
 
 		<!-- Preconnect para otimizar fontes -->
@@ -74,37 +56,43 @@
 			href="/favicon-16x16.png"
 		/>
 		<link rel="manifest" href="/site.webmanifest" />
-		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#eb1c24" />
+		<link
+			rel="mask-icon"
+			href="/safari-pinned-tab.svg"
+			color="<%- themeColor %>"
+		/>
 
-		<title>Liga Top Sprint</title>
+		<title><%- title %></title>
 
 		<!-- Structured Data -->
 		<script type="application/ld+json">
 			{
 				"@context": "https://schema.org",
 				"@type": "SportsOrganization",
-				"name": "Liga Top Sprint",
-				"url": "https://www.ligatopsprint.com",
+				"name": "<%- name %>",
+				"url": "<%- url %>",
 				"sport": "Fórmula 1 Virtual",
-				"description": "Liga de automobilismo virtual focada em simulação de corridas de Fórmula 1.",
+				"description": "<%- description %>",
 				"logo": "/media-logo.png"
 			}
 		</script>
-	</head>
-	<!-- Google tag (gtag.js) -->
-	<script
-		async
-		src="https://www.googletagmanager.com/gtag/js?id=G-N82GC0X63T"
-	></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag() {
-			dataLayer.push(arguments);
-		}
-		gtag("js", new Date());
 
-		gtag("config", "G-N82GC0X63T");
-	</script>
+		<!-- Google Analytics -->
+		<% if (gtagId) { %>
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=<%- gtagId %>"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "<%- gtagId %>");
+		</script>
+		<% } %>
+	</head>
 	<body>
 		<div id="root"></div>
 		<script type="module" src="/src/main.tsx"></script>

@@ -41,13 +41,21 @@ export function PartnerRegistration() {
 	} | null>(null);
 
 	const [createPartner, { loading: createPartnerLoading }] =
-		useCreatePartnerMutation();
+		useCreatePartnerMutation({
+			refetchQueries: [{ query: GetPartnersRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 	const [updatePartner, { loading: updatePartnerLoading }] =
-		useUpdatePartnerMutation();
+		useUpdatePartnerMutation({
+			refetchQueries: [{ query: GetPartnersRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 	const [createAsset] = useCreateAssetMutation();
 
 	const { data: partnersData, error: partnersError } =
-		useGetPartnersRegistrationQuery();
+		useGetPartnersRegistrationQuery({
+			fetchPolicy: "network-only",
+		});
 
 	const handleDeleteClick = (id: string, deleted: boolean) => {
 		setItemToDelete({ id, deleted });
@@ -191,22 +199,6 @@ export function PartnerRegistration() {
 								? { connect: { id: logoId } }
 								: undefined,
 						},
-					},
-					update(cache, { data }) {
-						const existing = cache.readQuery({
-							query: GetPartnersRegistrationDocument,
-						});
-						if (existing && data?.createPartner) {
-							cache.writeQuery({
-								query: GetPartnersRegistrationDocument,
-								data: {
-									partners: [
-										data.createPartner,
-										...existing.partners,
-									],
-								},
-							});
-						}
 					},
 				});
 

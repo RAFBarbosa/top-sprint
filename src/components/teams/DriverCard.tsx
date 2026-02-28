@@ -1,7 +1,9 @@
 import { useState } from "react";
 import useNavigateToDriver from "../hooks/useNavigateToDriver";
-import useNormalizeString from "../hooks/useNormalizeString";
+import { normalizeString } from "../hooks/useNormalizeString";
 import { useTab } from "../../contexts/TabContext";
+import { getGridConfig } from "../config/grids";
+import { tenant } from "../config/tenants";
 
 interface Driver {
 	id: string;
@@ -37,20 +39,14 @@ export function DriverCard({ driver }: DriverCardProps) {
 			setActiveTab(driver.grid);
 		}
 
-		navigateToDriver(useNormalizeString(driver.name));
+		navigateToDriver(normalizeString(driver.name));
 	};
 
+	const gridConfig = getGridConfig(driver.grid);
+	const isRound = gridConfig?.photoStyle === "round";
+
 	const getGridTitle = () => {
-		switch (driver.grid) {
-			case "gridA":
-				return "Grid Heat";
-			case "gridB":
-				return "Grid Carbon";
-			case "gridC":
-				return "Grid Academy";
-			default:
-				return "Driver";
-		}
+		return getGridConfig(driver.grid)?.label ?? "Driver";
 	};
 
 	// Name formatting logic extracted from JSX
@@ -90,11 +86,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 	// Class labeling logic based on active tab
 	const getClassLabel = () => {
-		if (activeTab.id === "gridC") {
-			return driver.team?.class === "classA" ? "Classe C" : "Classe D";
-		} else {
-			return driver.team?.class === "classA" ? "Classe A" : "Classe B";
-		}
+		return driver.team?.class === "classA" ? "Classe A" : "Classe B";
 	};
 
 	return (
@@ -104,22 +96,25 @@ export function DriverCard({ driver }: DriverCardProps) {
 			onClick={handleDriverClick}
 		>
 			<div
-				className="absolute inset-0 rounded-lg z-0 pointer-events-none opacity-10"
+				className="dot-pattern absolute inset-0 rounded-lg z-0 pointer-events-none opacity-10"
 				style={{
-					backgroundColor: "rgba(0, 0, 0, 0.3)",
+					backgroundColor: "rgba(0, 0, 0, 0.5)",
 					backgroundImage: "var(--background-image-dot-pattern)",
-					backgroundSize: "2px 2px",
 				}}
 			/>
 
 			{/* Team logo - behind everything, positioned at top */}
 			<img
-				className="w-25 h-25 object-cover absolute top-5 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg md:transition-all md:duration-200 md:group-hover:scale-95 md:group-hover:-translate-y-1"
+				className={`w-25 h-25 object-cover absolute top-3 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg ${
+					!isRound
+						? "md:transition-all md:duration-200 md:group-hover:scale-95 md:group-hover:-translate-y-1"
+						: ""
+				}`}
 				src={driver.team?.photo?.url}
 				alt={driver.team?.name}
 			/>
 
-			<div className="flex items-center justify-between p-4 relative z-10 text-white md:drop-shadow-lg">
+			{/* <div className="flex items-center justify-between p-4 relative z-10 text-white md:drop-shadow-lg">
 				<div className="flex flex-col items-center">
 					<span className="text-xs uppercase font-semibold">
 						Classe
@@ -135,25 +130,28 @@ export function DriverCard({ driver }: DriverCardProps) {
 						</span>
 					</div>
 				</div>
-			</div>
+			</div> */}
 
 			{/* Foto do piloto */}
 			<div className="flex-1 flex items-center justify-center p-4 relative z-10">
 				<img
-					src={
-						driver.photo?.url ||
-						"https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84"
-					}
+					src={driver.photo?.url || tenant.fallbackDriverPhoto}
 					alt={driver.name}
-					className={`w-55 h-55 object-cover md:transition-all md:duration-200 md:group-hover:scale-106 md:group-hover:translate-y-2 absolute top-3 ${
-						!imageLoading ? "opacity-100" : "opacity-0"
-					}`}
-					style={{
-						maskImage:
-							"linear-gradient(to bottom, black 70%, transparent 89%)",
-						WebkitMaskImage:
-							"linear-gradient(to bottom, black 70%, transparent 89%)",
-					}}
+					className={`object-cover md:transition-all md:duration-200 md:group-hover:scale-106 absolute ${
+						isRound
+							? "w-35 h-35 rounded-full top-37 left-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-white/20"
+							: "w-58 h-58 top-16 md:group-hover:translate-y-2"
+					} ${!imageLoading ? "opacity-100" : "opacity-0"}`}
+					style={
+						isRound
+							? undefined
+							: {
+									maskImage:
+										"linear-gradient(to bottom, black 70%, transparent 89%)",
+									WebkitMaskImage:
+										"linear-gradient(to bottom, black 70%, transparent 89%)",
+								}
+					}
 					onLoad={handleImageLoad}
 				/>
 			</div>

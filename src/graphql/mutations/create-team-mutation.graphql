@@ -2,6 +2,7 @@ mutation CreateTeam($data: TeamCreateInput!) {
 	createTeam(data: $data) {
 		id
 		name
+		deleted
 		color {
 			hex
 		}

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { addHours } from "date-fns";
+import { tenant } from "../config/tenants";
 
 interface CalendarProps {
 	round: string;
@@ -83,8 +84,8 @@ export function Calendar(props: CalendarProps) {
 	return (
 		<div
 			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
-				isPastTwoHours && " hover:border-f1-red"
-			} ${isFutureDate ? "cursor-pointer" : "cursor-pointer"}`}
+				isPastTwoHours ? "calendar-card-hover" : ""
+			} cursor-pointer`}
 		>
 			<a
 				href={isFutureDate ? undefined : props.link}
@@ -98,7 +99,10 @@ export function Calendar(props: CalendarProps) {
 					isFutureDate ? "cursor-pointer" : "cursor-pointer"
 				}`}
 			>
-				<div className="text-f1-red font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase">
+				<div
+					style={{ color: "var(--color-brand-primary)" }}
+					className="font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
+				>
 					{props.round}
 					{isPastTwoHours && " Finalizada"}
 				</div>
@@ -116,7 +120,10 @@ export function Calendar(props: CalendarProps) {
 									}`}
 								>
 									<MenuArrow
-										className="text-f1-red p-[2px] ml-1 translate-y-[-1px]"
+										style={{
+											color: "var(--color-brand-primary)",
+										}}
+										className="p-[2px] ml-1 translate-y-[-1px]"
 										fontSize="small"
 									/>
 								</div>
@@ -159,24 +166,22 @@ export function Calendar(props: CalendarProps) {
 									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
 										<p className="font-black"></p>
 										<p className="font-semibold">
-											{/* Use the helper function to handle objects */}
 											{getFilteredWinnerName(
 												props.winnerA,
 											)}
 										</p>
 									</div>
 								)}
-								{props.winnerB && (
+								{/* {props.winnerB && (
 									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
 										<p className="font-black">B</p>
 										<p className="font-semibold">
-											{/* Use the helper function to handle objects */}
 											{getFilteredWinnerName(
 												props.winnerB,
 											)}
 										</p>
 									</div>
-								)}
+								)} */}
 							</div>
 						</div>
 					)}

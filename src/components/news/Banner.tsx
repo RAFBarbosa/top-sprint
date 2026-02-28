@@ -14,7 +14,10 @@ export function Banner(props: BannerProps) {
 				target="_blank"
 				rel="noopener noreferrer"
 			>
-				<div className="text-sm font-semibold mt-2 text-f1-red uppercase">
+				<div
+					style={{ color: "var(--color-brand-primary)" }}
+					className="text-sm font-semibold mt-2 uppercase"
+				>
 					{props.title}
 				</div>
 				<div className="group-hover:underline">

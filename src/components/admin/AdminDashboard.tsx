@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../auth/firebase";
 import Sidebar from "./Sidebar";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { tenant } from "../config/tenants";
 
 export function AdminDashboard() {
 	const navigate = useNavigate();
@@ -36,7 +37,9 @@ export function AdminDashboard() {
 					<h1 className="text-2xl font-bold mb-2">
 						Painel Administrador
 					</h1>
-					<p>Bem vindo ao painel Top Sprint, {user?.email}</p>
+					<p>
+						Bem vindo ao painel {tenant.name}, {user?.email}
+					</p>
 				</div>
 				<button
 					onClick={handleLogout}

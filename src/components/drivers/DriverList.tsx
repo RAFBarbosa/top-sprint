@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import useNormalizeString from "../hooks/useNormalizeString";
+import { normalizeString } from "../hooks/useNormalizeString";
 
 interface DriverListProps {
 	gridName: string;
@@ -19,8 +19,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 						? "hidden"
 						: ""
 				}`}
-			>
-			</div>
+			></div>
 			<h2 className="text-xl font-bold my-4">
 				<div
 					className={`font-extrabold text-4xl tracking-wide mb-6 ${
@@ -44,17 +43,15 @@ export const DriverList: React.FC<DriverListProps> = ({
 
 					return (
 						<Link
-							key={driver.name}
-							to={`/pilotos/${useNormalizeString(
-								driver.name.toLowerCase()
-							)}`}
+							key={driver.id ?? driver.name}
+							to={`/pilotos/${normalizeString(driver.name.toLowerCase())}`}
 							className="block p-4 border-t border-r rounded-tr-lg transition-all duration-200 group"
 							onMouseEnter={(e) => {
 								e.currentTarget.style.borderColor =
 									driver.teamColor;
 							}}
 							onMouseLeave={(e) => {
-								e.currentTarget.style.borderColor = "black";
+								e.currentTarget.style.borderColor = "";
 							}}
 						>
 							<div className="flex items-center overflow-hidden gap-1 group">
@@ -76,7 +73,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 									style={{
 										backgroundColor: driver.teamColor
 											? driver.teamColor
-											: "black",
+											: "",
 									}}
 								/>
 								<div

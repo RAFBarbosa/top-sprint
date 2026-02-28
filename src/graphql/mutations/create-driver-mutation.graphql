@@ -1,15 +1,19 @@
 mutation CreateDriver($data: DriverCreateInput!) {
 	createDriver(data: $data) {
 		id
+		deleted
 		name
 		number
 		grid
-		class
 		stream
 		deleted
 		city
 		equipment
 		phone
+		badgeTitle
+		badge {
+			url
+		}
 		photo {
 			url
 		}

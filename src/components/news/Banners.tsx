@@ -1,8 +1,8 @@
 import { useGetBannersQuery } from "../../graphql/generated";
-import GenericLogo from "/src/assets/img/white-logo.png";
 import { Banner } from "./Banner";
-import { SecondaryBanners } from "./SecondaryBanners"; // We'll create this
+import { SecondaryBanners } from "./SecondaryBanners";
 import { Skeleton } from "@mui/material";
+import { tenant } from "../config/tenants";
 
 const loadingSkeleton = () => {
 	return (
@@ -34,7 +34,7 @@ export function Banners() {
 		?.sort(
 			(a, b) =>
 				new Date(b.createdAt).getTime() -
-				new Date(a.createdAt).getTime()
+				new Date(a.createdAt).getTime(),
 		);
 
 	// Get latest 2 secondary banners
@@ -44,7 +44,7 @@ export function Banners() {
 			?.sort(
 				(a, b) =>
 					new Date(b.createdAt).getTime() -
-					new Date(a.createdAt).getTime()
+					new Date(a.createdAt).getTime(),
 			)
 			?.slice(0, 4) || [];
 
@@ -53,7 +53,10 @@ export function Banners() {
 	return (
 		<div className="flex flex-col md:flex-row gap-4 items-stretch">
 			{/* Primary Banner */}
-			<aside className="md:w-4/7 mb-4 md:mb-0 border-t-8 border-r-8 border-f1-red rounded-tr-3xl relative flex flex-col">
+			<aside
+				style={{ borderColor: "var(--color-brand-primary)" }}
+				className="md:w-4/7 mb-4 md:mb-0 border-t-8 border-r-8 rounded-tr-3xl relative flex flex-col"
+			>
 				<div className="pr-2 md:sticky top-16 z-10">
 					{latestFeaturedBanner ? (
 						<Banner
@@ -64,7 +67,7 @@ export function Banners() {
 							content={latestFeaturedBanner.content || ""}
 							photo={
 								latestFeaturedBanner.photo || {
-									url: GenericLogo,
+									url: tenant.logo.url,
 								}
 							}
 						/>
