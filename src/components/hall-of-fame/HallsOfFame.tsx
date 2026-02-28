@@ -3,6 +3,7 @@ import Carousel from "../utils/Carousel";
 import { HallOfFame } from "./HallOfFame";
 import { useGetHallsOfFameQuery } from "../../graphql/generated";
 import { Divider } from "../layout/Divider";
+import { tenant } from "../config/tenants";
 
 const loadingSkeleton = () => {
 	return (
@@ -55,7 +56,7 @@ export function HallsOfFame() {
 										{data.season}
 									</h2>
 
-									<div className="w-full h-3 bg-f1-carbon my-4" />
+									<div className="w-full h-3 bg-f1-text my-4" />
 
 									{/* Carousel */}
 									<Carousel>
@@ -77,13 +78,32 @@ export function HallsOfFame() {
 			</div>
 			<div className="w-full bg-f1-silver text-white py-8">
 				<div className="max-w-screen-xl mx-auto px-3">
-					<div className="border-t-8 border-r-8 border-f1-red rounded-tr-3xl pt-3 mb-6">
+					<div
+						style={{ borderColor: "var(--color-brand-primary)" }}
+						className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6"
+					>
 						<h2 className="font-bold text-3xl md:text-4xl">
 							Prêmios
 						</h2>
 					</div>
 					<div className="pr-3">
-						<p className="mb-2">
+						<ul className="list-disc ml-5 mb-2">
+							<li>
+								A premiação varia a cada temporada e pode
+								incluir troféus, medalhas, premiações em
+								dinheiro e outros reconhecimentos
+								especiais.{" "}
+							</li>
+							<li>
+								A cada edição buscamos elevar o nível e
+								valorizar ainda mais os campeões.
+							</li>
+							<li>
+								Os detalhes completos são divulgados antes do
+								início de cada temporada.
+							</li>
+						</ul>
+						{/* <p className="mb-2">
 							Os ganhadores do campeonato serão recompensados com:
 						</p>
 						<ul className="list-disc ml-5 mb-2">
@@ -94,9 +114,9 @@ export function HallsOfFame() {
 							<li>
 								Medalhas para ambos os campeões de contrutores.
 							</li>
-						</ul>
+						</ul> */}
 
-						<p>O envio deverá ser pago pelos donos dos prêmios.</p>
+						{/* <p>O envio deverá ser pago pelos donos dos prêmios.</p> */}
 					</div>
 				</div>
 			</div>

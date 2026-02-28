@@ -51,13 +51,21 @@ export function HallOfFameRegistration() {
 	} | null>(null);
 
 	const [createHallOfFame, { loading: createLoading }] =
-		useCreateHallOfFameMutation();
+		useCreateHallOfFameMutation({
+			refetchQueries: [{ query: GetHallsOfFameRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 	const [updateHallOfFame, { loading: updateLoading }] =
-		useUpdateHallOfFameMutation();
+		useUpdateHallOfFameMutation({
+			refetchQueries: [{ query: GetHallsOfFameRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 	const [createAsset] = useCreateAssetMutation();
 
 	const { data: hofData, error: hofError } =
-		useGetHallsOfFameRegistrationQuery();
+		useGetHallsOfFameRegistrationQuery({
+			fetchPolicy: "network-only",
+		});
 
 	// ── Delete modal ────────────────────────────────────────────────────────
 	const handleDeleteClick = (id: string, deleted: boolean) => {
@@ -259,22 +267,6 @@ export function HallOfFameRegistration() {
 								connect: orderedIds.map((id) => ({ id })),
 							},
 						},
-					},
-					update(cache, { data }) {
-						const existing = cache.readQuery({
-							query: GetHallsOfFameRegistrationDocument,
-						});
-						if (existing && data?.createHallOfFame) {
-							cache.writeQuery({
-								query: GetHallsOfFameRegistrationDocument,
-								data: {
-									hallsOfFame: [
-										data.createHallOfFame,
-										...existing.hallsOfFame,
-									],
-								},
-							});
-						}
 					},
 				});
 

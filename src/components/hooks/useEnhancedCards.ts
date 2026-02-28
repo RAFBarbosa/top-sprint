@@ -9,17 +9,18 @@ const normalizeString = (str: string): string => {
 		.toLowerCase()
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "")
-		.replace(/\s+/g, ' ')
+		.replace(/\s+/g, " ")
 		.trim();
 };
 
-export function useEnhancedCards(gridId: GridId) {  // ← Changed parameter name
+export function useEnhancedCards(gridId: GridId) {
+	// ← Changed parameter name
 	const { data } = useGetTeamsQuery();
-	
-	const { cards, stats, loading, error } = useCsvLoader({ 
-		gridId: gridId  // ← Now this is correct
+
+	const { cards, stats, loading, error } = useCsvLoader({
+		gridId: gridId, // ← Now this is correct
 	});
-	
+
 	const enhancedCards = useMemo(() => {
 		if (!data || !cards || !stats) {
 			return [];
@@ -29,17 +30,21 @@ export function useEnhancedCards(gridId: GridId) {  // ← Changed parameter nam
 			.map((card) => {
 				const driverFromData = data?.drivers?.find(
 					(driverFromData) =>
-						normalizeString(driverFromData.name) === normalizeString(card.name)
+						normalizeString(driverFromData.name) ===
+						normalizeString(card.name),
 				);
-				
+
 				if (!driverFromData) return null;
 
 				const driverStats = stats.find(
-					(stat) => normalizeString(stat.name) === normalizeString(card.name)
+					(stat) =>
+						normalizeString(stat.name) ===
+						normalizeString(card.name),
 				);
 
 				return {
 					...card,
+					id: driverFromData?.id || "",
 					stream: driverFromData?.stream || "",
 					grid: driverFromData?.grid || "",
 					class: driverFromData?.class || "",
@@ -60,6 +65,6 @@ export function useEnhancedCards(gridId: GridId) {  // ← Changed parameter nam
 	return {
 		enhancedCards,
 		loading,
-		error
+		error,
 	};
 }

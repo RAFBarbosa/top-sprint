@@ -41,6 +41,7 @@ query GetDrivers {
 		equipment
 		phone
 		team {
+			id
 			name
 			color {
 				hex

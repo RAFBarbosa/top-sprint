@@ -6,10 +6,15 @@ import { Footer } from "./components/layout/Footer";
 import { Router } from "./Router";
 import { Analytics } from "@vercel/analytics/react";
 import { TabProvider } from "./contexts/TabContext";
+import { tenant } from "./components/config/tenants";
 
 function App() {
+	const style = Object.fromEntries(
+		Object.entries(tenant.cssVars),
+	) as React.CSSProperties;
+
 	return (
-		<div className="flex flex-col min-h-screen">
+		<div style={style} className="flex flex-col min-h-screen">
 			<ApolloProvider client={client}>
 				<BrowserRouter>
 					<TabProvider>

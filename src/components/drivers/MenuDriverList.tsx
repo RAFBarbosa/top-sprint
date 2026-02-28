@@ -1,10 +1,12 @@
 import React from "react";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
-import useNormalizeString from "../hooks/useNormalizeString";
+import { normalizeString } from "../hooks/useNormalizeString";
 import { useLocation } from "react-router-dom";
 
 interface Driver {
+	id?: string;
 	name: string;
+	photo?: string;
 	teamColor: string;
 	grid: string;
 }
@@ -53,18 +55,16 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 			>
 				{drivers.map((driver) => {
 					const { firstName, secondName } = splitDriverName(
-						driver.name
+						driver.name,
 					);
 					return (
 						<li
-							key={driver.name}
+							key={driver.id ?? driver.name}
 							className="border-b-1 border-r-1 rounded-br-lg py-2 flex justify-between items-center cursor-pointer transition-colors duration-200"
 							style={{
 								borderColor:
-									useNormalizeString(location.pathname) ===
-									useNormalizeString(
-										`/pilotos/${driver.name}`
-									)
+									normalizeString(location.pathname) ===
+									normalizeString(`/pilotos/${driver.name}`)
 										? driver.teamColor
 										: "rgba(255, 255, 255, 0.5)",
 							}}
@@ -74,10 +74,8 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 							}}
 							onMouseLeave={(e) => {
 								if (
-									useNormalizeString(location.pathname) !==
-									useNormalizeString(
-										`/pilotos/${driver.name}`
-									)
+									normalizeString(location.pathname) !==
+									normalizeString(`/pilotos/${driver.name}`)
 								) {
 									e.currentTarget.style.borderColor =
 										"rgba(255, 255, 255, 0.5)";
@@ -87,7 +85,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 						>
 							<div className="flex items-center">
 								<div
-									className="mr-2 rounded-full overflow-hidden border-1 border-f1-carbon transition-all duration-200"
+									className="mr-2 rounded-full overflow-hidden transition-all duration-200"
 									style={{
 										backgroundColor: driver.teamColor,
 									}}

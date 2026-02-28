@@ -12,6 +12,7 @@ export interface GridConfig {
 	hoverAccentColor: string;
 	standingsBgClass: string;
 	standingsTitle: string;
+	countdownBgClass: string;
 	classes?: Array<{
 		id: string;
 		label: string;
@@ -26,7 +27,7 @@ export const GRIDS = tenant.grids;
 
 // All your existing helpers stay exactly the same below this line
 export const getGridColor = (gridId: string) =>
-	GRIDS.find((g) => g.id === gridId)?.primaryColor ?? "bg-white";
+	GRIDS.find((g) => g.id === gridId)?.primaryColor ?? "#ffffff";
 
 export const getGridConfig = (gridId: GridId) =>
 	GRIDS.find((g) => g.id === gridId);

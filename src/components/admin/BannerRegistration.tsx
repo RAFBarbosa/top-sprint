@@ -125,29 +125,15 @@ export function BannerRegistration() {
 	// GraphQL operations
 	const [createBanner, { loading: createBannerLoading }] =
 		useCreateBannerMutation({
-			update: (cache, { data }) => {
-				const newBanner = data?.createBanner;
-				if (!newBanner) return;
-
-				const existingData = cache.readQuery({
-					query: GetBannersRegistrationDocument,
-					variables: { stage: "DRAFT" },
-				});
-
-				if (existingData) {
-					cache.writeQuery({
-						query: GetBannersRegistrationDocument,
-						variables: { stage: "DRAFT" },
-						data: {
-							banners: [newBanner, ...existingData.banners],
-						},
-					});
-				}
-			},
+			refetchQueries: [{ query: GetBannersRegistrationDocument }],
+			awaitRefetchQueries: true,
 		});
 
 	const [updateBanner, { loading: updateBannerLoading }] =
-		useUpdateBannerMutation();
+		useUpdateBannerMutation({
+			refetchQueries: [{ query: GetBannersRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 	const [createAsset] = useCreateAssetMutation();
 
 	// Queries
@@ -155,7 +141,9 @@ export function BannerRegistration() {
 		data: bannersData,
 		loading: bannersLoading,
 		error: bannersError,
-	} = useGetBannersRegistrationQuery();
+	} = useGetBannersRegistrationQuery({
+		fetchPolicy: "network-only",
+	});
 	const {
 		data: categoriesData,
 		loading: categoriesLoading,
@@ -293,6 +281,7 @@ export function BannerRegistration() {
 				const result = await createBanner({
 					variables: {
 						data: {
+							deleted: false,
 							title: formData.title,
 							content: formData.content,
 							link: formData.link || null,
@@ -301,22 +290,6 @@ export function BannerRegistration() {
 								? { connect: { id: photoId } }
 								: null,
 						},
-					},
-					update(cache, { data }) {
-						const existing = cache.readQuery({
-							query: GetBannersRegistrationDocument,
-						});
-						if (existing && data?.createBanner) {
-							cache.writeQuery({
-								query: GetBannersRegistrationDocument,
-								data: {
-									banners: [
-										data.createBanner,
-										...existing.banners,
-									],
-								},
-							});
-						}
 					},
 				});
 

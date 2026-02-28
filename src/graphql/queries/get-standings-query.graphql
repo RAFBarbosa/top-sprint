@@ -10,6 +10,7 @@ query GetTeams {
 		grid
 		class
 		team {
+			id
 			name
 			color {
 				hex

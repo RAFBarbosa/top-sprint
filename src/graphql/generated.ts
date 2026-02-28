@@ -12249,7 +12249,7 @@ export type CreateDriverMutationVariables = Exact<{
 }>;
 
 
-export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, class?: Class | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
+export type CreateDriverMutation = { __typename?: 'Mutation', createDriver?: { __typename?: 'Driver', id: string, deleted?: boolean | null, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, city?: string | null, equipment?: string | null, phone?: string | null, badgeTitle: Array<BadgeTitle>, badge: Array<{ __typename?: 'Asset', url: string }>, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null } | null };
 
 export type CreateHallOfFameMutationVariables = Exact<{
   data: HallOfFameCreateInput;
@@ -12277,7 +12277,7 @@ export type CreateTeamMutationVariables = Exact<{
 }>;
 
 
-export type CreateTeamMutation = { __typename?: 'Mutation', createTeam?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
+export type CreateTeamMutation = { __typename?: 'Mutation', createTeam?: { __typename?: 'Team', id: string, name?: string | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null, driver: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, grid?: Grid | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null }> } | null };
 
 export type UpdateBannerMutationVariables = Exact<{
   where: BannerWhereUniqueInput;
@@ -12395,7 +12395,7 @@ export type GetSeasonRoundsQuery = { __typename?: 'Query', rounds: Array<{ __typ
 export type GetDriversQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, class?: Class | null, number?: string | null, stream?: string | null, deleted?: boolean | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, name?: string | null, class?: Class | null, number?: string | null, stream?: string | null, deleted?: boolean | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
 
 export type GetDriversRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -12427,7 +12427,7 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, grid?: Grid | null, class?: Class | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, class?: Class | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, grid?: Grid | null, class?: Class | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, class?: Class | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{
   gridId: Grid;
@@ -12591,15 +12591,19 @@ export const CreateDriverDocument = gql`
     mutation CreateDriver($data: DriverCreateInput!) {
   createDriver(data: $data) {
     id
+    deleted
     name
     number
     grid
-    class
     stream
     deleted
     city
     equipment
     phone
+    badgeTitle
+    badge {
+      url
+    }
     photo {
       url
     }
@@ -12764,6 +12768,7 @@ export const CreateTeamDocument = gql`
   createTeam(data: $data) {
     id
     name
+    deleted
     color {
       hex
     }
@@ -13710,6 +13715,7 @@ export const GetDriversDocument = gql`
     equipment
     phone
     team {
+      id
       name
       color {
         hex
@@ -13981,6 +13987,7 @@ export const GetTeamsDocument = gql`
     grid
     class
     team {
+      id
       name
       color {
         hex

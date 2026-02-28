@@ -1,9 +1,9 @@
 import { useGetCalendarsQuery } from "../../graphql/generated";
-import GenericLogo from "/src/assets/img/white-logo.png";
+import { tenant } from "../config/tenants";
+import { getGridConfig } from "../config/grids";
 import { Calendar } from "./Calendar";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
-import { TabSwitch } from "../standings/csv/TabSwitch";
 
 // Import Swiper components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -35,18 +35,30 @@ export function Calendars() {
 		return calendar.grid === activeTab.id;
 	});
 
+	const initialSlide =
+		filteredCalendars?.findIndex((calendar) => {
+			return new Date(calendar.date) >= new Date();
+		}) ?? 0;
+
+	const startIndex =
+		initialSlide === -1
+			? (filteredCalendars?.length ?? 1) - 1
+			: initialSlide;
+
 	return (
 		<aside className="bg-f1-bg-silver pt-10">
 			<div className="flex flex-col overflow-hidden">
 				<div className="w-full mx-auto max-w-screen-xl px-3">
 					<div
-						className={`border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center ${
-							activeTab.id === "gridA"
-								? "border-f1-red"
-								: activeTab.id === "gridB"
-								? "border-f1-academy"
-								: "border-f1-silver"
-						}`}
+						style={{
+							borderColor:
+								tenant.grids.length > 1
+									? (getGridConfig(activeTab.id)
+											?.primaryColor ??
+										"var(--color-brand-primary)")
+									: "var(--color-brand-primary)",
+						}}
+						className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center"
 					>
 						<h2 className="font-bold text-3xl md:text-4xl">
 							Calendário
@@ -61,8 +73,10 @@ export function Calendars() {
 							<Swiper
 								modules={[Navigation]}
 								slidesPerView={"auto"}
+								spaceBetween={16}
 								navigation={true}
-								className="!ml-0" // Force left alignment
+								initialSlide={startIndex}
+								className="!ml-0"
 								breakpoints={{
 									640: {
 										slidesPerView: "auto",
@@ -104,12 +118,12 @@ export function Calendars() {
 												link={data.link || ""}
 												map={
 													data.map || {
-														url: GenericLogo,
+														url: tenant.logo.url,
 													}
 												}
 												flag={
 													data.flag || {
-														url: GenericLogo,
+														url: tenant.logo.url,
 													}
 												}
 											/>

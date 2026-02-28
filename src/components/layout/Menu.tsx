@@ -104,19 +104,24 @@ export function Menu() {
 		(id === "/resultados" && location.pathname.startsWith("/resultados"));
 
 	return (
-		<nav className="bg-f1-red text-white h-[56px] md:h-[74px]">
+		<nav
+			style={{ backgroundColor: "var(--color-brand-nav)" }}
+			className="text-white h-[56px] md:h-[74px]"
+		>
 			<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10">
 				{/* Logo */}
-				<button className="w-[50px] md:w-[70px] z-50 ml-3 md:ml-0">
+				<button className="h-[40px] md:h-[50px] z-50 ml-3 md:ml-0">
 					<Link to="/" onClick={handleLinkClick}>
 						<Logo />
 					</Link>
 				</button>
 
 				{/* Mobile — grid switcher + hamburger */}
-				<div className="text-xl font-semibold md:hidden z-50 self-center mt-2">
-					<GridMenu />
-				</div>
+				{tenant.grids.length > 1 && (
+					<div className="text-xl font-semibold md:hidden z-50 self-center mt-2">
+						<GridMenu />
+					</div>
+				)}
 				<button
 					className="text-3xl md:hidden z-50 w-[40px] h-[50px] mr-3"
 					onClick={() => setIsOpen(!isOpen)}
@@ -130,11 +135,15 @@ export function Menu() {
 				</button>
 
 				{/* Mobile overlay bg */}
-				<div className="md:hidden absolute bg-f1-red w-full h-full z-40" />
+				<div
+					style={{ backgroundColor: "var(--color-brand-nav)" }}
+					className="md:hidden absolute w-full h-full z-40"
+				/>
 
 				{/* Mobile drawer */}
 				<div
-					className={`fixed top-0 right-0 bg-f1-red px-2 py-6 transition-transform duration-300 ${
+					style={{ backgroundColor: "var(--color-brand-nav)" }}
+					className={`fixed top-0 right-0 px-2 py-6 transition-transform duration-300 ${
 						isOpen ? "translate-y-[56px]" : "translate-y-[-468px]"
 					} md:hidden w-full z-30`}
 				>
@@ -183,19 +192,21 @@ export function Menu() {
 									href={item.id}
 									target="_blank"
 									rel="noopener noreferrer"
-									className={`text-lg h-full flex items-center px-4 hover:bg-f1-carbon transition-colors duration-300`}
+									className={`text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300`}
 								>
 									{item.label}
 								</a>
 							) : item.isDropdown ? (
 								<div
 									className={`relative h-full group ${
-										isActive(item.id) ? "bg-f1-carbon" : ""
+										isActive(item.id)
+											? "nav-link-active"
+											: ""
 									}`}
 								>
 									<button
 										onClick={handleAllDriversClick}
-										className="text-lg h-full flex items-center px-4 hover:bg-f1-carbon transition-colors duration-300 cursor-pointer"
+										className="text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 cursor-pointer"
 									>
 										<span>{item.label}</span>
 										<MenuArrow
@@ -205,7 +216,7 @@ export function Menu() {
 									</button>
 
 									{/* Dropdown panel */}
-									<div className="fixed left-0 z-50 hidden group-hover:block w-full py-8 bg-f1-carbon">
+									<div className="fixed left-0 z-50 hidden group-hover:block w-full py-8 nav-dropdown-bg">
 										<div className="flex flex-col max-w-screen-xl mx-auto gap-10">
 											<div className="flex justify-between gap-6">
 												{loading ? (
@@ -241,8 +252,10 @@ export function Menu() {
 								<Link
 									to={item.id}
 									onClick={handleLinkClick}
-									className={`text-lg h-full flex items-center px-4 hover:bg-f1-carbon transition-colors duration-300 ${
-										isActive(item.id) ? "bg-f1-carbon" : ""
+									className={`text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 ${
+										isActive(item.id)
+											? "nav-link-active"
+											: ""
 									}`}
 								>
 									{item.label}

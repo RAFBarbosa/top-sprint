@@ -3,7 +3,7 @@ import { TabSwitch } from "../standings/csv/TabSwitch";
 import { Socials } from "../utils/Socials";
 import { useState } from "react";
 import { ArrowDropDown } from "@mui/icons-material";
-import { getGridColor } from "../config/grids";
+import { getGridConfig } from "../config/grids";
 
 export function GridMenu() {
 	const { activeTab, tabs, setActiveTab } = useTab();
@@ -14,10 +14,8 @@ export function GridMenu() {
 		setIsMobileDropdownOpen(false);
 	};
 
-	const getTabColor = (tabId: string) => getGridColor(tabId);
-
 	return (
-		<div className="md:bg-f1-carbon text-white h-9 md:h-11">
+		<div className="grid-menu-bg text-white h-9 md:h-11">
 			<div className="max-w-screen-xl flex justify-between mx-auto px-3">
 				<div className="flex md:gap-4 items-center">
 					<h3 className="font-semibold uppercase hidden md:block">
@@ -41,7 +39,13 @@ export function GridMenu() {
 						</button>
 
 						{isMobileDropdownOpen && (
-							<div className="fixed left-1/2 transform -translate-x-1/2 top-14 w-2/3 bg-f1-carbon border border-white/30 rounded shadow-lg z-50">
+							<div
+								style={{
+									backgroundColor:
+										"var(--color-brand-nav-dropdown-bg)",
+								}}
+								className="fixed left-1/2 transform -translate-x-1/2 top-14 w-2/3 border border-white/30 rounded shadow-lg z-50"
+							>
 								{tabs.map((tab) => (
 									<div
 										key={tab.id}
@@ -59,12 +63,16 @@ export function GridMenu() {
 										>
 											Grid {tab.label}
 											<span
-												className={`absolute bottom-0 left-0 h-0.5 ${getTabColor(
-													tab.id
-												)} ${
+												style={{
+													backgroundColor:
+														getGridConfig(tab.id)
+															?.primaryColor ??
+														"var(--color-brand-primary)",
+												}}
+												className={`absolute bottom-0 left-0 h-0.5 transition-all duration-150 ease-out ${
 													activeTab.id === tab.id
 														? "w-full"
-														: "w-0 group-hover:w-full transition-all duration-150 ease-out"
+														: "w-0 group-hover:w-full"
 												}`}
 											></span>
 										</button>

@@ -1,9 +1,8 @@
-import { Divider } from "../components/layout/Divider";
 import Car1Bg from "/src/assets/img/car1-bg.png";
 import Car2Bg from "/src/assets/img/car2-bg.png";
 import Car4Bg from "/src/assets/img/car4-bg.png";
 
-export function Rules() {
+export function FeliplayRules() {
 	const racePoints = [
 		"25 pontos",
 		"22 pontos",
@@ -28,14 +27,6 @@ export function Rules() {
 	];
 
 	const sprintPoints = [
-		"16 pontos",
-		"15 pontos",
-		"14 pontos",
-		"13 pontos",
-		"12 pontos",
-		"11 pontos",
-		"10 pontos",
-		"9 pontos",
 		"8 pontos",
 		"7 pontos",
 		"6 pontos",
@@ -50,12 +41,18 @@ export function Rules() {
 		"0 pontos",
 		"0 pontos",
 		"0 pontos",
+		"0 pontos",
+		"0 pontos",
+		"0 pontos",
+		"0 pontos",
+		"0 pontos",
+		"0 pontos",
 	];
 
 	return (
 		<aside id="regras" className="mx-auto leading-snug w-full">
 			<div className="w-full mb-8 max-w-screen-xl px-3 mx-auto">
-				<Divider className="max-w-screen-xl mx-auto px-3" />
+				<div className="h-16 bg-divider bg-cover my-4 opacity-5"></div>
 				<div className="border-t-8 border-r-8 border-f1-carbon rounded-tr-3xl pt-3 relative mb-8">
 					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide">
 						Regras e Formato
@@ -64,7 +61,7 @@ export function Rules() {
 				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
 					As regras utilizadas serão baseadas no{" "}
 					<a
-						href="https://docs.google.com/document/d/1IVOIGzItkJyCKvMbu20eRvRnxLWoQDppAZrZX9b1zBY/edit?usp=sharing"
+						href="https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmbylqzb10o8107mzfm9zewqg"
 						target="_blank"
 						className="text-f1-red font-bold underline"
 					>
@@ -75,32 +72,22 @@ export function Rules() {
 			</div>
 			<div className="flex flex-col md:flex-row items-start mb-10 max-w-screen-xl px-3 mx-auto">
 				<div className="w-full md:w-1/2 space-y-4 px-3">
-					<p className="font-bold text-lg">
-						O campeonato utilizará F1 25.
-					</p>
-					<p>
-						A <strong>Top Sprint</strong> inclui
-						<strong> corridas Sprint</strong> com o objetivo de criar
-						oportunidades para quem está atrás no campeonato,
-						oferecendo mais emoção nas disputas por posições e
-						pontos.
-					</p>
-					<div>
-					
-						<p className="font-bold text-lg">
-							As corridas acontecerão sempre às:
+					<div className="font-bold text-xl">
+						<p>O campeonato utilizará F1 24.</p>
+						<p>
+							As corridas acontecerão todas as quinta-feiras às
+							20h o Grid Start e as 22h o Grid Inter.
 						</p>
-
-						<ul className="ml-5 list-disc space-y-1">
-							<li>
-								<i>Grid Top Sprint:</i> Quintas-feiras às 22h.
-							</li>
-							<li>
-								<i>Grid Academy:</i> Segundas-feiras às 22h.
-							</li>
-						</ul>
 					</div>
-
+					{/* <p>
+						A <strong>Feliplay Cup</strong> inclui{" "}
+						<strong>corridas Sprint</strong>{" "}
+						
+						com o objetivo de criar oportunidades para quem está
+						atrás no campeonato, oferecendo mais emoção nas disputas
+						por posições e pontos.
+					</p> */}
+					<p>As corridas serão:</p>
 					{/* <div className="space-y-2">
 						<strong className="block text-xl">
 							Primeira Etapa (Sprint):
@@ -122,31 +109,10 @@ export function Rules() {
 							<li>Duração: 5 Voltas</li>
 						</ul>
 					</div> */}
-					{/* <div className="space-y-2">
-						<strong className="block text-xl">
-							Segunda Etapa (Corrida):
-						</strong>
+					<div className="space-y-2">
 						<ul className="list-disc ml-5 space-y-1">
 							<li>Grid: Qualificatória Curta (18 minutos)</li>
-							<li>Duração: 35% do circuito</li>
-						</ul>
-						<p className="italic text-f1-silver">
-							* Na primeira corrida da temporada, haverá uma
-							qualificatória de uma volta para definir o grid da
-							Sprint.
-						</p>
-						
-					</div> */}
-					<div>
-						<p className="font-bold text-lg">Detalhes da sessão:</p>
-						<ul className="ml-5 list-disc space-y-1">
-							<li>
-								<i>Grid:</i> Qualificatória curta (18 minutos)
-							</li>
-							<li>
-								<i>Duração:</i> 50% do circuito
-							</li>
-							<li>Dias de Sprint: Ambos os grids invertidos + 35% corrida principal</li>
+							<li>Duração: 50% do circuito</li>
 						</ul>
 						<p className="md:hidden italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 							"Ninguém vence a corrida na primeira curva, mas pode
@@ -168,7 +134,7 @@ export function Rules() {
 			</div>
 
 			<div className="w-full h-auto relative mb-8 max-w-screen-xl px-3 mx-auto">
-				<div className="border-t-8 border-r-8 border-b-8 border-f1-lighterPurple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
+				<div className="border-t-8 border-r-8 border-b-8 border-f1-purple rounded-tr-3xl rounded-br-3xl pt-8 w-full">
 					<div className="font-bold md:text-4xl text-3xl pr-4 absolute bg-white -top-[30px] mt-3">
 						Configuração da Corrida
 					</div>
@@ -195,40 +161,22 @@ export function Rules() {
 								boxes e assistências de DRS e ERS.
 							</p>
 							<p>
-								<strong>Sala:</strong> As configurações para a
-								sala estão descritas abaixo:
+								<strong>Lobby:</strong> As configurações para o
+								lobby estão descritas abaixo:
 							</p>
 							<div className="md:flex md:space-x-10">
 								<ul className="list-disc ml-5">
-									<li>
-										<i>Dificuldade da IA:</i> 50%
-									</li>
-									<li>
-										<i>Dano:</i> Completo
-									</li>
-									<li>
-										<i>Clima:</i> Dinâmico
-									</li>
-									<li>
-										<i>Safety Car:</i> Ligado e Reduzido
-									</li>
-									<li>
-										<i>Regras e Bandeiras:</i> Ligado
-									</li>
+									<li>Dificuldade da IA: 50%</li>
+									<li>Dano: Completo</li>
+									<li>Clima: Dinâmico</li>
+									<li>Safety Car: Ligado e Regular</li>
+									<li>Regras e Bandeiras: Ligado</li>
 								</ul>
 								<ul className="list-disc ml-5">
-									<li>
-										<i>Corte de curvas:</i> Rígido
-									</li>
-									<li>
-										<i>Volta de apresentação:</i> Desligado
-									</li>
-									<li>
-										<i>Largada:</i> Manual
-									</li>
-									<li>
-										<i>Regra de Parque Fechado:</i> Ligado
-									</li>
+									<li>Corte de curvas: Rígido</li>
+									<li>Volta de apresentação: Desligado</li>
+									<li>Largada: Manual</li>
+									<li>Regra de Parque Fechado: Ligado</li>
 								</ul>
 							</div>
 						</div>
@@ -250,24 +198,12 @@ export function Rules() {
 					</div>
 					<div className="w-full flex flex-col md:flex-row">
 						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
-							<p>
-								Em caso de ausência de um piloto, a direção pode convidar ex-pilotos <strong>Top Sprint</strong> para completar o grid e pontuar para a equipe do piloto ausente.
-							</p>
-							<ul className="list-disc ml-5">
-								<li>
-									Para evitar disputas importantes com reservas, a posição final de reservas será 4 posições atrás da posição em que cruzaram a linha de chegada.
-								</li>
-								<li>
-									Infrações cometidas pelo piloto reserva, serão aplicadas na pontuação final que ele irá ganhar para a equipe.
-								</li>
-								
-								<li>
-									De forma geral, <strong>Pilotos Reserva Top Sprint</strong> que já fizeram parte do grid em questão, deverão ter prioridade como piloto reserva.
-								</li>
-								<li>
-									Como exceção a direção pode considerar pilotos externos caso exista vídeos de corridas do piloto proposto.
-								</li>
-							</ul>
+							{/* <p>
+								Nas raras ocasiões onde pouca gente for
+								participar da etapa. A direção pode convidar
+								ex-pilotos <strong>Top Sprint</strong> para
+								completar o grid.
+							</p> */}
 							{/* <p>
 								Para evitar colisões com Reservas, na contagem
 								da pontuação, a posição do reserva será
@@ -277,7 +213,7 @@ export function Rules() {
 									titulares seguintes subirão uma posição.
 								</i>
 							</p> */}
-							{/* <p>
+							<p>
 								<b>Terceiro Piloto:</b> A pedido dos jogadores,
 								vamos introduzir uma forma de um piloto que
 								souber que vai faltar, convidar um terceiro
@@ -300,7 +236,7 @@ export function Rules() {
 								</li>
 								<li>
 									De forma geral,{" "}
-									<strong>Pilotos Reserva Top Sprint</strong>{" "}
+									<strong>Pilotos Feliplay Cup</strong>{" "}
 									deverão ter prioridade como terceiro piloto
 								</li>
 								<li>
@@ -314,7 +250,7 @@ export function Rules() {
 									Pilotos reservas e Terceiro Pilotos não
 									poderão participar da última etapa.
 								</i>
-							</p> */}
+							</p>
 						</div>
 						<figure className="md:block w-full md:w-1/2 pr-3">
 							<img
@@ -336,19 +272,18 @@ export function Rules() {
 					</div>
 					<div className="flex flex-col justify-center max-w-screen-sm mx-auto mb-4">
 						<div className="border border-f1-carbon/50 rounded-2xl pt-3">
-							<table className="min-w-full text-center">
+							<table className="min-w-full text-left">
 								<thead>
 									<tr className="border-b border-b-f1-carbon/50">
 										<th className="px-4 pb-4 uppercase">
 											Posição
 										</th>
 										<th className="px-4 pb-4 uppercase">
-											Sprint
+											Corrida
 										</th>
 										<th className="px-4 pb-4 uppercase">
-											Corrida Principal
+											Sprint
 										</th>
-										
 									</tr>
 								</thead>
 								<tbody>
@@ -387,41 +322,36 @@ export function Rules() {
 											>
 												{position}
 											</td>
-											<td
-												className={`px-4 py-4 ${
-													index ===
-													sprintPoints.length - 1
-														? ""
-														: ""
-												}`}
-											>
-												{sprintPoints[index]}
+											<td className="px-4 py-4">
+												{racePoints[index]}
 											</td>
 											<td
 												className={`px-4 py-4 ${
 													index ===
-													racePoints.length - 1
+													sprintPoints.length - 1
 														? "rounded-br-2xl"
 														: ""
 												}`}
 											>
-												{racePoints[index]}
+												{sprintPoints[index]}
 											</td>
 										</tr>
 									))}
 								</tbody>
 							</table>
 						</div>
-						<div className="mt-4">
+						<div className="px-4 mt-4">
 							<p className="mb-2 font-bold text-xl">
-								Pontos extra para ambas as classes:
+								Pontos extra:
 							</p>
-							<div className="space-y-1 md:space-y-0 md:flex md:justify-between w-full">
+							<div className="space-y-1">
 								<p>
-									<strong>Volta mais rápida:</strong> 1 ponto
+									<strong>Melhor volta na corrida:</strong> 1
+									ponto
 								</p>
 								<p>
-									<strong>Pole position:</strong> 1 ponto
+									<strong>Pole position na corrida:</strong> 1
+									ponto
 								</p>
 								<p>
 									<strong>Presença por corrida:</strong> 1
@@ -443,7 +373,7 @@ export function Rules() {
 					<div className="w-full md:w-1/2 space-y-2">
 						<p>
 							É esperado que todos os pilotos da{" "}
-							<strong>Top Sprint</strong> corram de forma justa,
+							<strong>Feliplay Cup</strong> corram de forma justa,
 							deixando espaço para dividir curvas e atendo-se às
 							regras. Porém, haverá incidentes, e mesmo que não
 							haja a intenção, estes incidentes podem prejudicar a
@@ -453,7 +383,7 @@ export function Rules() {
 						<div className="space-y-2">
 							<p>
 								<strong>
-									As corridas precisam ser gravadas na camera onboard caso os
+									As corridas precisam ser gravadas caso os
 									pilotos queiram abrir tickets ou se
 									defender.
 								</strong>
@@ -478,22 +408,23 @@ export function Rules() {
 						<div>
 							<ul className="list-disc ml-5">
 								<li>
-									<strong>Impacto Leve -2 pontos</strong>: Quando o piloto causar prejuízo momentâneo sem danos físicos ao carro do adversário.
-									(Exemplo: Forçar o outro piloto para fora da pista perdendo posições ou tempo, ou rodar parcialmente o piloto.)
+									<strong>-2 pontos</strong>: Quando o piloto
+									atrasar outro piloto (rodar, tirar da pista)
+									sem danos ou com dano mínimo (verde claro).
 								</li>
 								<li>
-									<strong>Impacto Severo (-3 pontos)</strong>: Quando o piloto causar perda de controle do adversário sem danos físicos ao carro.
-(Exemplo: Fazer o adversário rodar e ficar na contramão, perder múltiplas posições ou perder diversos segundos.)
+									<strong>-4 pontos</strong>: Quando o piloto
+									causar danos (amarelo ou maior) que forcem o
+									piloto a ir ao pit.
 								</li>
 								<li>
-									<strong>Dano Material (-4 pontos)</strong>: Quando o incidente resultar em danos mecânicos (nível amarelo ou superior) que obriguem o adversário a realizar um pit stop não planejado.
-								</li>
-								<li>
-									<strong>Incidente Crítico (-8 pontos)</strong>: Quando o piloto causar o abandono (NC - Não Completou) de outro competidor ou provocar danos severos em múltiplos carros.
+									<strong>-8 pontos</strong>: Quando o piloto
+									der NC (não completar) no carro do outro
+									piloto ou múltiplos carros com danos.
 								</li>
 							</ul>
 						</div>
-						{/* <p>
+						{/* 						<p>
 							<strong>
 								As penalidades para a Sprint são reduzidas: 1,
 								2, ou 3 pontos.
@@ -510,7 +441,6 @@ export function Rules() {
 									de causar o incidente.
 								</strong>
 							</p>
-							<p>Agravantes ou atenuntes de penalidades podem ser aplicados e estão detalhados no manual de regras.</p>
 							{/* <p>
 								<strong>
 									Incidentes envolvendo múltiplos carros:
@@ -554,9 +484,9 @@ export function Rules() {
 							<p className="italic border-b-2 border-r-2 mt-3 border-f1-red rounded-br-xl p-3">
 								As regras utilizadas serão baseadas no{" "}
 								<a
-									href="https://docs.google.com/document/d/1IVOIGzItkJyCKvMbu20eRvRnxLWoQDppAZrZX9b1zBY/edit?usp=sharing"
+									href="https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmbylqzb10o8107mzfm9zewqg"
 									target="_blank"
-									className="text-f1-red font-bold underline"
+									className="text-f1-red underline"
 								>
 									manual oficial Top Sprint
 								</a>

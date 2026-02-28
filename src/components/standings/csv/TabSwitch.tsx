@@ -1,6 +1,6 @@
 import { useTab } from "../../../contexts/TabContext";
 import React from "react";
-import { getGridColor } from "../../config/grids";
+import { getGridConfig } from "../../config/grids";
 
 interface TabSwitchProps {
 	textColor?: string;
@@ -28,12 +28,15 @@ export function TabSwitch({
 						>
 							{tab.label}
 							<span
-								className={`absolute bottom-0 left-0 h-0.5 ${getGridColor(
-									tab.id
-								)} ${
+								style={{
+									backgroundColor:
+										getGridConfig(tab.id)?.primaryColor ??
+										"var(--color-brand-primary)",
+								}}
+								className={`absolute bottom-0 left-0 h-0.5 transition-all duration-150 ease-out ${
 									activeTab.id === tab.id
 										? "w-full"
-										: "w-0 group-hover:w-full transition-all duration-150 ease-out"
+										: "w-0 group-hover:w-full"
 								}`}
 							></span>
 						</button>
