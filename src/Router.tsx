@@ -18,13 +18,14 @@ import { SessionResults } from "./components/results/SessionResults";
 import PartnerAdmin from "./pages/admin/PartnerAdmin";
 import { TopSprintRules } from "./pages/rules/TopSprintRules";
 import { FeliplayRules } from "./pages/rules/FeliplayRules";
+import { BrazukaRules } from "./pages/rules/BrazukaRules";
 import { tenant } from "./components/config/tenants";
 
 export function Router() {
 	const RulesPage = {
 		topSprint: TopSprintRules,
 		feliplay: FeliplayRules,
-		brazuka: TopSprintRules,
+		brazuka: BrazukaRules,
 	}[tenant.id];
 
 	return (

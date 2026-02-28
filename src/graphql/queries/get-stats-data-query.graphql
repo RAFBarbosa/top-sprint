@@ -15,6 +15,7 @@ query GetStatsData($gridId: Grid!) {
 		title
 		grid
 		csv {
+			id
 			url
 		}
 	}
@@ -28,6 +29,7 @@ query GetData {
 		deleted
 		createdAt
 		csv {
+			id
 			url
 		}
 	}

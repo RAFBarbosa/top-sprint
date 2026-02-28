@@ -8,6 +8,7 @@ query GetHallsOfFame {
 		season
 		deleted
 		photo {
+			id
 			url
 		}
 	}

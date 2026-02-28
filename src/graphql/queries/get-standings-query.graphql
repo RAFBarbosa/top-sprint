@@ -16,13 +16,16 @@ query GetTeams {
 				hex
 			}
 			photo {
+				id
 				url
 			}
 		}
 		photo {
+			id
 			url
 		}
 		badge {
+			id
 			url
 		}
 		badgeTitle
@@ -36,6 +39,7 @@ query GetTeams {
 			hex
 		}
 		photo {
+			id
 			url
 		}
 	}

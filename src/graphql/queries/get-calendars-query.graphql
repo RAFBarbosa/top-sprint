@@ -18,6 +18,7 @@ query GetCalendars {
 		# 	name
 		# }
 		map {
+			id
 			url
 		}
 		grid
@@ -25,6 +26,7 @@ query GetCalendars {
 		date
 		link
 		flag {
+			id
 			url
 		}
 	}
@@ -45,6 +47,7 @@ query GetCalendarsRegistration {
 		# }
 		active
 		map {
+			id
 			url
 		}
 		grid
@@ -53,6 +56,7 @@ query GetCalendarsRegistration {
 		date
 		link
 		flag {
+			id
 			url
 		}
 	}
