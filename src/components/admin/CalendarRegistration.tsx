@@ -55,13 +55,22 @@ export function CalendarRegistration() {
 	>("all");
 
 	const [createCalendar, { loading: createCalendarLoading }] =
-		useCreateCalendarMutation();
+		useCreateCalendarMutation({
+			refetchQueries: [{ query: GetCalendarsRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 	const [updateCalendar, { loading: updateCalendarLoading }] =
-		useUpdateCalendarMutation();
-	const [createAsset] = useCreateAssetMutation();
+		useUpdateCalendarMutation({
+			refetchQueries: [{ query: GetCalendarsRegistrationDocument }],
+			awaitRefetchQueries: true,
+		});
 
 	const { data: calendarsData, error: calendarsError } =
-		useGetCalendarsRegistrationQuery();
+		useGetCalendarsRegistrationQuery({
+			fetchPolicy: "network-only",
+		});
+
+	const [createAsset] = useCreateAssetMutation();
 
 	// Add drivers query
 	const {
@@ -237,11 +246,11 @@ export function CalendarRegistration() {
 			// Prepare winner connections
 			const winnerAData = formData.winnerAId
 				? { connect: { id: formData.winnerAId } }
-				: { disconnect: true };
+				: undefined;
 
 			const winnerBData = formData.winnerBId
 				? { connect: { id: formData.winnerBId } }
-				: { disconnect: true };
+				: undefined;
 
 			if (isEditing && selectedCalendar) {
 				// Update existing calendar
@@ -276,6 +285,7 @@ export function CalendarRegistration() {
 				const result = await createCalendar({
 					variables: {
 						data: {
+							deleted: false,
 							track: formData.track,
 							round: formData.round,
 							grid: formData.grid || null,
@@ -287,22 +297,6 @@ export function CalendarRegistration() {
 							active: formData.active,
 							flag: flagId ? { connect: { id: flagId } } : null,
 						},
-					},
-					update(cache, { data }) {
-						const existing = cache.readQuery({
-							query: GetCalendarsRegistrationDocument,
-						});
-						if (existing && data?.createCalendar) {
-							cache.writeQuery({
-								query: GetCalendarsRegistrationDocument,
-								data: {
-									calendars: [
-										data.createCalendar,
-										...existing.calendars,
-									],
-								},
-							});
-						}
 					},
 				});
 

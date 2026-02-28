@@ -4,11 +4,10 @@ import ShareButton from "../components/utils/ShareButton";
 import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
-import useNormalizeString from "../components/hooks/useNormalizeString";
+import { normalizeString } from "../components/hooks/useNormalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
-import { TabSwitch } from "../components/standings/csv/TabSwitch";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
@@ -21,14 +20,14 @@ export function Profile() {
 
 	// Filter drivers based on active tab
 	const filteredDrivers = enhancedCards.filter(
-		(driver) => driver.grid === activeTab.id
+		(driver) => driver.grid === activeTab.id,
 	);
 
 	useEffect(() => {
 		const index = filteredDrivers.findIndex(
 			(driver) =>
-				useNormalizeString(driver.name.toLowerCase()) ===
-				useNormalizeString(driverName?.toLowerCase())
+				normalizeString(driver.name.toLowerCase()) ===
+				normalizeString(driverName?.toLowerCase() ?? ""),
 		);
 		setCurrentIndex(index >= 0 ? index : filteredDrivers.length - 1);
 	}, [driverName, filteredDrivers, activeTab.id]); // Added activeTab.id to dependencies
@@ -36,7 +35,7 @@ export function Profile() {
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
 			const prevDriver = filteredDrivers[currentIndex - 1];
-			navigate(`/pilotos/${useNormalizeString(prevDriver.name)}`);
+			navigate(`/pilotos/${normalizeString(prevDriver.name)}`);
 		}
 	};
 
@@ -46,7 +45,7 @@ export function Profile() {
 			currentIndex < filteredDrivers.length - 1
 		) {
 			const nextDriver = filteredDrivers[currentIndex + 1];
-			navigate(`/pilotos/${useNormalizeString(nextDriver.name)}`);
+			navigate(`/pilotos/${normalizeString(nextDriver.name)}`);
 		}
 	};
 
@@ -99,7 +98,7 @@ export function Profile() {
 													currentIndex > 0
 														? filteredDrivers[
 																currentIndex - 1
-														  ].photo
+															].photo
 														: ""
 												})`,
 											}}
@@ -140,7 +139,7 @@ export function Profile() {
 													]
 														? filteredDrivers[
 																currentIndex + 1
-														  ].photo
+															].photo
 														: ""
 												})`,
 											}}
@@ -216,20 +215,19 @@ export function Profile() {
 											<p>{driverData.stats.totalWinsB}</p>
 										</>
 									)}
-									{driverData?.grid === "gridA" &&
-										driverData?.stats?.totalSprintWins && (
-											<>
-												<p className="font-bold mt-2 md:mt-0">
-													Vitórias em Sprint
-												</p>
-												<p>
-													{
-														driverData.stats
-															.totalSprintWins
-													}
-												</p>
-											</>
-										)}
+									{driverData?.stats?.totalSprintWins && (
+										<>
+											<p className="font-bold mt-2 md:mt-0">
+												Vitórias em Sprint
+											</p>
+											<p>
+												{
+													driverData.stats
+														.totalSprintWins
+												}
+											</p>
+										</>
+									)}
 									{driverData?.stats?.totalPodiums && (
 										<>
 											<p className="font-bold mt-2 md:mt-0">
@@ -298,7 +296,10 @@ export function Profile() {
 										<a
 											href={`${driverData.stream}`}
 											target="_blank"
-											className="text-f1-red hover:opacity-80 transition-all duration-200"
+											style={{
+												color: "var(--color-brand-primary)",
+											}}
+											className="hover:opacity-80 transition-all duration-200"
 										>
 											<div className="flex items-center gap-2 mt-2 md:mt-0">
 												<p className="font-bold">

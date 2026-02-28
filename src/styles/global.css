@@ -65,7 +65,7 @@ body {
 .slick-next::before {
 	font-size: 2.7rem;
 	opacity: 100%;
-	color: var(--color-f1-red);
+	color: var(--color-brand-primary);
 }
 
 /* Hover effect to make arrows 90% opaque */
@@ -91,32 +91,14 @@ body {
 	box-shadow: 2px 2px 11px rgba(148, 146, 146, 0.7);
 }
 
-/* Force Swiper to align properly */
 .swiper {
 	overflow: visible !important;
-	margin-left: 0 !important;
-	padding-left: 0 !important;
 	padding-bottom: 90px !important;
 }
 
-.swiper-wrapper {
-	justify-content: flex-start !important;
-}
-
-/* Remove any default Swiper padding/margin */
 .calendar-swiper {
-	padding: 0 !important;
-	margin: 0 !important;
-}
-
-/* Ensure slides start from left */
-.swiper-slide {
-	margin-right: 0px !important; /* Match your spaceBetween value */
-}
-
-/* First slide should have no left margin */
-.swiper-slide:first-child {
 	margin-left: 0 !important;
+	padding: 0 !important;
 }
 
 /* Custom navigation styling */
@@ -129,9 +111,9 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #eb1c24;
+	background: var(--color-brand-primary);
 	color: white;
-	border: 1px solid #eb1c24;
+	border: 1px solid var(--color-brand-primary);
 	border-radius: 4%;
 	width: 100px;
 	height: 50px;
@@ -142,7 +124,7 @@ body {
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
 	background: transparent;
-	color: #eb1c24;
+	color: var(--color-brand-primary);
 }
 
 .swiper-button-prev {
@@ -158,6 +140,10 @@ body {
 .swiper-button-next:after {
 	font-size: 20px !important; /* Smaller arrow size */
 	font-weight: bold;
+}
+
+.grid-menu-bg {
+	background-color: var(--color-brand-primary);
 }
 
 /* Mobile: centered arrows */
@@ -180,6 +166,10 @@ body {
 		top: auto;
 	}
 
+	.grid-menu-bg {
+		background-color: var(--color-brand-nav-hover);
+	}
+
 	.swiper-button-prev {
 		left: auto;
 		right: 128px; /* Position from right */
@@ -194,10 +184,10 @@ body {
 @theme {
 	--breakpoint-md: 950px;
 
-	--font-f1: "Titillium Web", "sans-serif";
-	--font-f1Podium: "Alfa Slab One", "serif";
-	--font-f1Title: "Formula1-Regular", "sans-serif";
-	--font-signature: "Inter", "sans-serif";
+	--font-f1: "Titillium Web", sans-serif;
+	--font-f1Podium: "Alfa Slab One", serif;
+	--font-f1Title: "Formula1-Regular", sans-serif;
+	--font-signature: "Inter", sans-serif;
 
 	--color-f1-red: #eb1c24;
 	--color-f1-black: #000000;
@@ -240,4 +230,63 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
 	background: #ededed;
+}
+
+.nav-link-hover:hover {
+	background-color: var(--color-brand-nav-hover);
+}
+
+.nav-link-active {
+	background-color: var(--color-brand-nav-active);
+}
+
+.nav-dropdown-bg {
+	background-color: var(--color-brand-nav-dropdown-bg);
+}
+
+.pagination-border {
+	border-color: var(--color-brand-accent);
+}
+
+.pagination-border:hover {
+	border-color: var(--color-brand-primary);
+}
+
+.pagination-arrow {
+	color: var(--color-brand-accent);
+}
+
+.group:hover .pagination-arrow {
+	color: var(--color-brand-primary);
+}
+
+.calendar-card-hover:hover {
+	border-color: var(--color-brand-primary);
+}
+
+.footer-admin-btn:hover {
+	background-color: var(--color-brand-primary);
+	opacity: 0.9;
+}
+
+.social-icon-btn {
+	background-color: var(--color-brand-footer);
+}
+
+.social-icon-btn:hover {
+	background-color: color-mix(in srgb, var(--color-brand-footer) 70%, white);
+}
+
+.footer-admin-btn {
+	background-color: color-mix(in srgb, var(--color-brand-footer) 70%, white);
+}
+
+.dot-pattern {
+	background-size: 5px 5px;
+	background-position: center;
+	transition: background-size 0.2s ease;
+}
+
+.group:hover .dot-pattern {
+	background-size: 6px 6px;
 }

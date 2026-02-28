@@ -1,5 +1,7 @@
 import { useTab } from "../../contexts/TabContext";
 import Watch from "/src/assets/img/casio.png";
+import { getGridConfig } from "../config/grids";
+import { GridId } from "../config/grids";
 
 interface CountdownRendererProps {
 	days: number;
@@ -12,30 +14,23 @@ interface CountdownRendererProps {
 
 export function CountdownRenderer(props: CountdownRendererProps) {
 	const { activeTab } = useTab();
+	const gridConfig = getGridConfig(activeTab.id as GridId);
+	const bgClass = gridConfig?.countdownBgClass ?? "bg-f1-silver";
+	const gridLabel = gridConfig?.label ?? activeTab.id;
 
 	if (props.completed) {
 		return (
 			<a href={props.link} target="_blank" className="hover:opacity-90">
 				<div
-					className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${
-						activeTab.id === "gridA"
-							? "bg-f1-silver"
-							: activeTab.id === "gridB"
-							? "bg-f1-academy-darker"
-							: "bg-f1-silver"
-					}`}
+					className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${bgClass}`}
 				>
 					<div className="flex flex-col w-full">
 						<span className="font-bold uppercase text-center">
-							{activeTab.id === "gridA"
-								? "Top Sprint"
-								: activeTab.id === "gridB"
-								? "Academy"
-								: "Grid Academy"}
+							{gridLabel}
 						</span>
 						<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
 						<div className="flex flex-col w-full justify-center mt-1">
-							<span className="font-bold text-2xl a">
+							<span className="font-bold text-2xl">
 								Corrida ao vivo!
 							</span>
 							<p className="text-sm">Clique para assistir</p>
@@ -47,74 +42,60 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 				</div>
 			</a>
 		);
-	} else {
-		return (
-			<div
-				className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center	${
-					activeTab.id === "gridA"
-						? "bg-f1-silver"
-						: activeTab.id === "gridB"
-						? "bg-f1-academy-darker"
-						: "bg-f1-silver"
-				}`}
-			>
-				<div className="flex flex-col w-full">
-					<span className="font-bold uppercase text-center">
-						{activeTab.id === "gridA"
-							? "Top Sprint"
-							: activeTab.id === "gridB"
-							? "Academy"
-							: "Grid Academy"}
-					</span>
-					<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
-					<div className="flex w-full justify-center mt-1">
-						<div className="flex flex-col items-center px-3">
-							<span className="font-bold text-4xl">
-								{props.days < 10
-									? "0" + props.days
-									: props.days}
+	}
+
+	return (
+		<div
+			className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${bgClass}`}
+		>
+			<div className="flex flex-col w-full">
+				<span className="font-bold uppercase text-center">
+					{gridLabel}
+				</span>
+				<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
+				<div className="flex w-full justify-center mt-1">
+					<div className="flex flex-col items-center px-3">
+						<span className="font-bold text-4xl">
+							{props.days < 10 ? "0" + props.days : props.days}
+						</span>
+						<p className="text-sm tracking-tight -mt-1">
+							{props.days === 1 ? "DIA" : "DIAS"}
+						</p>
+					</div>
+
+					<div className="self-center h-11 w-[1px] bg-white/50" />
+
+					<div className="flex flex-col items-center px-3">
+						<span className="font-bold text-4xl">
+							{props.hours < 10 ? "0" + props.hours : props.hours}
+						</span>
+						<p className="text-sm tracking-tight -mt-1">
+							{props.hours === 1 ? "HR" : "HRS"}
+						</p>
+					</div>
+
+					<div className="self-center h-11 w-[1px] bg-white/50" />
+
+					<div className="flex flex-col items-center px-3">
+						<span className="font-bold text-4xl flex">
+							{props.minutes < 10
+								? "0" + props.minutes
+								: props.minutes}
+							<span className="font-bold text-xs mt-1 ml-1">
+								{props.seconds < 10
+									? "0" + props.seconds
+									: props.seconds}
 							</span>
-							<p className="text-sm tracking-tight -mt-1">
-								{props.days == 1 ? "DIA" : "DIAS"}
-							</p>
-						</div>
-
-						<div className="self-center h-11 w-[1px] bg-white/50"></div>
-
-						<div className="flex flex-col items-center px-3">
-							<span className="font-bold text-4xl">
-								{props.hours < 10
-									? "0" + props.hours
-									: props.hours}
-							</span>
-							<p className="text-sm tracking-tight -mt-1">
-								{props.hours == 1 ? "HR" : "HRS"}
-							</p>
-						</div>
-
-						<div className="self-center h-11 w-[1px] bg-white/50"></div>
-
-						<div className="flex flex-col items-center px-3">
-							<span className="font-bold text-4xl flex">
-								{props.minutes < 10
-									? "0" + props.minutes
-									: props.minutes}
-								<span className="font-bold text-xs mt-1 ml-1">
-									{props.seconds < 10
-										? "0" + props.seconds
-										: props.seconds}
-								</span>
-							</span>
-							<p className="text-sm tracking-tight -mt-1 -ml-4">
-								{props.minutes == 1 ? "MIN" : "MINS"}
-							</p>
-						</div>
+						</span>
+						<p className="text-sm tracking-tight -mt-1 -ml-4">
+							{props.minutes === 1 ? "MIN" : "MINS"}
+						</p>
 					</div>
 				</div>
-				<div className="w-[90px] h-auto mr-1">
-					<img src={Watch} alt="Relogio" />
-				</div>
 			</div>
-		);
-	}
+			<div className="w-[90px] h-auto mr-1">
+				<img src={Watch} alt="Relogio" />
+			</div>
+		</div>
+	);
 }

@@ -18,7 +18,10 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 				className="h-full flex flex-col justify-between"
 			>
 				{/* Title */}
-				<div className="text-sm font-bold text-f1-red uppercase mb-2 w-full">
+				<div
+					style={{ color: "var(--color-brand-primary)" }}
+					className="text-sm font-bold uppercase mb-2 w-full"
+				>
 					{props.title}
 				</div>
 

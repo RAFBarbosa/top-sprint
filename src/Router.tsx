@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/Home";
-import { Rules } from "./pages/Rules";
+import { Rules } from "./pages/TopSprintRules";
 import { Profile } from "./pages/Profile";
 import { Champions } from "./pages/Champions";
 import Drivers from "./pages/Drivers";
@@ -16,12 +16,21 @@ import HallOfFameAdmin from "./pages/admin/HallOfFameAdmin";
 import { Standings } from "./components/standings/Standings";
 import { SessionResults } from "./components/results/SessionResults";
 import PartnerAdmin from "./pages/admin/PartnerAdmin";
+import { TopSprintRules } from "./pages/rules/TopSprintRules";
+import { FeliplayRules } from "./pages/rules/FeliplayRules";
+import { tenant } from "./components/config/tenants";
 
 export function Router() {
+	const RulesPage = {
+		topSprint: TopSprintRules,
+		feliplay: FeliplayRules,
+		brazuka: TopSprintRules,
+	}[tenant.id];
+
 	return (
 		<Routes>
 			<Route path="/" element={<Home />} />
-			<Route path="/regras" element={<Rules />} />
+			<Route path="/regras" element={<RulesPage />} />
 			<Route path="/campeoes" element={<Champions />} />
 			<Route path="/pilotos" element={<Drivers />} />
 			<Route path="/pilotos/:driverName" element={<Profile />} />

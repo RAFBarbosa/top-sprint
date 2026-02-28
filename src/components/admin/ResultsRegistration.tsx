@@ -44,10 +44,18 @@ export function ResultsRegistration() {
 	const [gridFilter, setGridFilter] = useState("");
 
 	// GraphQL operations
-	const [updateData] = useUpdateDataMutation();
-	const [createData] = useCreateDataMutation();
+	const [updateData] = useUpdateDataMutation({
+		refetchQueries: [{ query: GetDataDocument }],
+		awaitRefetchQueries: true,
+	});
+	const [createData] = useCreateDataMutation({
+		refetchQueries: [{ query: GetDataDocument }],
+		awaitRefetchQueries: true,
+	});
 	const [createAsset] = useCreateAssetMutation();
-	const { data, loading, error } = useGetDataQuery();
+	const { data, loading, error } = useGetDataQuery({
+		fetchPolicy: "network-only",
+	});
 	const {
 		data: gridData,
 		loading: gridLoading,
@@ -142,19 +150,6 @@ export function ResultsRegistration() {
 							title: title || null,
 							deleted: false,
 						},
-					},
-					update(cache, { data }) {
-						const existing = cache.readQuery({
-							query: GetDataDocument,
-						});
-						if (existing && data?.createData) {
-							cache.writeQuery({
-								query: GetDataDocument,
-								data: {
-									datas: [data.createData, ...existing.datas],
-								},
-							});
-						}
 					},
 				});
 			}
