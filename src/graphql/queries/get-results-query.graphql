@@ -19,14 +19,17 @@ query GetResults {
 			url
 		}
 		winnerSprint {
+			id
 			name
 			number
 			photo {
 				url
 			}
 			team {
+				id
 				name
 				photo {
+					id
 					url
 				}
 				color {
@@ -35,14 +38,18 @@ query GetResults {
 			}
 		}
 		winnerB {
+			id
 			name
 			number
 			photo {
+				id
 				url
 			}
 			team {
+				id
 				name
 				photo {
+					id
 					url
 				}
 				color {
@@ -51,14 +58,18 @@ query GetResults {
 			}
 		}
 		winnerA {
+			id
 			name
 			number
 			photo {
+				id
 				url
 			}
 			team {
+				id
 				name
 				photo {
+					id
 					url
 				}
 				color {

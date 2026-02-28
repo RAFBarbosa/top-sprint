@@ -63,10 +63,12 @@ query GetDriversRegistration {
 		stream
 		deleted
 		photo {
+			id
 			url
 		}
 		badgeTitle
 		badge {
+			id
 			url
 		}
 		city
@@ -79,6 +81,7 @@ query GetDriversRegistration {
 				hex
 			}
 			photo {
+				id
 				url
 			}
 		}

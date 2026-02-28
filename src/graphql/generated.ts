@@ -12353,17 +12353,17 @@ export type GetBannersCategoriesQuery = { __typename?: 'Query', __type?: { __typ
 export type GetCalendarsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, grid: Grid, description?: string | null, date?: any | null, link?: string | null, winnerA?: { __typename?: 'Driver', id: string, name?: string | null } | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, deleted: boolean, grid: Grid, description?: string | null, date?: any | null, link?: string | null, winnerA?: { __typename?: 'Driver', id: string, name?: string | null } | null, map?: { __typename?: 'Asset', id: string, url: string } | null, flag?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetCalendarsRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, winnerA?: { __typename?: 'Driver', id: string, name?: string | null } | null, map?: { __typename?: 'Asset', url: string } | null, flag?: { __typename?: 'Asset', url: string } | null }> };
+export type GetCalendarsRegistrationQuery = { __typename?: 'Query', calendars: Array<{ __typename?: 'Calendar', id: string, track?: string | null, round?: string | null, active: boolean, grid: Grid, deleted: boolean, description?: string | null, date?: any | null, link?: string | null, winnerA?: { __typename?: 'Driver', id: string, name?: string | null } | null, map?: { __typename?: 'Asset', id: string, url: string } | null, flag?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', url: string }> }> };
+export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', id: string, url: string }> }> };
 
 export type GetHallsOfFameRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -12373,17 +12373,17 @@ export type GetHallsOfFameRegistrationQuery = { __typename?: 'Query', hallsOfFam
 export type GetPartnersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPartnersQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, altText?: string | null, deleted: boolean, link?: string | null, active: boolean, image?: { __typename?: 'Asset', url: string } | null, footerLogo: { __typename?: 'Asset', url: string } }> };
+export type GetPartnersQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, altText?: string | null, deleted: boolean, link?: string | null, active: boolean, image?: { __typename?: 'Asset', id: string, url: string } | null, footerLogo: { __typename?: 'Asset', id: string, url: string } }> };
 
 export type GetPartnersRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetPartnersRegistrationQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, deleted: boolean, link?: string | null, active: boolean, footerLogo: { __typename?: 'Asset', url: string } }> };
+export type GetPartnersRegistrationQuery = { __typename?: 'Query', partners: Array<{ __typename?: 'Partner', id: string, name?: string | null, deleted: boolean, link?: string | null, active: boolean, footerLogo: { __typename?: 'Asset', id: string, url: string } }> };
 
 export type GetResultsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetResultsQuery = { __typename?: 'Query', results: Array<{ __typename?: 'Result', deleted?: boolean | null, id: string, link?: string | null, calendar?: { __typename?: 'Calendar', id: string } | null, sprint: Array<{ __typename?: 'Asset', url: string }>, quali: Array<{ __typename?: 'Asset', url: string }>, race: Array<{ __typename?: 'Asset', url: string }>, extras: Array<{ __typename?: 'Asset', url: string }>, winnerSprint?: { __typename?: 'Driver', name?: string | null, number?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', name?: string | null, photo?: { __typename?: 'Asset', url: string } | null, color?: { __typename?: 'Color', hex: any } | null } | null } | null, winnerB?: { __typename?: 'Driver', name?: string | null, number?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', name?: string | null, photo?: { __typename?: 'Asset', url: string } | null, color?: { __typename?: 'Color', hex: any } | null } | null } | null, winnerA?: { __typename?: 'Driver', name?: string | null, number?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', name?: string | null, photo?: { __typename?: 'Asset', url: string } | null, color?: { __typename?: 'Color', hex: any } | null } | null } | null }> };
+export type GetResultsQuery = { __typename?: 'Query', results: Array<{ __typename?: 'Result', deleted?: boolean | null, id: string, link?: string | null, calendar?: { __typename?: 'Calendar', id: string } | null, sprint: Array<{ __typename?: 'Asset', url: string }>, quali: Array<{ __typename?: 'Asset', url: string }>, race: Array<{ __typename?: 'Asset', url: string }>, extras: Array<{ __typename?: 'Asset', url: string }>, winnerSprint?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, photo?: { __typename?: 'Asset', url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, color?: { __typename?: 'Color', hex: any } | null } | null } | null, winnerB?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, color?: { __typename?: 'Color', hex: any } | null } | null } | null, winnerA?: { __typename?: 'Driver', id: string, name?: string | null, number?: string | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, team?: { __typename?: 'Team', id: string, name?: string | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, color?: { __typename?: 'Color', hex: any } | null } | null } | null }> };
 
 export type GetSeasonRoundsQueryVariables = Exact<{
   slug: Scalars['String'];
@@ -12400,7 +12400,7 @@ export type GetDriversQuery = { __typename?: 'Query', drivers: Array<{ __typenam
 export type GetDriversRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, class?: Class | null, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }>, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null }> };
+export type GetDriversRegistrationQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, grid?: Grid | null, class?: Class | null, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, badgeTitle: Array<BadgeTitle>, city?: string | null, equipment?: string | null, phone?: string | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, badge: Array<{ __typename?: 'Asset', id: string, url: string }>, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null }> };
 
 export type GridOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -12427,19 +12427,19 @@ export type GetSeasonsQuery = { __typename?: 'Query', seasons: Array<{ __typenam
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, grid?: Grid | null, class?: Class | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null } | null, photo?: { __typename?: 'Asset', url: string } | null, badge: Array<{ __typename?: 'Asset', url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, class?: Class | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', url: string } | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', drivers: Array<{ __typename?: 'Driver', id: string, name?: string | null, number?: string | null, stream?: string | null, deleted?: boolean | null, city?: string | null, equipment?: string | null, grid?: Grid | null, class?: Class | null, badgeTitle: Array<BadgeTitle>, team?: { __typename?: 'Team', id: string, name?: string | null, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', id: string, url: string } | null } | null, photo?: { __typename?: 'Asset', id: string, url: string } | null, badge: Array<{ __typename?: 'Asset', id: string, url: string }> }>, teams: Array<{ __typename?: 'Team', id: string, name?: string | null, class?: Class | null, deleted: boolean, color?: { __typename?: 'Color', hex: any } | null, photo?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetStatsDataQueryVariables = Exact<{
   gridId: Grid;
 }>;
 
 
-export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, title?: string | null, grid: Grid, csv?: { __typename?: 'Asset', url: string } | null }> };
+export type GetStatsDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, title?: string | null, grid: Grid, csv?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 export type GetDataQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, title?: string | null, grid: Grid, deleted: boolean, createdAt: any, csv?: { __typename?: 'Asset', url: string } | null }> };
+export type GetDataQuery = { __typename?: 'Query', datas: Array<{ __typename?: 'Data', id: string, title?: string | null, grid: Grid, deleted: boolean, createdAt: any, csv?: { __typename?: 'Asset', id: string, url: string } | null }> };
 
 
 export const CreateAssetDocument = gql`
@@ -13287,6 +13287,7 @@ export const GetCalendarsDocument = gql`
       name
     }
     map {
+      id
       url
     }
     grid
@@ -13294,6 +13295,7 @@ export const GetCalendarsDocument = gql`
     date
     link
     flag {
+      id
       url
     }
   }
@@ -13338,6 +13340,7 @@ export const GetCalendarsRegistrationDocument = gql`
     }
     active
     map {
+      id
       url
     }
     grid
@@ -13346,6 +13349,7 @@ export const GetCalendarsRegistrationDocument = gql`
     date
     link
     flag {
+      id
       url
     }
   }
@@ -13385,6 +13389,7 @@ export const GetHallsOfFameDocument = gql`
     season
     deleted
     photo {
+      id
       url
     }
   }
@@ -13469,9 +13474,11 @@ export const GetPartnersDocument = gql`
     altText
     deleted
     image {
+      id
       url
     }
     footerLogo {
+      id
       url
     }
     link
@@ -13513,6 +13520,7 @@ export const GetPartnersRegistrationDocument = gql`
     name
     deleted
     footerLogo {
+      id
       url
     }
     link
@@ -13569,14 +13577,17 @@ export const GetResultsDocument = gql`
       url
     }
     winnerSprint {
+      id
       name
       number
       photo {
         url
       }
       team {
+        id
         name
         photo {
+          id
           url
         }
         color {
@@ -13585,14 +13596,18 @@ export const GetResultsDocument = gql`
       }
     }
     winnerB {
+      id
       name
       number
       photo {
+        id
         url
       }
       team {
+        id
         name
         photo {
+          id
           url
         }
         color {
@@ -13601,14 +13616,18 @@ export const GetResultsDocument = gql`
       }
     }
     winnerA {
+      id
       name
       number
       photo {
+        id
         url
       }
       team {
+        id
         name
         photo {
+          id
           url
         }
         color {
@@ -13765,10 +13784,12 @@ export const GetDriversRegistrationDocument = gql`
     stream
     deleted
     photo {
+      id
       url
     }
     badgeTitle
     badge {
+      id
       url
     }
     city
@@ -13781,6 +13802,7 @@ export const GetDriversRegistrationDocument = gql`
         hex
       }
       photo {
+        id
         url
       }
     }
@@ -13993,13 +14015,16 @@ export const GetTeamsDocument = gql`
         hex
       }
       photo {
+        id
         url
       }
     }
     photo {
+      id
       url
     }
     badge {
+      id
       url
     }
     badgeTitle
@@ -14013,6 +14038,7 @@ export const GetTeamsDocument = gql`
       hex
     }
     photo {
+      id
       url
     }
   }
@@ -14057,6 +14083,7 @@ export const GetStatsDataDocument = gql`
     title
     grid
     csv {
+      id
       url
     }
   }
@@ -14099,6 +14126,7 @@ export const GetDataDocument = gql`
     deleted
     createdAt
     csv {
+      id
       url
     }
   }

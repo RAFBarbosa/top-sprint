@@ -41,6 +41,7 @@ export function CalendarRegistration() {
 	});
 
 	const [flagFile, setFlagFile] = useState<File | null>(null);
+	const [duplicateFlagId, setDuplicateFlagId] = useState<string | null>(null);
 	const [status, setStatus] = useState<{
 		type: "idle" | "loading" | "success" | "error";
 		message: string;
@@ -163,6 +164,7 @@ export function CalendarRegistration() {
 			grid: "",
 		});
 		setFlagFile(null);
+		setDuplicateFlagId(null);
 	};
 
 	const handleCalendar = async (event: FormEvent) => {
@@ -295,7 +297,11 @@ export function CalendarRegistration() {
 							winnerA: winnerAData,
 							winnerB: winnerBData,
 							active: formData.active,
-							flag: flagId ? { connect: { id: flagId } } : null,
+							flag: flagId
+								? { connect: { id: flagId } }
+								: duplicateFlagId
+									? { connect: { id: duplicateFlagId } }
+									: null,
 						},
 					},
 				});
@@ -312,9 +318,9 @@ export function CalendarRegistration() {
 				// Stay on the same item, just clear the file input
 				setFlagFile(null);
 			} else {
-				// Only reset fully when creating new
 				resetForm();
 			}
+			setDuplicateFlagId(null);
 			setUploadProgress(null);
 
 			setTimeout(() => {
@@ -642,13 +648,28 @@ export function CalendarRegistration() {
 							</div>
 						</div>
 						{isEditing && (
-							<button
-								type="button"
-								onClick={resetForm}
-								className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
-							>
-								Nova Etapa
-							</button>
+							<div className="flex gap-2">
+								<button
+									type="button"
+									onClick={() => {
+										setDuplicateFlagId(
+											selectedCalendar?.flag?.id || null,
+										);
+										setSelectedCalendar(null);
+										setIsEditing(false);
+									}}
+									className="px-4 py-1 self-start bg-blue-100 text-blue-700 rounded hover:bg-blue-200 cursor-pointer"
+								>
+									Duplicar
+								</button>
+								<button
+									type="button"
+									onClick={resetForm}
+									className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+								>
+									Nova Etapa
+								</button>
+							</div>
 						)}
 					</div>
 

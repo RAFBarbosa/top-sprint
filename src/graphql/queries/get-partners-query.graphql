@@ -9,9 +9,11 @@ query GetPartners {
 		altText
 		deleted
 		image {
+			id
 			url
 		}
 		footerLogo {
+			id
 			url
 		}
 		link
@@ -25,6 +27,7 @@ query GetPartnersRegistration {
 		name
 		deleted
 		footerLogo {
+			id
 			url
 		}
 		link
