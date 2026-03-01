@@ -11,6 +11,7 @@ import {
 	getGridClasses,
 	hasGridClasses,
 } from "../../config/grids";
+import { tenant } from "../../config/tenants";
 
 interface StandingsListProps {
 	title: string;
@@ -22,6 +23,7 @@ interface StandingsListProps {
 	activeTab: GridId;
 	oldData?: any[];
 	oldTeams?: any[];
+	photoStyle?: "portrait" | "round";
 }
 
 export function StandingsList(props: StandingsListProps) {
@@ -41,7 +43,7 @@ export function StandingsList(props: StandingsListProps) {
 	const [isMobile, setIsMobile] = useState<boolean>(false);
 
 	useEffect(() => {
-		const checkMobile = () => setIsMobile(window.innerWidth < 768);
+		const checkMobile = () => setIsMobile(window.innerWidth < 950);
 		checkMobile();
 		window.addEventListener("resize", checkMobile);
 		return () => window.removeEventListener("resize", checkMobile);
@@ -123,6 +125,7 @@ export function StandingsList(props: StandingsListProps) {
 				grid={props.activeTab}
 				class={classId}
 				newData={data}
+				photoStyle={tenant.defaultPhotoStyle}
 				oldData={
 					activeGrid === "drivers" ? props.oldData : props.oldTeams
 				}
@@ -160,6 +163,7 @@ export function StandingsList(props: StandingsListProps) {
 					newData={
 						activeGrid === "drivers" ? props.data : props.teams
 					}
+					photoStyle={tenant.defaultPhotoStyle}
 					oldData={
 						activeGrid === "drivers"
 							? props.oldData
@@ -208,13 +212,17 @@ export function StandingsList(props: StandingsListProps) {
 				</h2>
 
 				{/* Desktop podium */}
-				<div className="hidden md:block">
-					{renderPodium(data, classConfig.id)}
-				</div>
+				{!isMobile && <div>{renderPodium(data, classConfig.id)}</div>}
 
-				<div className="hidden md:block mt-6">
-					{renderList(listData, classConfig.id, startPosition - 1)}
-				</div>
+				{!isMobile && (
+					<div className="mt-6">
+						{renderList(
+							listData,
+							classConfig.id,
+							startPosition - 1,
+						)}
+					</div>
+				)}
 			</div>
 		);
 	};
@@ -265,9 +273,7 @@ export function StandingsList(props: StandingsListProps) {
 				</div>
 				<div className="w-full mx-auto max-w-2xl pt-8">
 					{/* Show Podium only on desktop */}
-					<div className="hidden md:block">
-						{renderPodium(currentData)}
-					</div>
+					{!isMobile && <div>{renderPodium(currentData)}</div>}
 
 					{/* Show ALL positions on mobile, filtered positions on desktop */}
 					{renderList(filteredData, "single", startPosition)}

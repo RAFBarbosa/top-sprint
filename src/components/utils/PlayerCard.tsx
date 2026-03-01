@@ -1,10 +1,10 @@
 import { forwardRef } from "react";
-import bgCard from "/src/assets/img/bg-card.jpg";
-import bgCardChuva from "/src/assets/img/bg-card-chuva.jpg";
-import bgCardCarbon from "/src/assets/img/bg-card-carbon.jpg";
+import bgCard from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
+import bgCardChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
 import Logo from "/src/assets/img/logo.png";
 import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 import { Tooltip } from "react-tooltip";
+import { tenant } from "../config/tenants";
 
 interface PlayerCardProps {
 	data: {
@@ -79,27 +79,12 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 		const borderColor = isCrystalBorder
 			? "repeating-linear-gradient(145deg, #b3f0ff, #a0e7f5 10%, #b2fff5 20%, #aaf2d5 30%, #aaf2aa 40%, #d7ff8f 50%, #fff5b3 60%, #ffe0a0 70%, #ffb3a0 80%, #e0aaff 90%)"
 			: parseFloat(data.rating) >= 90
-			? "repeating-linear-gradient(145deg, #ffd700, #e6c200 15%, #b88a00 20%)"
-			: parseFloat(data.rating) >= 80
-			? "repeating-linear-gradient(145deg, #c0c0c0, #a8a8a8 15%, #8c8c8c 20%)"
-			: "repeating-linear-gradient(145deg, #cd7f32, #c0802d 15%, #a6672a 20%)";
+				? "repeating-linear-gradient(145deg, #ffd700, #e6c200 15%, #b88a00 20%)"
+				: parseFloat(data.rating) >= 80
+					? "repeating-linear-gradient(145deg, #c0c0c0, #a8a8a8 15%, #8c8c8c 20%)"
+					: "repeating-linear-gradient(145deg, #cd7f32, #c0802d 15%, #a6672a 20%)";
 
 		const badgeUrls = data.badge?.map((badge) => badge.url) || [];
-
-		// Class labeling logic based on grid
-		const getClassLabel = () => {
-			if (data.grid === "gridC") {
-				return data.class === "classA" ? "Classe C" : "Classe D";
-			} else {
-				return data.class === "classA"
-					? "Classe A"
-					: data.class === "classB"
-					? "Classe B"
-					: data.class === "reserva"
-					? "Reserva"
-					: "Ex-Piloto";
-			}
-		};
 
 		return (
 			<div
@@ -123,15 +108,16 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							data.badgeTitle?.includes("reiDaChuva") ||
 							data.badgeTitle?.includes("mestreDaChuva")
 								? bgCardChuva
-								: data.grid === "gridA"
-								? bgCard
-								: bgCardCarbon
+								: (data.cardBackground ?? // driver-level override
+									tenant.grids.find((g) => g.id === data.grid)
+										?.cardBackground ?? // grid default
+									bgCard) // ultimate fallback
 						}
 						alt="Background"
 					/>
 
 					{data.badge.length > 0 && (
-						<div className="absolute top-10 left-31 z-30 flex gap-1">
+						<div className="absolute top-13 left-32 z-30 flex gap-1">
 							{data.badge.map((badge, index) => (
 								<div key={index} className="relative">
 									<img
@@ -139,7 +125,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 										alt={`Badge ${index + 1}`}
 										data-tooltip-id="badge-tooltip"
 										data-tooltip-content={formatBadgeTitle(
-											data.badgeTitle.toString()
+											data.badgeTitle.toString(),
 										)}
 										className="w-12 h-12 object-contain cursor-help"
 									/>
@@ -165,15 +151,15 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						/>
 					</div>
 
-					<div className="w-auto relative px-6 py-3 ml-2 flex flex-col font-semibold">
+					<div className="w-auto relative mt-2 px-6 py-3 ml-2 flex flex-col font-semibold">
 						<div
-							className="w-55 h-53 absolute top-0 left-3 border-t-4 border-l-4 rounded-tl-lg z-20"
+							className="w-55 h-56 absolute top-0 left-3 border-t-4 border-l-4 rounded-tl-lg z-20"
 							style={{ borderColor: teamColor }}
 						/>
-						<span className="flex flex-col mb-4 leading-3 z-20">
+						<span className="flex flex-col mb-8 leading-3 z-20">
 							<p className="text-gray-300">Nota Geral</p>
 							<div className="flex items-center">
-								<p className="text-5xl font-bold">
+								<p className="text-6xl font-bold">
 									{data.rating}
 								</p>
 								{data.rating !== data.prevRating && (
@@ -196,33 +182,49 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								)}
 							</div>
 						</span>
-						<span className="flex gap-1 items-baseline z-20">
-							<p className="font-bold text-2xl">
-								{data.experience}
-							</p>
-							<p className="text-gray-300">Experiência TSL</p>
-						</span>
-						<span className="flex gap-1 items-baseline z-20">
-							<p className="font-bold text-2xl">
-								{data.racecraft}
-							</p>
-							<p className="text-gray-300">Pilotagem</p>
-						</span>
-						<span className="flex gap-1 items-baseline z-20">
-							<p className="font-bold text-2xl">
-								{data.awareness}
-							</p>
-							<p className="text-gray-300">Atenção</p>
-						</span>
-						<span className="flex gap-1 items-baseline z-20">
-							<p className="font-bold text-2xl">{data.pace}</p>
-							<p className="text-gray-300">Ritmo</p>
-						</span>
+						<div className="text-xs font-bold flex gap-4 justify-between w-30 flex-wrap z-30">
+							<span className="flex flex-col items-center leading-2">
+								<p className="text-gray-300 tracking-[.218m]">
+									EXP
+								</p>
+								<p className="text-4xl drop-shadow-2xl">
+									{data.experience}
+								</p>
+							</span>
+							<span className="flex flex-col items-center leading-2">
+								<p className="text-gray-300 tracking-[.218m]">
+									PIL
+								</p>
+								<p className="text-4xl drop-shadow-2xl">
+									{data.racecraft}
+								</p>
+							</span>
+							<span className="flex flex-col items-center leading-2">
+								<p className="text-gray-300 tracking-[.218m]">
+									ATN
+								</p>
+								<p className="text-4xl drop-shadow-2xl">
+									{data.awareness}
+								</p>
+							</span>
+							<span className="flex flex-col items-center leading-2">
+								<p className="text-gray-300 tracking-[.218m]">
+									RIT
+								</p>
+								<p className="text-4xl drop-shadow-2xl">
+									{data.pace}
+								</p>
+							</span>
+						</div>
 					</div>
 
 					<div className="overflow-hidden absolute z-20 top-0 right-0 h-[330px] w-auto">
 						<img
-							className="object-cover translate-x-[80px] translate-y-[15px]"
+							className={
+								tenant.defaultPhotoStyle === "round"
+									? "object-cover translate-x-[40px] -translate-y-[40px] scale-60 border-10 rounded-full border-f1-text"
+									: "object-cover translate-x-[80px] translate-y-[15px]"
+							}
 							src={data.photo}
 							alt={`${data.name}'s photo`}
 						/>
@@ -242,13 +244,13 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 											? firstName.length > 10
 												? "text-3xl leading-4"
 												: secondName
-												? "text-2xl leading-4"
-												: ""
+													? "text-2xl leading-4"
+													: ""
 											: `font-bold uppercase ${
 													firstName.length > 10
 														? "text-3xl"
 														: "text-4xl"
-											  }`
+												}`
 									}
 								>
 									{firstName}
@@ -272,8 +274,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 										data.class === "classA"
 											? "bg-f1-carbon text-white"
 											: data.class === "classB"
-											? "bg-f1-red text-white"
-											: "bg-white text-f1-black"
+												? "bg-f1-red text-white"
+												: "bg-white text-f1-black"
 									}`}
 								>
 									{/* {getClassLabel()} */}
@@ -320,7 +322,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 				</div>
 			</div>
 		);
-	}
+	},
 );
 
 export default PlayerCard;

@@ -13,6 +13,7 @@ interface PodiumProps {
 		teamName: string;
 		[key: string]: string;
 	}[];
+	photoStyle?: "portrait" | "round";
 	activeTab: "drivers" | "teams";
 	newData: { name: string }[];
 	oldData?: { name: string }[];
@@ -34,6 +35,7 @@ export function Podium(props: PodiumProps) {
 							teamName={props.topThree[1].teamName}
 							points={props.topThree[1].pts}
 							position={2}
+							photoStyle={props.photoStyle}
 							grid={props.grid}
 							class={props.class}
 							activeTab={props.activeTab}
@@ -48,6 +50,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
 							teamName={props.topThree[0].teamName}
+							photoStyle={props.photoStyle}
 							points={props.topThree[0].pts}
 							position={1}
 							grid={props.grid}
@@ -64,6 +67,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[2].photo}
 							teamColor={props.topThree[2].teamColor}
 							teamName={props.topThree[2].teamName}
+							photoStyle={props.photoStyle}
 							points={props.topThree[2].pts}
 							position={3}
 							grid={props.grid}
@@ -81,6 +85,7 @@ export function Podium(props: PodiumProps) {
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
+							photoStyle={props.photoStyle}
 							points={props.topThree[0].pts}
 							position={1}
 							class={props.class}

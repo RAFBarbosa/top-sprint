@@ -3,6 +3,7 @@ import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import { getGridConfig, getGridColors, GridId } from "../../config/grids";
+import { tenant } from "../../config/tenants";
 
 interface PodiumCardProps {
 	position: number;
@@ -17,6 +18,7 @@ interface PodiumCardProps {
 	teamDrivers?: string[];
 	activeTab: "drivers" | "teams";
 	newData: { name: string }[];
+	photoStyle?: "portrait" | "round";
 	oldData: { name: string }[];
 }
 
@@ -145,14 +147,24 @@ export function PodiumCard(props: PodiumCardProps) {
 			/>
 
 			<img
-				src={props.photo}
+				src={props.photo || tenant.fallbackDriverPhoto}
 				alt={`${props.name} foto`}
 				className={`absolute object-cover max-w-none ${
-					isDrivers
-						? `bottom-0 right-0 scale-70 ${
-								props.position === 1 ? "h-[330px]" : "h-[290px]"
-							} w-auto translate-x-[70px] translate-y-[15px]`
-						: `bottom-0 left-1/2 -translate-x-1/2 scale-60 translate-y-[-20%]`
+					props.photoStyle === "round"
+						? isDrivers
+							? `bottom-0 scale-50 border-10 rounded-full border-f1-text ${
+									props.position === 1
+										? "h-[320px] -translate-y-[22px] right-0"
+										: "h-[270px] -translate-y-[35px] right-1"
+								} w-auto translate-x-[65px]`
+							: `h-[180px] w-auto transform translate-x-[136%] translate-y-[-54%]`
+						: isDrivers
+							? `bottom-0 right-0 scale-70 ${
+									props.position === 1
+										? "h-[330px]"
+										: "h-[290px]"
+								} w-auto translate-x-[70px] translate-y-[15px]`
+							: `bottom-0 left-1/2 -translate-x-1/2 scale-60 translate-y-[-20%]`
 				}`}
 			/>
 

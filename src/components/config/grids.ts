@@ -20,6 +20,8 @@ export interface GridConfig {
 		classHoverColor: string;
 	}>;
 	classLabels?: Record<string, string>;
+	photoStyle?: "portrait" | "round";
+	cardBackground?: string;
 }
 
 // Everything else in your app still imports GRIDS from here — nothing breaks

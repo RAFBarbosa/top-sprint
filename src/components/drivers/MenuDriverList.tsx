@@ -15,12 +15,14 @@ interface MenuDriverListProps {
 	gridName: string;
 	drivers: Driver[];
 	onDriverClick: (driverName: string) => void;
+	photoStyle?: "portrait" | "round";
 }
 
 const MenuDriverList: React.FC<MenuDriverListProps> = ({
 	gridName,
 	drivers,
 	onDriverClick,
+	photoStyle,
 }) => {
 	const location = useLocation();
 
@@ -85,17 +87,27 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 						>
 							<div className="flex items-center">
 								<div
-									className="mr-2 rounded-full overflow-hidden transition-all duration-200"
+									className="mr-2 flex-shrink-0 rounded-full overflow-hidden transition-all duration-200"
 									style={{
 										backgroundColor: driver.teamColor,
+										width: "32px",
+										height: "32px",
 									}}
 								>
-									<div
-										className="w-8 h-8 scale-150 rounded-full bg-cover transition-all translate-y-[12px]"
-										style={{
-											backgroundImage: `url(${driver.photo})`,
-										}}
-									/>
+									{photoStyle === "round" ? (
+										<img
+											src={driver.photo}
+											alt={driver.name}
+											className="w-full h-full object-cover border-1 border-transparent"
+										/>
+									) : (
+										<div
+											className="w-8 h-8 bg-cover transition-all scale-210 translate-y-[17px]"
+											style={{
+												backgroundImage: `url(${driver.photo})`,
+											}}
+										/>
+									)}
 								</div>
 								{/* <span
 									className="ml-1 mr-2 w-1 h-4"
