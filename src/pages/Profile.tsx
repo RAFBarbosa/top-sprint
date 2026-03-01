@@ -199,12 +199,12 @@ export function Profile() {
 									) : (
 										<p>Driver not found</p>
 									)}
-									<div className="self-center group mt-6">
+									{/* <div className="self-center group mt-6">
 										<ShareButton
 											cardRef={cardRef}
 											data={driverData}
 										/>
-									</div>
+									</div> */}
 								</div>
 							</div>
 

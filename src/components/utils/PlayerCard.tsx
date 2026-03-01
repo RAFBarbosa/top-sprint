@@ -243,7 +243,15 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							boxShadow: `0 -10px 10px -5px rgba(0, 0, 0, .5)`,
 						}}
 					>
-						<div className="flex items-end justify-between font-regular">
+						<div
+							className="dot-pattern absolute inset-0 rounded-lg z-0 pointer-events-none opacity-10"
+							style={{
+								backgroundColor: "rgba(0, 0, 0, 0.5)",
+								backgroundImage:
+									"var(--background-image-dot-pattern)",
+							}}
+						/>
+						<div className="flex items-end justify-between font-regular z-30">
 							<span className="flex flex-col text-3xl leading-3">
 								<span
 									className={
@@ -294,11 +302,11 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						</div>
 
 						<div
-							className="w-full h-1"
+							className="w-full h-1 z-30"
 							style={{ backgroundColor: teamColor }}
 						/>
 
-						<div className="flex justify-between items-start w-full">
+						<div className="flex justify-between items-start w-full z-30">
 							<div className="flex items-center gap-2 min-w-0">
 								{data.teamName && (
 									<>
