@@ -2,18 +2,6 @@ import React, { useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import { tenant } from "../config/tenants";
-const titilliumRegular = new URL(
-	"../assets/font/TitilliumWeb-Regular.ttf",
-	import.meta.url,
-).href;
-const titilliumBold = new URL(
-	"../assets/font/TitilliumWeb-Bold.ttf",
-	import.meta.url,
-).href;
-const titilliumSemiBold = new URL(
-	"../assets/font/TitilliumWeb-SemiBold.ttf",
-	import.meta.url,
-).href;
 
 interface ShareButtonProps {
 	cardRef: React.RefObject<HTMLDivElement>;
@@ -41,83 +29,33 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 		loadFonts();
 	}, []);
 
+	// The buildPng workaround to retry and ensure the image size is large enough
 	const buildPng = async () => {
 		const element = cardRef.current;
+
 		if (!element) {
 			console.error("Card element not found");
 			return "";
 		}
 
-		// Wait for all images inside the card to load
-		const images = Array.from(element.querySelectorAll("img"));
-		await Promise.all(
-			images.map(
-				(img) =>
-					new Promise<void>((resolve) => {
-						if (img.complete && img.naturalWidth > 0) {
-							resolve();
-						} else {
-							img.onload = () => resolve();
-							img.onerror = () => resolve(); // resolve anyway to not block
-						}
-					}),
-			),
-		);
+		let dataUrl = "";
+		const minDataLength = 2000000; // 2MB minimum size
+		let i = 0;
+		const maxAttempts = 10;
 
-		const toBase64 = async (url: string) => {
-			const res = await fetch(url);
-			const buf = await res.arrayBuffer();
-			console.log("Font buffer size:", buf.byteLength, "for", url);
-			if (buf.byteLength < 1000) {
-				console.error(
-					"Font file too small, likely not loading correctly",
-				);
-				return "";
+		while (dataUrl.length < minDataLength && i < maxAttempts) {
+			try {
+				dataUrl = await toPng(element, {
+					cacheBust: true,
+					quality: 1,
+				});
+				i += 1;
+			} catch (error) {
+				console.error("Error generating PNG image:", error);
+				break;
 			}
-			const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-			return `data:font/ttf;base64,${base64}`;
-		};
+		}
 
-		const [regularB64, boldB64, semiBoldB64] = await Promise.all([
-			toBase64(titilliumRegular),
-			toBase64(titilliumBold),
-			toBase64(titilliumSemiBold),
-		]);
-
-		const fontEmbedCSS = `
-    @font-face {
-        font-family: 'Titillium Web Local';
-        font-weight: 400;
-        src: url(${regularB64}) format('truetype');
-    }
-    @font-face {
-        font-family: 'Titillium Web Local';
-        font-weight: 600;
-        src: url(${semiBoldB64}) format('truetype');
-    }
-    @font-face {
-        font-family: 'Titillium Web Local';
-        font-weight: 700;
-        src: url(${boldB64}) format('truetype');
-    }
-`;
-
-		const options = {
-			cacheBust: true,
-			quality: 1,
-			fontEmbedCSS,
-			skipFonts: false,
-			filter: (node: HTMLElement) => {
-				if (node.tagName === "LINK") {
-					const href = node.getAttribute("href") || "";
-					if (href.includes("http")) return false;
-				}
-				return true;
-			},
-		};
-
-		await toPng(element, options);
-		const dataUrl = await toPng(element, options);
 		return dataUrl;
 	};
 
