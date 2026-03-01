@@ -116,6 +116,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmkyoezu6gp7508loqaon7skm",
 		poweredBy: false,
 	},
+
 	feliplay: {
 		id: "feliplay",
 		name: "Feliplay Cup",
@@ -165,6 +166,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84",
 		poweredBy: true,
 	},
+
 	brazuka: {
 		id: "brazuka",
 		name: "Brazuka",

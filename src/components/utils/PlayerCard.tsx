@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import bgCard from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
 import bgCardChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
-import Logo from "/src/assets/img/logo.png";
 import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 import { Tooltip } from "react-tooltip";
 import { tenant } from "../config/tenants";
@@ -24,6 +23,7 @@ interface PlayerCardProps {
 		class: string;
 		badge: Array<{ url: string }>;
 		badgeTitle: string;
+		cardBackground?: string;
 		stats: {
 			championships: string | number;
 			totalSprintWins: string | number;
@@ -83,8 +83,6 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 				: parseFloat(data.rating) >= 80
 					? "repeating-linear-gradient(145deg, #c0c0c0, #a8a8a8 15%, #8c8c8c 20%)"
 					: "repeating-linear-gradient(145deg, #cd7f32, #c0802d 15%, #a6672a 20%)";
-
-		const badgeUrls = data.badge?.map((badge) => badge.url) || [];
 
 		return (
 			<div
@@ -183,38 +181,47 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							</div>
 						</span>
 						<div className="text-xs font-bold flex gap-4 justify-between w-30 flex-wrap z-30">
-							<span className="flex flex-col items-center leading-2">
-								<p className="text-gray-300 tracking-[.218m]">
-									EXP
-								</p>
-								<p className="text-4xl drop-shadow-2xl">
-									{data.experience}
-								</p>
-							</span>
-							<span className="flex flex-col items-center leading-2">
-								<p className="text-gray-300 tracking-[.218m]">
-									PIL
-								</p>
-								<p className="text-4xl drop-shadow-2xl">
-									{data.racecraft}
-								</p>
-							</span>
-							<span className="flex flex-col items-center leading-2">
-								<p className="text-gray-300 tracking-[.218m]">
-									ATN
-								</p>
-								<p className="text-4xl drop-shadow-2xl">
-									{data.awareness}
-								</p>
-							</span>
-							<span className="flex flex-col items-center leading-2">
-								<p className="text-gray-300 tracking-[.218m]">
-									RIT
-								</p>
-								<p className="text-4xl drop-shadow-2xl">
-									{data.pace}
-								</p>
-							</span>
+							{[
+								{
+									label: "EXP",
+									value: data.experience,
+									tooltip: "Experiência",
+								},
+								{
+									label: "PIL",
+									value: data.racecraft,
+									tooltip: "Pilotagem",
+								},
+								{
+									label: "ATN",
+									value: data.awareness,
+									tooltip: "Atenção",
+								},
+								{
+									label: "RIT",
+									value: data.pace,
+									tooltip: "Ritmo",
+								},
+							].map(({ label, value, tooltip }) => (
+								<span
+									key={label}
+									className="flex flex-col items-center leading-2"
+									data-tooltip-id="stat-tooltip"
+									data-tooltip-content={tooltip}
+								>
+									<p className="text-gray-300 tracking-[.218m]">
+										{label}
+									</p>
+									<p className="text-4xl drop-shadow-2xl">
+										{value}
+									</p>
+								</span>
+							))}
+							<Tooltip
+								id="stat-tooltip"
+								place="top"
+								className="!z-60"
+							/>
 						</div>
 					</div>
 
@@ -313,9 +320,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							</div>
 
 							<img
-								className="h-[30px] w-auto object-contain pt-2"
-								src={Logo}
-								alt="Top Sprint League Logo"
+								className="h-[30px] w-auto object-contain"
+								src={tenant.logo.url}
+								alt={`${tenant.name} Logo`}
 							/>
 						</div>
 					</div>
