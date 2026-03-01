@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { normalizeString } from "../hooks/useNormalizeString";
+import { tenant } from "../config/tenants";
 
 interface DriverListProps {
 	gridName: string;
@@ -56,17 +57,28 @@ export const DriverList: React.FC<DriverListProps> = ({
 						>
 							<div className="flex items-center overflow-hidden gap-1 group">
 								<div
-									className="rounded-full overflow-hidden border-1 border-f1-carbon transition-all duration-200"
+									className="rounded-full overflow-hidden border-1 border-f1-carbon transition-all duration-200 flex-shrink-0"
 									style={{
 										backgroundColor: driver.teamColor,
 									}}
 								>
-									<div
-										className="w-16 h-16 scale-150 rounded-full bg-cover transition-all translate-y-[20px] duration-200 group-hover:scale-170"
-										style={{
-											backgroundImage: `url(${driver.photo})`,
-										}}
-									/>
+									{tenant.defaultPhotoStyle === "round" ? (
+										<img
+											src={
+												driver.photo ||
+												tenant.fallbackDriverPhoto
+											}
+											alt={driver.name}
+											className="w-16 h-16 rounded-full object-cover transition-all duration-200 group-hover:scale-110"
+										/>
+									) : (
+										<div
+											className="w-16 h-16 scale-150 rounded-full bg-cover transition-all translate-y-[20px] duration-200 group-hover:scale-170"
+											style={{
+												backgroundImage: `url(${driver.photo || tenant.fallbackDriverPhoto})`,
+											}}
+										/>
+									)}
 								</div>
 								<span
 									className="x-2 w-1 mx-2 self-center h-16"

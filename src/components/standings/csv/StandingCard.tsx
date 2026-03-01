@@ -3,6 +3,7 @@ import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import useNormalizeString from "../../hooks/useNormalizeString";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
 import { GridId, getGridConfig, getGridColors } from "../../config/grids";
+import { tenant } from "../../config/tenants";
 
 interface StandingCardProps {
 	position: number;
@@ -25,6 +26,7 @@ interface StandingCardProps {
 	onClick: () => void;
 	newData: { name: string }[];
 	oldData: { name: string }[];
+	photoStyle?: "portrait" | "round";
 }
 
 export function StandingCard(props: StandingCardProps) {
@@ -236,17 +238,37 @@ export function StandingCard(props: StandingCardProps) {
 					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
 						<div className="relative w-full h-full">
 							<img
-								src={props.photo}
+								src={props.photo || tenant.fallbackDriverPhoto}
 								alt={`${props.name} foto`}
+								className={
+									props.photoStyle === "round"
+										? isDrivers
+											? "border-5 rounded-full border-f1-text"
+											: ""
+										: ""
+								}
 								style={{
 									objectFit: "cover",
-									width: "auto",
-									height: isDrivers ? "130%" : "100%",
+									width: isDrivers ? "auto" : "100%",
+									height:
+										props.photoStyle === "round"
+											? isDrivers
+												? "130%"
+												: "140%"
+											: isDrivers
+												? "130%"
+												: "100%",
 									maxWidth: "100%",
-									maxHeight: "150%",
-									transform: isDrivers
-										? "translateY(7%)"
-										: "translateY(0%) translateX(-15%)",
+									maxHeight:
+										props.photoStyle === "round"
+											? "100%"
+											: "150%",
+									transform:
+										props.photoStyle === "round"
+											? "translateY(0%) translateX(-15%)"
+											: isDrivers
+												? "translateY(7%)"
+												: "translateY(0%) translateX(-15%)",
 								}}
 							/>
 						</div>
@@ -256,16 +278,38 @@ export function StandingCard(props: StandingCardProps) {
 						<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10">
 							<div className="relative w-full h-full hidden md:block">
 								<img
-									src={props.photo}
+									src={
+										props.photo ||
+										tenant.fallbackDriverPhoto
+									}
 									alt={`${props.name} foto`}
+									className={
+										props.photoStyle === "round"
+											? "border-2 rounded-full border-f1-text"
+											: ""
+									}
 									style={{
 										objectFit: "cover",
 										width: isDrivers ? "auto" : "100%",
-										height: isDrivers ? "280%" : "140%",
+										height:
+											props.photoStyle === "round"
+												? isDrivers
+													? "280%"
+													: "140%"
+												: isDrivers
+													? "280%"
+													: "140%",
 										maxWidth: "100%",
-										maxHeight: "350%",
+										maxHeight:
+											props.photoStyle === "round"
+												? "100%"
+												: "350%",
 										transform:
-											"translateX(-60%) translateY(-3%)",
+											props.photoStyle === "round"
+												? "translateY(0%) translateX(-250%)"
+												: isDrivers
+													? "translateY(-3%) translateX(-62%)"
+													: "translateY(0%) translateX(-15%)",
 									}}
 								/>
 							</div>

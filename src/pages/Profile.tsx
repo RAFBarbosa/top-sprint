@@ -8,6 +8,7 @@ import { normalizeString } from "../components/hooks/useNormalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
+import { tenant } from "../components/config/tenants";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
@@ -91,18 +92,35 @@ export function Profile() {
 										<MenuArrow className="rotate-180" />
 									</p>
 									<div className="flex items-center">
-										<div
-											className="w-22 h-22 bg-cover translate-y-[10px] scale-120"
-											style={{
-												backgroundImage: `url(${
+										{tenant.defaultPhotoStyle ===
+										"round" ? (
+											<img
+												src={
 													currentIndex > 0
 														? filteredDrivers[
 																currentIndex - 1
-															].photo
-														: ""
-												})`,
-											}}
-										/>
+															].photo ||
+															tenant.fallbackDriverPhoto
+														: tenant.fallbackDriverPhoto
+												}
+												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
+											/>
+										) : (
+											<div
+												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
+												style={{
+													backgroundImage: `url(${
+														currentIndex > 0
+															? filteredDrivers[
+																	currentIndex -
+																		1
+																].photo ||
+																tenant.fallbackDriverPhoto
+															: tenant.fallbackDriverPhoto
+													})`,
+												}}
+											/>
+										)}
 									</div>
 								</div>
 							</button>
@@ -130,20 +148,30 @@ export function Profile() {
 							>
 								<div className="pt-2 flex items-center justify-around">
 									<div className="flex items-center">
-										<div
-											className="w-22 h-22 bg-cover translate-y-[10px] scale-120"
-											style={{
-												backgroundImage: `url(${
+										{tenant.defaultPhotoStyle ===
+										"round" ? (
+											<img
+												src={
 													filteredDrivers[
 														currentIndex + 1
-													]
-														? filteredDrivers[
-																currentIndex + 1
-															].photo
-														: ""
-												})`,
-											}}
-										/>
+													]?.photo ||
+													tenant.fallbackDriverPhoto
+												}
+												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
+											/>
+										) : (
+											<div
+												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
+												style={{
+													backgroundImage: `url(${
+														filteredDrivers[
+															currentIndex + 1
+														]?.photo ||
+														tenant.fallbackDriverPhoto
+													})`,
+												}}
+											/>
+										)}
 									</div>
 									<p className="text-sm tracking uppercase space-y-2 flex flex-col items-center">
 										<span>Próximo</span>

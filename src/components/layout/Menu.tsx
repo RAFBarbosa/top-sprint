@@ -13,6 +13,7 @@ import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 import { tenant } from "../config/tenants";
+import { normalizeString } from "../hooks/useNormalizeString";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -53,14 +54,6 @@ const buildMenuItems = (): NavItem[] =>
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-
-const normalizeString = (str: string): string =>
-	str
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "")
-		.replace(/\s+/g, " ")
-		.trim();
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -241,6 +234,9 @@ export function Menu() {
 														}
 														onDriverClick={
 															handleDriverClick
+														}
+														photoStyle={
+															tenant.defaultPhotoStyle
 														}
 													/>
 												)}

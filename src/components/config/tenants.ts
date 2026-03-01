@@ -1,5 +1,10 @@
 import { GridConfig } from "./grids";
 
+import topSprintA from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
+import topSprintChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
+import topSprintB from "/src/assets/img/card-backgrounds/topsprint-b.jpg";
+import feliplay from "/src/assets/img/card-backgrounds/feliplay.jpg";
+
 export type TenantId = "topSprint" | "feliplay" | "brazuka";
 
 export interface CssVars {
@@ -64,6 +69,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
 				standingsTitle: "",
 				countdownBgClass: "bg-f1-silver",
+				cardBackground: topSprintA,
 			},
 			{
 				id: "gridB",
@@ -76,6 +82,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsTitle: "Academy",
 				countdownBgClass: "bg-f1-academy-darker",
+				cardBackground: topSprintB,
 			},
 		],
 		features: {
@@ -129,7 +136,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_100%] from-f1-silver to-f1-text to-70%",
 				standingsTitle: "",
 				countdownBgClass: "bg-f1-silver",
-				photoStyle: "round",
+				cardBackground: feliplay,
 			},
 		],
 		features: {
@@ -178,10 +185,11 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
 				standingsTitle: "",
 				countdownBgClass: "bg-f1-silver",
+				cardBackground: topSprintA,
 			},
 			{
 				id: "gridB",
-				label: "Beta",
+				label: "Bravo",
 				primaryColor: "#11bf5b",
 				accentColor: "bg-f1-academy-blue",
 				hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
@@ -190,10 +198,11 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsTitle: "Academy",
 				countdownBgClass: "bg-f1-academy-darker",
+				cardBackground: topSprintA,
 			},
 			{
 				id: "gridC",
-				label: "Gamma",
+				label: "Charlie",
 				primaryColor: "#11bf5b",
 				accentColor: "bg-f1-academy-blue",
 				hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
@@ -202,6 +211,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsTitle: "Academy",
 				countdownBgClass: "bg-f1-academy-darker",
+				cardBackground: topSprintA,
 			},
 		],
 		features: {
