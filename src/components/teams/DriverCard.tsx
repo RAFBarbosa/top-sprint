@@ -43,7 +43,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 	};
 
 	const gridConfig = getGridConfig(driver.grid);
-	const isRound = gridConfig?.photoStyle === "round";
+	const isRound = tenant.defaultPhotoStyle === "round";
 
 	const getGridTitle = () => {
 		return getGridConfig(driver.grid)?.label ?? "Driver";

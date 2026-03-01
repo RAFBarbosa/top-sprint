@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import IosShareIcon from "@mui/icons-material/IosShare";
+import { tenant } from "../config/tenants";
 
 interface ShareButtonProps {
 	cardRef: React.RefObject<HTMLDivElement>;
@@ -28,33 +29,55 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 		loadFonts();
 	}, []);
 
-	// The buildPng workaround to retry and ensure the image size is large enough
 	const buildPng = async () => {
 		const element = cardRef.current;
-
 		if (!element) {
 			console.error("Card element not found");
 			return "";
 		}
 
-		let dataUrl = "";
-		const minDataLength = 2000000; // 2MB minimum size
-		let i = 0;
-		const maxAttempts = 10;
+		// Wait for all images inside the card to load
+		const images = Array.from(element.querySelectorAll("img"));
+		await Promise.all(
+			images.map(
+				(img) =>
+					new Promise<void>((resolve) => {
+						if (img.complete && img.naturalWidth > 0) {
+							resolve();
+						} else {
+							img.onload = () => resolve();
+							img.onerror = () => resolve(); // resolve anyway to not block
+						}
+					}),
+			),
+		);
 
-		while (dataUrl.length < minDataLength && i < maxAttempts) {
-			try {
-				dataUrl = await toPng(element, {
-					cacheBust: true,
-					quality: 1,
-				});
-				i += 1;
-			} catch (error) {
-				console.error("Error generating PNG image:", error);
-				break;
-			}
-		}
+		const options = {
+			cacheBust: true,
+			quality: 1,
+			skipFonts: true, // don't try to inline external fonts
+			filter: (node: HTMLElement) => {
+				// skip link tags pointing to external stylesheets
+				if (node.tagName === "LINK") {
+					const rel = node.getAttribute("rel");
+					const href = node.getAttribute("href") || "";
+					if (
+						rel === "stylesheet" &&
+						(href.includes("fonts.googleapis.com") ||
+							href.includes("rsms.me") ||
+							href.includes("http"))
+					) {
+						return false;
+					}
+				}
+				return true;
+			},
+		};
 
+		// First pass to prime image cache
+		await toPng(element, options);
+		// Second pass for final output
+		const dataUrl = await toPng(element, options);
 		return dataUrl;
 	};
 
@@ -86,12 +109,12 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 				if (navigator.share) {
 					await navigator.share({
 						title: `${data.name} Card`,
-						text: `Confira o card do piloto ${data.name} da Liga Top Sprint! ${currentPath}`,
+						text: `Confira o card do piloto ${data.name} da ${tenant.name}! ${currentPath}`,
 						files: [file],
 					});
 				} else {
 					console.warn(
-						"Web Share API is not supported in this browser."
+						"Web Share API is not supported in this browser.",
 					);
 				}
 			} catch (error) {
@@ -105,7 +128,18 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 	return (
 		<button
 			onClick={handleShareImage}
-			className="px-4 py-2 bg-f1-red text-white rounded w-full md:w-auto mx-auto hover:bg-transparent cursor-pointer border-2 border-f1-red hover:text-f1-text transition-colors duration-200 flex justify-center items-center gap-2"
+			className="px-4 py-2 text-white rounded w-full md:w-auto mx-auto cursor-pointer border-2 hover:text-f1-text transition-colors duration-200 flex justify-center items-center gap-2"
+			style={{
+				backgroundColor: "var(--color-brand-primary)",
+				borderColor: "var(--color-brand-primary)",
+			}}
+			onMouseEnter={(e) => {
+				e.currentTarget.style.backgroundColor = "transparent";
+			}}
+			onMouseLeave={(e) => {
+				e.currentTarget.style.backgroundColor =
+					"var(--color-brand-primary)";
+			}}
 		>
 			<div className="text-xs uppercase font-semibold flex items-center gap-1">
 				<IosShareIcon fontSize="small" />
