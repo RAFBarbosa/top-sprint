@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import { tenant } from "../config/tenants";
+const titilliumRegular = new URL(
+	"../assets/font/TitilliumWeb-Regular.ttf",
+	import.meta.url,
+).href;
+const titilliumBold = new URL(
+	"../assets/font/TitilliumWeb-Bold.ttf",
+	import.meta.url,
+).href;
+const titilliumSemiBold = new URL(
+	"../assets/font/TitilliumWeb-SemiBold.ttf",
+	import.meta.url,
+).href;
 
 interface ShareButtonProps {
 	cardRef: React.RefObject<HTMLDivElement>;
@@ -52,31 +64,59 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 			),
 		);
 
+		const toBase64 = async (url: string) => {
+			const res = await fetch(url);
+			const buf = await res.arrayBuffer();
+			console.log("Font buffer size:", buf.byteLength, "for", url);
+			if (buf.byteLength < 1000) {
+				console.error(
+					"Font file too small, likely not loading correctly",
+				);
+				return "";
+			}
+			const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+			return `data:font/ttf;base64,${base64}`;
+		};
+
+		const [regularB64, boldB64, semiBoldB64] = await Promise.all([
+			toBase64(titilliumRegular),
+			toBase64(titilliumBold),
+			toBase64(titilliumSemiBold),
+		]);
+
+		const fontEmbedCSS = `
+    @font-face {
+        font-family: 'Titillium Web Local';
+        font-weight: 400;
+        src: url(${regularB64}) format('truetype');
+    }
+    @font-face {
+        font-family: 'Titillium Web Local';
+        font-weight: 600;
+        src: url(${semiBoldB64}) format('truetype');
+    }
+    @font-face {
+        font-family: 'Titillium Web Local';
+        font-weight: 700;
+        src: url(${boldB64}) format('truetype');
+    }
+`;
+
 		const options = {
 			cacheBust: true,
 			quality: 1,
-			skipFonts: true, // don't try to inline external fonts
+			fontEmbedCSS,
+			skipFonts: false,
 			filter: (node: HTMLElement) => {
-				// skip link tags pointing to external stylesheets
 				if (node.tagName === "LINK") {
-					const rel = node.getAttribute("rel");
 					const href = node.getAttribute("href") || "";
-					if (
-						rel === "stylesheet" &&
-						(href.includes("fonts.googleapis.com") ||
-							href.includes("rsms.me") ||
-							href.includes("http"))
-					) {
-						return false;
-					}
+					if (href.includes("http")) return false;
 				}
 				return true;
 			},
 		};
 
-		// First pass to prime image cache
 		await toPng(element, options);
-		// Second pass for final output
 		const dataUrl = await toPng(element, options);
 		return dataUrl;
 	};
