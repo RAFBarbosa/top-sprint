@@ -30,7 +30,7 @@ export interface TenantConfig {
 		tickets: boolean;
 		hallOfFame: boolean;
 		partners: boolean;
-		results: boolean;
+		archive: boolean;
 	};
 	nav: {
 		ticketUrl?: string;
@@ -89,7 +89,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			tickets: true,
 			hallOfFame: true,
 			partners: true,
-			results: true,
+			archive: false,
 		},
 		nav: {
 			ticketUrl:
@@ -144,7 +144,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			tickets: true,
 			hallOfFame: true,
 			partners: true,
-			results: true,
+			archive: false,
 		},
 		nav: {
 			ticketUrl:
@@ -220,13 +220,11 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			tickets: false,
 			hallOfFame: true,
 			partners: false,
-			results: true,
+			archive: true,
 		},
 		nav: {
-			// ticketUrl:
-			// 	"https://marvelous-barracuda-f24.notion.site/2d9a6519acc080199dc7e431afd52d5a?pvs=105",
-			// registrationUrl:
-			// 	"https://docs.google.com/forms/d/19PHr-9GcvGMmp0SU2Nva9PEWDlm4R6JHjkIKD_L-YiI/edit",
+			ticketUrl: "",
+			registrationUrl: "",
 		},
 		cssVars: {
 			"--color-brand-primary": "#eb1c24",
