@@ -19,6 +19,7 @@ import PartnerAdmin from "./pages/admin/PartnerAdmin";
 import { TopSprintRules } from "./pages/rules/TopSprintRules";
 import { FeliplayRules } from "./pages/rules/FeliplayRules";
 import { BrazukaRules } from "./pages/rules/BrazukaRules";
+import { Archive } from "./pages/Archive";
 import { tenant } from "./components/config/tenants";
 
 export function Router() {
@@ -37,6 +38,7 @@ export function Router() {
 			<Route path="/pilotos/:driverName" element={<Profile />} />
 			<Route path="/resultados" element={<SessionResults />} />
 			<Route path="/resultados/:id" element={<SessionResults />} />
+			<Route path="/historico" element={<Archive />} />
 			<Route path="/admin" element={<AdminLogin />} />
 			<Route element={<ProtectedRoute />}>
 				<Route path="/admin/painel" element={<AdminDashboard />}>

@@ -1,0 +1,9 @@
+query GetArchive {
+	archives(orderBy: publishedAt_DESC) {
+		id
+		season
+		photo {
+			url
+		}
+	}
+}

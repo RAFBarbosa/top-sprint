@@ -36,6 +36,11 @@ const buildMenuItems = (): NavItem[] =>
 			label: "Mural dos Campeões",
 			hidden: !tenant.features.hallOfFame,
 		},
+		{
+			id: "/historico",
+			label: "Histórico",
+			hidden: !tenant.features.archive,
+		},
 		{ id: "/regras", label: "Regras e Formato" },
 		{
 			id: tenant.nav.ticketUrl ?? "",
