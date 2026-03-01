@@ -1,4 +1,4 @@
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState } from "react";
 import {
 	Listbox,
 	ListboxButton,
@@ -9,10 +9,10 @@ import {
 	useCreateCalendarMutation,
 	useGetCalendarsRegistrationQuery,
 	useUpdateCalendarMutation,
-	useCreateAssetMutation,
 	GetCalendarsRegistrationDocument,
 	useGetDriversQuery,
 	useGridOptionsQuery,
+	useGetTracksQuery,
 } from "../../graphql/generated";
 import { format } from "date-fns";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
@@ -27,9 +27,9 @@ import {
 
 export function CalendarRegistration() {
 	const [formData, setFormData] = useState({
-		track: "",
+		trackId: "",
 		round: "",
-		description: "",
+		sprint: false,
 		date: "",
 		link: "",
 		winnerA: "",
@@ -40,13 +40,10 @@ export function CalendarRegistration() {
 		grid: "",
 	});
 
-	const [flagFile, setFlagFile] = useState<File | null>(null);
-	const [duplicateFlagId, setDuplicateFlagId] = useState<string | null>(null);
 	const [status, setStatus] = useState<{
 		type: "idle" | "loading" | "success" | "error";
 		message: string;
 	}>({ type: "idle", message: "" });
-	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const [selectedCalendar, setSelectedCalendar] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -70,8 +67,6 @@ export function CalendarRegistration() {
 		useGetCalendarsRegistrationQuery({
 			fetchPolicy: "network-only",
 		});
-
-	const [createAsset] = useCreateAssetMutation();
 
 	// Add drivers query
 	const {
@@ -105,6 +100,7 @@ export function CalendarRegistration() {
 	};
 
 	const { data: gridData, loading: gridLoading } = useGridOptionsQuery();
+	const { data: tracksData, loading: tracksLoading } = useGetTracksQuery();
 
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
@@ -133,9 +129,9 @@ export function CalendarRegistration() {
 		setSelectedCalendar(calendar);
 		setIsEditing(true);
 		setFormData({
-			track: calendar.track,
+			trackId: calendar.track?.id || "",
 			round: calendar.round,
-			description: calendar.description,
+			sprint: calendar.sprint || false,
 			date: isoToDatetimeLocal(calendar.date),
 			link: calendar.link || "",
 			winnerA: calendar.winnerA?.name || "",
@@ -151,9 +147,9 @@ export function CalendarRegistration() {
 		setSelectedCalendar(null);
 		setIsEditing(false);
 		setFormData({
-			track: "",
+			trackId: "",
 			round: "",
-			description: "",
+			sprint: false,
 			date: "",
 			link: "",
 			winnerA: "",
@@ -163,8 +159,6 @@ export function CalendarRegistration() {
 			active: true,
 			grid: "",
 		});
-		setFlagFile(null);
-		setDuplicateFlagId(null);
 	};
 
 	const handleCalendar = async (event: FormEvent) => {
@@ -184,62 +178,9 @@ export function CalendarRegistration() {
 				.toISOString()
 				.replace(/\.\d{3}Z$/, "Z");
 			// Validate required fields
-			if (!formData.track) throw new Error("Pista é obrigatória");
+			if (!formData.trackId) throw new Error("Pista é obrigatória");
 			if (!formData.round) throw new Error("Rodada é obrigatória");
 			if (!formData.date) throw new Error("Data é obrigatória");
-
-			let flagId = null;
-			if (flagFile) {
-				try {
-					setStatus({
-						type: "loading",
-						message: "Enviando imagem...",
-					});
-
-					const assetResult = await createAsset({
-						variables: { data: {} },
-					});
-
-					const asset = assetResult.data?.createAsset;
-					const uploadData = asset?.upload?.requestPostData;
-					if (!asset?.id || !uploadData?.url) {
-						throw new Error("Failed to get upload data");
-					}
-
-					const formData = new FormData();
-					const finalKey = uploadData.key.replace(
-						"${filename}",
-						encodeURIComponent(flagFile.name),
-					);
-					formData.append("key", finalKey);
-					formData.append("policy", uploadData.policy);
-					formData.append("x-amz-algorithm", uploadData.algorithm);
-					formData.append("x-amz-credential", uploadData.credential);
-					formData.append("x-amz-date", uploadData.date);
-					formData.append("x-amz-signature", uploadData.signature);
-					if (uploadData.securityToken) {
-						formData.append(
-							"x-amz-security-token",
-							uploadData.securityToken,
-						);
-					}
-					formData.append("file", flagFile);
-
-					const uploadResponse = await fetch(uploadData.url, {
-						method: "POST",
-						body: formData,
-					});
-
-					if (!uploadResponse.ok) throw new Error("Upload failed");
-
-					flagId = asset.id;
-					setUploadProgress(100);
-				} catch (uploadError) {
-					throw new Error(
-						`Falha no upload da bandeira: ${uploadError.message}`,
-					);
-				}
-			}
 
 			if (formData.link && !formData.link.startsWith("http")) {
 				throw new Error("URL deve começar com http/https");
@@ -260,18 +201,15 @@ export function CalendarRegistration() {
 					variables: {
 						where: { id: selectedCalendar.id },
 						data: {
-							track: formData.track,
+							track: { connect: { id: formData.trackId } },
 							round: formData.round,
+							sprint: formData.sprint,
 							grid: formData.grid || null,
-							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
 							winnerA: winnerAData,
 							winnerB: winnerBData,
 							active: formData.active,
-							flag: flagId
-								? { connect: { id: flagId } }
-								: undefined,
 						},
 					},
 				});
@@ -288,20 +226,15 @@ export function CalendarRegistration() {
 					variables: {
 						data: {
 							deleted: false,
-							track: formData.track,
+							track: { connect: { id: formData.trackId } },
 							round: formData.round,
+							sprint: formData.sprint,
 							grid: formData.grid || null,
-							description: formData.description,
 							date: formattedDate,
 							link: formData.link || null,
 							winnerA: winnerAData,
 							winnerB: winnerBData,
 							active: formData.active,
-							flag: flagId
-								? { connect: { id: flagId } }
-								: duplicateFlagId
-									? { connect: { id: duplicateFlagId } }
-									: null,
 						},
 					},
 				});
@@ -314,14 +247,9 @@ export function CalendarRegistration() {
 				});
 			}
 
-			if (isEditing) {
-				// Stay on the same item, just clear the file input
-				setFlagFile(null);
-			} else {
+			if (!isEditing) {
 				resetForm();
 			}
-			setDuplicateFlagId(null);
-			setUploadProgress(null);
 
 			setTimeout(() => {
 				setStatus({ type: "idle", message: "" });
@@ -333,7 +261,6 @@ export function CalendarRegistration() {
 				message:
 					error.message || "Erro desconhecido ao cadastrar etapa",
 			});
-			setUploadProgress(null);
 		}
 	};
 
@@ -359,12 +286,12 @@ export function CalendarRegistration() {
 				? true
 				: activeFilter === "active"
 					? calendar.active === true
-					: calendar.active === false;
+					: calendar.active !== true;
 		const matchesSearch = searchTerm
 			? Object.entries({
-					track: calendar.track,
+					track: calendar.track?.name || "",
+					location: calendar.track?.location || "",
 					round: calendar.round,
-					description: calendar.description,
 					date: calendar.date,
 					link: calendar.link,
 					winnerA: calendar.winnerA?.name || "",
@@ -514,7 +441,9 @@ export function CalendarRegistration() {
 								>
 									<div className="flex flex-col items-start truncate">
 										<span className="truncate max-w-40">
-											{calendar.track}
+											{calendar.track?.name
+												? `${calendar.track.name}`
+												: calendar.round}
 										</span>
 										<div className="flex flex-col items-start">
 											<span className="text-xs text-gray-500">
@@ -532,10 +461,12 @@ export function CalendarRegistration() {
 									</div>
 									<div className="flex gap-4 items-center">
 										<div>
-											{calendar.flag?.url && (
+											{calendar.track?.flag?.url && (
 												<img
-													src={calendar.flag.url}
-													alt={`Bandeira ${calendar.track}`}
+													src={
+														calendar.track.flag.url
+													}
+													alt={`Bandeira ${calendar.track?.name}`}
 													className="max-w-8 max-h-8 object-cover scale-150 mr-2 border border-f1-black/50 rounded"
 												/>
 											)}
@@ -627,24 +558,45 @@ export function CalendarRegistration() {
 									? "Editar Etapa"
 									: "Cadastrar Nova Etapa"}
 							</h2>
-							<div className="flex items-center justify-start gap-2 mt-4">
-								<span className="text-sm font-medium">
-									Ativo
-								</span>
-								<label className="relative inline-flex items-center cursor-pointer">
-									<input
-										type="checkbox"
-										checked={formData.active}
-										onChange={(e) =>
-											setFormData({
-												...formData,
-												active: e.target.checked,
-											})
-										}
-										className="sr-only peer"
-									/>
-									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
-								</label>
+							<div className="flex items-center justify-start gap-6 mt-4">
+								<div className="flex items-center gap-2">
+									<span className="text-sm font-medium">
+										Ativo
+									</span>
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											checked={formData.active}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													active: e.target.checked,
+												})
+											}
+											className="sr-only peer"
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+									</label>
+								</div>
+								<div className="flex items-center gap-2">
+									<span className="text-sm font-medium">
+										Sprint
+									</span>
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											checked={formData.sprint}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													sprint: e.target.checked,
+												})
+											}
+											className="sr-only peer"
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+									</label>
+								</div>
 							</div>
 						</div>
 						{isEditing && (
@@ -652,9 +604,12 @@ export function CalendarRegistration() {
 								<button
 									type="button"
 									onClick={() => {
-										setDuplicateFlagId(
-											selectedCalendar?.flag?.id || null,
-										);
+										setFormData((prev) => ({
+											...prev,
+											trackId:
+												selectedCalendar?.track?.id ||
+												"",
+										}));
 										setSelectedCalendar(null);
 										setIsEditing(false);
 									}}
@@ -695,13 +650,71 @@ export function CalendarRegistration() {
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block mb-1">Pista *</label>
-							<input
-								name="track"
-								value={formData.track}
-								onChange={handleChange}
-								required
-								className="w-full p-2 border rounded h-11"
-							/>
+							<Listbox
+								value={formData.trackId}
+								onChange={(value) =>
+									setFormData((prev) => ({
+										...prev,
+										trackId: value,
+									}))
+								}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.trackId
+												? (() => {
+														const t =
+															tracksData?.tracks.find(
+																(t) =>
+																	t.id ===
+																	formData.trackId,
+															);
+														return t
+															? `${t.name} - ${t.location}`
+															: "Selecione uma pista";
+													})()
+												: "Selecione uma pista"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon className="h-5 w-5 text-f1-silver" />
+										</span>
+									</ListboxButton>
+									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										{tracksLoading ? (
+											<div className="p-2 text-center">
+												Carregando...
+											</div>
+										) : (
+											tracksData?.tracks.map((track) => (
+												<ListboxOption
+													key={track.id}
+													value={track.id}
+													className={({ active }) =>
+														`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+													}
+												>
+													<div className="flex items-center gap-2">
+														{track.flag?.url && (
+															<img
+																src={
+																	track.flag
+																		.url
+																}
+																className="w-6 h-4 object-cover"
+															/>
+														)}
+														<span>
+															{track.name} -{" "}
+															{track.location}
+														</span>
+													</div>
+												</ListboxOption>
+											))
+										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
 						</div>
 
 						<div>
@@ -711,16 +724,6 @@ export function CalendarRegistration() {
 								value={formData.round}
 								onChange={handleChange}
 								required
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-
-						<div className="md:col-span-2">
-							<label className="block mb-1">Descrição</label>
-							<input
-								name="description"
-								value={formData.description}
-								onChange={handleChange}
 								className="w-full p-2 border rounded h-11"
 							/>
 						</div>
@@ -976,48 +979,6 @@ export function CalendarRegistration() {
 								</div>
 							</Listbox>
 						</div> */}
-
-						<div className="md:col-span-2">
-							<label className="block mb-1">Bandeira</label>
-							<input
-								type="file"
-								accept="image/*"
-								onChange={(e) =>
-									e.target.files?.[0] &&
-									setFlagFile(e.target.files[0])
-								}
-								className="w-full p-2 border rounded h-11"
-							/>
-							{flagFile && (
-								<p className="text-sm mt-1 text-gray-600">
-									Arquivo selecionado: {flagFile.name}
-								</p>
-							)}
-						</div>
-
-						{isEditing &&
-							selectedCalendar?.flag?.url &&
-							!flagFile && (
-								<div className="md:col-span-2">
-									<span className="block mb-1">
-										Bandeira atual:
-									</span>
-									<img
-										src={selectedCalendar.flag.url}
-										alt={`Bandeira ${selectedCalendar.track}`}
-										className="h-auto w-full md:w-1/5 mx-auto object-cover border border-gray-300"
-									/>
-								</div>
-							)}
-
-						{uploadProgress !== null && (
-							<div className="md:col-span-2 w-full bg-gray-200 rounded-full h-2.5">
-								<div
-									className="bg-f1-red h-2.5 rounded-full"
-									style={{ width: `${uploadProgress}%` }}
-								></div>
-							</div>
-						)}
 					</div>
 
 					<button

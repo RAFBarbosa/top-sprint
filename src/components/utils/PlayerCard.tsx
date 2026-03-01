@@ -129,11 +129,6 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									/>
 								</div>
 							))}
-							<Tooltip
-								id="badge-tooltip"
-								place="top"
-								className="!z-60"
-							/>
 						</div>
 					)}
 
@@ -205,7 +200,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							].map(({ label, value, tooltip }) => (
 								<span
 									key={label}
-									className="flex flex-col items-center leading-2"
+									className="flex flex-col items-center leading-2 cursor-help"
 									data-tooltip-id="stat-tooltip"
 									data-tooltip-content={tooltip}
 								>
@@ -217,11 +212,6 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									</p>
 								</span>
 							))}
-							<Tooltip
-								id="stat-tooltip"
-								place="top"
-								className="!z-60"
-							/>
 						</div>
 					</div>
 
@@ -232,7 +222,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									? "object-cover translate-x-[40px] -translate-y-[40px] scale-60 border-10 rounded-full border-f1-text"
 									: "object-cover translate-x-[80px] translate-y-[15px]"
 							}
-							src={data.photo}
+							src={data.photo || tenant.fallbackDriverPhoto}
 							alt={`${data.name}'s photo`}
 						/>
 					</div>
@@ -335,6 +325,10 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						</div>
 					</div>
 				</div>
+				{data.badge.length > 0 && (
+					<Tooltip id="badge-tooltip" place="top" className="!z-60" />
+				)}
+				<Tooltip id="stat-tooltip" place="top" className="!z-60" />
 			</div>
 		);
 	},

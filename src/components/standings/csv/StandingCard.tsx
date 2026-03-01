@@ -306,7 +306,7 @@ export function StandingCard(props: StandingCardProps) {
 												: "350%",
 										transform:
 											props.photoStyle === "round"
-												? "translateY(0%) translateX(-250%)"
+												? "translateY(0%) translateX(-280%)"
 												: isDrivers
 													? "translateY(-3%) translateX(-62%)"
 													: "translateY(0%) translateX(-15%)",

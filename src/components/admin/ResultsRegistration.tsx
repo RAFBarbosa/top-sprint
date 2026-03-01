@@ -576,9 +576,9 @@ export function ResultsRegistration() {
 												Arquivo atual:
 											</span>
 											<span className="text-sm text-gray-600">
-												{selectedData.csv.url
-													.split("/")
-													.pop()}
+												{decodeURIComponent(
+													selectedData.csv.fileName,
+												)}
 											</span>
 										</div>
 									)}

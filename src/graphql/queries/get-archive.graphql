@@ -3,6 +3,7 @@ query GetArchive {
 		id
 		season
 		photo {
+			id
 			url
 		}
 	}
