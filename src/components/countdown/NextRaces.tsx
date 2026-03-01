@@ -8,15 +8,16 @@ import { useTab } from "../../contexts/TabContext";
 
 interface Calendar {
 	id: string;
-	track?: string | null;
+	track?: {
+		name?: string | null;
+		location?: string | null;
+		flag?: { url: string } | null;
+	} | null;
 	round?: string | null;
+	sprint?: boolean | null;
 	grid?: string | null;
-	description?: string | null;
 	date?: string | null;
 	link?: string | null;
-	flag?: {
-		url: string;
-	} | null;
 }
 
 const loadingSkeleton = () => {
@@ -59,12 +60,12 @@ export function NextRaces() {
 
 			// ✅ only races from the selected grid
 			const filteredCalendars = calendars.filter(
-				(race) => race.grid === activeTab.id
+				(race) => race.grid === activeTab.id,
 			);
 
 			const sortedCalendars = [...filteredCalendars].sort(
 				(a, b) =>
-					parseISO(a.date).getTime() - parseISO(b.date).getTime()
+					parseISO(a.date).getTime() - parseISO(b.date).getTime(),
 			);
 
 			let activeRace = null;
@@ -128,12 +129,13 @@ export function NextRaces() {
 				nextRace && nextRace.date ? (
 					<NextRace
 						key={nextRace.id}
-						track={nextRace.track || ""}
+						track={nextRace.track?.name || nextRace.round || ""}
+						location={nextRace.track?.location || ""}
 						date={parseISO(nextRace.date)}
 						link={nextRace.link || ""}
 						grid={nextRace.grid || ""}
-						description={nextRace.description || ""}
-						flag={nextRace.flag || { url: GenericLogo }}
+						sprint={nextRace.sprint || false}
+						flag={nextRace.track?.flag || { url: GenericLogo }}
 					/>
 				) : (
 					""

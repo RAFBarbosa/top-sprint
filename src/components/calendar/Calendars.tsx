@@ -108,21 +108,26 @@ export function Calendars() {
 										<div className="px-2 h-full">
 											<Calendar
 												round={data.round || ""}
-												track={data.track || ""}
-												description={
-													data.description || ""
+												sprint={data.sprint || false}
+												track={
+													data.track?.name ||
+													data.round ||
+													""
+												}
+												location={
+													data.track?.location || ""
 												}
 												date={data.date || ""}
-												winnerA={data.winnerA || ""}
-												winnerB={data.winnerB || ""}
+												winnerA={data.winnerA || null}
+												winnerB={data.winnerB || null}
 												link={data.link || ""}
 												map={
-													data.map || {
+													data.track?.map || {
 														url: tenant.logo.url,
 													}
 												}
 												flag={
-													data.flag || {
+													data.track?.flag || {
 														url: tenant.logo.url,
 													}
 												}

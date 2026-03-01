@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { normalizeString } from "../hooks/useNormalizeString";
 import { useLocation } from "react-router-dom";
+import { tenant } from "../config/tenants";
 
 interface Driver {
 	id?: string;
@@ -96,7 +97,10 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 								>
 									{photoStyle === "round" ? (
 										<img
-											src={driver.photo}
+											src={
+												driver.photo ||
+												tenant.fallbackDriverPhoto
+											}
 											alt={driver.name}
 											className="w-full h-full object-cover border-1 border-transparent"
 										/>

@@ -4,21 +4,28 @@ mutation UpdateCalendar(
 ) {
 	updateCalendar(where: $where, data: $data) {
 		id
-		track
+		track {
+			id
+			name
+			flag {
+				id
+				url
+			}
+		}
 		round
-		description
+		sprint
+		grid
 		deleted
+		active
 		date
+		link
 		winnerA {
+			id
 			name
 		}
 		winnerB {
-			name
-		}
-		link
-		flag {
 			id
-			url
+			name
 		}
 		updatedAt
 	}

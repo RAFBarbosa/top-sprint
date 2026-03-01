@@ -5,29 +5,56 @@ query GetCalendars {
 		stage: DRAFT
 	) {
 		id
-		track
+		track {
+			id
+			location
+			map {
+				id
+				url
+			}
+			flag {
+				id
+				url
+			}
+			name
+		}
+		sprint
 		round
-		active
+		link
+		grid
 		deleted
+		date
 		winnerA {
 			id
 			name
+			grid
+			class
+			photo {
+				id
+				url
+			}
+			team {
+				id
+				color {
+					hex
+				}
+			}
 		}
-		# winnerB {
-		# 	id
-		# 	name
-		# }
-		map {
+		winnerB {
+			name
 			id
-			url
-		}
-		grid
-		description
-		date
-		link
-		flag {
-			id
-			url
+			photo {
+				url
+				id
+			}
+			team {
+				id
+				color {
+					hex
+				}
+			}
+			grid
+			class
 		}
 	}
 }
@@ -35,26 +62,66 @@ query GetCalendars {
 query GetCalendarsRegistration {
 	calendars(orderBy: date_ASC, stage: DRAFT, where: { deleted: false }) {
 		id
-		track
+		track {
+			id
+			location
+			map {
+				id
+				url
+			}
+			flag {
+				id
+				url
+			}
+			name
+		}
+		sprint
 		round
+		link
+		grid
+		deleted
+		active
+		date
 		winnerA {
 			id
 			name
+			grid
+			class
+			photo {
+				id
+				url
+			}
+			team {
+				id
+				color {
+					hex
+				}
+			}
 		}
-		# winnerB {
-		# 	id
-		# 	name
-		# }
-		active
-		map {
+		winnerB {
+			name
 			id
-			url
+			photo {
+				url
+				id
+			}
+			team {
+				id
+				color {
+					hex
+				}
+			}
+			grid
+			class
 		}
-		grid
-		deleted
-		description
-		date
-		link
+	}
+}
+
+query GetTracks {
+	tracks(orderBy: name_ASC, stage: DRAFT, where: { deleted: false }) {
+		id
+		name
+		location
 		flag {
 			id
 			url

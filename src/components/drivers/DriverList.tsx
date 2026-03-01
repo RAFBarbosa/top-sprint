@@ -21,7 +21,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 						: ""
 				}`}
 			></div>
-			<h2 className="text-xl font-bold my-4">
+			<h2 className="text-xl font-bold">
 				<div
 					className={`font-extrabold text-4xl tracking-wide mb-6 ${
 						gridName == "Reservas e Ex-Pilotos" && "border-t-4"

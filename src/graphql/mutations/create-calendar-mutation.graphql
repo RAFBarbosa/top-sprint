@@ -1,22 +1,28 @@
 mutation CreateCalendar($data: CalendarCreateInput!) {
 	createCalendar(data: $data) {
 		id
-		track
+		track {
+			id
+			name
+			flag {
+				id
+				url
+			}
+		}
 		round
+		sprint
+		grid
 		deleted
-		description
-		date
 		active
+		date
 		link
 		winnerA {
+			id
 			name
 		}
 		winnerB {
-			name
-		}
-		flag {
 			id
-			url
+			name
 		}
 		createdAt
 	}

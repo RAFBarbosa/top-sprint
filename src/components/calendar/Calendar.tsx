@@ -7,12 +7,13 @@ import { tenant } from "../config/tenants";
 
 interface CalendarProps {
 	round: string;
+	sprint: boolean;
 	track: string;
+	location: string;
 	flag: { url: string };
-	description: string;
 	link: string;
-	winnerA: string[];
-	winnerB: string[];
+	winnerA: any;
+	winnerB: any;
 	date: Date;
 	map?: { url: string };
 }
@@ -83,7 +84,7 @@ export function Calendar(props: CalendarProps) {
 
 	return (
 		<div
-			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none group hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
+			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
 				isPastTwoHours ? "calendar-card-hover" : ""
 			} cursor-pointer`}
 		>
@@ -95,96 +96,149 @@ export function Calendar(props: CalendarProps) {
 						e.preventDefault();
 					}
 				}}
-				className={`h-full flex flex-col ${
-					isFutureDate ? "cursor-pointer" : "cursor-pointer"
-				}`}
+				className="h-full flex flex-col group"
 			>
 				<div
 					style={{ color: "var(--color-brand-primary)" }}
 					className="font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
 				>
 					{props.round}
-					{isPastTwoHours && " Finalizada"}
+					{props.sprint && (
+						<span className="text-f1-red ml-0.5"></span>
+					)}
+					{isPastTwoHours && <span> Finalizada</span>}
 				</div>
-				<div className="flex pb-5 mb-0 border-b-1 border-f1-black/20 items-start flex-grow">
-					<div className="w-full mr-3 text-justify flex flex-col justify-between h-full">
-						<div className="flex flex-col gap-0 divide-black">
-							<div className="text-lg font-semibold leading-6">
-								{formattedDateCapitalized}
-							</div>
-							<div className="flex text-lg font-bold uppercase leading-6">
+				<div className="flex pb-3 mb-0 border-b border-f1-black/20 items-start flex-grow">
+					<div className="w-full mr-3 flex flex-col justify-between h-full">
+						<span className="text-sm font-semibold text-f1-text uppercase tracking-wide">
+							{formattedDateCapitalized}
+						</span>
+						<div className="flex items-center gap-1 mt-0.5">
+							<span className="text-lg font-bold uppercase leading-5 tracking-wide">
 								{props.track}
-								<div
-									className={`group-hover:translate-x-1 transition-all duration-200 ${
-										isFutureDate && "hidden"
-									}`}
-								>
+							</span>
+							{!isFutureDate && (
+								<span className="transition-transform duration-200 group-hover:translate-x-1 inline-flex">
 									<MenuArrow
 										style={{
 											color: "var(--color-brand-primary)",
+											fontSize: "16px",
 										}}
-										className="p-[2px] ml-1 translate-y-[-1px]"
-										fontSize="small"
 									/>
-								</div>
-							</div>
+								</span>
+							)}
 						</div>
-						{props.description && (
-							<p className="text-base/5 mt-2 line-clamp-2">
-								{props.description}
-							</p>
+						{props.location && (
+							<span className="text-f1-text mt-2 leading-4">
+								{props.location}
+							</span>
 						)}
 					</div>
 
-					<img
-						src={props.flag?.url}
-						alt={`${props.track} flag`}
-						className="rounded-md w-[46px] h-auto border border-f1-black/70 self-start mt-3 flex-shrink-0"
-					/>
+					<div className="flex flex-col items-center flex-shrink-0">
+						<img
+							src={props.flag?.url}
+							alt={`${props.track} flag`}
+							className="rounded w-[42px] h-auto border border-f1-black/20 self-start"
+						/>
+						{props.sprint && (
+							<span className="text-[10px] font-bold text-f1-red mt-1 tracking-wide uppercase">
+								Sprint
+							</span>
+						)}
+					</div>
 				</div>
 
 				<div
 					className={`bg-map-bg h-29 w-60 absolute bottom-2 -z-10 ${
-						isFutureDate ? "opacity-35" : "opacity-20"
+						!isFutureDate && props.winnerA
+							? "opacity-5"
+							: isFutureDate
+								? "opacity-35"
+								: "opacity-20"
 					}`}
 				/>
 
-				<div className="py-4 h-33 px-2 z-10">
-					{isFutureDate || (!props.winnerA && !props.winnerB) ? (
+				<div className="py-4 h-33 px-2 z-10 relative">
+					{/* Map always as watermark */}
+					{props.map?.url && (
 						<img
-							src={props.map?.url}
-							alt={`${props.track} map`}
-							className="w-full h-full object-contain mx-auto scale-90 opacity-85"
+							src={props.map.url}
+							alt=""
+							className={`absolute inset-0 w-full h-full object-contain p-3 pointer-events-none transition-opacity duration-300 ${
+								!isFutureDate && props.winnerA
+									? "opacity-3"
+									: isFutureDate
+										? "opacity-85"
+										: "opacity-20"
+							}`}
 						/>
-					) : (
-						<div className="h-full flex flex-col gap-2 items-center justify-center">
-							<p className="font-f1Podium tracking-wider text-center bg-f1-bg-silver px-6">
-								Vencedor
-							</p>
-							<div className="flex flex-col gap-1">
-								{props.winnerA && (
-									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
-										<p className="font-black"></p>
-										<p className="font-semibold">
-											{getFilteredWinnerName(
-												props.winnerA,
-											)}
-										</p>
-									</div>
+					)}
+
+					{!isFutureDate && props.winnerA ? (
+						<div className="relative z-10 h-full flex items-center gap-3 px-1">
+							{/* Photo */}
+							<div
+								className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-1"
+								style={{
+									backgroundColor:
+										props.winnerA.team?.color?.hex ||
+										"var(--color-brand-primary)",
+								}}
+							>
+								{tenant.defaultPhotoStyle === "round" ? (
+									<img
+										src={
+											props.winnerA.photo?.url ||
+											tenant.fallbackDriverPhoto
+										}
+										alt={getFilteredWinnerName(
+											props.winnerA,
+										)}
+										className="w-full h-full object-cover scale-123 translate-y-[5px]"
+									/>
+								) : (
+									<img
+										src={
+											props.winnerA.photo?.url ||
+											tenant.fallbackDriverPhoto
+										}
+										alt={getFilteredWinnerName(
+											props.winnerA,
+										)}
+										className="w-full h-full object-cover scale-200 translate-y-[24px]"
+									/>
 								)}
-								{/* {props.winnerB && (
-									<div className="flex gap-2 rounded bg-f1-bg-silver px-4 py-1">
-										<p className="font-black">B</p>
-										<p className="font-semibold">
-											{getFilteredWinnerName(
-												props.winnerB,
-											)}
-										</p>
-									</div>
+							</div>
+							{/* Name + label */}
+							<div className="flex flex-col min-w-0">
+								<span
+									className="text-xs uppercase tracking-wide font-semibold"
+									style={{
+										color: "var(--color-brand-primary)",
+									}}
+								>
+									Vencedor
+								</span>
+								<span className="font-bold uppercase tracking-wide leading-5 truncate">
+									{getFilteredWinnerName(props.winnerA)}
+								</span>
+								{/* {props.winnerA.team?.name && (
+									<span
+										className="text-[10px] font-medium mt-0.5 truncate"
+										style={{
+											color:
+												props.winnerA.team?.color
+													?.hex ||
+												"var(--color-brand-primary)",
+										}}
+									>
+										{props.winnerA.team.name}
+									</span>
 								)} */}
 							</div>
 						</div>
-					)}
+					) : null}
 				</div>
 			</a>
 		</div>

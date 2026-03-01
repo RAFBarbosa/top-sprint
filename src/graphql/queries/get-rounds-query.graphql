@@ -15,6 +15,7 @@ query GetSeasonRounds($slug: String!) {
 			location
 			uniqueName
 			flag {
+				id
 				url
 			}
 		}
@@ -47,6 +48,7 @@ query GetDrivers {
 				hex
 			}
 			photo {
+				id
 				url
 			}
 		}
