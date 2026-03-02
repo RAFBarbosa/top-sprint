@@ -23,28 +23,17 @@ interface PodiumCardProps {
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	const [firstName, lastName] = (() => {
-		const nameParts = props.name.split(" ");
-		return [
-			nameParts[0].replace(/-[BC]$/, ""),
-			nameParts.length > 1
-				? nameParts
-						.slice(1)
-						.join(" ")
-						.replace(/-[BC]$/, "")
-				: "",
-		];
-	})();
+	const cleanName = (name: string) => name.replace(/-[BC]$/, "").trim();
+	const nameParts = props.name.split(" ");
+	const firstName = cleanName(nameParts[0]);
+	const lastName =
+		nameParts.length > 1 ? cleanName(nameParts.slice(1).join(" ")) : "";
 
 	const isDrivers = props.activeTab === "drivers";
 
-	let cleanedTeamDrivers = props.teamDrivers || [];
-
-	if (!isDrivers) {
-		cleanedTeamDrivers =
-			props.teamDrivers?.map((driver) => driver.replace(/-[BC]$/, "")) ||
-			[];
-	}
+	const cleanedTeamDrivers = isDrivers
+		? props.teamDrivers || []
+		: props.teamDrivers?.map((d) => cleanName(d)) || [];
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -146,7 +135,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				style={{ backgroundColor: props.teamColor }}
 			/>
 
-			<img
+			{/* <img
 				src={props.photo || tenant.fallbackDriverPhoto}
 				alt={`${props.name} foto`}
 				className={`absolute object-cover max-w-none ${
@@ -166,7 +155,45 @@ export function PodiumCard(props: PodiumCardProps) {
 								} w-auto translate-x-[70px] translate-y-[15px]`
 							: `bottom-0 left-1/2 -translate-x-1/2 scale-60 translate-y-[-20%]`
 				}`}
-			/>
+			/> */}
+
+			{props.photoStyle === "round" && isDrivers ? (
+				<div
+					className={`absolute overflow-hidden rounded-full border-4 border-f1-carbon/20 ${
+						props.position === 1
+							? "w-[160px] h-[160px] bottom-[104px] right-3"
+							: "w-[134px] h-[134px] bottom-[104px] right-2"
+					}`}
+				>
+					<img
+						src={props.photo || tenant.fallbackDriverPhoto}
+						alt={`${props.name} foto`}
+						className="w-full h-full object-cover"
+					/>
+				</div>
+			) : isDrivers ? (
+				<div
+					className={`absolute overflow-hidden bottom-0 right-0 ${
+						props.position === 1
+							? "w-[200px] h-[260px]"
+							: "w-[180px] h-[230px]"
+					}`}
+				>
+					<img
+						src={props.photo || tenant.fallbackDriverPhoto}
+						alt={`${props.name} foto`}
+						className="w-full h-full object-cover object-top"
+					/>
+				</div>
+			) : (
+				<div className="absolute top-0 left-0 right-0 bottom-[90px] flex items-center justify-center">
+					<img
+						src={props.teamLogo || props.photo || tenant.logo.url}
+						alt={`${props.name} logo`}
+						className="w-[150px] h-[150px] object-contain"
+					/>
+				</div>
+			)}
 
 			<div
 				className={`absolute bottom-0 w-full -z-10 rounded-2xl bg-white ${
@@ -181,40 +208,38 @@ export function PodiumCard(props: PodiumCardProps) {
 			<div
 				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none ${colorClass}`}
 			>
-				<span
-					className={`${
-						isDrivers
-							? lastName
-								? "font-semibold"
-								: "font-bold uppercase text-2xl"
-							: "font-bold uppercase text-2xl text-center"
-					}`}
-				>
-					{isDrivers
-						? firstName
-						: Array.isArray(props.teamDrivers)
-							? cleanedTeamDrivers.join(" / ")
-							: cleanedTeamDrivers || "No drivers"}
-				</span>
-
-				{lastName && isDrivers && (
-					<span
-						className={`font-bold uppercase leading-6 truncate ${
-							lastName.length > 9 ? "text-xl" : "text-2xl"
-						}`}
-					>
-						{lastName}
-					</span>
+				{isDrivers ? (
+					<>
+						<span
+							className={
+								lastName
+									? "font-semibold"
+									: "font-bold uppercase text-2xl"
+							}
+						>
+							{firstName}
+						</span>
+						{lastName && (
+							<span
+								className={`font-bold uppercase leading-6 truncate ${lastName.length > 9 ? "text-xl" : "text-2xl"}`}
+							>
+								{lastName}
+							</span>
+						)}
+						<span className="font-light text-sm leading-3 mt-auto">
+							{props.teamName}
+						</span>
+					</>
+				) : (
+					<>
+						<span className="font-bold uppercase text-2xl text-center">
+							{cleanedTeamDrivers.join(" / ") || "Sem Pilotos"}
+						</span>
+						<span className="font-light text-base leading-3 mt-auto text-center">
+							{props.name}
+						</span>
+					</>
 				)}
-				<div
-					className={`font-light leading-3 mt-auto ${
-						isDrivers
-							? "text-left text-sm"
-							: "text-center text-base"
-					}`}
-				>
-					{isDrivers ? props.teamName : props.name}
-				</div>
 			</div>
 		</div>
 	);

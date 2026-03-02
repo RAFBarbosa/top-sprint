@@ -190,6 +190,7 @@ body {
 	--font-signature: "Inter", sans-serif;
 
 	--color-f1-red: #eb1c24;
+	--color-f1-darkerRed: #a81b20;
 	--color-f1-black: #000000;
 	--color-f1-silver: #38383f;
 	--color-f1-bg-silver: #ededed;
@@ -206,6 +207,7 @@ body {
 	--color-f1-academy-dark: #0a7236;
 	--color-f1-academy-darker: #064c24;
 	--color-f1-academy-blue: #005ba5;
+	--color-f1-academy-darkerBlue: #00335e;
 
 	--background-image-divider: url(../assets/img/divider.png);
 	--background-image-map-bg: url(../assets/img/grid.png);

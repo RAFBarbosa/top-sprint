@@ -28,23 +28,38 @@ export function useEnhancedCards(gridId: GridId) {
 
 		return cards
 			.map((card) => {
-				const driverFromData = data?.drivers?.find(
-					(driverFromData) =>
-						normalizeString(driverFromData.name) ===
-						normalizeString(card.name),
+				const driverFromData = data?.drivers?.find((d) =>
+					card.id
+						? d.id === card.id
+						: normalizeString(d.name) ===
+							normalizeString(card.name),
 				);
 
-				if (!driverFromData) return null;
+				if (!driverFromData)
+					return {
+						...card,
+						grid: "",
+						class: "",
+						photo: "",
+						teamName: "",
+						teamLogo: "",
+						teamColor: "",
+						stats: {},
+						badge: "",
+						badgeTitle: "",
+					};
 
-				const driverStats = stats.find(
-					(stat) =>
-						normalizeString(stat.name) ===
-						normalizeString(card.name),
+				const driverStats = stats.find((stat) =>
+					card.id
+						? stat.id === card.id
+						: normalizeString(stat.name) ===
+							normalizeString(card.name),
 				);
 
 				return {
 					...card,
 					id: driverFromData?.id || "",
+					name: driverFromData?.name || card.name,
 					stream: driverFromData?.stream || "",
 					grid: driverFromData?.grid || "",
 					class: driverFromData?.class || "",

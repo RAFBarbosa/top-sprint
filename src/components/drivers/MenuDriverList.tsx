@@ -66,8 +66,8 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 							className="border-b-1 border-r-1 rounded-br-lg py-2 flex justify-between items-center cursor-pointer transition-colors duration-200"
 							style={{
 								borderColor:
-									normalizeString(location.pathname) ===
-									normalizeString(`/pilotos/${driver.name}`)
+									location.pathname ===
+									`/pilotos/${driver.name.toLowerCase().replace(/\s+/g, "-")}`
 										? driver.teamColor
 										: "rgba(255, 255, 255, 0.5)",
 							}}
@@ -77,8 +77,8 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 							}}
 							onMouseLeave={(e) => {
 								if (
-									normalizeString(location.pathname) !==
-									normalizeString(`/pilotos/${driver.name}`)
+									location.pathname !==
+									`/pilotos/${driver.name.toLowerCase().replace(/\s+/g, "-")}`
 								) {
 									e.currentTarget.style.borderColor =
 										"rgba(255, 255, 255, 0.5)";
@@ -102,7 +102,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 												tenant.fallbackDriverPhoto
 											}
 											alt={driver.name}
-											className="w-full h-full object-cover border-1 border-transparent"
+											className="w-full h-full object-cover"
 										/>
 									) : (
 										<div
