@@ -1,5 +1,5 @@
 // src/config/grids.ts
-import { tenant } from "./tenants";
+import { tenant } from "../../shared/config/tenants";
 
 export type GridId = string;
 
