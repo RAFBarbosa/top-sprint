@@ -3,7 +3,7 @@ import useNavigateToDriver from "../hooks/useNavigateToDriver";
 import { normalizeString } from "../hooks/useNormalizeString";
 import { useTab } from "../../contexts/TabContext";
 import { getGridConfig } from "../config/grids";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 interface Driver {
 	id: string;
@@ -164,3 +164,4 @@ export function DriverCard({ driver }: DriverCardProps) {
 		</div>
 	);
 }
+

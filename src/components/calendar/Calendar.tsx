@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { addHours } from "date-fns";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 interface CalendarProps {
 	round: string;
@@ -244,3 +244,4 @@ export function Calendar(props: CalendarProps) {
 		</div>
 	);
 }
+

@@ -2,7 +2,7 @@ import { useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
 import { DriverCard } from "./DriverCard";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../config/grids";
 
 // Import Swiper components
@@ -155,3 +155,4 @@ export function Teams() {
 		</aside>
 	);
 }
+

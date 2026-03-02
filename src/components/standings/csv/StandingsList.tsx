@@ -11,7 +11,7 @@ import {
 	getGridClasses,
 	hasGridClasses,
 } from "../../config/grids";
-import { tenant } from "../../config/tenants";
+import { tenant } from "../../../shared/config/tenants";
 
 interface StandingsListProps {
 	title: string;
@@ -350,3 +350,4 @@ export function StandingsList(props: StandingsListProps) {
 		</>
 	);
 }
+

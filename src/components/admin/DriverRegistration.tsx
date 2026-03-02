@@ -29,7 +29,7 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 export function DriverRegistration() {
 	// State management
@@ -989,3 +989,4 @@ export function DriverRegistration() {
 		</div>
 	);
 }
+

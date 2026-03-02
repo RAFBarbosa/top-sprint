@@ -3,7 +3,7 @@ import Carousel from "../utils/Carousel";
 import { HallOfFame } from "./HallOfFame";
 import { useGetHallsOfFameQuery } from "../../graphql/generated";
 import { Divider } from "../layout/Divider";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 const loadingSkeleton = () => {
 	return (
@@ -123,3 +123,4 @@ export function HallsOfFame() {
 		</aside>
 	);
 }
+

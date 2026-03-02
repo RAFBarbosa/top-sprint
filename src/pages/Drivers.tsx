@@ -2,7 +2,7 @@ import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
 import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
-import { tenant } from "../components/config/tenants";
+import { tenant } from "../shared/config/tenants";
 
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
@@ -39,3 +39,4 @@ const Drivers: React.FC = () => {
 };
 
 export default Drivers;
+
