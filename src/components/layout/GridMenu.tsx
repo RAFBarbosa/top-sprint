@@ -2,8 +2,8 @@ import { useTab } from "../../contexts/TabContext";
 import { TabSwitch } from "../standings/csv/TabSwitch";
 import { Socials } from "../utils/Socials";
 import { useState } from "react";
-import { ArrowDropDown } from "@mui/icons-material";
-import { getGridConfig } from "../config/grids";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import { getGridConfig } from "../../shared/config/grids";
 
 export function GridMenu() {
 	const { activeTab, tabs, setActiveTab } = useTab();
@@ -33,13 +33,18 @@ export function GridMenu() {
 							onClick={() =>
 								setIsMobileDropdownOpen(!isMobileDropdownOpen)
 							}
+							aria-expanded={isMobileDropdownOpen}
+							aria-haspopup="listbox"
+							aria-label={`Selecionar grid, atual: ${activeTab.label}`}
 						>
 							<span>{activeTab.label}</span>
-							<ArrowDropDown fontSize="medium" />
+							<ArrowDropDown fontSize="medium" aria-hidden="true" />
 						</button>
 
 						{isMobileDropdownOpen && (
 							<div
+								role="listbox"
+								aria-label="Selecionar grid"
 								style={{
 									backgroundColor:
 										"var(--color-brand-nav-dropdown-bg)",
@@ -52,6 +57,8 @@ export function GridMenu() {
 										className="relative group"
 									>
 										<button
+											role="option"
+											aria-selected={activeTab.id === tab.id}
 											className={`w-full text-left px-3 py-2 text-base hover:bg-white/10 relative ${
 												activeTab.id === tab.id
 													? "bg-white/20"

@@ -1,8 +1,10 @@
 import React from "react";
-import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
-import { normalizeString } from "../hooks/useNormalizeString";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import { normalizeString } from "../../shared/utils/normalizeString";
 import { useLocation } from "react-router-dom";
 import { tenant } from "../../shared/config/tenants";
+import { HygraphImg } from "../utils/HygraphImg";
+import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 
 interface Driver {
 	id?: string;
@@ -13,14 +15,14 @@ interface Driver {
 }
 
 interface MenuDriverListProps {
-	gridName: string;
+	gridName?: string;
 	drivers: Driver[];
 	onDriverClick: (driverName: string) => void;
 	photoStyle?: "portrait" | "round";
 }
 
 const MenuDriverList: React.FC<MenuDriverListProps> = ({
-	gridName,
+	gridName = "",
 	drivers,
 	onDriverClick,
 	photoStyle,
@@ -85,6 +87,15 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 								}
 							}}
 							onClick={() => onDriverClick(driver.name)}
+							role="button"
+							tabIndex={0}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									onDriverClick(driver.name);
+								}
+							}}
+							aria-label={`Ver perfil de ${driver.name}`}
 						>
 							<div className="flex items-center">
 								<div
@@ -96,19 +107,21 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 									}}
 								>
 									{photoStyle === "round" ? (
-										<img
+										<HygraphImg
 											src={
 												driver.photo ||
 												tenant.fallbackDriverPhoto
 											}
 											alt={driver.name}
+											imgWidth={32}
+											imgHeight={32}
 											className="w-full h-full object-cover"
 										/>
 									) : (
 										<div
 											className="w-8 h-8 bg-cover transition-all scale-210 translate-y-[17px]"
 											style={{
-												backgroundImage: `url(${driver.photo})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo, 64)})`,
 											}}
 										/>
 									)}
@@ -137,7 +150,11 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 									)}
 								</span>
 							</div>
-							<MenuArrow fontSize="inherit" className="mr-2" />
+							<ArrowForwardIos
+								fontSize="inherit"
+								className="mr-2"
+								aria-hidden="true"
+							/>
 						</li>
 					);
 				})}
@@ -147,4 +164,3 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 };
 
 export default MenuDriverList;
-

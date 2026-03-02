@@ -106,6 +106,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 	return (
 		<button
 			onClick={handleShareImage}
+			aria-label={`Compartilhar card de ${data.name}`}
 			className="px-4 py-2 text-white rounded w-full md:w-auto mx-auto cursor-pointer border-2 hover:text-f1-text transition-colors duration-200 flex justify-center items-center gap-2"
 			style={{
 				backgroundColor: "var(--color-brand-primary)",
@@ -120,7 +121,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 			}}
 		>
 			<div className="text-xs uppercase font-semibold flex items-center gap-1">
-				<IosShareIcon fontSize="small" />
+				<IosShareIcon fontSize="small" aria-hidden="true" />
 				<span>Compartilhe esse card </span>{" "}
 			</div>
 		</button>
@@ -128,4 +129,3 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 };
 
 export default ShareButton;
-

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import useNavigateToDriver from "../hooks/useNavigateToDriver";
-import { normalizeString } from "../hooks/useNormalizeString";
+import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
+import { normalizeString } from "../../shared/utils/normalizeString";
 import { useTab } from "../../contexts/TabContext";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
+import { HygraphImg } from "../utils/HygraphImg";
 
 interface Driver {
 	id: string;
@@ -87,9 +88,18 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 	return (
 		<div
+			role="button"
+			tabIndex={0}
+			aria-label={`Ver perfil de ${driver.name}`}
 			className="rounded-lg md:shadow-md flex flex-col h-68 w-45 mx-auto cursor-pointer transition-all relative group mb-8 md:mb-0 overflow-hidden"
 			style={{ backgroundColor: driver.teamColor }}
 			onClick={handleDriverClick}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					handleDriverClick();
+				}
+			}}
 		>
 			<div
 				className="dot-pattern absolute inset-0 rounded-lg z-0 pointer-events-none opacity-10"
@@ -99,14 +109,16 @@ export function DriverCard({ driver }: DriverCardProps) {
 				}}
 			/>
 
-			<img
+			<HygraphImg
 				className={`h-22 object-cover absolute top-3 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg ${
 					!isRound
 						? "md:transition-all md:duration-200 md:group-hover:scale-95 md:group-hover:-translate-y-1"
 						: ""
 				}`}
 				src={driver.team?.photo?.url || tenant.logo.url}
-				alt={driver.team?.name}
+				alt={driver.team?.name ?? ""}
+				imgWidth={180}
+				fit="clip"
 			/>
 
 			{/* <div className="flex items-center justify-between p-4 relative z-10 text-white md:drop-shadow-lg">
@@ -129,9 +141,11 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 			{/* Foto do piloto */}
 			<div className="flex-1 flex items-center justify-center p-4 relative z-10">
-				<img
+				<HygraphImg
 					src={driver.photo?.url || tenant.fallbackDriverPhoto}
 					alt={driver.name}
+					imgWidth={140}
+					imgHeight={140}
 					className={`object-cover md:transition-all md:duration-200 md:group-hover:scale-106 absolute ${
 						isRound
 							? "w-35 h-35 rounded-full top-37 left-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-white/20"
@@ -164,4 +178,3 @@ export function DriverCard({ driver }: DriverCardProps) {
 		</div>
 	);
 }
-

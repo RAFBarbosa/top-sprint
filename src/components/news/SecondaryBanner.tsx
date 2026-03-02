@@ -1,4 +1,5 @@
 import GenericLogo from "/src/assets/img/white-logo.png";
+import { HygraphImg } from "../utils/HygraphImg";
 
 interface SecondaryBannerProps {
 	link: string;
@@ -34,10 +35,12 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 					</div>
 					<div className="overflow-hidden w-1/5 flex items-center justify-center">
 						<div className="w-full h-[110px] flex items-center justify-center overflow-hidden rounded">
-							<img
+							<HygraphImg
 								src={props.photo?.url || GenericLogo}
-								alt={`${props.title} photo`}
-								className="h-full w-auto rounded object-cover transform transition-transform duration-150 group-hover:scale-105" /* Changed to cover for portrait */
+								alt={props.content}
+								imgWidth={110}
+								imgHeight={110}
+								className="h-full w-auto rounded object-cover transform transition-transform duration-150 group-hover:scale-105"
 							/>
 						</div>
 					</div>

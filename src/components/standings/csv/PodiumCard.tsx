@@ -1,9 +1,14 @@
-import useNormalizeString from "../../hooks/useNormalizeString";
-import useNavigateToDriver from "../../hooks/useNavigateToDriver";
-import { usePositionDifference } from "../../hooks/usePositionDifference";
+import { normalizeString } from "../../../shared/utils/normalizeString";
+import useNavigateToDriver from "../../../shared/hooks/useNavigateToDriver";
+import { usePositionDifference } from "../../../shared/hooks/usePositionDifference";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import { getGridConfig, getGridColors, GridId } from "../../config/grids";
+import {
+	getGridConfig,
+	getGridColors,
+	GridId,
+} from "../../../shared/config/grids";
 import { tenant } from "../../../shared/config/tenants";
+import { HygraphImg } from "../../utils/HygraphImg";
 
 interface PodiumCardProps {
 	position: number;
@@ -38,7 +43,7 @@ export function PodiumCard(props: PodiumCardProps) {
 	const navigateToDriver = useNavigateToDriver();
 
 	const handleDriverClick = () => {
-		isDrivers && navigateToDriver(useNormalizeString(props.name));
+		isDrivers && navigateToDriver(normalizeString(props.name));
 	};
 
 	const positionDifference = usePositionDifference(
@@ -92,6 +97,19 @@ export function PodiumCard(props: PodiumCardProps) {
 	return (
 		<div
 			onClick={handleDriverClick}
+			role={isDrivers ? "button" : undefined}
+			tabIndex={isDrivers ? 0 : undefined}
+			onKeyDown={
+				isDrivers
+					? (e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								handleDriverClick();
+							}
+						}
+					: undefined
+			}
+			aria-label={isDrivers ? `Ver perfil de ${props.name}` : undefined}
 			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl ${
 				isDrivers
 					? "hover:-translate-y-1 cursor-pointer h-[280px] transition-translate duration-200"
@@ -165,9 +183,11 @@ export function PodiumCard(props: PodiumCardProps) {
 							: "w-[134px] h-[134px] bottom-[104px] right-2"
 					}`}
 				>
-					<img
+					<HygraphImg
 						src={props.photo || tenant.fallbackDriverPhoto}
-						alt={`${props.name} foto`}
+						alt={`${props.name}`}
+						imgWidth={props.position === 1 ? 160 : 134}
+						imgHeight={props.position === 1 ? 160 : 134}
 						className="w-full h-full object-cover"
 					/>
 				</div>
@@ -179,17 +199,22 @@ export function PodiumCard(props: PodiumCardProps) {
 							: "w-[180px] h-[230px]"
 					}`}
 				>
-					<img
+					<HygraphImg
 						src={props.photo || tenant.fallbackDriverPhoto}
-						alt={`${props.name} foto`}
+						alt={`${props.name}`}
+						imgWidth={props.position === 1 ? 200 : 180}
+						imgHeight={props.position === 1 ? 260 : 230}
 						className="w-full h-full object-cover object-top"
 					/>
 				</div>
 			) : (
 				<div className="absolute top-0 left-0 right-0 bottom-[90px] flex items-center justify-center">
-					<img
+					<HygraphImg
 						src={props.teamLogo || props.photo || tenant.logo.url}
 						alt={`${props.name} logo`}
+						imgWidth={150}
+						imgHeight={150}
+						fit="clip"
 						className="w-[150px] h-[150px] object-contain"
 					/>
 				</div>
@@ -244,4 +269,3 @@ export function PodiumCard(props: PodiumCardProps) {
 		</div>
 	);
 }
-

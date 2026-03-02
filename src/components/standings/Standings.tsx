@@ -3,7 +3,7 @@ import { useGetTeamsQuery } from "../../graphql/generated";
 import DataLoader from "./csv/DataLoader";
 import { useState } from "react";
 import { useTab } from "../../contexts/TabContext";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig } from "../../shared/config/grids";
 
 const loadingSkeleton = () => {
 	return (
@@ -66,6 +66,7 @@ export function Standings() {
 
 			<div className="px-3 w-full md:max-w-screen-xl mx-auto z-10">
 				<div
+					aria-busy={isTabLoading}
 					className={`transition-opacity duration-300 md:min-h-full min-h-full ${
 						isTabLoading ? "opacity-50" : "opacity-100"
 					}`}
@@ -76,7 +77,11 @@ export function Standings() {
 					/>
 				</div>
 				{isTabLoading && (
-					<div className="absolute inset-0 flex items-center justify-center">
+					<div
+						className="absolute inset-0 flex items-center justify-center"
+						role="status"
+						aria-label="Carregando classificação..."
+					>
 						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
 					</div>
 				)}

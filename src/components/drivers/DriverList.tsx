@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { normalizeString } from "../hooks/useNormalizeString";
+import { normalizeString } from "../../shared/utils/normalizeString";
 import { tenant } from "../../shared/config/tenants";
+import { HygraphImg } from "../utils/HygraphImg";
+import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 
 interface DriverListProps {
 	gridName: string;
@@ -63,19 +65,21 @@ export const DriverList: React.FC<DriverListProps> = ({
 									}}
 								>
 									{tenant.defaultPhotoStyle === "round" ? (
-										<img
+										<HygraphImg
 											src={
 												driver.photo ||
 												tenant.fallbackDriverPhoto
 											}
 											alt={driver.name}
+											imgWidth={64}
+											imgHeight={64}
 											className="w-16 h-16 rounded-full object-cover transition-all duration-200 group-hover:scale-110"
 										/>
 									) : (
 										<div
 											className="w-16 h-16 scale-150 rounded-full bg-cover transition-all translate-y-[20px] duration-200 group-hover:scale-170"
 											style={{
-												backgroundImage: `url(${driver.photo || tenant.fallbackDriverPhoto})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 128)})`,
 											}}
 										/>
 									)}
@@ -128,4 +132,3 @@ export const DriverList: React.FC<DriverListProps> = ({
 };
 
 export default DriverList;
-

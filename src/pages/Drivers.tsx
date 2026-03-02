@@ -1,4 +1,4 @@
-import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
+import { useEnhancedCards } from "../shared/hooks/useEnhancedCards";
 import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";

@@ -1,6 +1,6 @@
 import { useTab } from "../../../contexts/TabContext";
 import React from "react";
-import { getGridConfig } from "../../config/grids";
+import { getGridConfig } from "../../../shared/config/grids";
 
 interface TabSwitchProps {
 	textColor?: string;

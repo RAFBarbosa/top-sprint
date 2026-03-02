@@ -6,7 +6,7 @@ import { Footer } from "./components/layout/Footer";
 import { Router } from "./Router";
 import { Analytics } from "@vercel/analytics/react";
 import { TabProvider } from "./contexts/TabContext";
-import { tenant } from "./components/config/tenants";
+import { tenant } from "./shared/config/tenants";
 
 function App() {
 	const style = Object.fromEntries(

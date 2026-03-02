@@ -3,7 +3,7 @@ import { useMemo } from "react";
 export function usePositionDifference(
 	newData: { name: string }[],
 	oldData: { name: string }[],
-	itemName: string
+	itemName: string,
 ): number {
 	return useMemo(() => {
 		if (!newData || !oldData) return 0;

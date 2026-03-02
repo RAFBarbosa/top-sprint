@@ -1,7 +1,7 @@
 import { useTab } from "../../contexts/TabContext";
 import Watch from "/src/assets/img/casio.png";
-import { getGridConfig } from "../config/grids";
-import { GridId } from "../config/grids";
+import { getGridConfig } from "../../shared/config/grids";
+import { GridId } from "../../shared/config/grids";
 
 interface CountdownRendererProps {
 	days: number;
@@ -37,7 +37,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 						</div>
 					</div>
 					<div className="w-[90px] h-auto mr-1">
-						<img src={Watch} alt="Relogio" />
+						<img src={Watch} alt="Relógio" aria-hidden="true" />
 					</div>
 				</div>
 			</a>
@@ -94,7 +94,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 				</div>
 			</div>
 			<div className="w-[90px] h-auto mr-1">
-				<img src={Watch} alt="Relogio" />
+				<img src={Watch} alt="Relógio" aria-hidden="true" />
 			</div>
 		</div>
 	);

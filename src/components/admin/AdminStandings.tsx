@@ -10,7 +10,7 @@ import {
 	getGridConfig,
 	getGridClasses,
 	hasGridClasses,
-} from "../config/grids";
+} from "../../shared/config/grids";
 
 interface AdminStandingsProps {
 	title: string;

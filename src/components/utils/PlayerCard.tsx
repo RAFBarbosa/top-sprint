@@ -1,7 +1,8 @@
 import { forwardRef } from "react";
+import { HygraphImg } from "./HygraphImg";
 import bgCard from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
 import bgCardChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
-import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
+import DoubleArrowOutlined from "@mui/icons-material/DoubleArrowOutlined";
 import { Tooltip } from "react-tooltip";
 import { tenant } from "../../shared/config/tenants";
 
@@ -111,16 +112,20 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 										?.cardBackground ?? // grid default
 									bgCard) // ultimate fallback
 						}
-						alt="Background"
+						alt=""
+						aria-hidden="true"
 					/>
 
 					{data.badge.length > 0 && (
 						<div className="absolute top-13 left-32 z-30 flex gap-1">
 							{data.badge.map((badge, index) => (
 								<div key={index} className="relative">
-									<img
+									<HygraphImg
 										src={badge.url}
 										alt={`Badge ${index + 1}`}
+										imgWidth={48}
+										imgHeight={48}
+										fit="clip"
 										data-tooltip-id="badge-tooltip"
 										data-tooltip-content={formatBadgeTitle(
 											data.badgeTitle.toString(),
@@ -163,13 +168,14 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 												: "text-red-500"
 										}
 									>
-										<MenuArrow
+										<DoubleArrowOutlined
 											className={
 												data.rating > data.prevRating
 													? "rotate-270"
 													: "rotate-90"
 											}
 											fontSize="medium"
+											aria-hidden="true"
 										/>
 									</span>
 								)}
@@ -217,18 +223,22 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 					{tenant.defaultPhotoStyle === "round" ? (
 						<div className="absolute z-20 top-3 right-3 w-[168px] h-[168px] rounded-full overflow-hidden border-4 border-f1-carbon/50">
-							<img
+							<HygraphImg
 								className="w-full h-full object-cover"
 								src={data.photo || tenant.fallbackDriverPhoto}
-								alt={`${data.name}'s photo`}
+								alt={data.name}
+								imgWidth={168}
+								imgHeight={168}
 							/>
 						</div>
 					) : (
 						<div className="absolute z-20 top-0 right-0 h-[330px] w-auto overflow-hidden">
-							<img
+							<HygraphImg
 								className="w-[280px] h-[330px] object-cover object-top translate-y-[10px] translate-x-[70px]"
 								src={data.photo || tenant.fallbackDriverPhoto}
-								alt={`${data.name}'s photo`}
+								alt={data.name}
+								imgWidth={280}
+								imgHeight={330}
 							/>
 						</div>
 					)}
@@ -313,20 +323,26 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 											{data.teamName}
 										</p>
 										{data.teamLogo && (
-											<img
+											<HygraphImg
 												className="h-5 w-auto object-contain"
 												src={data.teamLogo}
 												alt={`${data.teamName} logo`}
+												imgWidth={80}
+												imgHeight={20}
+												fit="clip"
 											/>
 										)}
 									</>
 								)}
 							</div>
 
-							<img
+							<HygraphImg
 								className="h-[30px] w-auto object-contain"
 								src={tenant.logo.url}
 								alt={`${tenant.name} Logo`}
+								imgWidth={80}
+								imgHeight={30}
+								fit="clip"
 							/>
 						</div>
 					</div>
@@ -341,4 +357,3 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 );
 
 export default PlayerCard;
-

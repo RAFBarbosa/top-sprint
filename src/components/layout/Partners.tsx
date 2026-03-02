@@ -1,4 +1,5 @@
 import { useGetPartnersQuery } from "../../graphql/generated";
+import { HygraphImg } from "../utils/HygraphImg";
 
 export function Partners() {
 	const { data } = useGetPartnersQuery();
@@ -21,12 +22,15 @@ export function Partners() {
 							rel="noopener noreferrer"
 							className="flex items-center justify-center w-38 p-2 hover:bg-f1-silver rounded-2xl"
 						>
-							<img
+							<HygraphImg
 								src={
 									partner.footerLogo?.url ||
 									partner.image?.url
 								}
 								alt={partner.altText || partner.name}
+								imgWidth={152}
+								imgHeight={80}
+								fit="clip"
 								className="max-h-full max-w-full object-contain rounded-lg p-1"
 							/>
 						</a>

@@ -15,7 +15,7 @@ import {
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import ptBR from "date-fns/locale/pt-BR";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
 	Dialog,

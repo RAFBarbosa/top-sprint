@@ -1,4 +1,4 @@
-import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 
 interface ShowAllButtonProps {
 	showAll: boolean;
@@ -21,7 +21,7 @@ export function ShowAllButton({
 			>
 				<div className="text-xs uppercase font-semibold flex items-center gap-2">
 					{showAll ? "Ver Top 10" : "Ver Classificação Completa"}
-					<MenuArrow
+					<ArrowForwardIos
 						fontSize="inherit"
 						className={`transition-transform duration-300 ${
 							showAll ? "-rotate-90" : "rotate-90"

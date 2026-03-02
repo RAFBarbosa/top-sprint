@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/Home";
-import { Rules } from "./pages/TopSprintRules";
 import { Profile } from "./pages/Profile";
 import { Champions } from "./pages/Champions";
 import Drivers from "./pages/Drivers";

@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { StandingsList } from "./StandingsList";
-import useCsvLoader from "../../hooks/useCsvLoader";
+import useCsvLoader from "../../../shared/hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
 import { useLocation } from "react-router-dom";
 import { AdminStandings } from "../../admin/AdminStandings";
-import { GridId } from "../../config/grids";
-import { getGridConfig } from "../../config/grids";
+import { GridId } from "../../../shared/config/grids";
+import { getGridConfig } from "../../../shared/config/grids";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;

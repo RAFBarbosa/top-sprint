@@ -1,5 +1,5 @@
 import { PodiumCard } from "./PodiumCard";
-import { GridId } from "../../config/grids"; // Import GridId for type safety
+import { GridId } from "../../../shared/config/grids"; // Import GridId for type safety
 
 interface PodiumProps {
 	grid?: GridId;
