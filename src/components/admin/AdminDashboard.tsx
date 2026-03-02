@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../auth/firebase";
 import Sidebar from "./Sidebar";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 export function AdminDashboard() {
 	const navigate = useNavigate();
@@ -55,3 +55,4 @@ export function AdminDashboard() {
 		</div>
 	);
 }
+

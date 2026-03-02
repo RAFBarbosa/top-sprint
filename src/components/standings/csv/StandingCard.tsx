@@ -3,7 +3,7 @@ import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import useNormalizeString from "../../hooks/useNormalizeString";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
 import { GridId, getGridConfig, getGridColors } from "../../config/grids";
-import { tenant } from "../../config/tenants";
+import { tenant } from "../../../shared/config/tenants";
 
 interface StandingCardProps {
 	position: number;
@@ -322,3 +322,4 @@ export function StandingCard(props: StandingCardProps) {
 		</button>
 	);
 }
+

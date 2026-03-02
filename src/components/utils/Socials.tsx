@@ -1,5 +1,5 @@
 import { SocialIcon } from "react-social-icons";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 const { socials } = tenant;
 
@@ -59,3 +59,4 @@ export function Socials() {
 		</div>
 	);
 }
+

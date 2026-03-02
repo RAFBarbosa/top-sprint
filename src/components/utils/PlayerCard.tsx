@@ -3,7 +3,7 @@ import bgCard from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
 import bgCardChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
 import { DoubleArrowOutlined as MenuArrow } from "@mui/icons-material";
 import { Tooltip } from "react-tooltip";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 interface PlayerCardProps {
 	data: {
@@ -341,3 +341,4 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 );
 
 export default PlayerCard;
+

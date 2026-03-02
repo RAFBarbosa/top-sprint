@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import IosShareIcon from "@mui/icons-material/IosShare";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 interface ShareButtonProps {
 	cardRef: React.RefObject<HTMLDivElement>;
@@ -128,3 +128,4 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 };
 
 export default ShareButton;
+

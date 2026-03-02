@@ -2,7 +2,7 @@ import { Menu } from "./Menu";
 import { NextRaces } from "../countdown/NextRaces";
 import { useLocation } from "react-router-dom";
 import { GridMenu } from "./GridMenu";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 export function Header() {
 	const location = useLocation();
@@ -32,3 +32,4 @@ export function Header() {
 		</header>
 	);
 }
+

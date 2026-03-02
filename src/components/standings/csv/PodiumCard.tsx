@@ -3,7 +3,7 @@ import useNavigateToDriver from "../../hooks/useNavigateToDriver";
 import { usePositionDifference } from "../../hooks/usePositionDifference";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import { getGridConfig, getGridColors, GridId } from "../../config/grids";
-import { tenant } from "../../config/tenants";
+import { tenant } from "../../../shared/config/tenants";
 
 interface PodiumCardProps {
 	position: number;
@@ -244,3 +244,4 @@ export function PodiumCard(props: PodiumCardProps) {
 		</div>
 	);
 }
+

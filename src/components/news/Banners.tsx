@@ -2,7 +2,7 @@ import { useGetBannersQuery } from "../../graphql/generated";
 import { Banner } from "./Banner";
 import { SecondaryBanners } from "./SecondaryBanners";
 import { Skeleton } from "@mui/material";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 const loadingSkeleton = () => {
 	return (
@@ -85,3 +85,4 @@ export function Banners() {
 		</div>
 	);
 }
+

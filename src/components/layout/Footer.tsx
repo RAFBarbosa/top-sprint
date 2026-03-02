@@ -4,7 +4,7 @@ import { Partners } from "./Partners";
 import { Link, useLocation } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import { Socials } from "../utils/Socials";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 import PoweredBy from "../utils/PoweredBy";
 
 export function Footer() {
@@ -61,3 +61,4 @@ export function Footer() {
 		</footer>
 	);
 }
+

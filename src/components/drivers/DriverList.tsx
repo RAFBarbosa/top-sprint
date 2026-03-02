@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { normalizeString } from "../hooks/useNormalizeString";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 interface DriverListProps {
 	gridName: string;
@@ -128,3 +128,4 @@ export const DriverList: React.FC<DriverListProps> = ({
 };
 
 export default DriverList;
+

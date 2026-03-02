@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { normalizeString } from "../hooks/useNormalizeString";
 import { useLocation } from "react-router-dom";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 interface Driver {
 	id?: string;
@@ -147,3 +147,4 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 };
 
 export default MenuDriverList;
+

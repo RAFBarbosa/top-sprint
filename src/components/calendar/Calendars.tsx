@@ -1,5 +1,5 @@
 import { useGetCalendarsQuery } from "../../graphql/generated";
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../config/grids";
 import { Calendar } from "./Calendar";
 import { Skeleton } from "@mui/material";
@@ -146,3 +146,4 @@ export function Calendars() {
 		</aside>
 	);
 }
+

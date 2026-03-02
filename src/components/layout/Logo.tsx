@@ -1,4 +1,4 @@
-import { tenant } from "../config/tenants";
+import { tenant } from "../../shared/config/tenants";
 
 export function Logo() {
 	return (
@@ -9,3 +9,4 @@ export function Logo() {
 		/>
 	);
 }
+
