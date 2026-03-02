@@ -3,7 +3,7 @@ import { DriverCard } from "./DriverCard";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
 import { tenant } from "../../shared/config/tenants";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig } from "../../shared/config/grids";
 
 // Import Swiper components
 import { Swiper, SwiperSlide } from "swiper/react";

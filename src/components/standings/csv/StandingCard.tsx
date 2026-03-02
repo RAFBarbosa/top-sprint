@@ -1,9 +1,14 @@
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
-import useNavigateToDriver from "../../hooks/useNavigateToDriver";
-import useNormalizeString from "../../hooks/useNormalizeString";
-import { usePositionDifference } from "../../hooks/usePositionDifference";
-import { GridId, getGridConfig, getGridColors } from "../../config/grids";
+import useNavigateToDriver from "../../../shared/hooks/useNavigateToDriver";
+import { normalizeString } from "../../../shared/utils/normalizeString";
+import { usePositionDifference } from "../../../shared/hooks/usePositionDifference";
+import {
+	GridId,
+	getGridConfig,
+	getGridColors,
+} from "../../../shared/config/grids";
 import { tenant } from "../../../shared/config/tenants";
+import { HygraphImg } from "../../utils/HygraphImg";
 
 interface StandingCardProps {
 	position: number;
@@ -59,7 +64,7 @@ export function StandingCard(props: StandingCardProps) {
 
 	const handleCardClick = () => {
 		if (isDrivers) {
-			navigateToDriver(useNormalizeString(props.name));
+			navigateToDriver(normalizeString(props.name));
 		}
 	};
 
@@ -142,6 +147,7 @@ export function StandingCard(props: StandingCardProps) {
 	return (
 		<button
 			onClick={handleCardClick}
+			aria-label={isDrivers ? `Ver perfil de ${props.name}` : props.name}
 			className={`tracking-wide overflow-hidden w-full group ${
 				isDrivers ? "md:cursor-pointer" : ""
 			}`}
@@ -195,7 +201,7 @@ export function StandingCard(props: StandingCardProps) {
 							{displayInfo.secondaryName && (
 								<span
 									className={`font-bold md:ml-1
-										${isDrivers ? "uppercase" : "ml-1"} 
+										${isDrivers ? "uppercase" : "ml-1"}
 										${!props.isActive && "ml-1"}`}
 								>
 									{displayInfo.secondaryName}
@@ -241,24 +247,32 @@ export function StandingCard(props: StandingCardProps) {
 						<div className="relative w-full h-full">
 							{props.photoStyle === "round" && isDrivers ? (
 								<div className="w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-white/20 absolute right-4 top-1/2 transform -translate-y-1/2">
-									<img
+									<HygraphImg
 										src={
 											props.photo ||
 											tenant.fallbackDriverPhoto
 										}
 										alt={props.name}
+										imgWidth={120}
+										imgHeight={120}
 										className="w-full h-full object-cover"
 									/>
 								</div>
 							) : (
-								<img
+								<HygraphImg
 									src={
 										isDrivers
 											? props.photo ||
 												tenant.fallbackDriverPhoto
 											: props.teamLogo || tenant.logo.url
 									}
-									alt={`${props.name} foto`}
+									alt={
+										isDrivers
+											? props.name
+											: `${props.name} logo`
+									}
+									imgWidth={200}
+									fit={isDrivers ? "crop" : "clip"}
 									style={{
 										objectFit: isDrivers
 											? "cover"
@@ -279,41 +293,38 @@ export function StandingCard(props: StandingCardProps) {
 					isDrivers && (
 						<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10">
 							<div className="relative w-full h-full hidden md:block">
-								<img
-									src={
-										props.photo ||
-										tenant.fallbackDriverPhoto
-									}
-									alt={`${props.name} foto`}
-									className={
-										props.photoStyle === "round"
-											? "border-2 rounded-full border-f1-carbon/20"
-											: ""
-									}
-									style={{
-										objectFit: "cover",
-										width: isDrivers ? "auto" : "100%",
-										height:
-											props.photoStyle === "round"
-												? isDrivers
-													? "280%"
-													: "140%"
-												: isDrivers
-													? "280%"
-													: "140%",
-										maxWidth: "100%",
-										maxHeight:
-											props.photoStyle === "round"
-												? "100%"
-												: "350%",
-										transform:
-											props.photoStyle === "round"
-												? "translateY(0%) translateX(-280%)"
-												: isDrivers
-													? "translateY(-3%) translateX(-62%)"
-													: "translateY(0%) translateX(-15%)",
-									}}
-								/>
+								{props.photoStyle === "round" ? (
+									<div className="w-[50px] h-[50px] rounded-full overflow-hidden border-2 border-f1-carbon/20 absolute right-36 top-1/2 -translate-y-1/2">
+										<HygraphImg
+											src={
+												props.photo ||
+												tenant.fallbackDriverPhoto
+											}
+											alt={props.name}
+											imgWidth={50}
+											imgHeight={50}
+											className="w-full h-full object-cover"
+										/>
+									</div>
+								) : (
+									<HygraphImg
+										src={
+											props.photo ||
+											tenant.fallbackDriverPhoto
+										}
+										alt={props.name}
+										imgWidth={200}
+										style={{
+											objectFit: "cover",
+											width: "auto",
+											height: "280%",
+											maxWidth: "100%",
+											maxHeight: "350%",
+											transform:
+												"translateY(-3%) translateX(-62%)",
+										}}
+									/>
+								)}
 							</div>
 						</div>
 					)
@@ -322,4 +333,3 @@ export function StandingCard(props: StandingCardProps) {
 		</button>
 	);
 }
-

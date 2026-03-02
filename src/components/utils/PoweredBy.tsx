@@ -1,3 +1,5 @@
+import { HygraphImg } from "./HygraphImg";
+
 interface SignatureProps {
 	side?: string;
 }
@@ -20,9 +22,11 @@ export function PoweredBy(props: SignatureProps) {
 				<div className="overflow-hidden font-light self-end translate-y-[-1px]">
 					<p className="text-xs">Powered By</p>
 				</div>
-				<img
+				<HygraphImg
 					src={signature.imageUrl}
 					alt={signature.name}
+					imgWidth={24}
+					imgHeight={24}
 					className="w-6 h-auto rounded-full"
 				/>
 			</div>

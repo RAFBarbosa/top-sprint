@@ -1,3 +1,5 @@
+import { HygraphImg } from "../utils/HygraphImg";
+
 interface BannerProps {
 	link: string;
 	category: string;
@@ -25,9 +27,10 @@ export function Banner(props: BannerProps) {
 						{props.content}
 					</div>
 					<div className="overflow-hidden">
-						<img
+						<HygraphImg
 							src={props.photo?.url}
-							alt={`${props.photo} photo`}
+							alt={props.content}
+							imgWidth={600}
 							className="shadow-lg w-full transform transition-transform duration-150 group-hover:scale-110"
 						/>
 					</div>

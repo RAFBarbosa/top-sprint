@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
-import {
-	Menu as MenuIcon,
-	Close as CloseIcon,
-	ArrowForwardIos as MenuArrow,
-	OpenInNew as ExternalIcon,
-} from "@mui/icons-material";
-import { useEnhancedCards } from "../hooks/useEnhancedCards";
-import useNavigateToDriver from "../hooks/useNavigateToDriver";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import OpenInNew from "@mui/icons-material/OpenInNew";
+import { useEnhancedCards } from "../../shared/hooks/useEnhancedCards";
+import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
 import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
-import { tenant } from "../config/tenants";
-import { normalizeString } from "../hooks/useNormalizeString";
+import { tenant } from "../../shared/config/tenants";
+import { normalizeString } from "../../shared/utils/normalizeString";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -106,11 +104,14 @@ export function Menu() {
 		>
 			<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10">
 				{/* Logo */}
-				<button className="h-[40px] md:h-[50px] z-50 ml-3 md:ml-0">
-					<Link to="/" onClick={handleLinkClick}>
-						<Logo />
-					</Link>
-				</button>
+				<Link
+					to="/"
+					onClick={handleLinkClick}
+					aria-label="Ir para a página inicial"
+					className="h-[40px] md:h-[50px] z-50 ml-3 md:ml-0 flex items-center"
+				>
+					<Logo />
+				</Link>
 
 				{/* Mobile — grid switcher + hamburger */}
 				{tenant.grids.length > 1 && (
@@ -122,11 +123,12 @@ export function Menu() {
 					className="text-3xl md:hidden z-50 w-[40px] h-[50px] mr-3"
 					onClick={() => setIsOpen(!isOpen)}
 					aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+					aria-expanded={isOpen}
 				>
 					{isOpen ? (
-						<CloseIcon fontSize="large" />
+						<CloseIcon fontSize="large" aria-hidden="true" />
 					) : (
-						<MenuIcon fontSize="large" />
+						<MenuIcon fontSize="large" aria-hidden="true" />
 					)}
 				</button>
 
@@ -158,11 +160,15 @@ export function Menu() {
 										href={item.id}
 										target="_blank"
 										rel="noopener noreferrer"
+										aria-label={`${item.label} (abre em nova janela)`}
 										className="text-lg w-full flex justify-between items-center py-2 px-2"
 										onClick={handleLinkClick}
 									>
 										<span>{item.label}</span>
-										<ExternalIcon fontSize="small" />
+										<OpenInNew
+											fontSize="small"
+											aria-hidden="true"
+										/>
 									</a>
 								) : (
 									<Link
@@ -171,7 +177,10 @@ export function Menu() {
 										onClick={handleLinkClick}
 									>
 										<span>{item.label}</span>
-										<MenuArrow fontSize="small" />
+										<ArrowForwardIos
+											fontSize="small"
+											aria-hidden="true"
+										/>
 									</Link>
 								)}
 							</li>
@@ -188,6 +197,7 @@ export function Menu() {
 									href={item.id}
 									target="_blank"
 									rel="noopener noreferrer"
+									aria-label={`${item.label} (abre em nova janela)`}
 									className={`text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300`}
 								>
 									{item.label}
@@ -205,9 +215,10 @@ export function Menu() {
 										className="text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 cursor-pointer"
 									>
 										<span>{item.label}</span>
-										<MenuArrow
+										<ArrowForwardIos
 											className="ml-2 rotate-90"
 											fontSize="small"
+											aria-hidden="true"
 										/>
 									</button>
 

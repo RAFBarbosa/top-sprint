@@ -21,7 +21,7 @@ import {
 	getGridClasses,
 	GridId,
 	getGridConfig,
-} from "../config/grids";
+} from "../../shared/config/grids";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
 	Dialog,

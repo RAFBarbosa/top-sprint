@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { GRIDS, GridId } from "../components/config/grids";
+import { GRIDS, GridId } from "../shared/config/grids";
 
 type TabType = {
 	id: GridId;

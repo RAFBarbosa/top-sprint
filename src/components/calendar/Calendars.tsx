@@ -1,6 +1,6 @@
 import { useGetCalendarsQuery } from "../../graphql/generated";
 import { tenant } from "../../shared/config/tenants";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig } from "../../shared/config/grids";
 import { Calendar } from "./Calendar";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";

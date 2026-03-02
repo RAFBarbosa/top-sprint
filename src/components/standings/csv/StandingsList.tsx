@@ -10,7 +10,7 @@ import {
 	getGridConfig,
 	getGridClasses,
 	hasGridClasses,
-} from "../../config/grids";
+} from "../../../shared/config/grids";
 import { tenant } from "../../../shared/config/tenants";
 
 interface StandingsListProps {

@@ -1,5 +1,6 @@
 import { Skeleton } from "@mui/material";
 import { useState } from "react";
+import { HygraphImg } from "../utils/HygraphImg";
 
 interface HallOfFameProps {
 	season: string;
@@ -27,9 +28,10 @@ export function HallOfFame(props: HallOfFameProps) {
 					className="absolute top-0 left-0"
 				/>
 			)}
-			<img
+			<HygraphImg
 				src={props.photo.url}
 				alt={`${props.season} photo`}
+				imgWidth={600}
 				className={`w-full h-auto object-contain rounded-lg shadow-lg transition-opacity duration-500 ${
 					loading ? "opacity-0" : "opacity-100"
 				}`}

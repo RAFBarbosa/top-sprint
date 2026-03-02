@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import PlayerCard from "../components/utils/PlayerCard";
 import ShareButton from "../components/utils/ShareButton";
-import { useEnhancedCards } from "../components/hooks/useEnhancedCards";
+import { useEnhancedCards } from "../shared/hooks/useEnhancedCards";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
-import { normalizeString } from "../components/hooks/useNormalizeString";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import { normalizeString } from "../shared/utils/normalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
+import { HygraphImg } from "../components/utils/HygraphImg";
+import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
@@ -72,6 +74,11 @@ export function Profile() {
 								disabled={
 									currentIndex === null || currentIndex === 0
 								}
+								aria-label={
+									currentIndex !== null && currentIndex > 0
+										? `Piloto anterior: ${filteredDrivers[currentIndex - 1].name}`
+										: "Piloto anterior"
+								}
 								className={`bg-f1-lightSilver text-f1-text font-bold px-2 rounded-l border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
 									currentIndex === null || currentIndex === 0
 										? "opacity-50 cursor-not-allowed"
@@ -89,12 +96,12 @@ export function Profile() {
 								<div className="pt-2 flex items-center justify-around">
 									<p className="text-sm uppercase space-y-2 flex flex-col items-center">
 										<span>Anterior</span>
-										<MenuArrow className="rotate-180" />
+										<ArrowForwardIos className="rotate-180" aria-hidden="true" />
 									</p>
 									<div className="flex items-center">
 										{tenant.defaultPhotoStyle ===
 										"round" ? (
-											<img
+											<HygraphImg
 												src={
 													currentIndex > 0
 														? filteredDrivers[
@@ -103,21 +110,29 @@ export function Profile() {
 															tenant.fallbackDriverPhoto
 														: tenant.fallbackDriverPhoto
 												}
+												alt={
+													currentIndex > 0
+														? filteredDrivers[currentIndex - 1].name
+														: ""
+												}
+												imgWidth={80}
+												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
 										) : (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
 												style={{
-													backgroundImage: `url(${
+													backgroundImage: `url(${resizeHygraphUrl(
 														currentIndex > 0
 															? filteredDrivers[
 																	currentIndex -
 																		1
 																].photo ||
 																tenant.fallbackDriverPhoto
-															: tenant.fallbackDriverPhoto
-													})`,
+															: tenant.fallbackDriverPhoto,
+														88,
+													)})`,
 												}}
 											/>
 										)}
@@ -129,6 +144,12 @@ export function Profile() {
 								disabled={
 									currentIndex === null ||
 									currentIndex === filteredDrivers.length - 1
+								}
+								aria-label={
+									currentIndex !== null &&
+									currentIndex < filteredDrivers.length - 1
+										? `Próximo piloto: ${filteredDrivers[currentIndex + 1].name}`
+										: "Próximo piloto"
 								}
 								className={`bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
 									currentIndex === null ||
@@ -150,32 +171,36 @@ export function Profile() {
 									<div className="flex items-center">
 										{tenant.defaultPhotoStyle ===
 										"round" ? (
-											<img
+											<HygraphImg
 												src={
 													filteredDrivers[
 														currentIndex + 1
 													]?.photo ||
 													tenant.fallbackDriverPhoto
 												}
+												alt={filteredDrivers[currentIndex + 1]?.name ?? ""}
+												imgWidth={80}
+												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
 										) : (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
 												style={{
-													backgroundImage: `url(${
+													backgroundImage: `url(${resizeHygraphUrl(
 														filteredDrivers[
 															currentIndex + 1
 														]?.photo ||
-														tenant.fallbackDriverPhoto
-													})`,
+															tenant.fallbackDriverPhoto,
+														88,
+													)})`,
 												}}
 											/>
 										)}
 									</div>
 									<p className="text-sm tracking uppercase space-y-2 flex flex-col items-center">
 										<span>Próximo</span>
-										<MenuArrow />
+										<ArrowForwardIos aria-hidden="true" />
 									</p>
 								</div>
 							</button>
@@ -324,6 +349,8 @@ export function Profile() {
 										<a
 											href={`${driverData.stream}`}
 											target="_blank"
+											rel="noopener noreferrer"
+											aria-label={`Assistir stream de ${driverData.name} (abre em nova janela)`}
 											style={{
 												color: "var(--color-brand-primary)",
 											}}
@@ -333,7 +360,7 @@ export function Profile() {
 												<p className="font-bold">
 													Stream
 												</p>
-												<LiveTvIcon fontSize="small" />
+												<LiveTvIcon fontSize="small" aria-hidden="true" />
 											</div>
 										</a>
 									)}

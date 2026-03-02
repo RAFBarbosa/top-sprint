@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import ptBR from "date-fns/locale/pt-BR";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { addHours } from "date-fns";
 import { Link } from "react-router-dom";
+import { HygraphImg } from "../utils/HygraphImg";
 
 interface RoundProps {
 	round: string;
@@ -109,7 +110,7 @@ export function Round(props: RoundProps) {
 										isFutureDate && "hidden"
 									}`}
 								>
-									<MenuArrow
+									<ArrowForwardIos
 										className="text-f1-red p-[2px] ml-1 translate-y-[-1px]"
 										fontSize="small"
 									/>
@@ -123,9 +124,12 @@ export function Round(props: RoundProps) {
 						)}
 					</div>
 
-					<img
+					<HygraphImg
 						src={props.flag?.url}
 						alt={`${props.track} flag`}
+						imgWidth={46}
+						imgHeight={30}
+						fit="clip"
 						className="rounded-md w-[46px] h-auto border border-f1-black/70 self-start md:mt-3"
 					/>
 				</div>

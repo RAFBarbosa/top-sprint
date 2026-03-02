@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { ArrowForwardIos as MenuArrow } from "@mui/icons-material";
+import ptBR from "date-fns/locale/pt-BR";
+import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { addHours } from "date-fns";
 import { tenant } from "../../shared/config/tenants";
+import { HygraphImg } from "../utils/HygraphImg";
 
 interface CalendarProps {
 	round: string;
@@ -119,7 +120,7 @@ export function Calendar(props: CalendarProps) {
 							</span>
 							{!isFutureDate && (
 								<span className="transition-transform duration-200 group-hover:translate-x-1 inline-flex">
-									<MenuArrow
+									<ArrowForwardIos
 										style={{
 											color: "var(--color-brand-primary)",
 											fontSize: "16px",
@@ -136,9 +137,12 @@ export function Calendar(props: CalendarProps) {
 					</div>
 
 					<div className="flex flex-col items-center flex-shrink-0">
-						<img
+						<HygraphImg
 							src={props.flag?.url}
 							alt={`${props.track} flag`}
+							imgWidth={42}
+							imgHeight={28}
+							fit="clip"
 							className="rounded w-[42px] h-auto border border-f1-black/20 self-start"
 						/>
 						{props.sprint && (
@@ -162,9 +166,12 @@ export function Calendar(props: CalendarProps) {
 				<div className="py-4 h-33 px-2 z-10 relative">
 					{/* Map always as watermark */}
 					{props.map?.url && (
-						<img
+						<HygraphImg
 							src={props.map.url}
 							alt=""
+							imgWidth={250}
+							imgHeight={132}
+							fit="clip"
 							className={`absolute inset-0 w-full h-full object-contain p-3 pointer-events-none transition-opacity duration-300 ${
 								!isFutureDate && props.winnerA
 									? "opacity-3"
@@ -187,7 +194,7 @@ export function Calendar(props: CalendarProps) {
 								}}
 							>
 								{tenant.defaultPhotoStyle === "round" ? (
-									<img
+									<HygraphImg
 										src={
 											props.winnerA.photo?.url ||
 											tenant.fallbackDriverPhoto
@@ -195,10 +202,12 @@ export function Calendar(props: CalendarProps) {
 										alt={getFilteredWinnerName(
 											props.winnerA,
 										)}
+										imgWidth={48}
+										imgHeight={48}
 										className="w-full h-full object-cover scale-123 translate-y-[5px]"
 									/>
 								) : (
-									<img
+									<HygraphImg
 										src={
 											props.winnerA.photo?.url ||
 											tenant.fallbackDriverPhoto
@@ -206,6 +215,8 @@ export function Calendar(props: CalendarProps) {
 										alt={getFilteredWinnerName(
 											props.winnerA,
 										)}
+										imgWidth={48}
+										imgHeight={48}
 										className="w-full h-full object-cover scale-200 translate-y-[24px]"
 									/>
 								)}
@@ -244,4 +255,3 @@ export function Calendar(props: CalendarProps) {
 		</div>
 	);
 }
-

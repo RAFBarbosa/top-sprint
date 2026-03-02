@@ -1,7 +1,8 @@
 import Countdown from "react-countdown";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import ptBR from "date-fns/locale/pt-BR";
 import { CountdownRenderer } from "./CountdownRender";
+import { HygraphImg } from "../utils/HygraphImg";
 
 interface NextRaceProps {
 	track: string;
@@ -28,14 +29,16 @@ export function NextRace(props: NextRaceProps) {
 		<div className="text-white md:flex justify-between max-w-screen-xl px-3 py-4 mx-auto tracking-wide">
 			<div className="flex flex-col w-full">
 				<div className="text-lg mb-2 font-bold">
-					{/* {props.grid === "gridA" ? "Grid Heat - " : "Grid Carbon - "} */}
 					{formattedDateCapitalized}
 				</div>
 				<div className="flex">
 					<div className="border-r border-t rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none mr-3 border-white/50">
-						<img
+						<HygraphImg
 							src={props.flag?.url}
 							alt={`${props.track} flag`}
+							imgWidth={57}
+							imgHeight={32}
+							fit="clip"
 							className="rounded-md min-w-[57px] min-h-[32px] border border-white/20"
 						/>
 					</div>
@@ -48,14 +51,6 @@ export function NextRace(props: NextRaceProps) {
 								{props.location}
 							</p>
 						)}
-						{/* {props.sprint && (
-							<p
-								className="text-xs font-semibold uppercase tracking-wide md:ml-2"
-								style={{ color: "var(--color-brand-primary)" }}
-							>
-								Sprint
-							</p>
-						)} */}
 					</span>
 				</div>
 			</div>
