@@ -4,6 +4,8 @@ import topSprintA from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
 import topSprintChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
 import topSprintB from "/src/assets/img/card-backgrounds/topsprint-b.jpg";
 import feliplay from "/src/assets/img/card-backgrounds/feliplay.jpg";
+import brazukaF1 from "/src/assets/img/card-backgrounds/brazuka-f1.png";
+import brazukaF2 from "/src/assets/img/card-backgrounds/brazuka-f2.png";
 
 export type TenantId = "topSprint" | "feliplay" | "brazuka";
 
@@ -187,7 +189,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
 				standingsTitle: "Alpha",
 				countdownBgClass: "bg-f1-silver",
-				cardBackground: topSprintA,
+				cardBackground: brazukaF1,
 			},
 			{
 				id: "gridB",
@@ -200,7 +202,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_150%] from-f1-darkerRed to-f1-lightSilver to-225%",
 				standingsTitle: "Bravo",
 				countdownBgClass: "bg-f1-darkerRed",
-				cardBackground: topSprintA,
+				cardBackground: brazukaF1,
 			},
 			{
 				id: "gridC",
@@ -213,7 +215,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-darkerBlue to-150%",
 				standingsTitle: "Charlie",
 				countdownBgClass: "bg-f1-academy-darkerBlue",
-				cardBackground: topSprintA,
+				cardBackground: brazukaF2,
 			},
 		],
 		features: {
