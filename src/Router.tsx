@@ -20,7 +20,7 @@ import { TopSprintRules } from "./pages/rules/TopSprintRules";
 import { FeliplayRules } from "./pages/rules/FeliplayRules";
 import { BrazukaRules } from "./pages/rules/BrazukaRules";
 import { Archive } from "./pages/Archive";
-import { tenant } from "./components/config/tenants";
+import { tenant } from "./shared/config/tenants";
 
 export function Router() {
 	const RulesPage = {

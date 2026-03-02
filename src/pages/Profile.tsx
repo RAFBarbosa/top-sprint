@@ -8,7 +8,7 @@ import { normalizeString } from "../components/hooks/useNormalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
-import { tenant } from "../components/config/tenants";
+import { tenant } from "../shared/config/tenants";
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
