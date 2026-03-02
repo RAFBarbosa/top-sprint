@@ -250,9 +250,7 @@ export function ResultsRegistration() {
 		);
 	}
 
-	const gridOptions = (
-		gridData?.__type?.enumValues?.map((v) => v.name) || []
-	).filter((option) => option === "gridA" || option === "gridB");
+	const gridOptions = gridData?.__type?.enumValues?.map((v) => v.name) || [];
 
 	return (
 		<div className="flex flex-col md:flex-row w-full">

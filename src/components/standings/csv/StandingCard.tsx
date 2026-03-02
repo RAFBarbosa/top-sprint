@@ -235,42 +235,44 @@ export function StandingCard(props: StandingCardProps) {
 				</div>
 
 				{props.isActive ? (
-					<div className="absolute top-0 right-0 bottom-0 flex justify-end items-end z-10 md:hidden">
+					<div
+						className={`absolute top-0 right-0 bottom-0 flex justify-end z-10 md:hidden ${isDrivers ? "items-end" : "items-center"}`}
+					>
 						<div className="relative w-full h-full">
-							<img
-								src={props.photo || tenant.fallbackDriverPhoto}
-								alt={`${props.name} foto`}
-								className={
-									props.photoStyle === "round"
-										? isDrivers
-											? "border-5 rounded-full border-f1-text"
-											: ""
-										: ""
-								}
-								style={{
-									objectFit: "cover",
-									width: isDrivers ? "auto" : "100%",
-									height:
-										props.photoStyle === "round"
-											? isDrivers
-												? "130%"
-												: "140%"
-											: isDrivers
-												? "130%"
-												: "100%",
-									maxWidth: "100%",
-									maxHeight:
-										props.photoStyle === "round"
-											? "100%"
-											: "150%",
-									transform:
-										props.photoStyle === "round"
-											? "translateY(0%) translateX(-15%)"
-											: isDrivers
-												? "translateY(7%)"
-												: "translateY(0%) translateX(-15%)",
-								}}
-							/>
+							{props.photoStyle === "round" && isDrivers ? (
+								<div className="w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-white/20 absolute right-4 top-1/2 transform -translate-y-1/2">
+									<img
+										src={
+											props.photo ||
+											tenant.fallbackDriverPhoto
+										}
+										alt={props.name}
+										className="w-full h-full object-cover"
+									/>
+								</div>
+							) : (
+								<img
+									src={
+										isDrivers
+											? props.photo ||
+												tenant.fallbackDriverPhoto
+											: props.teamLogo || tenant.logo.url
+									}
+									alt={`${props.name} foto`}
+									style={{
+										objectFit: isDrivers
+											? "cover"
+											: "contain",
+										width: isDrivers ? "auto" : "auto",
+										height: isDrivers ? "160%" : "90%",
+										maxWidth: "100%",
+										maxHeight: isDrivers ? "160%" : "90%",
+										transform: isDrivers
+											? "translateX(5%)"
+											: "translateY(5%) translateX(-10%)",
+									}}
+								/>
+							)}
 						</div>
 					</div>
 				) : (
@@ -285,7 +287,7 @@ export function StandingCard(props: StandingCardProps) {
 									alt={`${props.name} foto`}
 									className={
 										props.photoStyle === "round"
-											? "border-2 rounded-full border-f1-text"
+											? "border-2 rounded-full border-f1-carbon/20"
 											: ""
 									}
 									style={{

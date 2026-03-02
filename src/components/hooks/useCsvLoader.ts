@@ -36,9 +36,11 @@ const calculatePositionChanges = <T extends { name: string; pts: string }>(
 	oldData: T[],
 ): (T & { positionChange: number })[] => {
 	return currentData.map((currentItem) => {
-		const oldItem = oldData.find(
-			(old) =>
-				normalizeHeader(old.name) === normalizeHeader(currentItem.name),
+		const oldItem = oldData.find((old) =>
+			currentItem.id && old.id
+				? old.id === currentItem.id
+				: normalizeHeader(old.name) ===
+					normalizeHeader(currentItem.name),
 		);
 
 		if (!oldItem) {
@@ -129,15 +131,24 @@ const processCsvData = async (
 					// console.log("First row sample:", rows[0]);
 
 					// Find indices for each data type
+					const teamIdIdx = findHeaderIndex(headers, ["ID Equipes"]);
 					const teamNameIdx = findHeaderIndex(headers, [
-						"Pontos Equipes",
+						"Nome Equipes",
+					]);
+					const teamPtsHeaderIdx = findHeaderIndex(headers, [
+						"Ponto Equipes",
+					]);
+					const driverIdIdx = findHeaderIndex(headers, [
+						"ID Pilotos",
 					]);
 					const driverNameIdx = findHeaderIndex(headers, [
-						"Pontos Pilotos",
-						"Carta Nome",
+						"Nome Pilotos",
+					]);
+					const driverPtsHeaderIdx = findHeaderIndex(headers, [
+						"Ponto Pilotos",
 					]);
 
-					// Cards data - FIXED: Better header matching
+					const cardIdIdx = findHeaderIndex(headers, ["ID Cartas"]);
 					const cardNameIdx = findHeaderIndex(headers, [
 						"Carta Nome",
 					]);
@@ -192,72 +203,12 @@ const processCsvData = async (
 					]);
 					const tempoIdx = findHeaderIndex(headers, ["Tempo"]);
 
-					// console.log("Column indices found:", {
-					// 	cardNameIdx,
-					// 	cardPrevRatingIdx,
-					// 	cardRatingIdx,
-					// 	racecraftIdx,
-					// 	awarenessIdx,
-					// 	paceIdx,
-					// 	experienceIdx,
-					// 	bestCardIdx,
-					// 	participationsIdx,
-					// 	pointsIdx,
-					// 	avgIdx,
-					// 	polesIdx,
-					// 	fastestLapIdx,
-					// 	raceWinsIdx,
-					// 	sprintWinsIdx,
-					// 	champWinsIdx,
-					// 	podiumsIdx,
-					// });
-
 					// Find points columns
-					let teamPtsIdx = -1;
-					const possibleTeamPtsColumns = [1, 2, 5];
-					for (const colIdx of possibleTeamPtsColumns) {
-						if (colIdx < headers.length) {
-							let hasNumericData = false;
-							for (let i = 0; i < Math.min(3, rows.length); i++) {
-								const value = rows[i]?.[headers[colIdx]];
-								if (
-									value &&
-									value.trim() !== "" &&
-									!isNaN(parseFloat(value))
-								) {
-									hasNumericData = true;
-									break;
-								}
-							}
-							if (hasNumericData) {
-								teamPtsIdx = colIdx;
-								break;
-							}
-						}
-					}
+					const teamPtsIdx =
+						teamPtsHeaderIdx !== -1 ? teamPtsHeaderIdx : 2;
 
-					let driverPtsIdx = -1;
-					const possibleDriverPtsColumns = [4, 5];
-					for (const colIdx of possibleDriverPtsColumns) {
-						if (colIdx < headers.length) {
-							let hasNumericData = false;
-							for (let i = 0; i < Math.min(3, rows.length); i++) {
-								const value = rows[i]?.[headers[colIdx]];
-								if (
-									value &&
-									value.trim() !== "" &&
-									!isNaN(parseFloat(value))
-								) {
-									hasNumericData = true;
-									break;
-								}
-							}
-							if (hasNumericData) {
-								driverPtsIdx = colIdx;
-								break;
-							}
-						}
-					}
+					const driverPtsIdx =
+						driverPtsHeaderIdx !== -1 ? driverPtsHeaderIdx : 5;
 
 					if (teamPtsIdx === -1) teamPtsIdx = 2;
 					if (driverPtsIdx === -1) driverPtsIdx = 4;
@@ -333,6 +284,14 @@ const processCsvData = async (
 									teamPts !== "N/A"
 								) {
 									teamsData.push({
+										id:
+											teamIdIdx !== -1
+												? (
+														row[
+															headers[teamIdIdx]
+														] || ""
+													).trim()
+												: "",
 										name: teamName.trim(),
 										pts: teamPts.trim(),
 									});
@@ -352,6 +311,14 @@ const processCsvData = async (
 									driverPts !== "N/A"
 								) {
 									driversData.push({
+										id:
+											driverIdIdx !== -1
+												? (
+														row[
+															headers[driverIdIdx]
+														] || ""
+													).trim()
+												: "",
 										name: driverName.trim(),
 										pts: driverPts.trim(),
 									});
@@ -415,6 +382,14 @@ const processCsvData = async (
 									cardName !== "N/A"
 								) {
 									const cardItem = {
+										id:
+											cardIdIdx !== -1
+												? (
+														row[
+															headers[cardIdIdx]
+														] || ""
+													).trim()
+												: "",
 										name: cardName.trim(),
 										num: "",
 										racecraft: (
@@ -441,14 +416,6 @@ const processCsvData = async (
 										).trim(),
 									};
 
-									// DEBUG for first few rows
-									// if (rowIndex < 3) {
-									// 	console.log(
-									// 		`Card row ${rowIndex}:`,
-									// 		cardItem,
-									// 	);
-									// }
-
 									cardData.push(cardItem);
 								}
 							}
@@ -467,6 +434,14 @@ const processCsvData = async (
 									driverName !== "N/A"
 								) {
 									const statsItem = {
+										id:
+											cardIdIdx !== -1
+												? (
+														row[
+															headers[cardIdIdx]
+														] || ""
+													).trim()
+												: "",
 										name: driverName.trim(),
 										championships:
 											champWinsIdx !== -1
@@ -604,10 +579,20 @@ interface UseCsvLoaderProps {
 
 const useCsvLoader = ({ gridId }: UseCsvLoaderProps) => {
 	const [csvData, setCsvData] = useState<{
-		teams: { name: string; pts: string; positionChange: number }[];
-		drivers: { name: string; pts: string; positionChange: number }[];
-		oldTeams: { name: string; pts: string }[];
-		oldDrivers: { name: string; pts: string }[];
+		teams: {
+			id: string;
+			name: string;
+			pts: string;
+			positionChange: number;
+		}[];
+		drivers: {
+			id: string;
+			name: string;
+			pts: string;
+			positionChange: number;
+		}[];
+		oldTeams: { id: string; name: string; pts: string }[];
+		oldDrivers: { id: string; name: string; pts: string }[];
 		fastestLaps: { name: string; qty: string }[];
 		poles: { name: string; qty: string }[];
 		cards: any[];

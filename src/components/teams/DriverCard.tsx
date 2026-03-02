@@ -49,18 +49,15 @@ export function DriverCard({ driver }: DriverCardProps) {
 		return getGridConfig(driver.grid)?.label ?? "Driver";
 	};
 
-	// Name formatting logic extracted from JSX
 	const formatDriverName = () => {
 		const nameParts = driver.name
 			.replace(/-[BC]\s*$/i, "")
 			.trim()
 			.split(" ");
 
-		// Se tem apenas uma palavra (sem espaço)
 		if (nameParts.length === 1) {
 			return (
 				<>
-					{/* Espaço vazio no topo para manter o layout consistente */}
 					<div className="h-6"></div>
 					<p className="text-xl uppercase font-semibold leading-5 md:drop-shadow-lg">
 						{nameParts[0]}
@@ -84,7 +81,6 @@ export function DriverCard({ driver }: DriverCardProps) {
 		);
 	};
 
-	// Class labeling logic based on active tab
 	const getClassLabel = () => {
 		return driver.team?.class === "classA" ? "Classe A" : "Classe B";
 	};
@@ -103,14 +99,13 @@ export function DriverCard({ driver }: DriverCardProps) {
 				}}
 			/>
 
-			{/* Team logo - behind everything, positioned at top */}
 			<img
-				className={`w-25 h-25 object-cover absolute top-3 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg ${
+				className={`h-22 object-cover absolute top-3 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg ${
 					!isRound
 						? "md:transition-all md:duration-200 md:group-hover:scale-95 md:group-hover:-translate-y-1"
 						: ""
 				}`}
-				src={driver.team?.photo?.url}
+				src={driver.team?.photo?.url || tenant.logo.url}
 				alt={driver.team?.name}
 			/>
 

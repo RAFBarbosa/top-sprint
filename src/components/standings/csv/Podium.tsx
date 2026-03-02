@@ -2,13 +2,14 @@ import { PodiumCard } from "./PodiumCard";
 import { GridId } from "../../config/grids"; // Import GridId for type safety
 
 interface PodiumProps {
-	grid?: GridId; // Changed to GridId
+	grid?: GridId;
 	class?: string;
 	topThree: {
 		name: string;
 		photo: string;
 		teamColor: string;
 		teamDrivers: string;
+		teamLogo: string;
 		points: string;
 		teamName: string;
 		[key: string]: string;
@@ -50,6 +51,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
 							teamName={props.topThree[0].teamName}
+							teamLogo={props.topThree[0].teamLogo}
 							photoStyle={props.photoStyle}
 							points={props.topThree[0].pts}
 							position={1}

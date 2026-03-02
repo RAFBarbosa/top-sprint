@@ -537,7 +537,7 @@ export function DriverRegistration() {
 														tenant.defaultPhotoStyle) ===
 														"round"
 														? "object-center"
-														: "scale-300 translate-y-12 object-top"
+														: "scale-300 translate-y-10 object-top"
 												}`}
 											/>
 										</div>

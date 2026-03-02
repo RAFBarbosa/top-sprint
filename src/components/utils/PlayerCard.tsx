@@ -215,17 +215,23 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						</div>
 					</div>
 
-					<div className="overflow-hidden absolute z-20 top-0 right-0 h-[330px] w-auto">
-						<img
-							className={
-								tenant.defaultPhotoStyle === "round"
-									? "object-cover translate-x-[40px] -translate-y-[40px] scale-60 border-10 rounded-full border-f1-text"
-									: "object-cover translate-x-[80px] translate-y-[15px]"
-							}
-							src={data.photo || tenant.fallbackDriverPhoto}
-							alt={`${data.name}'s photo`}
-						/>
-					</div>
+					{tenant.defaultPhotoStyle === "round" ? (
+						<div className="absolute z-20 top-3 right-3 w-[168px] h-[168px] rounded-full overflow-hidden border-4 border-f1-carbon/50">
+							<img
+								className="w-full h-full object-cover"
+								src={data.photo || tenant.fallbackDriverPhoto}
+								alt={`${data.name}'s photo`}
+							/>
+						</div>
+					) : (
+						<div className="absolute z-20 top-0 right-0 h-[330px] w-auto overflow-hidden">
+							<img
+								className="w-[280px] h-[330px] object-cover object-top translate-y-[10px] translate-x-[70px]"
+								src={data.photo || tenant.fallbackDriverPhoto}
+								alt={`${data.name}'s photo`}
+							/>
+						</div>
+					)}
 
 					<div
 						className="text-white px-4 py-5 h-[150px] flex flex-col gap-2 justify-end bg-linear-0 from-f1-carbon to-f1-silver z-20 relative"

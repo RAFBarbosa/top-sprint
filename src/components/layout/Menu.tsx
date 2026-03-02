@@ -82,13 +82,11 @@ export function Menu() {
 
 	const handleDriverClick = (driverName: string) => {
 		setIsOpen(false);
-		const driver = enhancedCards?.find(
-			(d) => normalizeString(d.name) === normalizeString(driverName),
-		);
+		const driver = enhancedCards?.find((d) => d.name === driverName);
 		if (driver && driver.grid !== activeTab.id) {
 			setActiveTab(driver.grid);
 		}
-		navigateToDriver(normalizeString(driverName));
+		navigateToDriver(driverName);
 	};
 
 	const handleAllDriversClick = () => {

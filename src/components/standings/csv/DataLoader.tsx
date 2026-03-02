@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { StandingsList } from "./StandingsList";
 import useCsvLoader from "../../hooks/useCsvLoader";
 import { GetTeamsQuery } from "../../../graphql/generated";
-import useNormalizeString from "../../hooks/useNormalizeString";
 import { useLocation } from "react-router-dom";
 import { AdminStandings } from "../../admin/AdminStandings";
 import { GridId } from "../../config/grids";
@@ -28,17 +27,18 @@ export function DataLoader(props: DataLoaderProps) {
 
 	const normalizeString = (str: string) => str.toLowerCase().trim();
 
-	// Memorize enhancedDrivers and enhancedTeams
 	const enhancedDrivers = useMemo(() => {
 		if (props.data && drivers && teams) {
 			return drivers.map((driver) => {
-				const driverFromData = props.data?.drivers.find(
-					(driverFromData) =>
-						normalizeString(driverFromData.name) ===
-						normalizeString(driver.name),
+				const driverFromData = props.data?.drivers.find((d) =>
+					driver.id
+						? d.id === driver.id
+						: normalizeString(d.name) ===
+							normalizeString(driver.name),
 				);
 				return {
 					...driver,
+					name: driverFromData?.name || driver.name,
 					grid: driverFromData?.grid || "",
 					class: driverFromData?.class || "",
 					photo: driverFromData?.photo?.url || "",
@@ -53,32 +53,29 @@ export function DataLoader(props: DataLoaderProps) {
 	}, [props.data, drivers, teams]);
 
 	const enhancedTeams = useMemo(() => {
-		if (props.data && teams) {
-			return teams.map((team) => {
-				const teamFromData = props.data?.teams.find(
-					(teamFromData) =>
-						normalizeString(teamFromData.name) ===
-						normalizeString(team.name),
-				);
+		if (!props.data?.teams?.length || !teams?.length) return [];
+		return teams.map((team) => {
+			const teamFromData = props.data?.teams.find((t) =>
+				team.id
+					? t.id === team.id
+					: normalizeString(t.name) === normalizeString(team.name),
+			);
 
-				const teamDrivers = enhancedDrivers
-					.filter((driver) => driver.teamName === team.name)
-					.map((driver) => driver.name);
+			const teamDrivers = enhancedDrivers
+				.filter((driver) => driver.teamName === team.name)
+				.map((driver) => driver.name);
 
-				return {
-					...team,
-					photo: teamFromData?.photo?.url || "",
-					class: teamFromData?.class || "",
-					teamLogo: teamFromData?.photo?.url || "",
-					teamColor: teamFromData?.color?.hex || "",
-					drivers: teamDrivers || "",
-				};
-			});
-		}
-		return [];
+			return {
+				...team,
+				name: teamFromData?.name || team.name,
+				photo: teamFromData?.photo?.url || "",
+				class: teamFromData?.class || "",
+				teamLogo: teamFromData?.photo?.url || "",
+				teamColor: teamFromData?.color?.hex || "",
+				drivers: teamDrivers || "",
+			};
+		});
 	}, [props.data, teams, enhancedDrivers]);
-
-	// console.log("Enhanced Drivers:", enhancedDrivers);
 
 	return (
 		<div className="w-full mx-auto">
