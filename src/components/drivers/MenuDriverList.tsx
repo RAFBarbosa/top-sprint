@@ -121,7 +121,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 										<div
 											className="w-8 h-8 bg-cover transition-all scale-210 translate-y-[17px]"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo, 64)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo, 264)})`,
 											}}
 										/>
 									)}

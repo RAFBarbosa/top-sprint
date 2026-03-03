@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import ptBR from "date-fns/locale/pt-BR";
-import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
+import { ptBR } from "date-fns/locale";
+import { LiveTv, ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { addHours } from "date-fns";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
@@ -103,11 +103,16 @@ export function Calendar(props: CalendarProps) {
 					style={{ color: "var(--color-brand-primary)" }}
 					className="font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
 				>
-					{props.round}
-					{props.sprint && (
+					{/* {props.sprint && (
 						<span className="text-f1-red ml-0.5"></span>
+					)} */}
+					{isPastTwoHours ? (
+						<span className="text-f1-text ">
+							{props.round} Finalizada
+						</span>
+					) : (
+						props.round
 					)}
-					{isPastTwoHours && <span> Finalizada</span>}
 				</div>
 				<div className="flex pb-3 mb-0 border-b border-f1-black/20 items-start flex-grow">
 					<div className="w-full mr-3 flex flex-col justify-between h-full">
@@ -120,7 +125,7 @@ export function Calendar(props: CalendarProps) {
 							</span>
 							{!isFutureDate && (
 								<span className="transition-transform duration-200 group-hover:translate-x-1 inline-flex">
-									<ArrowForwardIos
+									<MenuArrow
 										style={{
 											color: "var(--color-brand-primary)",
 											fontSize: "16px",
@@ -136,17 +141,16 @@ export function Calendar(props: CalendarProps) {
 						)}
 					</div>
 
-					<div className="flex flex-col items-center flex-shrink-0">
+					<div className="flex flex-col items-center flex-shrink-0 mt-1">
 						<HygraphImg
 							src={props.flag?.url}
-							alt={`${props.track} flag`}
-							imgWidth={42}
-							imgHeight={28}
-							fit="clip"
-							className="rounded w-[42px] h-auto border border-f1-black/20 self-start"
+							alt={`Bandeira ${props.track}`}
+							imgWidth={180}
+							imgHeight={100}
+							className="rounded w-[45px] h-[25px] border border-black/20 self-start"
 						/>
 						{props.sprint && (
-							<span className="text-[10px] font-bold text-f1-red mt-1 tracking-wide uppercase">
+							<span className="text-[10px] font-bold text-f1-red tracking-wider uppercase">
 								Sprint
 							</span>
 						)}
@@ -166,18 +170,15 @@ export function Calendar(props: CalendarProps) {
 				<div className="py-4 h-33 px-2 z-10 relative">
 					{/* Map always as watermark */}
 					{props.map?.url && (
-						<HygraphImg
+						<img
 							src={props.map.url}
 							alt=""
-							imgWidth={250}
-							imgHeight={132}
-							fit="clip"
 							className={`absolute inset-0 w-full h-full object-contain p-3 pointer-events-none transition-opacity duration-300 ${
 								!isFutureDate && props.winnerA
 									? "opacity-3"
 									: isFutureDate
 										? "opacity-85"
-										: "opacity-20"
+										: "opacity-3"
 							}`}
 						/>
 					)}
@@ -194,7 +195,7 @@ export function Calendar(props: CalendarProps) {
 								}}
 							>
 								{tenant.defaultPhotoStyle === "round" ? (
-									<HygraphImg
+									<img
 										src={
 											props.winnerA.photo?.url ||
 											tenant.fallbackDriverPhoto
@@ -202,12 +203,10 @@ export function Calendar(props: CalendarProps) {
 										alt={getFilteredWinnerName(
 											props.winnerA,
 										)}
-										imgWidth={48}
-										imgHeight={48}
 										className="w-full h-full object-cover scale-123 translate-y-[5px]"
 									/>
 								) : (
-									<HygraphImg
+									<img
 										src={
 											props.winnerA.photo?.url ||
 											tenant.fallbackDriverPhoto
@@ -215,14 +214,12 @@ export function Calendar(props: CalendarProps) {
 										alt={getFilteredWinnerName(
 											props.winnerA,
 										)}
-										imgWidth={48}
-										imgHeight={48}
 										className="w-full h-full object-cover scale-200 translate-y-[24px]"
 									/>
 								)}
 							</div>
 							{/* Name + label */}
-							<div className="flex flex-col min-w-0">
+							<div className="flex flex-col min-w-0 ">
 								<span
 									className="text-xs uppercase tracking-wide font-semibold"
 									style={{
@@ -234,19 +231,28 @@ export function Calendar(props: CalendarProps) {
 								<span className="font-bold uppercase tracking-wide leading-5 truncate">
 									{getFilteredWinnerName(props.winnerA)}
 								</span>
-								{/* {props.winnerA.team?.name && (
-									<span
-										className="text-[10px] font-medium mt-0.5 truncate"
-										style={{
-											color:
-												props.winnerA.team?.color
-													?.hex ||
-												"var(--color-brand-primary)",
-										}}
-									>
-										{props.winnerA.team.name}
+								{/* Broadcast badge */}
+								<div className="flex items-center gap-1 mt-1.5 transition-colors duration-150 group-hover:opacity-70">
+									<LiveTv
+										className="text-[var(--color-brand-primary)]"
+										style={{ fontSize: "12px" }}
+									/>
+									<span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-brand-primary)]">
+										Assistir corrida
 									</span>
-								)} */}
+								</div>
+							</div>
+						</div>
+					) : !isFutureDate ? (
+						<div className="relative z-10 h-full flex items-center justify-center px-1">
+							<div className="flex items-center gap-1 transition-colors duration-150 group-hover:opacity-70">
+								<LiveTv
+									className="text-[var(--color-brand-primary)]"
+									style={{ fontSize: "16px" }}
+								/>
+								<span className="text-sm font-semibold uppercase tracking-wide text-[var(--color-brand-primary)] pt-[1px]">
+									Assistir corrida
+								</span>
 							</div>
 						</div>
 					) : null}

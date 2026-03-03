@@ -79,7 +79,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 										<div
 											className="w-16 h-16 scale-150 rounded-full bg-cover transition-all translate-y-[20px] duration-200 group-hover:scale-170"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 128)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 450)})`,
 											}}
 										/>
 									)}

@@ -32,14 +32,13 @@ export function NextRace(props: NextRaceProps) {
 					{formattedDateCapitalized}
 				</div>
 				<div className="flex">
-					<div className="border-r border-t rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none mr-3 border-white/50">
+					<div className="flex-shrink-0 border-r border-t rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none mr-3 border-white/50">
 						<HygraphImg
 							src={props.flag?.url}
-							alt={`${props.track} flag`}
-							imgWidth={57}
-							imgHeight={32}
-							fit="clip"
-							className="rounded-md min-w-[57px] min-h-[32px] border border-white/20"
+							alt={`Bandeira ${props.track}`}
+							imgWidth={216}
+							imgHeight={120}
+							className="rounded w-[54px] h-[30px] border border-white/20"
 						/>
 					</div>
 					<span className="md:pt-0 pt-2 border-t w-full md:mr-3 border-white/50 flex flex-col md:flex-row md:items-end justify-center md:justify-start">
