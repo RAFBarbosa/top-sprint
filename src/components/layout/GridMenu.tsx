@@ -16,7 +16,7 @@ export function GridMenu() {
 
 	return (
 		<div className="grid-menu-bg text-white h-9 md:h-11">
-			<div className="max-w-screen-xl flex justify-between mx-auto px-3">
+			<div className="max-w-screen-xl flex items-center justify-center md:justify-between h-full mx-auto px-3">
 				<div className="flex md:gap-4 items-center">
 					<h3 className="font-semibold uppercase hidden md:block">
 						Grids
@@ -38,7 +38,10 @@ export function GridMenu() {
 							aria-label={`Selecionar grid, atual: ${activeTab.label}`}
 						>
 							<span>{activeTab.label}</span>
-							<ArrowDropDown fontSize="medium" aria-hidden="true" />
+							<ArrowDropDown
+								fontSize="medium"
+								aria-hidden="true"
+							/>
 						</button>
 
 						{isMobileDropdownOpen && (
@@ -49,7 +52,7 @@ export function GridMenu() {
 									backgroundColor:
 										"var(--color-brand-nav-dropdown-bg)",
 								}}
-								className="fixed left-1/2 transform -translate-x-1/2 top-14 w-2/3 border border-white/30 rounded shadow-lg z-50"
+								className="fixed inset-x-0 top-14 w-full border border-white/30 rounded-b shadow-lg z-50"
 							>
 								{tabs.map((tab) => (
 									<div
@@ -58,8 +61,10 @@ export function GridMenu() {
 									>
 										<button
 											role="option"
-											aria-selected={activeTab.id === tab.id}
-											className={`w-full text-left px-3 py-2 text-base hover:bg-white/10 relative ${
+											aria-selected={
+												activeTab.id === tab.id
+											}
+											className={`w-full text-center px-3 py-2 text-base hover:bg-white/10 relative ${
 												activeTab.id === tab.id
 													? "bg-white/20"
 													: ""

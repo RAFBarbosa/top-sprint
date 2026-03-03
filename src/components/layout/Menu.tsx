@@ -108,19 +108,19 @@ export function Menu() {
 					to="/"
 					onClick={handleLinkClick}
 					aria-label="Ir para a página inicial"
-					className="h-[40px] md:h-[50px] z-50 ml-3 md:ml-0 flex items-center"
+					className="h-auto max-w-22 md:max-w-40 relative z-[60] ml-3 md:ml-0 flex items-center mt-2"
 				>
 					<Logo />
 				</Link>
 
 				{/* Mobile — grid switcher + hamburger */}
 				{tenant.grids.length > 1 && (
-					<div className="text-xl font-semibold md:hidden z-50 self-center mt-2">
+					<div className="text-xl absolute inset-x-0 font-semibold md:hidden z-50 mt-1">
 						<GridMenu />
 					</div>
 				)}
 				<button
-					className="text-3xl md:hidden z-50 w-[40px] h-[50px] mr-3"
+					className="text-3xl md:hidden relative z-[60] w-[40px] h-[50px] mr-3"
 					onClick={() => setIsOpen(!isOpen)}
 					aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
 					aria-expanded={isOpen}
