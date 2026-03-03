@@ -108,14 +108,14 @@ export function Menu() {
 					to="/"
 					onClick={handleLinkClick}
 					aria-label="Ir para a página inicial"
-					className="h-auto max-w-22 md:max-w-40 relative z-[60] ml-3 md:ml-0 flex items-center mt-2"
+					className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-[60] ml-3 md:ml-0 flex items-center flex-shrink-0 overflow-hidden"
 				>
 					<Logo />
 				</Link>
 
 				{/* Mobile — grid switcher + hamburger */}
 				{tenant.grids.length > 1 && (
-					<div className="text-xl absolute left-8 inset-x-0 font-semibold md:hidden z-50 mt-1">
+					<div className="text-xl absolute left-7 inset-x-0 font-semibold md:hidden z-50 mt-1">
 						<GridMenu />
 					</div>
 				)}
