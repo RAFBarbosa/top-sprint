@@ -96,7 +96,10 @@ export function Profile() {
 								<div className="pt-2 flex items-center justify-around">
 									<p className="text-sm uppercase space-y-2 flex flex-col items-center">
 										<span>Anterior</span>
-										<ArrowForwardIos className="rotate-180" aria-hidden="true" />
+										<ArrowForwardIos
+											className="rotate-180"
+											aria-hidden="true"
+										/>
 									</p>
 									<div className="flex items-center">
 										{tenant.defaultPhotoStyle ===
@@ -112,7 +115,9 @@ export function Profile() {
 												}
 												alt={
 													currentIndex > 0
-														? filteredDrivers[currentIndex - 1].name
+														? filteredDrivers[
+																currentIndex - 1
+															].name
 														: ""
 												}
 												imgWidth={80}
@@ -129,9 +134,9 @@ export function Profile() {
 																	currentIndex -
 																		1
 																].photo ||
-																tenant.fallbackDriverPhoto
+																	tenant.fallbackDriverPhoto
 															: tenant.fallbackDriverPhoto,
-														88,
+														550,
 													)})`,
 												}}
 											/>
@@ -178,7 +183,11 @@ export function Profile() {
 													]?.photo ||
 													tenant.fallbackDriverPhoto
 												}
-												alt={filteredDrivers[currentIndex + 1]?.name ?? ""}
+												alt={
+													filteredDrivers[
+														currentIndex + 1
+													]?.name ?? ""
+												}
 												imgWidth={80}
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
@@ -192,7 +201,7 @@ export function Profile() {
 															currentIndex + 1
 														]?.photo ||
 															tenant.fallbackDriverPhoto,
-														88,
+														550,
 													)})`,
 												}}
 											/>
@@ -360,7 +369,10 @@ export function Profile() {
 												<p className="font-bold">
 													Stream
 												</p>
-												<LiveTvIcon fontSize="small" aria-hidden="true" />
+												<LiveTvIcon
+													fontSize="small"
+													aria-hidden="true"
+												/>
 											</div>
 										</a>
 									)}
