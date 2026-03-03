@@ -5,7 +5,7 @@ export function Logo() {
 		<img
 			src={tenant.logo.url}
 			alt={tenant.logo.alt}
-			className="h-full w-auto"
+			className="max-h-full w-auto"
 		/>
 	);
 }
