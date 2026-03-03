@@ -237,7 +237,7 @@ export function Calendar(props: CalendarProps) {
 										className="text-[var(--color-brand-primary)]"
 										style={{ fontSize: "12px" }}
 									/>
-									<span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--color-brand-primary)]">
+									<span className="text-[10px] mt-[1px] font-semibold uppercase tracking-wide text-[var(--color-brand-primary)]">
 										Assistir corrida
 									</span>
 								</div>
