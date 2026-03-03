@@ -115,7 +115,7 @@ export function Menu() {
 
 				{/* Mobile — grid switcher + hamburger */}
 				{tenant.grids.length > 1 && (
-					<div className="text-xl absolute inset-x-0 font-semibold md:hidden z-50 mt-1">
+					<div className="text-xl absolute left-8 inset-x-0 font-semibold md:hidden z-50 mt-1">
 						<GridMenu />
 					</div>
 				)}
