@@ -45,6 +45,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 	const gridConfig = getGridConfig(driver.grid);
 	const isRound = tenant.defaultPhotoStyle === "round";
+	const isBust = tenant.defaultPhotoStyle === "bust";
 
 	const getGridTitle = () => {
 		return getGridConfig(driver.grid)?.label ?? "Driver";
@@ -110,7 +111,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 			/>
 
 			<HygraphImg
-				className={`h-22 object-cover absolute top-3 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg ${
+				className={`h-22 object-cover absolute top-2 left-1/2 -translate-x-1/2 z-0 opacity-80 md:drop-shadow-lg ${
 					!isRound
 						? "md:transition-all md:duration-200 md:group-hover:scale-95 md:group-hover:-translate-y-1"
 						: ""
@@ -145,11 +146,13 @@ export function DriverCard({ driver }: DriverCardProps) {
 					src={driver.photo?.url || tenant.fallbackDriverPhoto}
 					alt={driver.name}
 					imgWidth={140}
-					imgHeight={140}
-					className={`object-cover md:transition-all md:duration-200 md:group-hover:scale-106 absolute ${
+					// imgHeight={140}
+					className={`object-cover md:transition-all md:duration-200 md:group-hover:scale-105 absolute ${
 						isRound
 							? "w-35 h-35 rounded-full top-37 left-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-white/20"
-							: "w-58 h-58 top-16 md:group-hover:translate-y-2"
+							: isBust
+								? "w-50 h-50 top-18 md:group-hover:translate-y-2"
+								: "w-58 h-58 top-16 md:group-hover:translate-y-2"
 					} ${!imageLoading ? "opacity-100" : "opacity-0"}`}
 					style={
 						isRound

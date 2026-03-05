@@ -20,7 +20,7 @@ export interface CssVars {
 export interface TenantConfig {
 	id: TenantId;
 	name: string;
-	defaultPhotoStyle?: "portrait" | "round";
+	defaultPhotoStyle?: "portrait" | "round" | "bust";
 	logo: {
 		url: string;
 		alt: string;
@@ -163,7 +163,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 	brazuka: {
 		id: "brazuka",
 		name: "Brazuka",
-		defaultPhotoStyle: "portrait",
+		defaultPhotoStyle: "bust",
 		logo: { url: "/logos/brazuka.png", alt: "Logo Brazuka" },
 		grids: [
 			{

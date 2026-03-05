@@ -14,7 +14,7 @@ interface PodiumProps {
 		teamName: string;
 		[key: string]: string;
 	}[];
-	photoStyle?: "portrait" | "round";
+	photoStyle?: "portrait" | "round" | "bust";
 	activeTab: "drivers" | "teams";
 	newData: { name: string }[];
 	oldData?: { name: string }[];

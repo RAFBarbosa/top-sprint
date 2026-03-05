@@ -205,6 +205,17 @@ export function Calendar(props: CalendarProps) {
 										)}
 										className="w-full h-full object-cover scale-123 translate-y-[5px]"
 									/>
+								) : tenant.defaultPhotoStyle === "bust" ? (
+									<img
+										src={
+											props.winnerA.photo?.url ||
+											tenant.fallbackDriverPhoto
+										}
+										alt={getFilteredWinnerName(
+											props.winnerA,
+										)}
+										className="object-cover translate-y-[6px]"
+									/>
 								) : (
 									<img
 										src={

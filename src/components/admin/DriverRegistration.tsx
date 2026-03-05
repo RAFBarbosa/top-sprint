@@ -537,7 +537,13 @@ export function DriverRegistration() {
 														tenant.defaultPhotoStyle) ===
 														"round"
 														? "object-center"
-														: "scale-300 translate-y-10 object-top"
+														: (getGridConfig(
+																	driver.grid,
+															  )?.photoStyle ??
+																	tenant.defaultPhotoStyle) ===
+															  "bust"
+															? "scale-200 translate-y-5 object-top"
+															: "scale-300 translate-y-10 object-top"
 												}`}
 											/>
 										</div>
@@ -989,4 +995,3 @@ export function DriverRegistration() {
 		</div>
 	);
 }
-

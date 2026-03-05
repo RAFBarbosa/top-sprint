@@ -97,7 +97,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 			>
 				<div className="bg-black relative w-full h-full flex flex-col justify-between">
 					<img
-						className={`object-cover absolute top-0 left-0 h-full ${
+						className={`object-none object-right-top absolute top-0 left-0 h-full w-full ${
 							data.badgeTitle?.includes("reiDaChuva") ||
 							data.badgeTitle?.includes("mestreDaChuva")
 								? "opacity-50"
@@ -107,10 +107,10 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							data.badgeTitle?.includes("reiDaChuva") ||
 							data.badgeTitle?.includes("mestreDaChuva")
 								? bgCardChuva
-								: (data.cardBackground ?? // driver-level override
+								: (data.cardBackground ??
 									tenant.grids.find((g) => g.id === data.grid)
-										?.cardBackground ?? // grid default
-									bgCard) // ultimate fallback
+										?.cardBackground ??
+									bgCard)
 						}
 						alt=""
 						aria-hidden="true"
@@ -229,6 +229,15 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								alt={data.name}
 								imgWidth={168}
 								imgHeight={168}
+							/>
+						</div>
+					) : tenant.defaultPhotoStyle === "bust" ? (
+						<div className="absolute z-20 top-0 right-0 h-[280px] w-auto overflow-hidden">
+							<HygraphImg
+								className="w-[220px] h-[240px] object-cover object-top translate-y-[30px] translate-x-[30px]"
+								src={data.photo || tenant.fallbackDriverPhoto}
+								alt={data.name}
+								imgWidth={280}
 							/>
 						</div>
 					) : (

@@ -18,7 +18,7 @@ interface MenuDriverListProps {
 	gridName?: string;
 	drivers: Driver[];
 	onDriverClick: (driverName: string) => void;
-	photoStyle?: "portrait" | "round";
+	photoStyle?: "portrait" | "round" | "bust";
 }
 
 const MenuDriverList: React.FC<MenuDriverListProps> = ({
@@ -116,6 +116,13 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 											imgWidth={32}
 											imgHeight={32}
 											className="w-full h-full object-cover"
+										/>
+									) : photoStyle === "bust" ? (
+										<div
+											className="w-8 h-8 bg-cover transition-all scale-120 translate-y-[5px]"
+											style={{
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo, 264)})`,
+											}}
 										/>
 									) : (
 										<div

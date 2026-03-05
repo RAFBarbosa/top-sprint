@@ -23,7 +23,7 @@ interface StandingsListProps {
 	activeTab: GridId;
 	oldData?: any[];
 	oldTeams?: any[];
-	photoStyle?: "portrait" | "round";
+	photoStyle?: "portrait" | "round" | "bust";
 }
 
 export function StandingsList(props: StandingsListProps) {
