@@ -72,7 +72,7 @@ export function BrazukaRules() {
 					</div>
 					<span className="inline-flex gap-3 md:ml-2 mt-2 md:mt-0">
 						<a
-							href="https://us-west-2.graphassets.com/cmcjgepwt00ck08jo096kd77q/cmcu08u09cict07n3g0npdihv"
+							href="https://us-west-2.graphassets.com/cmcjgepwt00ck08jo096kd77q/cmmdr3mle8t4007n60a824sz5" //PT
 							target="_blank"
 							className="w-10"
 						>
@@ -82,7 +82,7 @@ export function BrazukaRules() {
 							></img>
 						</a>
 						<a
-							href="https://us-west-2.graphassets.com/cmcjgepwt00ck08jo096kd77q/cmcu08u0ocmv907n0c06ydsjp"
+							href="https://us-west-2.graphassets.com/cmcjgepwt00ck08jo096kd77q/cmmdr4dv38raw08n8xgjq11j7" //ES
 							target="_blank"
 							className="w-10"
 						>
@@ -92,7 +92,7 @@ export function BrazukaRules() {
 							></img>
 						</a>
 						<a
-							href="https://us-west-2.graphassets.com/cmcjgepwt00ck08jo096kd77q/cmcu08u0mcmv607n0oh7zk270"
+							href="https://us-west-2.graphassets.com/cmcjgepwt00ck08jo096kd77q/cmmdr41p78tob07n6q2zgnfln" //EN
 							target="_blank"
 							className="w-10"
 						>
