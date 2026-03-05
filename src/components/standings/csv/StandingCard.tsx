@@ -31,7 +31,7 @@ interface StandingCardProps {
 	onClick: () => void;
 	newData: { name: string }[];
 	oldData: { name: string }[];
-	photoStyle?: "portrait" | "round";
+	photoStyle?: "portrait" | "round" | "bust";
 }
 
 export function StandingCard(props: StandingCardProps) {
@@ -258,6 +258,34 @@ export function StandingCard(props: StandingCardProps) {
 										className="w-full h-full object-cover"
 									/>
 								</div>
+							) : props.photoStyle === "bust" ? (
+								<HygraphImg
+									src={
+										isDrivers
+											? props.photo ||
+												tenant.fallbackDriverPhoto
+											: props.teamLogo || tenant.logo.url
+									}
+									alt={
+										isDrivers
+											? props.name
+											: `${props.name} logo`
+									}
+									imgWidth={200}
+									fit={isDrivers ? "crop" : "clip"}
+									style={{
+										objectFit: isDrivers
+											? "cover"
+											: "contain",
+										width: isDrivers ? "auto" : "auto",
+										height: isDrivers ? "110%" : "90%",
+										maxWidth: "100%",
+										maxHeight: isDrivers ? "110%" : "90%",
+										transform: isDrivers
+											? "translateY(5%) translateX(-5%)"
+											: "translateY(5%) translateX(-15%)",
+									}}
+								/>
 							) : (
 								<HygraphImg
 									src={
@@ -283,7 +311,7 @@ export function StandingCard(props: StandingCardProps) {
 										maxHeight: isDrivers ? "160%" : "90%",
 										transform: isDrivers
 											? "translateX(5%)"
-											: "translateY(5%) translateX(-10%)",
+											: "translateY(5%) translateX(-15%)",
 									}}
 								/>
 							)}
@@ -306,6 +334,23 @@ export function StandingCard(props: StandingCardProps) {
 											className="w-full h-full object-cover"
 										/>
 									</div>
+								) : props.photoStyle === "bust" ? (
+									<HygraphImg
+										src={
+											props.photo ||
+											tenant.fallbackDriverPhoto
+										}
+										alt={props.name}
+										imgWidth={200}
+										style={{
+											objectFit: "cover",
+											width: "auto",
+											height: "170%",
+											maxWidth: "100%",
+											maxHeight: "250%",
+											transform: "translateX(-155%)",
+										}}
+									/>
 								) : (
 									<HygraphImg
 										src={

@@ -23,7 +23,7 @@ interface PodiumCardProps {
 	teamDrivers?: string[];
 	activeTab: "drivers" | "teams";
 	newData: { name: string }[];
-	photoStyle?: "portrait" | "round";
+	photoStyle?: "portrait" | "round" | "bust";
 	oldData: { name: string }[];
 }
 
@@ -189,6 +189,22 @@ export function PodiumCard(props: PodiumCardProps) {
 						imgWidth={props.position === 1 ? 160 : 134}
 						imgHeight={props.position === 1 ? 160 : 134}
 						className="w-full h-full object-cover"
+					/>
+				</div>
+			) : props.photoStyle === "bust" && isDrivers ? (
+				<div
+					className={`absolute overflow-hidden bottom-0 right-0 ${
+						props.position === 1
+							? "h-[180px] -translate-y-22"
+							: "h-[160px] -translate-y-22"
+					}`}
+				>
+					<HygraphImg
+						src={props.photo || tenant.fallbackDriverPhoto}
+						alt={`${props.name}`}
+						imgWidth={props.position === 1 ? 200 : 180}
+						// imgHeight={props.position === 1 ? 200 : 175}
+						className="w-full h-full object-cover object-top"
 					/>
 				</div>
 			) : isDrivers ? (

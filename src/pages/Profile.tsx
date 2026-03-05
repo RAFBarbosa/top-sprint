@@ -124,6 +124,23 @@ export function Profile() {
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
+										) : tenant.defaultPhotoStyle ===
+										  "bust" ? (
+											<div
+												className="w-22 h-22 bg-cover translate-y-[8px]"
+												style={{
+													backgroundImage: `url(${resizeHygraphUrl(
+														currentIndex > 0
+															? filteredDrivers[
+																	currentIndex -
+																		1
+																].photo ||
+																	tenant.fallbackDriverPhoto
+															: tenant.fallbackDriverPhoto,
+														550,
+													)})`,
+												}}
+											/>
 										) : (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
@@ -191,6 +208,20 @@ export function Profile() {
 												imgWidth={80}
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
+											/>
+										) : tenant.defaultPhotoStyle ===
+										  "bust" ? (
+											<div
+												className="w-22 h-22 bg-cover translate-y-[8px]"
+												style={{
+													backgroundImage: `url(${resizeHygraphUrl(
+														filteredDrivers[
+															currentIndex + 1
+														]?.photo ||
+															tenant.fallbackDriverPhoto,
+														550,
+													)})`,
+												}}
 											/>
 										) : (
 											<div

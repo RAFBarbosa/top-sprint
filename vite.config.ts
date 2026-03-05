@@ -22,7 +22,7 @@ const tenantMeta: Record<
 		title: "Liga Top Sprint",
 		ogTitle: "Liga Top Sprint - Fórmula 1 Virtual",
 		description:
-			"Liga Top Sprint: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil. Tudo sobre automobilismo virtual, com foco em corridas e simuladores de F1.",
+			"Liga Top Sprint: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
 		keywords:
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Liga Top Sprint, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
 		themeColor: "#eb1c24",
@@ -34,7 +34,7 @@ const tenantMeta: Record<
 		title: "Feliplay Cup",
 		ogTitle: "Feliplay Cup - Fórmula 1 Virtual",
 		description:
-			"Feliplay Cup: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil. Tudo sobre automobilismo virtual, com foco em corridas e simuladores de F1.",
+			"Feliplay Cup: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
 		keywords:
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Feliplay Cup, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
 		themeColor: "#f50404",
@@ -42,16 +42,16 @@ const tenantMeta: Record<
 		gtagId: "G-P3CV4WHXE7",
 	},
 	brazuka: {
-		name: "Brazuka",
-		title: "Brazuka",
-		ogTitle: "Brazuka - Fórmula 1 Virtual",
+		name: "F1 Brazuka",
+		title: "F1 Brazuka",
+		ogTitle: "F1 Brazuka - Fórmula 1 Virtual",
 		description:
-			"Brazuka: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
+			"F1 Brazuka: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
 		keywords:
-			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Brazuka, F1 eSports, corridas virtuais",
-		themeColor: "#eb1c24",
-		url: "https://www.brazuka.com.br",
-		gtagId: "",
+			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, F1 Brazuka, F1 eSports, corridas virtuais",
+		themeColor: "#064c24",
+		url: "https://www. f1brazuka.com.br",
+		gtagId: "G-N82GC0X63T",
 	},
 };
 

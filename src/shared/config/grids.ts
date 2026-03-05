@@ -19,7 +19,7 @@ export interface GridConfig {
 		classHoverColor: string;
 	}>;
 	classLabels?: Record<string, string>;
-	photoStyle?: "portrait" | "round";
+	photoStyle?: "portrait" | "round" | "bust";
 	cardBackground?: string;
 }
 

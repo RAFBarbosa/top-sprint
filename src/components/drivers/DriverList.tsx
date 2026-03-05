@@ -75,11 +75,18 @@ export const DriverList: React.FC<DriverListProps> = ({
 											imgHeight={64}
 											className="w-16 h-16 rounded-full object-cover transition-all duration-200 group-hover:scale-110"
 										/>
+									) : tenant.defaultPhotoStyle === "bust" ? (
+										<div
+											className="w-16 h-16 rounded-full bg-cover transition-all translate-y-[6px] duration-200 group-hover:scale-110"
+											style={{
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 650)})`,
+											}}
+										/>
 									) : (
 										<div
-											className="w-16 h-16 scale-150 rounded-full bg-cover transition-all translate-y-[20px] duration-200 group-hover:scale-170"
+											className="w-16 h-16 scale-160 rounded-full bg-cover transition-all translate-y-[25px] duration-200 group-hover:scale-170"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 450)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 650)})`,
 											}}
 										/>
 									)}

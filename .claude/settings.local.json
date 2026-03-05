@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node \"d:/Documents/Projects/top-sprint/fix-profile.js\")",
+      "Bash(node \"d:/Documents/Projects/top-sprint/fix-remaining.js\")"
+    ]
+  }
+}
