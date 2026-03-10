@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import {
 	Listbox,
 	ListboxButton,
@@ -10,7 +10,9 @@ import {
 	useGetTeamsQuery,
 	useCreateAssetMutation,
 	useUpdateTeamMutation,
+	useUpdateDriverMutation,
 	GetTeamsDocument,
+	GetDriversRegistrationDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
@@ -40,6 +42,13 @@ export function TeamRegistration() {
 
 	const [updateTeam, { loading: updateTeamLoading }] =
 		useUpdateTeamMutation();
+	const [updateDriver] = useUpdateDriverMutation({
+		refetchQueries: [
+			{ query: GetTeamsDocument },
+			{ query: GetDriversRegistrationDocument },
+		],
+		awaitRefetchQueries: true,
+	});
 	const [createAsset] = useCreateAssetMutation();
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -124,6 +133,11 @@ export function TeamRegistration() {
 		});
 		setLogoFile(null);
 	};
+
+	const formatEnum = (text: string) =>
+		text
+			.replace(/([A-Z])/g, " $1")
+			.replace(/^./, (str) => str.toUpperCase());
 
 	const handleTeam = async (event: FormEvent) => {
 		event.preventDefault();
@@ -281,6 +295,23 @@ export function TeamRegistration() {
 								.includes(searchTerm.toLowerCase()))
 				: true;
 		}) || [];
+
+	// Compute team drivers for the form
+	const teamDrivers =
+		isEditing && selectedTeam
+			? (teamsData?.drivers ?? []).filter(
+					(d) => d.team?.id === selectedTeam.id,
+				)
+			: [];
+
+	const byGrid = teamDrivers.reduce<
+		Record<string, typeof teamDrivers>
+	>((acc, d) => {
+		const key = d.grid ?? "Sem grid";
+		if (!acc[key]) acc[key] = [];
+		acc[key].push(d);
+		return acc;
+	}, {});
 
 	if (teamsLoading) {
 		return (
@@ -539,6 +570,57 @@ export function TeamRegistration() {
 									className="bg-f1-red h-2.5 rounded-full"
 									style={{ width: `${uploadProgress}%` }}
 								></div>
+							</div>
+						)}
+
+						{isEditing && teamDrivers.length > 0 && (
+							<div className="md:col-span-2 border-t pt-4">
+								<h3 className="font-semibold text-gray-700 mb-3">
+									Pilotos da equipe
+								</h3>
+								{Object.entries(byGrid).map(([grid, drivers]) => (
+									<div key={grid} className="mb-4">
+										<p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+											{formatEnum(grid)}
+										</p>
+										<ul className="space-y-2">
+											{drivers.map((d) => (
+												<li key={d.id} className="flex items-center justify-between gap-3">
+													<div className="flex items-center gap-3">
+														<div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
+															<img
+																src={d.photo?.url ?? ""}
+																alt={d.name ?? ""}
+																className="w-full h-full object-cover object-top scale-125 translate-y-1"
+															/>
+														</div>
+														<div>
+															<span className="text-sm font-medium">{d.name}</span>
+															{d.number && (
+																<span className="text-xs text-gray-400 ml-1">#{d.number}</span>
+															)}
+														</div>
+													</div>
+													<button
+														type="button"
+														onClick={() =>
+															updateDriver({
+																variables: {
+																	where: { id: d.id },
+																	data: { team: { disconnect: true } },
+																},
+															})
+														}
+														className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+														title="Remover da equipe"
+													>
+														<XMarkIcon className="h-4 w-4" />
+													</button>
+												</li>
+											))}
+										</ul>
+									</div>
+								))}
 							</div>
 						)}
 					</div>

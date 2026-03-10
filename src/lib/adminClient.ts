@@ -21,5 +21,11 @@ export async function createAdminApolloClient() {
 			headers: { Authorization: `Bearer ${token}` },
 		}),
 		cache: new InMemoryCache(),
+		defaultOptions: {
+			watchQuery: {
+				fetchPolicy: "cache-and-network",
+				nextFetchPolicy: "cache-and-network",
+			},
+		},
 	});
 }
