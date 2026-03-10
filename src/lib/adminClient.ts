@@ -24,7 +24,7 @@ export async function createAdminApolloClient() {
 		defaultOptions: {
 			watchQuery: {
 				fetchPolicy: "cache-and-network",
-				nextFetchPolicy: "cache-and-network",
+				nextFetchPolicy: "cache-first",
 			},
 		},
 	});
