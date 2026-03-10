@@ -59,10 +59,7 @@ export function DriverRegistration() {
 
 	const [updateDriver, { loading: updateDriverLoading }] =
 		useUpdateDriverMutation({
-			refetchQueries: [
-				{ query: GetDriversRegistrationDocument, variables: {} },
-				{ query: GetTeamsDocument },
-			],
+			refetchQueries: [{ query: GetDriversRegistrationDocument }],
 			awaitRefetchQueries: true,
 		});
 	const [createAsset] = useCreateAssetMutation();
@@ -311,7 +308,9 @@ export function DriverRegistration() {
 								: undefined,
 							team: teamId
 								? { connect: { id: teamId } }
-								: undefined,
+								: selectedDriver?.team
+									? { disconnect: true }
+									: undefined,
 						},
 					},
 				});
@@ -845,18 +844,7 @@ export function DriverRegistration() {
 							<label className="block mb-1">Equipe</label>
 							<Listbox
 								value={teamId}
-								onChange={async (value) => {
-									if (isEditing && value === "" && teamId) {
-										await updateDriver({
-											variables: {
-												where: { id: selectedDriver.id },
-												data: { team: { disconnect: true } },
-											},
-										});
-										setSelectedDriver((prev: any) => ({ ...prev, team: null }));
-									}
-									setTeamId(value);
-								}}
+								onChange={(value) => setTeamId(value)}
 							>
 								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 									{teamId ? (
