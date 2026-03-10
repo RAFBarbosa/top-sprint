@@ -13,6 +13,7 @@ import {
 	useUpdateDriverMutation,
 	useGetDriversRegistrationQuery,
 	GetDriversRegistrationDocument,
+	GetTeamsDocument,
 	useClassOptionsQuery,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
@@ -59,10 +60,8 @@ export function DriverRegistration() {
 	const [updateDriver, { loading: updateDriverLoading }] =
 		useUpdateDriverMutation({
 			refetchQueries: [
-				{
-					query: GetDriversRegistrationDocument,
-					variables: {},
-				},
+				{ query: GetDriversRegistrationDocument, variables: {} },
+				{ query: GetTeamsDocument },
 			],
 			awaitRefetchQueries: true,
 		});
@@ -107,7 +106,10 @@ export function DriverRegistration() {
 
 	const [createDriver, { loading: createDriverLoading }] =
 		useCreateDriverMutation({
-			refetchQueries: [{ query: GetDriversRegistrationDocument }],
+			refetchQueries: [
+				{ query: GetDriversRegistrationDocument },
+				{ query: GetTeamsDocument },
+			],
 			awaitRefetchQueries: true,
 		});
 
@@ -841,7 +843,21 @@ export function DriverRegistration() {
 						</div>
 						<div className="relative">
 							<label className="block mb-1">Equipe</label>
-							<Listbox value={teamId} onChange={setTeamId}>
+							<Listbox
+								value={teamId}
+								onChange={async (value) => {
+									if (isEditing && value === "" && teamId) {
+										await updateDriver({
+											variables: {
+												where: { id: selectedDriver.id },
+												data: { team: { disconnect: true } },
+											},
+										});
+										setSelectedDriver((prev: any) => ({ ...prev, team: null }));
+									}
+									setTeamId(value);
+								}}
+							>
 								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 									{teamId ? (
 										<div className="flex items-center gap-2">
@@ -863,7 +879,7 @@ export function DriverRegistration() {
 											</span>
 										</div>
 									) : (
-										"Selecione"
+										"Escolha equipe"
 									)}
 									<ChevronUpDownIcon
 										className="h-5 w-5 text-f1-silver"
@@ -871,6 +887,14 @@ export function DriverRegistration() {
 									/>
 								</ListboxButton>
 								<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+									<ListboxOption
+										value=""
+										className={({ active }) =>
+											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+										}
+									>
+										Escolha equipe
+									</ListboxOption>
 									{teamsData?.teams?.map((team) => (
 										<ListboxOption
 											key={team.id}
