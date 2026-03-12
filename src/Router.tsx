@@ -20,6 +20,7 @@ import { FeliplayRules } from "./pages/rules/FeliplayRules";
 import { BrazukaRules } from "./pages/rules/BrazukaRules";
 import { Archive } from "./pages/Archive";
 import { tenant } from "./shared/config/tenants";
+import { ManualResultsRegistration } from "./components/admin/ManualResultsRegistration";
 
 export function Router() {
 	const RulesPage = {
@@ -49,6 +50,10 @@ export function Router() {
 					<Route path="noticias" element={<NewsAdmin />} />
 					<Route path="campeoes" element={<HallOfFameAdmin />} />
 					<Route path="classificacao" element={<Standings />} />
+					<Route
+						path="resultado-manual"
+						element={<ManualResultsRegistration />}
+					/>
 				</Route>
 			</Route>
 		</Routes>

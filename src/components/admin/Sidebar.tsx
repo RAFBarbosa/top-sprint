@@ -103,6 +103,18 @@ export default function Sidebar() {
 							Classificação
 						</NavLink>
 					</li>
+					<li className="hidden md:block">
+						<NavLink
+							to="/admin/painel/resultado-manual"
+							className={({ isActive }) =>
+								`block p-2 rounded hover:bg-f1-red/20 ${
+									isActive ? "bg-f1-red/20 font-bold" : ""
+								}`
+							}
+						>
+							Resultado Manual
+						</NavLink>
+					</li>
 				</ul>
 			</nav>
 
