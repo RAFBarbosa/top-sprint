@@ -50,7 +50,7 @@ const tenantMeta: Record<
 		keywords:
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, F1 Brazuka, F1 eSports, corridas virtuais",
 		themeColor: "#064c24",
-		url: "https://www. f1brazuka.com.br",
+		url: "https://www.f1brazuka.com.br",
 		gtagId: "G-N82GC0X63T",
 	},
 };
