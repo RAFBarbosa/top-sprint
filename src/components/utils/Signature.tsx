@@ -1,10 +1,13 @@
-import React from "react";
+import { useState } from "react";
 
 interface SignatureProps {
 	side?: string;
 }
 
 export function Signature(props: SignatureProps) {
+	const [hovered, setHovered] = useState(false);
+	const isLeft = props.side === "left";
+
 	const signature = {
 		name: "Rafael Barbosa",
 		imageUrl:
@@ -13,23 +16,55 @@ export function Signature(props: SignatureProps) {
 	};
 
 	return (
-		<a href={signature.website} target="_blank">
-			<div
-				className={`flex items-center justify-center group cursor-pointer opacity-80 hover:opacity-100 transition-all duration-200 font-signature ${
-					props.side === "left" && "flex-row-reverse"
-				}`}
-			>
-				{/* Text */}
-				<div className="overflow-hidden p-1">
-					<p className="text-white text-sm group-hover:text-amber-300 transition-all duration-400 transform md:translate-x-full group-hover:-translate-x-0 ease-in-out md:opacity-0 group-hover:opacity-100">
-						Desenvolvido por {signature.name}
-					</p>
-				</div>
-				{/* Image */}
+		<a
+			href={signature.website}
+			target="_blank"
+			className="font-signature opacity-80 hover:opacity-100 transition-opacity duration-500"
+		>
+			{/* Mobile — logo first, centered */}
+			<div className="flex items-center justify-center gap-2 md:hidden">
 				<img
 					src={signature.imageUrl}
 					alt={signature.name}
-					className="w-8 h-auto rounded-full p-1 bg-neutral-700 "
+					className="w-6 h-auto rounded-full p-1 bg-neutral-700 shrink-0"
+				/>
+				<p className="text-white text-xs">
+					Desenvolvido por {signature.name}
+				</p>
+			</div>
+
+			{/* Desktop — hover effect: logo sweeps left, text reveals right-to-left */}
+			<div
+				className="relative hidden md:inline-flex items-center"
+				onMouseEnter={() => setHovered(true)}
+				onMouseLeave={() => setHovered(false)}
+			>
+				<p
+					className="absolute top-1/2 -translate-y-1/2 text-xs whitespace-nowrap"
+					style={{
+						[isLeft ? "left" : "right"]: "0",
+						[isLeft ? "paddingLeft" : "paddingRight"]: "4px",
+						color: hovered ? "rgb(252 211 77)" : "white",
+						clipPath: hovered
+							? "inset(0 0 0 0%)"
+							: isLeft
+								? "inset(0 100% 0 0)"
+								: "inset(0 0 0 100%)",
+						transition: "clip-path 0.3s, color 0.2s",
+					}}
+				>
+					Desenvolvido por {signature.name}
+				</p>
+				<img
+					src={signature.imageUrl}
+					alt={signature.name}
+					className="w-6 h-auto rounded-full p-1 bg-neutral-700 shrink-0 relative z-10"
+					style={{
+						transform: hovered
+							? `translateX(${isLeft ? "160px" : "-196px"})`
+							: "translateX(0)",
+						transition: "transform 0.3s",
+					}}
 				/>
 			</div>
 		</a>
