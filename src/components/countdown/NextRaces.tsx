@@ -22,7 +22,7 @@ interface Calendar {
 
 const loadingSkeleton = () => {
 	return (
-		<div className="md:flex justify-between max-w-screen-xl p-4">
+		<div className="md:flex justify-between max-w-screen-xl mx-auto px-3">
 			<div className="flex flex-col md:w-1/3">
 				<Skeleton
 					animation="wave"

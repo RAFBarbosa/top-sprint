@@ -21,6 +21,9 @@ import { BrazukaRules } from "./pages/rules/BrazukaRules";
 import { Archive } from "./pages/Archive";
 import { tenant } from "./shared/config/tenants";
 import { ManualResultsRegistration } from "./components/admin/ManualResultsRegistration";
+import { GridsAdmin } from "./components/admin/GridsAdmin";
+import { GridConfigAdmin } from "./components/admin/GridConfigAdmin";
+import { GridDriversAdmin } from "./components/admin/GridDriversAdmin";
 
 export function Router() {
 	const RulesPage = {
@@ -37,7 +40,7 @@ export function Router() {
 			<Route path="/pilotos" element={<Drivers />} />
 			<Route path="/pilotos/:driverName" element={<Profile />} />
 			<Route path="/resultados" element={<SessionResults />} />
-			<Route path="/resultados/:id" element={<SessionResults />} />
+			<Route path="/resultados/:slug" element={<SessionResults />} />
 			<Route path="/historico" element={<Archive />} />
 			<Route path="/admin" element={<AdminLogin />} />
 			<Route element={<ProtectedRoute />}>
@@ -54,6 +57,9 @@ export function Router() {
 						path="resultado-manual"
 						element={<ManualResultsRegistration />}
 					/>
+<Route path="grids" element={<GridsAdmin />} />
+					<Route path="grids/:gridId" element={<GridConfigAdmin />} />
+					<Route path="grids/:gridId/pilotos" element={<GridDriversAdmin />} />
 				</Route>
 			</Route>
 		</Routes>

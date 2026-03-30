@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { AdminStandings } from "../../admin/AdminStandings";
 import { GridId } from "../../../shared/config/grids";
 import { getGridConfig } from "../../../shared/config/grids";
+import { useDriverProfiles } from "../../../contexts/DriverProfilesContext";
 
 interface DataLoaderProps {
 	data: GetTeamsQuery | undefined;
@@ -22,6 +23,7 @@ export function DataLoader(props: DataLoaderProps) {
 	});
 
 	const gridConfig = getGridConfig(props.activeTab);
+	const { applyProfile } = useDriverProfiles();
 
 	const title = gridConfig?.standingsTitle ?? "";
 
@@ -36,7 +38,7 @@ export function DataLoader(props: DataLoaderProps) {
 						: normalizeString(d.name) ===
 							normalizeString(driver.name),
 				);
-				return {
+				const base = {
 					...driver,
 					name: driverFromData?.name || driver.name,
 					grid: driverFromData?.grid || "",
@@ -47,10 +49,18 @@ export function DataLoader(props: DataLoaderProps) {
 					teamLogo: driverFromData?.team?.photo?.url || "",
 					teamColor: driverFromData?.team?.color?.hex || "",
 				};
+				const profiled = applyProfile(base, props.activeTab);
+				// Flatten profile overrides back to the CSV-expected flat fields
+				return {
+					...profiled,
+					photo: typeof profiled.photo === "string" ? profiled.photo : profiled.photo?.url || "",
+					teamName: profiled.teamName || profiled.team?.name || "",
+					teamColor: profiled.teamColor || profiled.team?.color?.hex || "",
+				};
 			});
 		}
 		return [];
-	}, [props.data, drivers, teams]);
+	}, [props.data, drivers, teams, applyProfile, props.activeTab]);
 
 	const enhancedTeams = useMemo(() => {
 		if (!props.data?.teams?.length || !teams?.length) return [];

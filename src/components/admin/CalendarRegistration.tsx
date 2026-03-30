@@ -10,7 +10,6 @@ import {
 	useGetCalendarsRegistrationQuery,
 	useUpdateCalendarMutation,
 	GetCalendarsRegistrationDocument,
-	useGetDriversQuery,
 	useGridOptionsQuery,
 	useGetTracksQuery,
 } from "../../graphql/generated";
@@ -24,6 +23,7 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
+import { getGridLabel } from "../../shared/config/grids";
 
 export function CalendarRegistration() {
 	const [formData, setFormData] = useState({
@@ -31,11 +31,6 @@ export function CalendarRegistration() {
 		round: "",
 		sprint: false,
 		date: "",
-		link: "",
-		winnerA: "",
-		winnerB: "",
-		winnerAId: "",
-		winnerBId: "",
 		active: true,
 		grid: "",
 	});
@@ -67,13 +62,6 @@ export function CalendarRegistration() {
 		useGetCalendarsRegistrationQuery({
 			fetchPolicy: "network-only",
 		});
-
-	// Add drivers query
-	const {
-		data: driversData,
-		loading: driversLoading,
-		error: driversError,
-	} = useGetDriversQuery();
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -133,11 +121,6 @@ export function CalendarRegistration() {
 			round: calendar.round,
 			sprint: calendar.sprint || false,
 			date: isoToDatetimeLocal(calendar.date),
-			link: calendar.link || "",
-			winnerA: calendar.winnerA?.name || "",
-			winnerB: calendar.winnerB?.name || "",
-			winnerAId: calendar.winnerA?.id || "",
-			winnerBId: calendar.winnerB?.id || "",
 			active: calendar.active,
 			grid: calendar.grid || "",
 		});
@@ -151,11 +134,6 @@ export function CalendarRegistration() {
 			round: "",
 			sprint: false,
 			date: "",
-			link: "",
-			winnerA: "",
-			winnerB: "",
-			winnerAId: "",
-			winnerBId: "",
 			active: true,
 			grid: "",
 		});
@@ -182,19 +160,6 @@ export function CalendarRegistration() {
 			if (!formData.round) throw new Error("Rodada é obrigatória");
 			if (!formData.date) throw new Error("Data é obrigatória");
 
-			if (formData.link && !formData.link.startsWith("http")) {
-				throw new Error("URL deve começar com http/https");
-			}
-
-			// Prepare winner connections
-			const winnerAData = formData.winnerAId
-				? { connect: { id: formData.winnerAId } }
-				: undefined;
-
-			const winnerBData = formData.winnerBId
-				? { connect: { id: formData.winnerBId } }
-				: undefined;
-
 			if (isEditing && selectedCalendar) {
 				// Update existing calendar
 				const result = await updateCalendar({
@@ -206,9 +171,6 @@ export function CalendarRegistration() {
 							sprint: formData.sprint,
 							grid: formData.grid || null,
 							date: formattedDate,
-							link: formData.link || null,
-							winnerA: winnerAData,
-							winnerB: winnerBData,
 							active: formData.active,
 						},
 					},
@@ -231,9 +193,6 @@ export function CalendarRegistration() {
 							sprint: formData.sprint,
 							grid: formData.grid || null,
 							date: formattedDate,
-							link: formData.link || null,
-							winnerA: winnerAData,
-							winnerB: winnerBData,
 							active: formData.active,
 						},
 					},
@@ -294,8 +253,6 @@ export function CalendarRegistration() {
 					round: calendar.round,
 					date: calendar.date,
 					link: calendar.link,
-					winnerA: calendar.winnerA?.name || "",
-					winnerB: calendar.winnerB?.name || "",
 				}).some(([_, value]) =>
 					value
 						?.toString()
@@ -305,26 +262,6 @@ export function CalendarRegistration() {
 			: true;
 		return matchesGrid && matchesSearch && matchesActive;
 	});
-
-	// Helper function to format enum values
-	const formatEnum = (text: string) =>
-		text
-			.replace(/([A-Z])/g, " $1")
-			.replace(/^./, (str) => str.toUpperCase());
-
-	// Filter drivers by grid and class
-	const getFilteredDrivers = () => {
-		if (!driversData?.drivers) return [];
-
-		return driversData.drivers
-			.filter((driver) => {
-				const matchesGrid = formData.grid
-					? driver.grid === formData.grid
-					: true;
-				return !driver.deleted && matchesGrid;
-			})
-			.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
-	};
 
 	if (calendarsError) {
 		return (
@@ -376,19 +313,12 @@ export function CalendarRegistration() {
 							</button>
 						))}
 					</div>
-					<input
-						type="text"
-						placeholder="Buscar etapas (pista, rodada, data)..."
-						className="w-full p-2 border rounded h-11"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
 					<Listbox value={gridFilter} onChange={setGridFilter}>
 						<div className="relative">
 							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 								<span className="block truncate">
 									{gridFilter
-										? formatEnum(gridFilter)
+										? getGridLabel(gridFilter)
 										: "Todos os grids"}
 								</span>
 								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -416,13 +346,20 @@ export function CalendarRegistration() {
 										}
 									>
 										<span className="block truncate">
-											{formatEnum(option.name)}
+											{getGridLabel(option.name)}
 										</span>
 									</ListboxOption>
 								))}
 							</ListboxOptions>
 						</div>
 					</Listbox>
+					<input
+						type="text"
+						placeholder="Buscar etapas (pista, rodada, data)..."
+						className="w-full p-2 border rounded h-11"
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
 				</div>
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
@@ -467,7 +404,7 @@ export function CalendarRegistration() {
 														calendar.track.flag.url
 													}
 													alt={`Bandeira ${calendar.track?.name}`}
-													className="max-w-8 max-h-8 object-cover scale-150 mr-2 border border-f1-black/50 rounded"
+													className="w-[45px] h-[25px] object-cover rounded border border-black/20 shrink-0"
 												/>
 											)}
 										</div>
@@ -746,16 +683,6 @@ export function CalendarRegistration() {
 						</div>
 
 						<div>
-							<label className="block mb-1">Link</label>
-							<input
-								name="link"
-								value={formData.link}
-								onChange={handleChange}
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-
-						<div>
 							<label className="block mb-1">Grid</label>
 							<Listbox
 								value={formData.grid}
@@ -763,8 +690,6 @@ export function CalendarRegistration() {
 									setFormData((prev) => ({
 										...prev,
 										grid: value,
-										winnerA: "",
-										winnerAId: "",
 									}));
 								}}
 							>
@@ -772,7 +697,7 @@ export function CalendarRegistration() {
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
 											{formData.grid
-												? formatEnum(formData.grid)
+												? getGridLabel(formData.grid)
 												: "Selecione um grid"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -802,7 +727,7 @@ export function CalendarRegistration() {
 													}
 												>
 													<span className="block truncate">
-														{formatEnum(
+														{getGridLabel(
 															option.name,
 														)}
 													</span>
@@ -814,8 +739,8 @@ export function CalendarRegistration() {
 							</Listbox>
 						</div>
 
-						{/* Vencedor A Field */}
-						<div>
+						{/* Vencedor A Field - removed, winners now come from Firebase results */}
+						{/* <div>
 							<label
 								className={`block mb-1 ${!formData.grid ? "text-gray-400" : ""}`}
 							>
@@ -899,7 +824,7 @@ export function CalendarRegistration() {
 									</ListboxOptions>
 								</div>
 							</Listbox>
-						</div>
+						</div> */}
 
 						{/* Vencedor B Field */}
 						{/* <div>

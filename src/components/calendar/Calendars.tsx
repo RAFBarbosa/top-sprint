@@ -1,32 +1,94 @@
-import { useGetCalendarsQuery } from "../../graphql/generated";
+import { useState, useEffect } from "react";
+import { getDocs, collection } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
+import {
+	useGetCalendarsQuery,
+	useGetDriversQuery,
+} from "../../graphql/generated";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
+import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { Calendar } from "./Calendar";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
 
-// Import Swiper components
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-const loadingSkeleton = () => {
-	return (
-		<div className="w-[305px] my-6 md:mb-0 mx-auto">
-			<Skeleton
-				animation="wave"
-				variant="rectangular"
-				height={500}
-				sx={{ my: 1, margin: "auto" }}
-			/>
-		</div>
-	);
-};
+const loadingSkeleton = () => (
+	<div className="w-[305px] my-6 md:mb-0 mx-auto">
+		<Skeleton
+			animation="wave"
+			variant="rectangular"
+			height={500}
+			sx={{ my: 1, margin: "auto" }}
+		/>
+	</div>
+);
 
-export function Calendars() {
+export function Calendars({
+	hideHeader = false,
+}: { hideHeader?: boolean } = {}) {
 	const { data, error, loading } = useGetCalendarsQuery();
+	const { data: driversData } = useGetDriversQuery();
 	const { activeTab } = useTab();
+	const { applyProfile } = useDriverProfiles();
+
+	const [raceResultsMap, setRaceResultsMap] = useState<Record<string, any>>(
+		{},
+	);
+
+	useEffect(() => {
+		const fetchResults = async () => {
+			try {
+				const snap = await getDocs(collection(db, "race_results"));
+				const map: Record<string, any> = {};
+				snap.forEach((doc) => {
+					map[doc.id] = doc.data();
+				});
+				setRaceResultsMap(map);
+			} catch (e) {
+				console.error("Failed to fetch race results", e);
+			}
+		};
+		fetchResults();
+	}, []);
+
+	const driverLookup = Object.fromEntries(
+		(driversData?.drivers ?? []).map((d) => [d.id, d]),
+	);
+
+	const getWinner = (calendarId: string, targetGrid: string, hygraphWinner?: any) => {
+		const result = raceResultsMap[calendarId];
+		if (result?.results) {
+			const snapshot = result.driverSnapshots ?? {};
+			const winnerId = (result.results as string[]).find((id) => {
+				// prefer profile grid membership, fall back to Hygraph grid
+				const profile = snapshot[id];
+				return (profile?.grid ?? driverLookup[id]?.grid) === targetGrid
+					|| driverLookup[id]?.grid === targetGrid;
+			});
+			if (!winnerId) return null;
+			const driver = driverLookup[winnerId];
+			if (!driver) return null;
+			const snap = snapshot[winnerId];
+			const base = {
+				...driver,
+				team: {
+					...driver.team,
+					color: snap?.teamColor
+						? { hex: snap.teamColor }
+						: driver.team?.color,
+					name: snap?.teamName ?? driver.team?.name,
+				},
+				photo: snap?.photoUrl ? { url: snap.photoUrl } : driver.photo,
+			};
+			return applyProfile(base, targetGrid);
+		}
+		return hygraphWinner ?? null;
+	};
 
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
@@ -46,27 +108,28 @@ export function Calendars() {
 			: initialSlide;
 
 	return (
-		<aside className="bg-f1-bg-silver pt-10">
+		<aside className="bg-f1-bg-silver">
 			<div className="flex flex-col overflow-hidden">
-				<div className="w-full mx-auto max-w-screen-xl px-3">
-					<div
-						style={{
-							borderColor:
-								tenant.grids.length > 1
-									? (getGridConfig(activeTab.id)
-											?.primaryColor ??
-										"var(--color-brand-primary)")
-									: "var(--color-brand-primary)",
-						}}
-						className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center"
-					>
-						<h2 className="font-bold text-3xl md:text-4xl">
-							Calendário
-						</h2>
+				{!hideHeader && (
+					<div className="w-full mx-auto max-w-screen-xl px-3">
+						<div
+							style={{
+								borderColor:
+									tenant.grids.length > 1
+										? (getGridConfig(activeTab.id)
+												?.primaryColor ??
+											"var(--color-brand-primary)")
+										: "var(--color-brand-primary)",
+							}}
+							className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center"
+						>
+							<h2 className="font-bold text-3xl md:text-4xl">
+								Calendário
+							</h2>
+						</div>
 					</div>
-				</div>
+				)}
 
-				{/* Desktop view - carousel */}
 				{filteredCalendars && filteredCalendars.length > 0 && (
 					<div className="w-full mx-auto max-w-screen-xl px-3">
 						<div className="w-full mt-10 cursor-pointer overflow-visible relative">
@@ -100,34 +163,43 @@ export function Calendars() {
 									},
 								}}
 							>
-								{filteredCalendars.map((data) => (
+								{filteredCalendars.map((cal) => (
 									<SwiperSlide
-										key={data.id}
+										key={cal.id}
 										className="!w-auto !h-auto max-w-[320px]"
 									>
 										<div className="px-2 h-full">
 											<Calendar
-												round={data.round || ""}
-												sprint={data.sprint || false}
+												round={cal.round || ""}
+												sprint={cal.sprint || false}
 												track={
-													data.track?.name ||
-													data.round ||
+													cal.track?.name ||
+													cal.round ||
 													""
 												}
 												location={
-													data.track?.location || ""
+													cal.track?.location || ""
 												}
-												date={data.date || ""}
-												winnerA={data.winnerA || null}
-												winnerB={data.winnerB || null}
-												link={data.link || ""}
+												date={cal.date || ""}
+												grid={cal.grid}
+												winnerA={getWinner(
+													cal.id,
+													cal.grid,
+													cal.winnerA,
+												)}
+												winnerB={null}
+												externalLink={
+													!raceResultsMap[cal.id] && cal.link
+														? cal.link
+														: undefined
+												}
 												map={
-													data.track?.map || {
+													cal.track?.map || {
 														url: tenant.logo.url,
 													}
 												}
 												flag={
-													data.track?.flag || {
+													cal.track?.flag || {
 														url: tenant.logo.url,
 													}
 												}
@@ -137,7 +209,6 @@ export function Calendars() {
 								))}
 							</Swiper>
 							<div className="pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
-
 							<div className="pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
 						</div>
 					</div>
@@ -146,4 +217,3 @@ export function Calendars() {
 		</aside>
 	);
 }
-

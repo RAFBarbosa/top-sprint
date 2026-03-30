@@ -1,394 +1,459 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import {
+	Combobox,
+	ComboboxInput,
+	ComboboxButton,
+	ComboboxOption,
+	ComboboxOptions,
 	Listbox,
 	ListboxButton,
 	ListboxOption,
 	ListboxOptions,
 } from "@headlessui/react";
 import {
-	useCreateCalendarMutation,
 	useGetCalendarsRegistrationQuery,
 	useUpdateCalendarMutation,
 	GetCalendarsRegistrationDocument,
 	useGetDriversQuery,
 	useGridOptionsQuery,
-	useGetTracksQuery,
 } from "../../graphql/generated";
-import { format } from "date-fns";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { getGridLabel, getGridConfig } from "../../shared/config/grids";
+import { tenant } from "../../shared/config/tenants";
+import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import { XMarkIcon } from "@heroicons/react/16/solid";
-import {
-	Dialog,
-	DialogTitle,
-	DialogPanel,
-	Description,
-} from "@headlessui/react";
+
+// Firebase
+import { doc, getDoc, setDoc, getDocs, collection } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
+
+interface GridProfile {
+	number: string;
+	teamName: string;
+	teamColor: string;
+}
+
+interface RaceResult {
+	position: number;
+	driverId: string;
+	driverName: string;
+}
+
+interface Penalty {
+	driverId: string;
+	seconds: number;
+}
 
 export function ManualResultsRegistration() {
-	const [formData, setFormData] = useState({
-		trackId: "",
-		round: "",
-		sprint: false,
-		date: "",
-		link: "",
-		winnerA: "",
-		winnerB: "",
-		winnerAId: "",
-		winnerBId: "",
-		active: true,
-		grid: "",
-	});
+	// Aba Ativa
+	const [activeTab, setActiveTab] = useState<"sprint" | "race">("race");
+
+	// --- ESTADOS CORRIDA ---
+	const [results, setResults] = useState<RaceResult[]>(
+		Array.from({ length: 20 }, (_, i) => ({
+			position: i + 1,
+			driverId: "",
+			driverName: "",
+		})),
+	);
+	const [qualyResults, setQualyResults] = useState<RaceResult[]>(
+		Array.from({ length: 20 }, (_, i) => ({
+			position: i + 1,
+			driverId: "",
+			driverName: "",
+		})),
+	);
+	const [penaltyValues, setPenaltyValues] = useState<number[]>(
+		Array(20).fill(0),
+	);
+	// Prêmios Corrida
+	const [awards, setAwards] = useState<Record<string, string>>({});
+
+	// --- ESTADOS SPRINT ---
+	const [sprintResults, setSprintResults] = useState<RaceResult[]>(
+		Array.from({ length: 20 }, (_, i) => ({
+			position: i + 1,
+			driverId: "",
+			driverName: "",
+		})),
+	);
+	const [sprintQualy, setSprintQualy] = useState<RaceResult[]>(
+		Array.from({ length: 20 }, (_, i) => ({
+			position: i + 1,
+			driverId: "",
+			driverName: "",
+		})),
+	);
+	const [sprintPenaltyValues, setSprintPenaltyValues] = useState<number[]>(
+		Array(20).fill(0),
+	);
+	// Prêmios Sprint
+	const [sprintAwards, setSprintAwards] = useState<Record<string, string>>(
+		{},
+	);
+
+	// Queries de busca
+	const [raceQueries, setRaceQueries] = useState<string[]>(
+		Array(20).fill(""),
+	);
+	const [qualyQueries, setQualyQueries] = useState<string[]>(
+		Array(20).fill(""),
+	);
+	const [sprintRaceQueries, setSprintRaceQueries] = useState<string[]>(
+		Array(20).fill(""),
+	);
+	const [sprintQualyQueries, setSprintQualyQueries] = useState<string[]>(
+		Array(20).fill(""),
+	);
+	// Queries de busca para prêmios
+	const [awardQueries, setAwardQueries] = useState<Record<string, string>>(
+		{},
+	);
+
+	const [allProfiles, setAllProfiles] = useState<
+		Record<string, Record<string, GridProfile>>
+	>({});
+
+	const [link, setLink] = useState("");
 
 	const [status, setStatus] = useState<{
 		type: "idle" | "loading" | "success" | "error";
 		message: string;
 	}>({ type: "idle", message: "" });
 	const [selectedCalendar, setSelectedCalendar] = useState<any>(null);
-	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [gridFilter, setGridFilter] = useState("");
 	const [activeFilter, setActiveFilter] = useState<
 		"all" | "active" | "inactive"
 	>("all");
+	const [gridFilter, setGridFilter] = useState("");
 
-	const [createCalendar, { loading: createCalendarLoading }] =
-		useCreateCalendarMutation({
-			refetchQueries: [{ query: GetCalendarsRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
-	const [updateCalendar, { loading: updateCalendarLoading }] =
-		useUpdateCalendarMutation({
-			refetchQueries: [{ query: GetCalendarsRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
+	const { data: calendarsData } = useGetCalendarsRegistrationQuery({
+		fetchPolicy: "network-only",
+	});
+	const { data: driversData } = useGetDriversQuery();
+	const { data: gridData } = useGridOptionsQuery();
 
-	const { data: calendarsData, error: calendarsError } =
-		useGetCalendarsRegistrationQuery({
-			fetchPolicy: "network-only",
-		});
+	useEffect(() => {
+		const loadProfiles = async () => {
+			try {
+				const snap = await getDocs(collection(db, "driver_profiles"));
+				const map: Record<string, Record<string, GridProfile>> = {};
+				snap.forEach((d) => {
+					map[d.id] = d.data() as Record<string, GridProfile>;
+				});
+				setAllProfiles(map);
+			} catch (e) {
+				console.error("Failed to load driver profiles", e);
+			}
+		};
+		loadProfiles();
+	}, []);
 
-	// Add drivers query
-	const {
-		data: driversData,
-		loading: driversLoading,
-		error: driversError,
-	} = useGetDriversQuery();
+	// --- LEITURA DO FIREBASE ---
+	useEffect(() => {
+		const loadFromFirebase = async () => {
+			if (!selectedCalendar?.id || !driversData?.drivers) return;
 
-	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-	const [itemToDelete, setItemToDelete] = useState<{
-		id: string;
-		deleted: boolean;
-	} | null>(null);
+			try {
+				const docRef = doc(db, "race_results", selectedCalendar.id);
+				const docSnap = await getDoc(docRef);
 
-	const handleDeleteClick = (id: string, deleted: boolean) => {
-		setItemToDelete({ id, deleted });
-		setIsDeleteModalOpen(true);
-	};
+				const mapFirebaseToState = (driverIds: string[]) => {
+					return Array.from({ length: 20 }, (_, i) => {
+						const id = driverIds?.[i];
+						const info = id
+							? driversData.drivers?.find((d) => d.id === id)
+							: null;
+						return {
+							position: i + 1,
+							driverId: id || "",
+							driverName: info?.name || "",
+						};
+					});
+				};
 
-	const confirmDelete = async () => {
-		if (itemToDelete) {
-			await handleToggleDelete(itemToDelete.id, itemToDelete.deleted);
-			setIsDeleteModalOpen(false);
-			setItemToDelete(null);
+				const mapPenaltiesToState = (
+					resList: RaceResult[],
+					pList: Penalty[],
+				) => {
+					const vals = Array(20).fill(0);
+					resList.forEach((res, index) => {
+						const p = pList?.find(
+							(fp) => fp.driverId === res.driverId,
+						);
+						if (p) vals[index] = p.seconds;
+					});
+					return vals;
+				};
+
+				const gridRaceAwards = resolveRaceAwards(selectedCalendar.grid);
+				const capitalize = (s: string) =>
+					s.charAt(0).toUpperCase() + s.slice(1);
+
+				if (docSnap.exists()) {
+					const data = docSnap.data();
+					setLink(data.link || "");
+					const rR = mapFirebaseToState(data.results || []);
+					setResults(rR);
+					setQualyResults(
+						mapFirebaseToState(data.resultsQualy || []),
+					);
+					setPenaltyValues(
+						mapPenaltiesToState(rR, data.penalties || []),
+					);
+					setAwards(
+						Object.fromEntries(
+							gridRaceAwards.map((a) => [a.id, data[a.id] || ""]),
+						),
+					);
+
+					const sR = mapFirebaseToState(data.sprintResults || []);
+					setSprintResults(sR);
+					setSprintQualy(
+						mapFirebaseToState(data.sprintResultsQualy || []),
+					);
+					setSprintPenaltyValues(
+						mapPenaltiesToState(sR, data.sprintPenalties || []),
+					);
+					setSprintAwards(
+						Object.fromEntries(
+							gridRaceAwards.map((a) => [
+								a.id,
+								data[`sprint${capitalize(a.id)}`] || "",
+							]),
+						),
+					);
+				} else {
+					const empty = () =>
+						Array.from({ length: 20 }, (_, i) => ({
+							position: i + 1,
+							driverId: "",
+							driverName: "",
+						}));
+					setResults(empty());
+					setQualyResults(empty());
+					setSprintResults(empty());
+					setSprintQualy(empty());
+					setPenaltyValues(Array(20).fill(0));
+					setSprintPenaltyValues(Array(20).fill(0));
+					setLink("");
+					const emptyAwards = Object.fromEntries(
+						gridRaceAwards.map((a) => [a.id, ""]),
+					);
+					setAwards(emptyAwards);
+					setSprintAwards({ ...emptyAwards });
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		};
+		loadFromFirebase();
+	}, [selectedCalendar, driversData]);
+
+	// Garantir que a aba Sprint não fique aberta em etapas sem Sprint
+	useEffect(() => {
+		if (
+			selectedCalendar &&
+			!selectedCalendar.sprint &&
+			activeTab === "sprint"
+		) {
+			setActiveTab("race");
 		}
-	};
+	}, [selectedCalendar]);
 
-	const cancelDelete = () => {
-		setIsDeleteModalOpen(false);
-		setItemToDelete(null);
-	};
+	// --- GRAVAÇÃO ---
+	const handleSubmit = async (e: FormEvent) => {
+		e.preventDefault();
+		if (!selectedCalendar?.id) return;
+		setStatus({ type: "loading", message: "Salvando no Firebase..." });
 
-	const { data: gridData, loading: gridLoading } = useGridOptionsQuery();
-	const { data: tracksData, loading: tracksLoading } = useGetTracksQuery();
-
-	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
-			await updateCalendar({
-				variables: {
-					where: { id },
-					data: { deleted: !currentDeleted },
-				},
+			const getPToSave = (resList: RaceResult[], penList: number[]) => {
+				return resList
+					.map((res, i) => ({
+						driverId: res.driverId,
+						seconds: penList[i],
+					}))
+					.filter((p) => p.driverId && p.seconds > 0);
+			};
+
+			// Snapshot each driver's grid-specific team/number so historical results stay accurate
+			const allIds = new Set(
+				[...results, ...qualyResults, ...sprintResults, ...sprintQualy]
+					.map((r) => r.driverId)
+					.filter(Boolean),
+			);
+			const driverSnapshots: Record<
+				string,
+				{ teamName: string; teamColor: string; number: string; photoUrl: string }
+			> = {};
+			allIds.forEach((id) => {
+				const driver = driversData?.drivers?.find((d) => d.id === id);
+				if (driver) {
+					const profile =
+						allProfiles[id]?.[selectedCalendar.grid ?? ""];
+					driverSnapshots[id] = {
+						teamName:
+							profile?.teamName ?? driver.team?.name ?? "",
+						teamColor:
+							profile?.teamColor ??
+							driver.team?.color?.hex ??
+							"",
+						number: profile?.number ?? driver.number ?? "",
+						photoUrl:
+							profile?.photoUrl ?? driver.photo?.url ?? "",
+					};
+				}
 			});
-		} catch (error) {
-			console.error("Error toggling delete:", error);
+
+			const gridRaceAwards = resolveRaceAwards(selectedCalendar.grid);
+			const capitalize = (s: string) =>
+				s.charAt(0).toUpperCase() + s.slice(1);
+			const awardFields = Object.fromEntries(
+				gridRaceAwards.map((a) => [a.id, awards[a.id] || ""]),
+			);
+			const sprintAwardFields = Object.fromEntries(
+				gridRaceAwards.map((a) => [
+					`sprint${capitalize(a.id)}`,
+					sprintAwards[a.id] || "",
+				]),
+			);
+
+			await setDoc(doc(db, "race_results", selectedCalendar.id), {
+				calendarId: selectedCalendar.id,
+				results: results.map((r) => r.driverId),
+				resultsQualy: qualyResults.map((r) => r.driverId),
+				penalties: getPToSave(results, penaltyValues),
+				...awardFields,
+
+				sprintResults: sprintResults.map((r) => r.driverId),
+				sprintResultsQualy: sprintQualy.map((r) => r.driverId),
+				sprintPenalties: getPToSave(sprintResults, sprintPenaltyValues),
+				...sprintAwardFields,
+
+				link: link || "",
+				driverSnapshots,
+				updatedAt: new Date().toISOString(),
+				grid: selectedCalendar.grid || "",
+			});
+
+			setStatus({
+				type: "success",
+				message: `Dados de ${activeTab === "race" ? "Corrida" : "Sprint"} salvos!`,
+			});
+			setTimeout(() => setStatus({ type: "idle", message: "" }), 3000);
+		} catch (error: any) {
+			setStatus({ type: "error", message: "Erro: " + error.message });
 		}
-	};
-
-	const isoToDatetimeLocal = (isoString: string) => {
-		if (!isoString) return "";
-		const date = new Date(isoString);
-		const pad = (num: number) => num.toString().padStart(2, "0");
-
-		return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-			date.getDate(),
-		)}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 	};
 
 	const handleSelectCalendar = (calendar: any) => {
 		setSelectedCalendar(calendar);
-		setIsEditing(true);
-		setFormData({
-			trackId: calendar.track?.id || "",
-			round: calendar.round,
-			sprint: calendar.sprint || false,
-			date: isoToDatetimeLocal(calendar.date),
-			link: calendar.link || "",
-			winnerA: calendar.winnerA?.name || "",
-			winnerB: calendar.winnerB?.name || "",
-			winnerAId: calendar.winnerA?.id || "",
-			winnerBId: calendar.winnerB?.id || "",
-			active: calendar.active,
-			grid: calendar.grid || "",
-		});
-	};
-
-	const resetForm = () => {
-		setSelectedCalendar(null);
-		setIsEditing(false);
-		setFormData({
-			trackId: "",
-			round: "",
-			sprint: false,
-			date: "",
-			link: "",
-			winnerA: "",
-			winnerB: "",
-			winnerAId: "",
-			winnerBId: "",
-			active: true,
-			grid: "",
-		});
-	};
-
-	const handleCalendar = async (event: FormEvent) => {
-		event.preventDefault();
-		setStatus({ type: "loading", message: "Enviando dados..." });
-
-		if (!formData.date) {
-			setStatus({
-				type: "error",
-				message: "Por favor, selecione uma data válida",
-			});
-			return;
-		}
-
-		try {
-			const formattedDate = new Date(formData.date)
-				.toISOString()
-				.replace(/\.\d{3}Z$/, "Z");
-			// Validate required fields
-			if (!formData.trackId) throw new Error("Pista é obrigatória");
-			if (!formData.round) throw new Error("Rodada é obrigatória");
-			if (!formData.date) throw new Error("Data é obrigatória");
-
-			if (formData.link && !formData.link.startsWith("http")) {
-				throw new Error("URL deve começar com http/https");
-			}
-
-			// Prepare winner connections
-			const winnerAData = formData.winnerAId
-				? { connect: { id: formData.winnerAId } }
-				: undefined;
-
-			const winnerBData = formData.winnerBId
-				? { connect: { id: formData.winnerBId } }
-				: undefined;
-
-			if (isEditing && selectedCalendar) {
-				// Update existing calendar
-				const result = await updateCalendar({
-					variables: {
-						where: { id: selectedCalendar.id },
-						data: {
-							track: { connect: { id: formData.trackId } },
-							round: formData.round,
-							sprint: formData.sprint,
-							grid: formData.grid || null,
-							date: formattedDate,
-							link: formData.link || null,
-							winnerA: winnerAData,
-							winnerB: winnerBData,
-							active: formData.active,
-						},
-					},
-				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				setStatus({
-					type: "success",
-					message: "Etapa atualizada com sucesso!",
-				});
-			} else {
-				// Create new calendar
-				const result = await createCalendar({
-					variables: {
-						data: {
-							deleted: false,
-							track: { connect: { id: formData.trackId } },
-							round: formData.round,
-							sprint: formData.sprint,
-							grid: formData.grid || null,
-							date: formattedDate,
-							link: formData.link || null,
-							winnerA: winnerAData,
-							winnerB: winnerBData,
-							active: formData.active,
-						},
-					},
-				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				setStatus({
-					type: "success",
-					message: "Etapa cadastrada com sucesso!",
-				});
-			}
-
-			if (!isEditing) {
-				resetForm();
-			}
-
-			setTimeout(() => {
-				setStatus({ type: "idle", message: "" });
-			}, 5000);
-		} catch (error) {
-			console.error("Registration error:", error);
-			setStatus({
-				type: "error",
-				message:
-					error.message || "Erro desconhecido ao cadastrar etapa",
-			});
-		}
-	};
-
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-	) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-	};
-
-	const filteredCalendars = (
-		calendarsData?.calendars
-			? [...calendarsData.calendars].sort((a, b) => {
-					const dateA = new Date(a.date).getTime();
-					const dateB = new Date(b.date).getTime();
-					return dateB - dateA;
-				})
-			: []
-	).filter((calendar) => {
-		const matchesGrid = gridFilter ? calendar.grid === gridFilter : true;
-		const matchesActive =
-			activeFilter === "all"
-				? true
-				: activeFilter === "active"
-					? calendar.active === true
-					: calendar.active !== true;
-		const matchesSearch = searchTerm
-			? Object.entries({
-					track: calendar.track?.name || "",
-					location: calendar.track?.location || "",
-					round: calendar.round,
-					date: calendar.date,
-					link: calendar.link,
-					winnerA: calendar.winnerA?.name || "",
-					winnerB: calendar.winnerB?.name || "",
-				}).some(([_, value]) =>
-					value
-						?.toString()
-						.toLowerCase()
-						.includes(searchTerm.toLowerCase()),
-				)
-			: true;
-		return matchesGrid && matchesSearch && matchesActive;
-	});
-
-	// Helper function to format enum values
-	const formatEnum = (text: string) =>
-		text
-			.replace(/([A-Z])/g, " $1")
-			.replace(/^./, (str) => str.toUpperCase());
-
-	// Filter drivers by grid and class
-	const getFilteredDrivers = () => {
-		if (!driversData?.drivers) return [];
-
-		return driversData.drivers
-			.filter((driver) => {
-				const matchesGrid = formData.grid
-					? driver.grid === formData.grid
-					: true;
-				return !driver.deleted && matchesGrid;
-			})
-			.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
-	};
-
-	if (calendarsError) {
-		return (
-			<div className="bg-f1-lightSilver py-10">
-				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-					Erro ao carregar etapas: {calendarsError.message}
-				</div>
-			</div>
+		setLink("");
+		setRaceQueries(Array(20).fill(""));
+		setQualyQueries(Array(20).fill(""));
+		setSprintRaceQueries(Array(20).fill(""));
+		setSprintQualyQueries(Array(20).fill(""));
+		const emptyAwards = Object.fromEntries(
+			(getGridConfig(calendar.grid)?.raceAwards ?? []).map((a) => [
+				a.id,
+				"",
+			]),
 		);
-	}
+		setAwards(emptyAwards);
+		setSprintAwards({ ...emptyAwards });
+		setAwardQueries({ ...emptyAwards });
+		setStatus({ type: "idle", message: "" });
+	};
+
+	const getFilteredDrivers = (query: string) => {
+		if (!driversData?.drivers || !selectedCalendar) return [];
+		const q = query.toLowerCase();
+		const grid = selectedCalendar.grid;
+		return driversData.drivers
+			.filter((d) => {
+				if (d.deleted) return false;
+				if (!grid) return true;
+				// Show if they have a Firebase profile for this grid,
+				// or fall back to Hygraph grid field for drivers not yet migrated
+				return (
+					allProfiles[d.id]?.[grid] !== undefined ||
+					d.grid === grid
+				);
+			})
+			.filter((d) => q === "" || d.name?.toLowerCase().includes(q))
+			.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+	};
+
+	const gridOptions: string[] =
+		gridData?.__type?.enumValues?.map((v: any) => v.name) ?? [];
+
+	// Resolve raceAwards for a calendar: try the calendar's specific grid first,
+	// fall back to the first tenant grid that has raceAwards configured.
+	const resolveRaceAwards = (gridId: string | null | undefined) => {
+		const explicit = getGridConfig(gridId ?? "")?.raceAwards;
+		if (explicit?.length) return explicit;
+		return (
+			(tenant.grids as any[]).find((g: any) => g.raceAwards?.length)
+				?.raceAwards ?? []
+		);
+	};
 
 	const formatDateWithCapitalizedMonth = (dateString: string) => {
 		const date = new Date(dateString);
 		const day = format(date, "dd", { locale: ptBR });
 		const month = format(date, "MMMM", { locale: ptBR });
 		const year = format(date, "yyyy", { locale: ptBR });
-
 		const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
 		return `${day} de ${capitalizedMonth} de ${year}`;
 	};
 
+	const filteredCalendars = (
+		calendarsData?.calendars ? [...calendarsData.calendars] : []
+	)
+		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+		.filter((c) => {
+			const matchesActive =
+				activeFilter === "all"
+					? true
+					: activeFilter === "active"
+						? c.active
+						: !c.active;
+			const matchesSearch = searchTerm
+				? (c.track?.name || "")
+						.toLowerCase()
+						.includes(searchTerm.toLowerCase())
+				: true;
+			const matchesGrid = gridFilter ? c.grid === gridFilter : true;
+			return matchesActive && matchesSearch && matchesGrid;
+		});
+
 	return (
 		<div className="flex flex-col md:flex-row w-full">
-			{/* Calendar Sidebar */}
+			{/* Calendar sidebar */}
 			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
 				<div className="mb-4 space-y-2">
-					{/* Active filter - segmented control */}
 					<div className="flex rounded border overflow-hidden text-sm">
-						{[
-							{ label: "Todos", value: "all" },
-							{ label: "Ativos", value: "active" },
-							{ label: "Inativos", value: "inactive" },
-						].map(({ label, value }) => (
+						{["all", "active", "inactive"].map((val) => (
 							<button
-								key={value}
-								type="button"
-								onClick={() =>
-									setActiveFilter(
-										value as "all" | "active" | "inactive",
-									)
-								}
-								className={`flex-1 py-2 cursor-pointer transition-colors duration-120 ${
-									activeFilter === value
-										? "bg-f1-red text-white font-medium"
-										: "bg-white text-gray-600 hover:bg-f1-red/10"
-								}`}
+								key={val}
+								onClick={() => setActiveFilter(val as any)}
+								className={`flex-1 py-2 cursor-pointer transition-colors duration-120 ${activeFilter === val ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
 							>
-								{label}
+								{val === "all"
+									? "Todos"
+									: val === "active"
+										? "Ativos"
+										: "Inativos"}
 							</button>
 						))}
 					</div>
-					<input
-						type="text"
-						placeholder="Buscar etapas (pista, rodada, data)..."
-						className="w-full p-2 border rounded h-11"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
 					<Listbox value={gridFilter} onChange={setGridFilter}>
 						<div className="relative">
 							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 								<span className="block truncate">
 									{gridFilter
-										? formatEnum(gridFilter)
+										? getGridLabel(gridFilter)
 										: "Todos os grids"}
 								</span>
 								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -407,595 +472,472 @@ export function ManualResultsRegistration() {
 								>
 									Todos os grids
 								</ListboxOption>
-								{gridData?.__type?.enumValues?.map((option) => (
+								{gridOptions.map((option) => (
 									<ListboxOption
-										key={option.name}
-										value={option.name}
+										key={option}
+										value={option}
 										className={({ active }) =>
 											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
 										}
 									>
 										<span className="block truncate">
-											{formatEnum(option.name)}
+											{getGridLabel(option)}
 										</span>
 									</ListboxOption>
 								))}
 							</ListboxOptions>
 						</div>
 					</Listbox>
+					<input
+						type="text"
+						placeholder="Buscar etapas..."
+						className="w-full p-2 border rounded h-11"
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
 				</div>
-
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
-					{filteredCalendars.length > 0 ? (
-						filteredCalendars.map((calendar) => (
-							<li key={calendar.id}>
-								<div
-									onClick={() =>
-										handleSelectCalendar(calendar)
-									}
-									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
-										selectedCalendar?.id === calendar.id
-											? "bg-f1-red/20 font-bold"
-											: ""
-									}`}
-								>
-									<div className="flex flex-col items-start truncate">
-										<span className="truncate max-w-40">
-											{calendar.track?.name
-												? `${calendar.track.name}`
-												: calendar.round}
-										</span>
-										<div className="flex flex-col items-start">
-											<span className="text-xs text-gray-500">
-												• {calendar.round}
-											</span>
-										</div>
-										<div className="flex flex-col items-start">
-											<span className="text-xs text-gray-500">
-												•{" "}
-												{formatDateWithCapitalizedMonth(
-													calendar.date,
-												)}
-											</span>
-										</div>
-									</div>
-									<div className="flex gap-4 items-center">
-										<div>
-											{calendar.track?.flag?.url && (
-												<img
-													src={
-														calendar.track.flag.url
-													}
-													alt={`Bandeira ${calendar.track?.name}`}
-													className="max-w-8 max-h-8 object-cover scale-150 mr-2 border border-f1-black/50 rounded"
-												/>
-											)}
-										</div>
-										<button
-											onClick={() =>
-												handleDeleteClick(
-													calendar.id,
-													calendar.deleted,
-												)
-											}
-											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-											title={
-												calendar.deleted
-													? "Restaurar"
-													: "Excluir"
-											}
-										>
-											<XMarkIcon className="h-5 w-5" />
-										</button>
-									</div>
+					{filteredCalendars.map((calendar) => (
+						<li key={calendar.id}>
+							<div
+								onClick={() => handleSelectCalendar(calendar)}
+								className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${selectedCalendar?.id === calendar.id ? "bg-f1-red/20 font-bold" : ""}`}
+							>
+								<div className="flex flex-col items-start truncate">
+									<span className="truncate max-w-40">
+										{calendar.track?.name ?? calendar.round}
+									</span>
+									<span className="text-xs text-gray-500">
+										• {calendar.round}
+									</span>
+									<span className="text-xs text-gray-500">
+										•{" "}
+										{formatDateWithCapitalizedMonth(
+											calendar.date,
+										)}
+									</span>
 								</div>
-							</li>
-						))
-					) : (
-						<li className="p-2 text-gray-500 text-center">
-							Nenhuma etapa encontrada
+								<div className="flex gap-4 items-center">
+									{calendar.track?.flag?.url && (
+										<img
+											src={calendar.track.flag.url}
+											alt=""
+											className="w-[45px] h-[25px] object-cover rounded border border-black/20 shrink-0"
+										/>
+									)}
+								</div>
+							</div>
 						</li>
-					)}
+					))}
 				</ul>
 			</div>
 
-			<Dialog
-				open={isDeleteModalOpen}
-				onClose={cancelDelete}
-				className="relative z-50"
-			>
-				{/* Backdrop */}
-				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-
-				{/* Modal container */}
-				<div className="fixed inset-0 flex items-center justify-center p-4">
-					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
-						<DialogTitle className="text-lg font-bold">
-							{itemToDelete?.deleted
-								? "Restaurar Etapa"
-								: "Excluir Etapa"}
-						</DialogTitle>
-						<Description className="mt-1">
-							{itemToDelete?.deleted
-								? "Deseja restaurar esta etapa?"
-								: "Tem certeza que deseja excluir esta etapa?"}
-						</Description>
-
-						<div className="mt-6 flex justify-end gap-2">
-							<button
-								onClick={cancelDelete}
-								className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-f1-bg-silver cursor-pointer"
-							>
-								Cancelar
-							</button>
-							<button
-								onClick={confirmDelete}
-								className={`px-4 py-2 text-white rounded cursor-pointer ${
-									itemToDelete?.deleted
-										? "bg-green-600 hover:bg-green-700"
-										: "bg-f1-red hover:bg-f1-red/90"
-								}`}
-							>
-								{itemToDelete?.deleted
-									? "Restaurar"
-									: "Excluir"}
-							</button>
-						</div>
-					</DialogPanel>
-				</div>
-			</Dialog>
-
-			{/* Registration Form */}
+			{/* Main content */}
 			<div className="mx-auto max-w-3xl w-full">
 				<form
-					onSubmit={handleCalendar}
+					onSubmit={handleSubmit}
 					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
 				>
 					<div className="flex justify-between items-center mb-6">
 						<div>
 							<h2 className="text-2xl font-bold">
-								{isEditing
-									? "Editar Etapa"
-									: "Cadastrar Nova Etapa"}
+								{activeTab === "race"
+									? "Resultados Corrida"
+									: "Resultados Sprint"}
 							</h2>
-							<div className="flex items-center justify-start gap-6 mt-4">
-								<div className="flex items-center gap-2">
-									<span className="text-sm font-medium">
-										Ativo
-									</span>
-									<label className="relative inline-flex items-center cursor-pointer">
-										<input
-											type="checkbox"
-											checked={formData.active}
-											onChange={(e) =>
-												setFormData({
-													...formData,
-													active: e.target.checked,
-												})
-											}
-											className="sr-only peer"
-										/>
-										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
-									</label>
-								</div>
-								<div className="flex items-center gap-2">
-									<span className="text-sm font-medium">
-										Sprint
-									</span>
-									<label className="relative inline-flex items-center cursor-pointer">
-										<input
-											type="checkbox"
-											checked={formData.sprint}
-											onChange={(e) =>
-												setFormData({
-													...formData,
-													sprint: e.target.checked,
-												})
-											}
-											className="sr-only peer"
-										/>
-										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
-									</label>
-								</div>
-							</div>
+							{selectedCalendar && (
+								<p className="text-sm mt-1 text-gray-600">
+									{selectedCalendar.track?.name} —{" "}
+									{selectedCalendar.round}
+								</p>
+							)}
 						</div>
-						{isEditing && (
-							<div className="flex gap-2">
-								<button
-									type="button"
-									onClick={() => {
-										setFormData((prev) => ({
-											...prev,
-											trackId:
-												selectedCalendar?.track?.id ||
-												"",
-										}));
-										setSelectedCalendar(null);
-										setIsEditing(false);
-									}}
-									className="px-4 py-1 self-start bg-blue-100 text-blue-700 rounded hover:bg-blue-200 cursor-pointer"
-								>
-									Duplicar
-								</button>
-								<button
-									type="button"
-									onClick={resetForm}
-									className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
-								>
-									Nova Etapa
-								</button>
-							</div>
-						)}
+						<div className="flex items-center gap-2">
+							{selectedCalendar?.sprint && (
+								<div className="flex rounded border overflow-hidden text-sm">
+									<button
+										type="button"
+										onClick={() => setActiveTab("race")}
+										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "race" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+									>
+										Corrida
+									</button>
+									<button
+										type="button"
+										onClick={() => setActiveTab("sprint")}
+										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "sprint" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+									>
+										Sprint
+									</button>
+								</div>
+							)}
+							<button
+								type="button"
+								onClick={handleSubmit}
+								disabled={!selectedCalendar}
+								className="bg-f1-carbon border border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
+							>
+								Gravar Dados
+							</button>
+						</div>
 					</div>
 
 					{status.type !== "idle" && (
 						<div
-							className={`w-full p-4 rounded-md mb-4 ${
-								status.type === "error"
-									? "bg-red-100 border border-red-400 text-red-700"
-									: status.type === "success"
-										? "bg-green-100 border border-green-400 text-green-700"
-										: "bg-blue-100 border border-blue-400 text-blue-700"
-							}`}
+							className={`w-full p-4 rounded-md mb-4 ${status.type === "error" ? "bg-red-100 border border-red-400 text-red-700" : status.type === "success" ? "bg-green-100 border border-green-400 text-green-700" : "bg-blue-100 border border-blue-400 text-blue-700"}`}
 						>
-							<div className="flex items-center gap-2">
-								{status.type === "loading" && (
-									<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-								)}
-								<span>{status.message}</span>
-							</div>
+							{status.message}
 						</div>
 					)}
 
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<label className="block mb-1">Pista *</label>
-							<Listbox
-								value={formData.trackId}
-								onChange={(value) =>
-									setFormData((prev) => ({
-										...prev,
-										trackId: value,
-									}))
-								}
-							>
-								<div className="relative">
-									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
-										<span className="block truncate">
-											{formData.trackId
-												? (() => {
-														const t =
-															tracksData?.tracks.find(
-																(t) =>
-																	t.id ===
-																	formData.trackId,
-															);
-														return t
-															? `${t.name} - ${t.location}`
-															: "Selecione uma pista";
-													})()
-												: "Selecione uma pista"}
-										</span>
-										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-											<ChevronUpDownIcon className="h-5 w-5 text-f1-silver" />
-										</span>
-									</ListboxButton>
-									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-										{tracksLoading ? (
-											<div className="p-2 text-center">
-												Carregando...
-											</div>
-										) : (
-											tracksData?.tracks.map((track) => (
-												<ListboxOption
-													key={track.id}
-													value={track.id}
-													className={({ active }) =>
-														`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-													}
-												>
-													<div className="flex items-center gap-2">
-														{track.flag?.url && (
-															<img
-																src={
-																	track.flag
-																		.url
-																}
-																className="w-6 h-4 object-cover"
-															/>
-														)}
-														<span>
-															{track.name} -{" "}
-															{track.location}
-														</span>
-													</div>
-												</ListboxOption>
-											))
-										)}
-									</ListboxOptions>
-								</div>
-							</Listbox>
-						</div>
-
-						<div>
-							<label className="block mb-1">Rodada *</label>
-							<input
-								name="round"
-								value={formData.round}
-								onChange={handleChange}
-								required
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-
-						<div>
-							<label className="block mb-1">Data *</label>
-							<input
-								type="datetime-local"
-								name="date"
-								value={formData.date}
-								onChange={(e) => {
-									setFormData((prev) => ({
-										...prev,
-										date: e.target.value,
-									}));
-								}}
-								required
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-
-						<div>
-							<label className="block mb-1">Link</label>
-							<input
-								name="link"
-								value={formData.link}
-								onChange={handleChange}
-								className="w-full p-2 border rounded h-11"
-							/>
-						</div>
-
-						<div>
-							<label className="block mb-1">Grid</label>
-							<Listbox
-								value={formData.grid}
-								onChange={(value) => {
-									setFormData((prev) => ({
-										...prev,
-										grid: value,
-										winnerA: "",
-										winnerAId: "",
-									}));
-								}}
-							>
-								<div className="relative">
-									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
-										<span className="block truncate">
-											{formData.grid
-												? formatEnum(formData.grid)
-												: "Selecione um grid"}
-										</span>
-										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-											<ChevronUpDownIcon
-												className="h-5 w-5 text-f1-silver"
-												aria-hidden="true"
-											/>
-										</span>
-									</ListboxButton>
-
-									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-										<ListboxOption
-											value=""
-											className={({ active }) =>
-												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-											}
-										>
-											Todos os grids
-										</ListboxOption>
-										{gridData?.__type?.enumValues?.map(
-											(option) => (
-												<ListboxOption
-													key={option.name}
-													value={option.name}
-													className={({ active }) =>
-														`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-													}
-												>
-													<span className="block truncate">
-														{formatEnum(
-															option.name,
-														)}
-													</span>
-												</ListboxOption>
-											),
-										)}
-									</ListboxOptions>
-								</div>
-							</Listbox>
-						</div>
-
-						{/* Vencedor A Field */}
-						<div>
-							<label
-								className={`block mb-1 ${!formData.grid ? "text-gray-400" : ""}`}
-							>
-								Vencedor
-							</label>
-							<Listbox
-								disabled={!formData.grid}
-								value={formData.winnerA}
-								onChange={(value) => {
-									const selectedDriver =
-										getFilteredDrivers().find(
-											(driver) => driver.name === value,
-										);
-									setFormData((prev) => ({
-										...prev,
-										winnerA: value,
-										winnerAId: selectedDriver?.id || "",
-									}));
-								}}
-							>
-								<div className="relative">
-									<ListboxButton
-										className={`w-full p-2 border rounded flex items-center justify-between h-11 ${!formData.grid ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "cursor-pointer"}`}
-									>
-										<span className="block truncate">
-											{formData.winnerA ||
-												(formData.grid
-													? "Selecione um piloto"
-													: "Selecione um grid")}
-										</span>
-										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-											<ChevronUpDownIcon
-												className="h-5 w-5 text-f1-silver"
-												aria-hidden="true"
-											/>
-										</span>
-									</ListboxButton>
-
-									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-										{driversLoading ? (
-											<div className="p-2 text-center">
-												Carregando...
-											</div>
-										) : getFilteredDrivers().length > 0 ? (
-											getFilteredDrivers().map(
-												(driver) => (
-													<ListboxOption
-														key={driver.id}
-														value={driver.name}
-														className={({
-															active,
-														}) =>
-															`flex items-center gap-2 p-2 cursor-pointer ${
-																active
-																	? "bg-f1-red/20"
-																	: ""
-															}`
-														}
-													>
-														<div className="flex flex-col">
-															<span>
-																{driver.name}
-															</span>
-															<span className="text-xs text-gray-500">
-																#{driver.number}{" "}
-																•{" "}
-																{
-																	driver.team
-																		?.name
-																}
-															</span>
-														</div>
-													</ListboxOption>
-												),
-											)
-										) : (
-											<div className="p-2 text-gray-500">
-												Nenhum piloto encontrado
-											</div>
-										)}
-									</ListboxOptions>
-								</div>
-							</Listbox>
-						</div>
-
-						{/* Vencedor B Field */}
-						{/* <div>
-							<label className="block mb-1">Vencedor B</label>
-							<Listbox
-								value={formData.winnerB}
-								onChange={(value) => {
-									// Find the selected driver to get both name and ID
-									const selectedDriver =
-										getFilteredDrivers().find(
-											(driver) => driver.name === value
-										);
-									setFormData({
-										...formData,
-										winnerB: value,
-										winnerBId: selectedDriver?.id || "",
-									});
-								}}
-							>
-								<div className="relative">
-									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
-										<span className="block truncate">
-											{formData.winnerB ||
-												"Selecione um piloto"}
-										</span>
-										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-											<ChevronUpDownIcon
-												className="h-5 w-5 text-f1-silver"
-												aria-hidden="true"
-											/>
-										</span>
-									</ListboxButton>
-
-									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-										{driversLoading ? (
-											<div className="p-2 text-center">
-												Carregando...
-											</div>
-										) : getFilteredDrivers().length > 0 ? (
-											getFilteredDrivers().map(
-												(driver) => (
-													<ListboxOption
-														key={driver.id}
-														value={driver.name}
-														className={({
-															active,
-														}) =>
-															`flex items-center gap-2 p-2 cursor-pointer ${
-																active
-																	? "bg-f1-red/20"
-																	: ""
-															}`
-														}
-													>
-														<div className="flex flex-col">
-															<span>
-																{driver.name}
-															</span>
-															<span className="text-xs text-gray-500">
-																#{driver.number}{" "}
-																•{" "}
-																{
-																	driver.team
-																		?.name
-																}
-															</span>
-														</div>
-													</ListboxOption>
-												)
-											)
-										) : (
-											<div className="p-2 text-gray-500">
-												Nenhum piloto encontrado
-											</div>
-										)}
-									</ListboxOptions>
-								</div>
-							</Listbox>
-						</div> */}
+					{/* Link da corrida */}
+					<div className="mb-6 pb-6 border-b border-f1-black/20">
+						<label className="block mb-1 font-bold">
+							Link da Corrida
+						</label>
+						<input
+							type="url"
+							value={link}
+							onChange={(e) => setLink(e.target.value)}
+							placeholder="https://youtube.com/watch?v=..."
+							className="w-full p-2 border rounded h-11"
+						/>
 					</div>
 
-					<button
-						type="submit"
-						disabled={
-							createCalendarLoading || updateCalendarLoading
-						}
-						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
-					>
-						{createCalendarLoading || updateCalendarLoading
-							? isEditing
-								? "Atualizando..."
-								: "Cadastrando..."
-							: isEditing
-								? "Atualizar"
-								: "Cadastrar"}
-					</button>
+					{/* Prêmios da Etapa */}
+					{(() => {
+						const gridRaceAwards = selectedCalendar
+							? resolveRaceAwards(selectedCalendar.grid)
+							: [];
+						if (gridRaceAwards.length === 0) return null;
+						return (
+							<div className="mb-6 pb-6 border-b border-f1-black/20">
+								<h3 className="font-bold mb-2">
+									Prêmios da{" "}
+									{activeTab === "race"
+										? "Corrida"
+										: "Sprint"}
+								</h3>
+								<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+									{gridRaceAwards.map((award) => {
+										const isRace = activeTab === "race";
+										const currentAwards = isRace
+											? awards
+											: sprintAwards;
+										const driverId =
+											currentAwards[award.id] || "";
+										const driverName =
+											driversData?.drivers?.find(
+												(d) => d.id === driverId,
+											)?.name || "";
+										return (
+											<div
+												key={award.id}
+												className="flex flex-col gap-1"
+											>
+												<label className="block mb-1">
+													{award.label}
+													{award.points > 0 && (
+														<span className="text-f1-lighterCarbon font-normal ml-1">
+															(+{award.points} pt)
+														</span>
+													)}
+												</label>
+												<Combobox
+													value={driverName}
+													onChange={(val) => {
+														const d =
+															driversData?.drivers?.find(
+																(x) =>
+																	x.name ===
+																	val,
+															);
+														const setter = isRace
+															? setAwards
+															: setSprintAwards;
+														setter((prev) => ({
+															...prev,
+															[award.id]:
+																d?.id || "",
+														}));
+													}}
+												>
+													<div className="relative">
+														<ComboboxInput
+															className="w-full p-2 border rounded h-11"
+															placeholder="Piloto..."
+															displayValue={() =>
+																driverName
+															}
+															onChange={(e) =>
+																setAwardQueries(
+																	(prev) => ({
+																		...prev,
+																		[award.id]:
+																			e
+																				.target
+																				.value,
+																	}),
+																)
+															}
+														/>
+														<ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
+															<ChevronUpDownIcon
+																className="h-4 w-4 text-gray-400"
+																aria-hidden="true"
+															/>
+														</ComboboxButton>
+														<ComboboxOptions className="absolute z-50 mt-1 max-h-40 w-full overflow-auto rounded bg-white py-1 shadow-xl border border-gray-100">
+															{getFilteredDrivers(
+																awardQueries[
+																	award.id
+																] ?? "",
+															).map((d) => (
+																<ComboboxOption
+																	key={d.id}
+																	value={
+																		d.name
+																	}
+																	className={({
+																		active,
+																	}) =>
+																		`cursor-pointer py-2 px-3 text-sm ${active ? "bg-f1-red text-white" : "text-gray-900"}`
+																	}
+																>
+																	{d.name}
+																</ComboboxOption>
+															))}
+														</ComboboxOptions>
+													</div>
+												</Combobox>
+											</div>
+										);
+									})}
+								</div>
+							</div>
+						);
+					})()}
+
+					<div className="grid grid-cols-[1fr_1fr_72px] gap-x-3 gap-y-1">
+						<label className="block mb-1 font-bold">
+							Qualificação
+						</label>
+						<label className="block mb-1 font-bold">
+							Resultado Final
+						</label>
+						<label className="block mb-1 text-center font-bold">
+							Penal. (s)
+						</label>
+
+						{Array.from({ length: 20 }).map((_, i) => {
+							const pos = i + 1;
+							const isRace = activeTab === "race";
+
+							const currentQualy = isRace
+								? qualyResults
+								: sprintQualy;
+							const currentResults = isRace
+								? results
+								: sprintResults;
+							const currentPens = isRace
+								? penaltyValues
+								: sprintPenaltyValues;
+							const currentQueriesQ = isRace
+								? qualyQueries
+								: sprintQualyQueries;
+							const currentQueriesR = isRace
+								? raceQueries
+								: sprintRaceQueries;
+
+							return (
+								<div
+									key={`row-${pos}`}
+									className="contents group"
+								>
+									{/* Qualy */}
+									<div className="flex items-center gap-2 mb-1">
+										<span className="w-5 text-right shrink-0 font-bold">
+											{pos}º
+										</span>
+										<Combobox
+											value={currentQualy[i].driverName}
+											onChange={(val) => {
+												const d = getFilteredDrivers(
+													currentQueriesQ[i],
+												).find((x) => x.name === val);
+												const setter = isRace
+													? setQualyResults
+													: setSprintQualy;
+												setter((prev) =>
+													prev.map((item, idx) =>
+														idx === i
+															? {
+																	...item,
+																	driverId:
+																		d?.id ||
+																		"",
+																	driverName:
+																		val ||
+																		"",
+																}
+															: item,
+													),
+												);
+											}}
+										>
+											<div className="relative flex-1">
+												<ComboboxInput
+													className="w-full p-2 border rounded h-11"
+													displayValue={(n: string) =>
+														n
+													}
+													placeholder="Piloto..."
+													onChange={(e) => {
+														const setter = isRace
+															? setQualyQueries
+															: setSprintQualyQueries;
+														setter((prev) => {
+															const n = [...prev];
+															n[i] =
+																e.target.value;
+															return n;
+														});
+													}}
+												/>
+												<ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
+													<ChevronUpDownIcon
+														className="h-4 w-4 text-gray-400"
+														aria-hidden="true"
+													/>
+												</ComboboxButton>
+												<ComboboxOptions className="absolute z-50 mt-1 max-h-40 w-full overflow-auto rounded bg-white py-1 shadow-xl border border-gray-100">
+													{getFilteredDrivers(
+														currentQueriesQ[i],
+													).map((d) => (
+														<ComboboxOption
+															key={d.id}
+															value={d.name}
+															className={({
+																active,
+															}) =>
+																`cursor-pointer py-2 px-3 text-sm ${active ? "bg-f1-red text-white" : "text-gray-900"}`
+															}
+														>
+															{d.name}
+														</ComboboxOption>
+													))}
+												</ComboboxOptions>
+											</div>
+										</Combobox>
+									</div>
+
+									{/* Resultado Final */}
+									<div className="flex items-center gap-2 mb-1">
+										<Combobox
+											value={currentResults[i].driverName}
+											onChange={(val) => {
+												const d = getFilteredDrivers(
+													currentQueriesR[i],
+												).find((x) => x.name === val);
+												const setter = isRace
+													? setResults
+													: setSprintResults;
+												setter((prev) =>
+													prev.map((item, idx) =>
+														idx === i
+															? {
+																	...item,
+																	driverId:
+																		d?.id ||
+																		"",
+																	driverName:
+																		val ||
+																		"",
+																}
+															: item,
+													),
+												);
+											}}
+										>
+											<div className="relative flex-1">
+												<ComboboxInput
+													className="w-full p-2 border rounded h-11"
+													displayValue={(n: string) =>
+														n
+													}
+													placeholder="Piloto..."
+													onChange={(e) => {
+														const setter = isRace
+															? setRaceQueries
+															: setSprintRaceQueries;
+														setter((prev) => {
+															const n = [...prev];
+															n[i] =
+																e.target.value;
+															return n;
+														});
+													}}
+												/>
+												<ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
+													<ChevronUpDownIcon
+														className="h-4 w-4 text-gray-400"
+														aria-hidden="true"
+													/>
+												</ComboboxButton>
+												<ComboboxOptions className="absolute z-50 mt-1 max-h-40 w-full overflow-auto rounded bg-white py-1 shadow-xl border border-gray-100">
+													{getFilteredDrivers(
+														currentQueriesR[i],
+													).map((d) => (
+														<ComboboxOption
+															key={d.id}
+															value={d.name}
+															className={({
+																active,
+															}) =>
+																`cursor-pointer py-2 px-3 text-sm ${active ? "bg-f1-red text-white" : "text-gray-900"}`
+															}
+														>
+															{d.name}
+														</ComboboxOption>
+													))}
+												</ComboboxOptions>
+											</div>
+										</Combobox>
+									</div>
+
+									{/* Penalidade */}
+									<div className="flex items-center mb-1">
+										<input
+											type="number"
+											value={
+												currentPens[i] === 0
+													? ""
+													: currentPens[i]
+											}
+											disabled={
+												!currentResults[i].driverId
+											}
+											onChange={(e) => {
+												const val =
+													parseInt(e.target.value) ||
+													0;
+												const setter = isRace
+													? setPenaltyValues
+													: setSprintPenaltyValues;
+												setter((prev) => {
+													const n = [...prev];
+													n[i] = val;
+													return n;
+												});
+											}}
+											className="w-full px-2 py-1.5 border rounded h-9 text-center text-sm disabled:opacity-20"
+											placeholder="0s"
+										/>
+									</div>
+								</div>
+							);
+						})}
+					</div>
 				</form>
 			</div>
 		</div>

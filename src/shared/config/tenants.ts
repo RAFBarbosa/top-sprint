@@ -70,6 +70,19 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				standingsTitle: "",
 				countdownBgClass: "bg-f1-silver",
 				cardBackground: topSprintA,
+				pointSystem: {
+					race: [
+						25, 22, 20, 18, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					sprint: [
+						16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+					],
+					poleBonus: 1,
+				},
+				raceAwards: [
+					{ id: "fastestLap", label: "Volta Rápida", points: 1 },
+				],
 			},
 			{
 				id: "gridB",
@@ -83,6 +96,19 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				standingsTitle: "Academy",
 				countdownBgClass: "bg-f1-academy-darker",
 				cardBackground: topSprintB,
+				pointSystem: {
+					race: [
+						25, 22, 20, 18, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					sprint: [
+						16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+					],
+					poleBonus: 1,
+				},
+				raceAwards: [
+					{ id: "fastestLap", label: "Volta Rápida", points: 1 },
+				],
 			},
 		],
 		features: {
@@ -134,6 +160,19 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				standingsTitle: "",
 				countdownBgClass: "bg-f1-silver",
 				cardBackground: feliplay,
+				pointSystem: {
+					race: [
+						25, 22, 20, 18, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					sprint: [
+						16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
+					],
+					poleBonus: 1,
+				},
+				raceAwards: [
+					{ id: "fastestLap", label: "Volta Rápida", points: 1 },
+				],
 			},
 		],
 		features: {
@@ -178,6 +217,27 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				standingsTitle: "Alpha",
 				countdownBgClass: "bg-f1-silver",
 				cardBackground: brazukaF1,
+				pointSystem: {
+					race: [
+						25, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					sprint: [
+						25, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					poleBonus: 1,
+				},
+				raceAwards: [
+					{ id: "fastestLap", label: "Volta Rápida", points: 1 },
+					{ id: "driverOfTheDay", label: "Piloto do Dia", points: 0 },
+					{ id: "fairplay", label: "Fairplay", points: 0 },
+					{
+						id: "mostOvertakes",
+						label: "Mais Ultrapassagens",
+						points: 0,
+					},
+				],
 			},
 			{
 				id: "gridB",
@@ -191,6 +251,27 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				standingsTitle: "Bravo",
 				countdownBgClass: "bg-f1-darkerRed",
 				cardBackground: brazukaF1,
+				pointSystem: {
+					race: [
+						25, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					sprint: [
+						25, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					poleBonus: 1,
+				},
+				raceAwards: [
+					{ id: "fastestLap", label: "Volta Rápida", points: 1 },
+					{ id: "driverOfTheDay", label: "Piloto do Dia", points: 0 },
+					{ id: "fairplay", label: "Fairplay", points: 0 },
+					{
+						id: "mostOvertakes",
+						label: "Mais Ultrapassagens",
+						points: 0,
+					},
+				],
 			},
 			{
 				id: "gridC",
@@ -204,6 +285,27 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				standingsTitle: "Charlie",
 				countdownBgClass: "bg-f1-academy-darkerBlue",
 				cardBackground: brazukaF2,
+				pointSystem: {
+					race: [
+						25, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					sprint: [
+						25, 20, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6,
+						5, 4, 3, 2, 1,
+					],
+					poleBonus: 1,
+				},
+				raceAwards: [
+					{ id: "fastestLap", label: "Volta Rápida", points: 1 },
+					{ id: "driverOfTheDay", label: "Piloto do Dia", points: 0 },
+					{ id: "fairplay", label: "Fairplay", points: 0 },
+					{
+						id: "mostOvertakes",
+						label: "Mais Ultrapassagens",
+						points: 0,
+					},
+				],
 			},
 		],
 		features: {
