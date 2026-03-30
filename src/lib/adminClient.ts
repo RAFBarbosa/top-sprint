@@ -1,9 +1,9 @@
 // src/apollo/adminClient.ts
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { app } from "../components/auth/firebase"; // adjust path
+import { app } from "../components/auth/firebase";
 
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 async function getAdminToken() {
 	const snap = await getDoc(doc(db, "Key", "vercel_admin"));

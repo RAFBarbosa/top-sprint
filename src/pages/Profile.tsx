@@ -9,6 +9,7 @@ import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
+import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { HygraphImg } from "../components/utils/HygraphImg";
 import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
 
@@ -17,14 +18,22 @@ export function Profile() {
 	const { activeTab, setActiveTab } = useTab();
 
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
+	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 
-	// Filter drivers based on active tab
-	const filteredDrivers = enhancedCards.filter(
-		(driver) => driver.grid === activeTab.id,
-	);
+	const hasProfiles = Object.keys(profiles).length > 0;
+
+	// Filter drivers based on active tab, using Firebase profiles when available
+	const filteredDrivers = enhancedCards
+		.filter((driver) => {
+			if (!driver.id) return driver.grid === activeTab.id;
+			return hasProfiles
+				? isInGrid(driver.id, activeTab.id)
+				: driver.grid === activeTab.id;
+		})
+		.map((driver) => applyProfile(driver, activeTab.id));
 
 	useEffect(() => {
 		const index = filteredDrivers.findIndex(

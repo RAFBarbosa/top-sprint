@@ -22,6 +22,7 @@ import {
 } from "@headlessui/react";
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
+import { getGridLabel } from "../../shared/config/grids";
 
 export function ResultsRegistration() {
 	// State management
@@ -71,12 +72,6 @@ export function ResultsRegistration() {
 		const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
 		return `${day} de ${capitalizedMonth} de ${year}`;
 	};
-
-	// Helper function to format enum values
-	const formatEnum = (text: string) =>
-		text
-			.replace(/([A-Z])/g, " $1")
-			.replace(/^./, (str) => str.toUpperCase());
 
 	const handleSubmit = async (event: FormEvent) => {
 		event.preventDefault();
@@ -262,7 +257,7 @@ export function ResultsRegistration() {
 							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 								<span className="block truncate">
 									{gridFilter
-										? formatEnum(gridFilter)
+										? getGridLabel(gridFilter)
 										: "Todos os grids"}
 								</span>
 								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -290,7 +285,7 @@ export function ResultsRegistration() {
 										}
 									>
 										<span className="block truncate">
-											{formatEnum(option)}
+											{getGridLabel(option)}
 										</span>
 									</ListboxOption>
 								))}
@@ -348,7 +343,7 @@ export function ResultsRegistration() {
 										<div className="flex flex-col items-start">
 											<div>
 												<span className="truncate max-w-40">
-													{formatEnum(dataItem.grid)}
+													{getGridLabel(dataItem.grid)}
 												</span>
 												{dataItem.csv?.url && (
 													<span className="text-sm">
@@ -503,7 +498,7 @@ export function ResultsRegistration() {
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
 											{grid
-												? formatEnum(grid)
+												? getGridLabel(grid)
 												: "Selecione"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -538,7 +533,7 @@ export function ResultsRegistration() {
 												}
 											>
 												<span className="block truncate">
-													{formatEnum(option)}
+													{getGridLabel(option)}
 												</span>
 											</ListboxOption>
 										))}

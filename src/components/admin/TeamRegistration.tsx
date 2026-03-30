@@ -22,6 +22,7 @@ import {
 	Description,
 } from "@headlessui/react";
 import { tenant } from "../../shared";
+import { getGridLabel } from "../../shared/config/grids";
 
 export function TeamRegistration() {
 	// State management
@@ -130,11 +131,6 @@ export function TeamRegistration() {
 		});
 		setLogoFile(null);
 	};
-
-	const formatEnum = (text: string) =>
-		text
-			.replace(/([A-Z])/g, " $1")
-			.replace(/^./, (str) => str.toUpperCase());
 
 	const handleTeam = async (event: FormEvent) => {
 		event.preventDefault();
@@ -587,7 +583,7 @@ export function TeamRegistration() {
 									([grid, drivers]) => (
 										<div key={grid} className="mb-4">
 											<p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-												{formatEnum(grid)}
+												{getGridLabel(grid)}
 											</p>
 											<ul className="space-y-2">
 												{drivers.map((d) => (

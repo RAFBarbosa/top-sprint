@@ -350,4 +350,3 @@ export function StandingsList(props: StandingsListProps) {
 		</>
 	);
 }
-

@@ -2,6 +2,18 @@ import { tenant } from "./tenants";
 
 export type GridId = string;
 
+export interface RaceAward {
+	id: string;
+	label: string;
+	points: number;
+}
+
+export interface PointSystem {
+	race: number[];
+	sprint?: number[];
+	poleBonus?: number;
+}
+
 export interface GridConfig {
 	id: GridId;
 	label: string;
@@ -21,17 +33,32 @@ export interface GridConfig {
 	classLabels?: Record<string, string>;
 	photoStyle?: "portrait" | "round" | "bust";
 	cardBackground?: string;
+	pointSystem?: PointSystem;
+	raceAwards?: RaceAward[];
 }
 
-// Everything else in your app still imports GRIDS from here — nothing breaks
-export const GRIDS = tenant.grids;
+// Mutable runtime array — starts with tenant defaults, updated by GridsContext when Firebase loads
+let _runtimeGrids: GridConfig[] = tenant.grids as GridConfig[];
 
-// All your existing helpers stay exactly the same below this line
+export const setRuntimeGrids = (grids: GridConfig[]) => {
+	_runtimeGrids = grids;
+};
+
+// Static-compatible export for TabContext initialisation (reads current runtime value)
+export const GRIDS = new Proxy([] as GridConfig[], {
+	get(_, prop) {
+		return (_runtimeGrids as any)[prop];
+	},
+});
+
+export const getGridLabel = (gridId: string): string =>
+	_runtimeGrids.find((g) => g.id === gridId)?.label ?? gridId;
+
 export const getGridColor = (gridId: string) =>
-	GRIDS.find((g) => g.id === gridId)?.primaryColor ?? "#ffffff";
+	_runtimeGrids.find((g) => g.id === gridId)?.primaryColor ?? "#ffffff";
 
 export const getGridConfig = (gridId: GridId) =>
-	GRIDS.find((g) => g.id === gridId);
+	_runtimeGrids.find((g) => g.id === gridId);
 
 export const hasGridClasses = (gridId: GridId): boolean => {
 	const config = getGridConfig(gridId);

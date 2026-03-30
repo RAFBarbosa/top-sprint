@@ -3,15 +3,23 @@ import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
+import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
-
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
+	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
 
-	const activeDrivers = enhancedCards.filter(
-		(driver) => driver.grid === activeTab.id,
-	);
+	const hasProfiles = Object.keys(profiles).length > 0;
+
+	const activeDrivers = enhancedCards
+		.filter((driver) => {
+			if (!driver.id) return driver.grid === activeTab.id;
+			return hasProfiles
+				? isInGrid(driver.id, activeTab.id)
+				: driver.grid === activeTab.id;
+		})
+		.map((driver) => applyProfile(driver, activeTab.id));
 
 	return (
 		<div id="pilotos" className="bg-f1-lightSilver w-full pb-8">

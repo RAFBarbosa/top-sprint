@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
-import { GRIDS, GridId } from "../shared/config/grids";
+import type { GridId } from "../shared/config/grids";
+import { useGrids } from "./GridsContext";
 
 type TabType = {
 	id: GridId;
@@ -17,7 +18,8 @@ const TabContext = createContext<TabContextType | undefined>(undefined);
 export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
-	const tabs = GRIDS.map(({ id, label }) => ({ id, label })) as const;
+	const { grids } = useGrids();
+	const tabs = grids.map(({ id, label }) => ({ id, label })) as const;
 
 	const [activeTabId, setActiveTabId] = useState<GridId>(
 		tabs.length > 0 ? tabs[0].id : "",

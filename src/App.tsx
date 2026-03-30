@@ -6,6 +6,8 @@ import { Footer } from "./components/layout/Footer";
 import { Router } from "./Router";
 import { Analytics } from "@vercel/analytics/react";
 import { TabProvider } from "./contexts/TabContext";
+import { GridsProvider } from "./contexts/GridsContext";
+import { DriverProfilesProvider } from "./contexts/DriverProfilesContext";
 import { tenant } from "./shared/config/tenants";
 import { useEffect } from "react";
 
@@ -15,6 +17,24 @@ function ScrollToTop() {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	}, [pathname]);
 	return null;
+}
+
+function AppLayout() {
+	const { pathname } = useLocation();
+	const isAdmin = pathname.startsWith("/admin");
+
+	return (
+		<GridsProvider>
+			<DriverProfilesProvider>
+			<TabProvider>
+				{!isAdmin && <Header />}
+				<Router />
+				<Analytics />
+				{!isAdmin && <Footer />}
+			</TabProvider>
+			</DriverProfilesProvider>
+		</GridsProvider>
+	);
 }
 
 function App() {
@@ -27,12 +47,7 @@ function App() {
 			<ApolloProvider client={client}>
 				<BrowserRouter>
 					<ScrollToTop />
-					<TabProvider>
-						<Header />
-						<Router />
-						<Analytics />
-						<Footer />
-					</TabProvider>
+					<AppLayout />
 				</BrowserRouter>
 			</ApolloProvider>
 		</div>

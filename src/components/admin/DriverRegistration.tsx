@@ -22,6 +22,7 @@ import {
 	getGridClasses,
 	GridId,
 	getGridConfig,
+	getGridLabel,
 } from "../../shared/config/grids";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import {
@@ -446,7 +447,7 @@ export function DriverRegistration() {
 							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 								<span className="block truncate">
 									{gridFilter
-										? formatEnum(gridFilter)
+										? getGridLabel(gridFilter)
 										: "Todos os grids"}
 								</span>
 								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -480,7 +481,7 @@ export function DriverRegistration() {
 										}
 									>
 										<span className="block truncate">
-											{formatEnum(option.name)}
+											{getGridLabel(option.name)}
 										</span>
 									</ListboxOption>
 								))}
@@ -509,7 +510,7 @@ export function DriverRegistration() {
 											{driver.number &&
 												`#${driver.number}`}{" "}
 											{driver.grid &&
-												`• ${formatEnum(driver.grid)}`}
+												`• ${getGridLabel(driver.grid)}`}
 										</span>
 									</div>
 
@@ -688,7 +689,7 @@ export function DriverRegistration() {
 							/>
 						</div>
 
-						<div>
+						<div className="hidden">
 							<label className="block mb-1 ">Grid *</label>
 							<Listbox
 								value={formData.grid}
@@ -707,7 +708,7 @@ export function DriverRegistration() {
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
 											{formData.grid
-												? formatEnum(formData.grid)
+												? getGridLabel(formData.grid)
 												: "Selecione"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -744,7 +745,7 @@ export function DriverRegistration() {
 													}
 												>
 													<span className="block truncate">
-														{formatEnum(
+														{getGridLabel(
 															option.name,
 														)}
 													</span>
@@ -755,7 +756,7 @@ export function DriverRegistration() {
 								</div>
 							</Listbox>
 						</div>
-						<div>
+						<div className="hidden">
 							<label
 								className={`block mb-1 ${!formData.grid || !hasGridClasses(formData.grid as GridId) ? "text-gray-400" : ""}`}
 							>
@@ -840,7 +841,7 @@ export function DriverRegistration() {
 								</div>
 							</Listbox>
 						</div>
-						<div className="relative">
+						<div className="relative hidden">
 							<label className="block mb-1">Equipe</label>
 							<Listbox
 								value={teamId}

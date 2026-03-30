@@ -28,6 +28,7 @@ interface NavItem {
 const buildMenuItems = (): NavItem[] =>
 	[
 		{ id: "/", label: "Início" },
+		{ id: "/resultados", label: "Resultados" },
 		{ id: "/pilotos", label: "Pilotos", isDropdown: true },
 		{
 			id: "/campeoes",
