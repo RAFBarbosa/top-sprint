@@ -12,7 +12,6 @@ import NewsAdmin from "./pages/admin/NewsAdmin";
 import ResultsAdmin from "./pages/admin/ResultsAdmin";
 import DriversAdmin from "./pages/admin/DriversAdmin";
 import HallOfFameAdmin from "./pages/admin/HallOfFameAdmin";
-import { Standings } from "./components/standings/Standings";
 import { SessionResults } from "./components/results/SessionResults";
 import PartnerAdmin from "./pages/admin/PartnerAdmin";
 import { TopSprintRules } from "./pages/rules/TopSprintRules";
@@ -24,6 +23,9 @@ import { ManualResultsRegistration } from "./components/admin/ManualResultsRegis
 import { GridsAdmin } from "./components/admin/GridsAdmin";
 import { GridConfigAdmin } from "./components/admin/GridConfigAdmin";
 import { GridDriversAdmin } from "./components/admin/GridDriversAdmin";
+import { GridStandings } from "./components/admin/GridStandings";
+import { GridManualResults } from "./components/admin/GridManualResults";
+import { SeasonsAdmin } from "./components/admin/SeasonsAdmin";
 
 export function Router() {
 	const RulesPage = {
@@ -47,20 +49,15 @@ export function Router() {
 				<Route path="/admin/painel" element={<AdminDashboard />}>
 					<Route path="pilotos" element={<DriversAdmin />} />
 					<Route path="equipes" element={<TeamsAdmin />} />
-					<Route path="calendarios" element={<CalendarAdmin />} />
 					<Route path="parceiros" element={<PartnerAdmin />} />
 					<Route path="resultados" element={<ResultsAdmin />} />
 					<Route path="noticias" element={<NewsAdmin />} />
-					<Route path="campeoes" element={<HallOfFameAdmin />} />
-					<Route path="classificacao" element={<Standings />} />
-					<Route
-						path="resultado-manual"
-						element={<ManualResultsRegistration />}
-					/>
+					<Route path="campeoes" element={<HallOfFameAdmin />} />					<Route path="temporadas" element={<SeasonsAdmin />} />
 <Route path="grids" element={<GridsAdmin />} />
 					<Route path="grids/:gridId" element={<GridConfigAdmin />} />
-					<Route path="grids/:gridId/pilotos" element={<GridDriversAdmin />} />
-				</Route>
+					<Route path="grids/:gridId/pilotos" element={<GridDriversAdmin />} />					<Route path="grids/:gridId/calendarios" element={<CalendarAdmin />} />
+					<Route path="grids/:gridId/classificacao" element={<GridStandings />} />
+					<Route path="grids/:gridId/resultado-manual" element={<GridManualResults />} />				</Route>
 			</Route>
 		</Routes>
 	);

@@ -20,14 +20,27 @@ const GridsContext = createContext<GridsContextType | undefined>(undefined);
 
 const FIRESTORE_DOC = `grids/${tenant.id}`;
 
-function fromFirebase(firebaseGrids: Record<string, any>): GridConfig[] {
-	// Firebase is authoritative — reconstruct the list in saved order.
-	// For each Firebase grid, merge data fields over the matching static grid
-	// (to preserve Tailwind class strings that aren't stored in Firebase).
+function fromFirebase(firebaseData: any): GridConfig[] {
+	// Firebase stores grids as an array to preserve order
+	if (Array.isArray(firebaseData.grids)) {
+		const staticMap = Object.fromEntries(
+			(tenant.grids as any[]).map((g) => [g.id, g]),
+		);
+		return firebaseData.grids.map((fbGrid: any) => ({
+			...(staticMap[fbGrid.id] ?? {}),
+			id: fbGrid.id,
+			label: fbGrid.label ?? fbGrid.id,
+			primaryColor: fbGrid.primaryColor ?? "#eb1c24",
+			pointSystem: fbGrid.pointSystem ?? {},
+			raceAwards: fbGrid.raceAwards ?? [],
+		})) as GridConfig[];
+	}
+	
+	// Fallback for old object format
 	const staticMap = Object.fromEntries(
 		(tenant.grids as any[]).map((g) => [g.id, g]),
 	);
-	return Object.entries(firebaseGrids).map(([id, fbGrid]) => ({
+	return Object.entries(firebaseData).map(([id, fbGrid]: [string, any]) => ({
 		...(staticMap[id] ?? {}),
 		id,
 		label: fbGrid.label ?? id,
@@ -48,9 +61,7 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 			try {
 				const snap = await getDoc(doc(db, FIRESTORE_DOC));
 				if (snap.exists()) {
-					const merged = fromFirebase(
-						snap.data() as Record<string, any>,
-					);
+					const merged = fromFirebase(snap.data());
 					setGrids(merged);
 					setRuntimeGrids(merged);
 				} else {
@@ -67,15 +78,15 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	const saveGrids = async (updated: GridConfig[]) => {
-		const payload: Record<string, any> = {};
-		updated.forEach((g) => {
-			payload[g.id] = {
+		const payload = {
+			grids: updated.map((g) => ({
+				id: g.id,
 				label: g.label,
 				primaryColor: g.primaryColor,
 				pointSystem: g.pointSystem,
 				raceAwards: g.raceAwards ?? [],
-			};
-		});
+			})),
+		};
 		await setDoc(doc(db, FIRESTORE_DOC), payload);
 		setGrids(updated);
 		setRuntimeGrids(updated);

@@ -10,14 +10,10 @@ const Drivers: React.FC = () => {
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
 	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
 
-	const hasProfiles = Object.keys(profiles).length > 0;
-
 	const activeDrivers = enhancedCards
 		.filter((driver) => {
-			if (!driver.id) return driver.grid === activeTab.id;
-			return hasProfiles
-				? isInGrid(driver.id, activeTab.id)
-				: driver.grid === activeTab.id;
+			if (!driver.id) return true;
+			return isInGrid(driver.id, activeTab.id) || !profiles[driver.id];
 		})
 		.map((driver) => applyProfile(driver, activeTab.id));
 

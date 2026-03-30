@@ -24,15 +24,25 @@ import {
 	Description,
 } from "@headlessui/react";
 import { getGridLabel } from "../../shared/config/grids";
+import { useSeasons } from "../../contexts/SeasonsContext";
+import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 
-export function CalendarRegistration() {
+interface CalendarRegistrationProps {
+	gridId?: string;
+}
+
+export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
+	const { seasons } = useSeasons();
+	const { setCalendarSeason, removeCalendarSeason, getSeasonForCalendar } = useCalendarSeasons();
+
 	const [formData, setFormData] = useState({
 		trackId: "",
 		round: "",
 		sprint: false,
 		date: "",
 		active: true,
-		grid: "",
+		grid: gridId || "",
+		seasonId: "",
 	});
 
 	const [status, setStatus] = useState<{
@@ -42,7 +52,7 @@ export function CalendarRegistration() {
 	const [selectedCalendar, setSelectedCalendar] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [gridFilter, setGridFilter] = useState("");
+	const [gridFilter, setGridFilter] = useState(gridId || "");
 	const [activeFilter, setActiveFilter] = useState<
 		"all" | "active" | "inactive"
 	>("all");
@@ -114,6 +124,7 @@ export function CalendarRegistration() {
 	};
 
 	const handleSelectCalendar = (calendar: any) => {
+		const seasonId = getSeasonForCalendar(calendar.id);
 		setSelectedCalendar(calendar);
 		setIsEditing(true);
 		setFormData({
@@ -123,6 +134,7 @@ export function CalendarRegistration() {
 			date: isoToDatetimeLocal(calendar.date),
 			active: calendar.active,
 			grid: calendar.grid || "",
+			seasonId: seasonId || "",
 		});
 	};
 
@@ -135,7 +147,8 @@ export function CalendarRegistration() {
 			sprint: false,
 			date: "",
 			active: true,
-			grid: "",
+			grid: gridId || "",
+			seasonId: "",
 		});
 	};
 
@@ -178,6 +191,13 @@ export function CalendarRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
+				// Update season mapping in Firebase
+				if (formData.seasonId) {
+					await setCalendarSeason(selectedCalendar.id, formData.seasonId);
+				} else {
+					await removeCalendarSeason(selectedCalendar.id);
+				}
+
 				setStatus({
 					type: "success",
 					message: "Etapa atualizada com sucesso!",
@@ -199,6 +219,11 @@ export function CalendarRegistration() {
 				});
 
 				if (result.errors) throw new Error(result.errors[0].message);
+
+				// Create season mapping in Firebase
+				if (formData.seasonId && result.data?.createCalendar?.id) {
+					await setCalendarSeason(result.data.createCalendar.id, formData.seasonId);
+				}
 
 				setStatus({
 					type: "success",
@@ -313,37 +338,38 @@ export function CalendarRegistration() {
 							</button>
 						))}
 					</div>
-					<Listbox value={gridFilter} onChange={setGridFilter}>
-						<div className="relative">
-							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
-								<span className="block truncate">
-									{gridFilter
-										? getGridLabel(gridFilter)
-										: "Todos os grids"}
-								</span>
-								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-									<ChevronUpDownIcon
-										className="h-5 w-5 text-f1-silver"
-										aria-hidden="true"
-									/>
-								</span>
-							</ListboxButton>
-							<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-								<ListboxOption
-									value=""
-									className={({ active }) =>
-										`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-									}
-								>
-									Todos os grids
-								</ListboxOption>
-								{gridData?.__type?.enumValues?.map((option) => (
+					{!gridId && (
+						<Listbox value={gridFilter} onChange={setGridFilter}>
+							<div className="relative">
+								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+									<span className="block truncate">
+										{gridFilter
+											? getGridLabel(gridFilter)
+											: "Todos os grids"}
+									</span>
+									<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+										<ChevronUpDownIcon
+											className="h-5 w-5 text-f1-silver"
+											aria-hidden="true"
+										/>
+									</span>
+								</ListboxButton>
+								<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
 									<ListboxOption
-										key={option.name}
-										value={option.name}
+										value=""
 										className={({ active }) =>
 											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
 										}
+									>
+										Todos os grids
+									</ListboxOption>
+									{gridData?.__type?.enumValues?.map((option) => (
+										<ListboxOption
+											key={option.name}
+											value={option.name}
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+											}
 									>
 										<span className="block truncate">
 											{getGridLabel(option.name)}
@@ -353,6 +379,7 @@ export function CalendarRegistration() {
 							</ListboxOptions>
 						</div>
 					</Listbox>
+					)}
 					<input
 						type="text"
 						placeholder="Buscar etapas (pista, rodada, data)..."
@@ -684,14 +711,19 @@ export function CalendarRegistration() {
 
 						<div>
 							<label className="block mb-1">Grid</label>
-							<Listbox
-								value={formData.grid}
-								onChange={(value) => {
-									setFormData((prev) => ({
-										...prev,
-										grid: value,
-									}));
-								}}
+							{gridId ? (
+								<div className="w-full p-2 border rounded h-11 bg-gray-100 flex items-center">
+									{getGridLabel(gridId)}
+								</div>
+							) : (
+								<Listbox
+									value={formData.grid}
+									onChange={(value) => {
+										setFormData((prev) => ({
+											...prev,
+											grid: value,
+										}));
+									}}
 							>
 								<div className="relative">
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
@@ -734,6 +766,56 @@ export function CalendarRegistration() {
 												</ListboxOption>
 											),
 										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
+							)}
+						</div>
+
+						<div>
+							<label className="block mb-1">Temporada</label>
+							<Listbox
+								value={formData.seasonId}
+								onChange={(value) =>
+									setFormData((prev) => ({
+										...prev,
+										seasonId: value,
+									}))
+								}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.seasonId
+												? seasons.find(s => s.id === formData.seasonId)?.name || "Temporada não encontrada"
+												: "Selecione uma temporada"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon className="h-5 w-5 text-f1-silver" />
+										</span>
+									</ListboxButton>
+									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+											}
+										>
+											Nenhuma temporada
+										</ListboxOption>
+										{seasons.map((season) => (
+											<ListboxOption
+												key={season.id}
+												value={season.id}
+												className={({ active }) =>
+													`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+												}
+											>
+												<span className="block truncate">
+													{season.name} ({season.year})
+												</span>
+											</ListboxOption>
+										))}
 									</ListboxOptions>
 								</div>
 							</Listbox>

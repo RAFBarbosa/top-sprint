@@ -44,7 +44,11 @@ interface Penalty {
 	seconds: number;
 }
 
-export function ManualResultsRegistration() {
+interface ManualResultsRegistrationProps {
+	gridId?: string;
+}
+
+export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationProps) {
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race">("race");
 
@@ -125,7 +129,7 @@ export function ManualResultsRegistration() {
 	const [activeFilter, setActiveFilter] = useState<
 		"all" | "active" | "inactive"
 	>("all");
-	const [gridFilter, setGridFilter] = useState("");
+	const [gridFilter, setGridFilter] = useState(gridId || "");
 
 	const { data: calendarsData } = useGetCalendarsRegistrationQuery({
 		fetchPolicy: "network-only",
@@ -448,46 +452,48 @@ export function ManualResultsRegistration() {
 							</button>
 						))}
 					</div>
-					<Listbox value={gridFilter} onChange={setGridFilter}>
-						<div className="relative">
-							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
-								<span className="block truncate">
-									{gridFilter
-										? getGridLabel(gridFilter)
-										: "Todos os grids"}
-								</span>
-								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-									<ChevronUpDownIcon
-										className="h-5 w-5 text-f1-silver"
-										aria-hidden="true"
-									/>
-								</span>
-							</ListboxButton>
-							<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-								<ListboxOption
-									value=""
-									className={({ active }) =>
-										`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-									}
-								>
-									Todos os grids
-								</ListboxOption>
-								{gridOptions.map((option) => (
+					{!gridId && (
+						<Listbox value={gridFilter} onChange={setGridFilter}>
+							<div className="relative">
+								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+									<span className="block truncate">
+										{gridFilter
+											? getGridLabel(gridFilter)
+											: "Todos os grids"}
+									</span>
+									<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+										<ChevronUpDownIcon
+											className="h-5 w-5 text-f1-silver"
+											aria-hidden="true"
+										/>
+									</span>
+								</ListboxButton>
+								<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
 									<ListboxOption
-										key={option}
-										value={option}
+										value=""
 										className={({ active }) =>
 											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
 										}
 									>
-										<span className="block truncate">
-											{getGridLabel(option)}
-										</span>
+										Todos os grids
 									</ListboxOption>
-								))}
-							</ListboxOptions>
-						</div>
-					</Listbox>
+									{gridOptions.map((option) => (
+										<ListboxOption
+											key={option}
+											value={option}
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+											}
+										>
+											<span className="block truncate">
+												{getGridLabel(option)}
+											</span>
+										</ListboxOption>
+									))}
+								</ListboxOptions>
+							</div>
+						</Listbox>
+					)}
 					<input
 						type="text"
 						placeholder="Buscar etapas..."

@@ -23,15 +23,11 @@ export function Profile() {
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 
-	const hasProfiles = Object.keys(profiles).length > 0;
-
 	// Filter drivers based on active tab, using Firebase profiles when available
 	const filteredDrivers = enhancedCards
 		.filter((driver) => {
-			if (!driver.id) return driver.grid === activeTab.id;
-			return hasProfiles
-				? isInGrid(driver.id, activeTab.id)
-				: driver.grid === activeTab.id;
+			if (!driver.id) return true;
+			return isInGrid(driver.id, activeTab.id) || !profiles[driver.id];
 		})
 		.map((driver) => applyProfile(driver, activeTab.id));
 

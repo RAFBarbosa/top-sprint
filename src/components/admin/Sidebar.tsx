@@ -38,11 +38,6 @@ export default function Sidebar() {
 						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/admin/painel/calendarios" className={navLink}>
-							Calendário
-						</NavLink>
-					</li>
-					<li>
 						<NavLink to="/admin/painel/parceiros" className={navLink}>
 							Parceiros
 						</NavLink>
@@ -52,14 +47,9 @@ export default function Sidebar() {
 							Mural dos Campeões
 						</NavLink>
 					</li>
-					<li className="hidden md:block">
-						<NavLink to="/admin/painel/classificacao" className={navLink}>
-							Classificação
-						</NavLink>
-					</li>
-					<li className="hidden md:block">
-						<NavLink to="/admin/painel/resultado-manual" className={navLink}>
-							Resultado Manual
+					<li>
+						<NavLink to="/admin/painel/temporadas" className={navLink}>
+							Temporadas
 						</NavLink>
 					</li>
 					{/* Grids section with sub-nav */}
@@ -107,6 +97,30 @@ export default function Sidebar() {
 															className={subNavLink}
 														>
 															Pilotos
+														</NavLink>
+													</li>
+													<li>
+														<NavLink
+															to={`${base}/calendarios`}
+															className={subNavLink}
+														>
+															Calendário
+														</NavLink>
+													</li>
+													<li>
+														<NavLink
+															to={`${base}/classificacao`}
+															className={subNavLink}
+														>
+															Classificação
+														</NavLink>
+													</li>
+													<li>
+														<NavLink
+															to={`${base}/resultado-manual`}
+															className={subNavLink}
+														>
+															Resultado Manual
 														</NavLink>
 													</li>
 												</ul>
