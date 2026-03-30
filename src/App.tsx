@@ -8,6 +8,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { TabProvider } from "./contexts/TabContext";
 import { GridsProvider } from "./contexts/GridsContext";
 import { DriverProfilesProvider } from "./contexts/DriverProfilesContext";
+import { SeasonsProvider } from "./contexts/SeasonsContext";
+import { CalendarSeasonsProvider } from "./contexts/CalendarSeasonsContext";
 import { tenant } from "./shared/config/tenants";
 import { useEffect } from "react";
 
@@ -25,14 +27,18 @@ function AppLayout() {
 
 	return (
 		<GridsProvider>
-			<DriverProfilesProvider>
-			<TabProvider>
-				{!isAdmin && <Header />}
-				<Router />
-				<Analytics />
-				{!isAdmin && <Footer />}
-			</TabProvider>
-			</DriverProfilesProvider>
+			<SeasonsProvider>
+				<CalendarSeasonsProvider>
+					<DriverProfilesProvider>
+					<TabProvider>
+						{!isAdmin && <Header />}
+						<Router />
+						<Analytics />
+						{!isAdmin && <Footer />}
+					</TabProvider>
+					</DriverProfilesProvider>
+				</CalendarSeasonsProvider>
+			</SeasonsProvider>
 		</GridsProvider>
 	);
 }

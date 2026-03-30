@@ -8,6 +8,7 @@ import {
 import { getGridConfig, type RaceAward } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
+import { CalendarSeasonsContext } from "../../contexts/CalendarSeasonsContext";
 
 // Resolve raceAwards for any grid, falling back to the first tenant grid
 // that has awards if the specific grid isn't found (cross-tenant admin usage).
@@ -94,6 +95,7 @@ function buildRows(
 	penalties: Penalty[],
 	drivers: ReturnType<typeof useGetDriversQuery>["data"]["drivers"],
 	sessionType: "race" | "sprint" | "quali",
+	calGrid: string,
 	driverSnapshots?: Record<
 		string,
 		{
@@ -106,12 +108,13 @@ function buildRows(
 ): DriverRow[] {
 	const lookup = Object.fromEntries((drivers ?? []).map((d) => [d.id, d]));
 
-	// Build per-grid subgroups (supports any number of grids)
-	const gridSubgroups: Record<string, Array<{ id: string }>> = {};
-	raceOrder.forEach((id) => {
-		const g = lookup[id]?.grid ?? "gridA";
-		if (!gridSubgroups[g]) gridSubgroups[g] = [];
-		gridSubgroups[g].push({ id });
+	// All drivers in this result belong to the calendar's grid — don't use driver.grid
+	// from Hygraph, which would be wrong for drivers that participate in multiple grids.
+	const gridSubgroups: Record<string, Array<{ id: string }>> = {
+		[calGrid]: [],
+	};
+	raceOrder.filter(Boolean).forEach((id) => {
+		gridSubgroups[calGrid].push({ id });
 	});
 
 	return raceOrder
@@ -121,7 +124,7 @@ function buildRows(
 			if (!driver) return null;
 
 			const overallPos = i + 1;
-			const gridId = driver.grid ?? "gridA";
+			const gridId = calGrid;
 			const gridRank =
 				(gridSubgroups[gridId] ?? []).findIndex(
 					(x) => x.id === driverId,
@@ -131,10 +134,7 @@ function buildRows(
 			const gridQualyRank =
 				qualyIdx === -1
 					? null
-					: qualyOrder
-							.slice(0, qualyIdx + 1)
-							.filter((id) => lookup[id]?.grid === driver.grid)
-							.length;
+					: qualyOrder.slice(0, qualyIdx + 1).length;
 
 			const positionChange =
 				sessionType === "race" && gridQualyRank !== null
@@ -359,6 +359,7 @@ function ResultsSection({
 	penalties,
 	drivers,
 	sessionType,
+	calGrid,
 	showLabel = true,
 	driverSnapshots,
 }: {
@@ -369,6 +370,7 @@ function ResultsSection({
 	penalties: Penalty[];
 	drivers: GetDriversQuery["drivers"] | undefined;
 	sessionType: "race" | "sprint" | "quali";
+	calGrid: string;
 	showLabel?: boolean;
 	driverSnapshots?: Record<
 		string,
@@ -387,6 +389,7 @@ function ResultsSection({
 		penalties,
 		drivers,
 		sessionType,
+		calGrid,
 		driverSnapshots,
 	);
 	if (rows.length === 0) return null;
@@ -605,6 +608,8 @@ function RaceHeader({
 									>
 										{gridLabel}
 									</span>
+									<span className="text-black/20">·</span>
+									
 									<span className="text-black/20">·</span>
 									<span className="text-xs font-bold uppercase tracking-wider text-f1-lighterCarbon leading-3">
 										{calendarData.round}
@@ -842,6 +847,7 @@ export function SessionResult({
 						penalties={firebaseData.sprintPenalties ?? []}
 						drivers={drivers}
 						sessionType="sprint"
+						calGrid={calGrid}
 						driverSnapshots={firebaseData.driverSnapshots}
 					/>
 				) : (
@@ -853,6 +859,7 @@ export function SessionResult({
 						penalties={firebaseData.penalties ?? []}
 						drivers={drivers}
 						sessionType="race"
+						calGrid={calGrid}
 						driverSnapshots={firebaseData.driverSnapshots}
 					/>
 				)}
