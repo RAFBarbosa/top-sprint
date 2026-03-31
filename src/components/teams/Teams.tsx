@@ -51,7 +51,7 @@ export function Teams() {
 		return false;
 	});
 
-	// Apply profile overrides (team, number, photo) then sort by team name
+	// Apply profile overrides (team, number, photo), exclude reserves, then sort by team name
 	const sortedDrivers = filteredDrivers
 		.map((driver) => {
 			const driverTeam = teamsData?.teams.find(
@@ -68,6 +68,7 @@ export function Teams() {
 			};
 			return applyProfile(withTeam, gridId);
 		})
+		.filter((driver) => !driver.reserve)
 		.sort((a, b) => {
 			const teamNameA = a.team?.name || "";
 			const teamNameB = b.team?.name || "";

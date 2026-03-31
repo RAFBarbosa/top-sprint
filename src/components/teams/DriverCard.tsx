@@ -176,6 +176,11 @@ export function DriverCard({ driver }: DriverCardProps) {
 						"linear-gradient(to top, rgba(0,0,0,.3) 30%, rgba(255,255,255,0) 100%)",
 				}}
 			>
+				{(driver as any).reserve && (
+					<span className="block text-[9px] font-bold uppercase tracking-widest text-white/70 mb-0.5">
+						Reserva
+					</span>
+				)}
 				{formatDriverName()}
 			</div>
 		</div>

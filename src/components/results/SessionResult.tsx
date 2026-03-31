@@ -8,7 +8,10 @@ import {
 import { getGridConfig, type RaceAward } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
+import { useSeasons } from "../../contexts/SeasonsContext";
+import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { CalendarSeasonsContext } from "../../contexts/CalendarSeasonsContext";
+import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 
 // Resolve raceAwards for any grid, falling back to the first tenant grid
 // that has awards if the specific grid isn't found (cross-tenant admin usage).
@@ -60,6 +63,8 @@ interface FirebaseResult {
 	sprintFairplay: string;
 	sprintMostOvertakes: string;
 	link?: string;
+	ncDriverIds?: string[];
+	sprintNcDriverIds?: string[];
 	driverSnapshots?: Record<
 		string,
 		{
@@ -86,6 +91,8 @@ type DriverRow = {
 	positionChange: number | null;
 	isFastestLap: boolean;
 	penaltySeconds: number;
+	isNC: boolean;
+	isReserve: boolean;
 };
 
 function buildRows(
@@ -105,6 +112,8 @@ function buildRows(
 			photoUrl?: string;
 		}
 	>,
+	ncDriverIds?: string[],
+	reserveSet?: Set<string>,
 ): DriverRow[] {
 	const lookup = Object.fromEntries((drivers ?? []).map((d) => [d.id, d]));
 
@@ -150,15 +159,21 @@ function buildRows(
 
 			const pointsArr =
 				sessionType === "sprint" ? sprintPointsArr : racePointsArr;
+			const isNC = ncDriverIds?.includes(driverId) ?? false;
 			let points = 0;
-			if (sessionType === "quali") {
-				if (gridRank === 1) points = poleBonus;
-			} else if (gridRank > 0 && gridRank <= pointsArr.length) {
-				points = pointsArr[gridRank - 1];
-				gridRaceAwards.forEach((award) => {
-					if (awardWinners[award.id] === driverId && award.points > 0)
-						points += award.points;
-				});
+			if (!isNC) {
+				if (sessionType === "quali") {
+					if (gridRank === 1) points = poleBonus;
+				} else if (gridRank > 0 && gridRank <= pointsArr.length) {
+					points = pointsArr[gridRank - 1];
+					gridRaceAwards.forEach((award) => {
+						if (
+							awardWinners[award.id] === driverId &&
+							award.points > 0
+						)
+							points += award.points;
+					});
+				}
 			}
 
 			const penalty = penalties?.find((p) => p.driverId === driverId);
@@ -180,6 +195,8 @@ function buildRows(
 				positionChange,
 				isFastestLap: awardWinners.fastestLap === driverId,
 				penaltySeconds: penalty?.seconds ?? 0,
+				isNC: ncDriverIds?.includes(driverId) ?? false,
+				isReserve: reserveSet?.has(driverId) ?? false,
 			};
 		})
 		.filter((r): r is NonNullable<typeof r> => r !== null) as DriverRow[];
@@ -226,10 +243,10 @@ function WinnerCard({
 			</div>
 
 			{/* Photo — fixed crop matching OG */}
-			{row.photo && (
+			{(row.photo || tenant.fallbackDriverPhoto) && (
 				<div className="flex items-center justify-center w-9/10 mx-auto overflow-hidden">
 					<img
-						src={row.photo}
+						src={row.photo || tenant.fallbackDriverPhoto}
 						alt={row.name}
 						className="max-w-full object-contain scale-125 transform translate-y-8"
 					/>
@@ -250,34 +267,38 @@ function WinnerCard({
 			{/* Pole position — same style as FL, shown above it */}
 			{sessionType === "race" && poleRow && (
 				<div className="bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-b border-black/10">
-					{poleRow.photo && (
-						<div
-							className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2 border-f1-carbon/20"
-							style={{
-								backgroundColor: poleRow.teamColor ?? "#48176d",
-							}}
-						>
-							{tenant.defaultPhotoStyle === "round" ? (
-								<img
-									src={poleRow.photo}
-									alt={poleRow.name}
-									className="w-full h-full object-cover scale-123 translate-y-[5px]"
-								/>
-							) : tenant.defaultPhotoStyle === "bust" ? (
-								<img
-									src={poleRow.photo}
-									alt={poleRow.name}
-									className="object-cover translate-y-[6px]"
-								/>
-							) : (
-								<img
-									src={poleRow.photo}
-									alt={poleRow.name}
-									className="w-full h-full object-cover scale-200 translate-y-[24px]"
-								/>
-							)}
-						</div>
-					)}
+					<div
+						className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2 border-f1-carbon/20"
+						style={{
+							backgroundColor: poleRow.teamColor ?? "#48176d",
+						}}
+					>
+						{tenant.defaultPhotoStyle === "round" ? (
+							<img
+								src={
+									poleRow.photo || tenant.fallbackDriverPhoto
+								}
+								alt={poleRow.name}
+								className="w-full h-full object-cover scale-123 translate-y-[5px]"
+							/>
+						) : tenant.defaultPhotoStyle === "bust" ? (
+							<img
+								src={
+									poleRow.photo || tenant.fallbackDriverPhoto
+								}
+								alt={poleRow.name}
+								className="object-cover translate-y-[6px]"
+							/>
+						) : (
+							<img
+								src={
+									poleRow.photo || tenant.fallbackDriverPhoto
+								}
+								alt={poleRow.name}
+								className="w-full h-full object-cover scale-200 translate-y-[24px]"
+							/>
+						)}
+					</div>
 					<div className="min-w-0">
 						<p className="text-xs uppercase tracking-wide text-f1-text font-bold">
 							Pole Position
@@ -301,35 +322,41 @@ function WinnerCard({
 						key={award.id}
 						className="bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-t border-black/10"
 					>
-						{driver.photo && (
-							<div
-								className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2 border-f1-carbon/20"
-								style={{
-									backgroundColor:
-										driver.teamColor ?? "#48176d",
-								}}
-							>
-								{tenant.defaultPhotoStyle === "round" ? (
-									<img
-										src={driver.photo}
-										alt={driver.name}
-										className="w-full h-full object-cover scale-123 translate-y-[5px]"
-									/>
-								) : tenant.defaultPhotoStyle === "bust" ? (
-									<img
-										src={driver.photo}
-										alt={driver.name}
-										className="object-cover translate-y-[6px]"
-									/>
-								) : (
-									<img
-										src={driver.photo}
-										alt={driver.name}
-										className="w-full h-full object-cover scale-200 translate-y-[24px]"
-									/>
-								)}
-							</div>
-						)}
+						<div
+							className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2 border-f1-carbon/20"
+							style={{
+								backgroundColor: driver.teamColor ?? "#48176d",
+							}}
+						>
+							{tenant.defaultPhotoStyle === "round" ? (
+								<img
+									src={
+										driver.photo ||
+										tenant.fallbackDriverPhoto
+									}
+									alt={driver.name}
+									className="w-full h-full object-cover scale-123 translate-y-[5px]"
+								/>
+							) : tenant.defaultPhotoStyle === "bust" ? (
+								<img
+									src={
+										driver.photo ||
+										tenant.fallbackDriverPhoto
+									}
+									alt={driver.name}
+									className="object-cover translate-y-[6px]"
+								/>
+							) : (
+								<img
+									src={
+										driver.photo ||
+										tenant.fallbackDriverPhoto
+									}
+									alt={driver.name}
+									className="w-full h-full object-cover scale-200 translate-y-[24px]"
+								/>
+							)}
+						</div>
 						<div className="min-w-0">
 							<p
 								className={`text-xs uppercase tracking-wide font-bold ${award.id === "fastestLap" ? "text-f1-purple" : "text-f1-text"}`}
@@ -362,6 +389,7 @@ function ResultsSection({
 	calGrid,
 	showLabel = true,
 	driverSnapshots,
+	ncDriverIds,
 }: {
 	label: string;
 	raceOrder: string[];
@@ -381,7 +409,15 @@ function ResultsSection({
 			photoUrl?: string;
 		}
 	>;
+	ncDriverIds?: string[];
 }) {
+	const { getProfile } = useDriverProfiles();
+	const reserveSet = new Set(
+		(raceOrder ?? []).filter(
+			(id) => getProfile(id, calGrid)?.reserve === true,
+		),
+	);
+
 	const rows = buildRows(
 		raceOrder,
 		qualyOrder,
@@ -391,6 +427,8 @@ function ResultsSection({
 		sessionType,
 		calGrid,
 		driverSnapshots,
+		ncDriverIds,
+		reserveSet,
 	);
 	if (rows.length === 0) return null;
 
@@ -421,13 +459,13 @@ function ResultsSection({
 	return (
 		<section>
 			{/* Section header — only shown when label is needed */}
-			{showLabel && (
+			{/* {showLabel && (
 				<div className="w-full mx-auto max-w-screen-xl px-3 mb-6">
 					<h2 className="font-bold text-3xl md:text-4xl">{label}</h2>
 				</div>
-			)}
+			)} */}
 
-			<div className="mx-auto max-w-screen-xl px-3">
+			<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-6">
 				{/* Side-by-side on desktop: winner cards fixed sidebar + table */}
 				<div className="flex flex-col md:flex-row gap-4 items-start">
 					{/* Winner cards sidebar */}
@@ -522,6 +560,16 @@ function ResultsSection({
 														<span className="text-sm font-semibold uppercase">
 															{row.name}
 														</span>
+														{row.isNC && (
+															<span className="bg-gray-400 text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																NC
+															</span>
+														)}
+														{row.isReserve && (
+															<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																Res
+															</span>
+														)}
 														{row.isFastestLap &&
 															sessionType ===
 																"race" && (
@@ -557,16 +605,22 @@ function ResultsSection({
 
 function RaceHeader({
 	calendarData,
+	calendarId,
 	link,
 }: {
 	calendarData: SessionResultProps["calendarData"];
+	calendarId?: string | null;
 	link?: string;
 }) {
+	const { seasons } = useSeasons();
+	const { getSeasonForCalendar } = useCalendarSeasons();
 	if (!calendarData) return null;
 	const gridLabel =
 		getGridConfig(calendarData.grid)?.label ?? calendarData.grid;
 	const gridColor =
 		getGridConfig(calendarData.grid)?.primaryColor ?? "#eb1c24";
+	const seasonId = calendarId ? getSeasonForCalendar(calendarId) : null;
+	const season = seasonId ? seasons.find((s) => s.id === seasonId) : null;
 	const formattedDate = calendarData.date
 		? (() => {
 				const raw = format(
@@ -583,8 +637,8 @@ function RaceHeader({
 		: null;
 
 	return (
-		<div className="bg-white pt-10 pb-6">
-			<div className="mx-auto max-w-screen-xl px-3">
+		<div className="bg-f1-bg-silver pt-10">
+			<div className="mx-auto max-w-[1256px] px-3 bg-white rounded-t p-4">
 				<div
 					className="border-t-8 border-r-8 rounded-tr-3xl pt-3"
 					style={{ borderColor: gridColor }}
@@ -602,14 +656,20 @@ function RaceHeader({
 							)}
 							<div className="flex flex-col gap-2">
 								<div className="flex items-center gap-2 flex-wrap leading-3">
-									<span
+									{/* <span
 										className="text-xs font-bold tracking-wider uppercase leading-3"
 										style={{ color: gridColor }}
 									>
 										{gridLabel}
-									</span>
-									<span className="text-black/20">·</span>
-									
+									</span> */}
+									{season && (
+										<>
+											{/* <span className="text-black/20">·</span> */}
+											<span className="text-xs font-bold uppercase tracking-wider text-f1-lighterCarbon leading-3">
+												{season.name}
+											</span>
+										</>
+									)}
 									<span className="text-black/20">·</span>
 									<span className="text-xs font-bold uppercase tracking-wider text-f1-lighterCarbon leading-3">
 										{calendarData.round}
@@ -634,7 +694,7 @@ function RaceHeader({
 									</p>
 								)}
 								{formattedDate && (
-									<p className="text-f1-lighterCarbon text-xs leading-0.5">
+									<p className="text-f1-lighterCarbon text-xs leading-1.5">
 										{formattedDate}
 									</p>
 								)}
@@ -644,7 +704,7 @@ function RaceHeader({
 										href={link}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="md:hidden inline-flex items-center gap-2 px-3 py-2 mt-1 text-xs font-bold uppercase tracking-wider rounded-lg self-start border transition-all duration-150"
+										className="md:hidden inline-flex items-center gap-2 px-3 py-2 mt-4 md:mt-1 text-xs font-bold uppercase tracking-wider rounded-lg self-start border transition-all duration-150"
 										style={{
 											backgroundColor: gridColor,
 											borderColor: gridColor,
@@ -739,7 +799,7 @@ export function SessionResult({
 	if (loading) {
 		return (
 			<>
-				<RaceHeader calendarData={calData} />
+				<RaceHeader calendarData={calData} calendarId={calendarId} />
 				<div className="my-12 text-center" role="status">
 					<div className="animate-pulse space-y-3 max-w-xl mx-auto px-3">
 						<div className="h-4 bg-f1-bg-silver rounded w-1/3 mx-auto" />
@@ -753,7 +813,7 @@ export function SessionResult({
 	if (error) {
 		return (
 			<>
-				<RaceHeader calendarData={calData} />
+				<RaceHeader calendarData={calData} calendarId={calendarId} />
 				<div className="my-8 text-center px-3">
 					<p className="text-f1-red font-bold text-sm">
 						Erro ao carregar: {error}
@@ -766,7 +826,7 @@ export function SessionResult({
 	if (!firebaseData) {
 		return (
 			<>
-				<RaceHeader calendarData={calData} />
+				<RaceHeader calendarData={calData} calendarId={calendarId} />
 				<div className="my-12 text-center px-3">
 					<p className="font-f1Title uppercase tracking-widest text-f1-lighterCarbon text-sm">
 						Nenhum resultado disponível
@@ -776,7 +836,9 @@ export function SessionResult({
 		);
 	}
 
-	const hasSprint = firebaseData.sprintResults?.some(Boolean);
+	const hasSprint = !!(
+		calData?.sprint && firebaseData.sprintResults?.some(Boolean)
+	);
 	const drivers = driversData?.drivers;
 
 	const calGrid = calData?.grid ?? "";
@@ -796,44 +858,50 @@ export function SessionResult({
 
 	return (
 		<>
-			<RaceHeader calendarData={calData} link={firebaseData.link} />
+			<RaceHeader
+				calendarData={calData}
+				calendarId={calendarId}
+				link={firebaseData.link}
+			/>
 
-			<div className="bg-white py-10">
+			<div className="bg-f1-bg-silver pb-10">
 				{hasSprint && (
-					<div className="mx-auto max-w-screen-xl px-3 mb-8 border-b border-black/10">
-						<div className="flex gap-0">
-							<button
-								onClick={() => setActiveTab("race")}
-								className="px-6 py-3 text-sm font-bold uppercase tracking-wider cursor-pointer transition-all duration-150 border-b-3 -mb-px"
-								style={{
-									borderColor:
-										activeTab === "race"
-											? gridColor
-											: "transparent",
-									color:
-										activeTab === "race"
-											? "var(--color-f1-text, #15151e)"
-											: "#9ca3af",
-								}}
-							>
-								Corrida
-							</button>
-							<button
-								onClick={() => setActiveTab("sprint")}
-								className="px-6 py-3 text-sm font-bold uppercase tracking-wider cursor-pointer transition-all duration-150 border-b-3 -mb-px"
-								style={{
-									borderColor:
-										activeTab === "sprint"
-											? gridColor
-											: "transparent",
-									color:
-										activeTab === "sprint"
-											? "var(--color-f1-text, #15151e)"
-											: "#9ca3af",
-								}}
-							>
-								Sprint
-							</button>
+					<div className="mx-auto max-w-screen-xl px-3">
+						<div className="bg-white border-b border-black/10">
+							<div className="flex gap-0">
+								<button
+									onClick={() => setActiveTab("race")}
+									className="px-6 py-3 text-sm font-bold uppercase tracking-wider cursor-pointer transition-all duration-150 border-b-3 -mb-px"
+									style={{
+										borderColor:
+											activeTab === "race"
+												? gridColor
+												: "transparent",
+										color:
+											activeTab === "race"
+												? "var(--color-f1-text, #15151e)"
+												: "#9ca3af",
+									}}
+								>
+									Corrida
+								</button>
+								<button
+									onClick={() => setActiveTab("sprint")}
+									className="px-6 py-3 text-sm font-bold uppercase tracking-wider cursor-pointer transition-all duration-150 border-b-3 -mb-px"
+									style={{
+										borderColor:
+											activeTab === "sprint"
+												? gridColor
+												: "transparent",
+										color:
+											activeTab === "sprint"
+												? "var(--color-f1-text, #15151e)"
+												: "#9ca3af",
+									}}
+								>
+									Sprint
+								</button>
+							</div>
 						</div>
 					</div>
 				)}
@@ -849,6 +917,7 @@ export function SessionResult({
 						sessionType="sprint"
 						calGrid={calGrid}
 						driverSnapshots={firebaseData.driverSnapshots}
+						ncDriverIds={firebaseData.sprintNcDriverIds}
 					/>
 				) : (
 					<ResultsSection
@@ -861,6 +930,7 @@ export function SessionResult({
 						sessionType="race"
 						calGrid={calGrid}
 						driverSnapshots={firebaseData.driverSnapshots}
+						ncDriverIds={firebaseData.ncDriverIds}
 					/>
 				)}
 			</div>

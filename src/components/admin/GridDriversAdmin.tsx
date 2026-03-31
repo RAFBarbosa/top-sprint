@@ -18,6 +18,7 @@ interface GridProfile {
 	teamName: string;
 	teamColor: string;
 	photoUrl?: string;
+	reserve?: boolean;
 }
 
 export function GridDriversAdmin() {
@@ -80,6 +81,12 @@ export function GridDriversAdmin() {
 	const assignedDriverIds = Object.keys(allProfiles).filter(
 		(dId) => allProfiles[dId]?.[gridId ?? ""],
 	);
+	const titularIds = assignedDriverIds.filter(
+		(dId) => !allProfiles[dId]?.[gridId ?? ""]?.reserve,
+	);
+	const reserveIds = assignedDriverIds.filter(
+		(dId) => !!allProfiles[dId]?.[gridId ?? ""]?.reserve,
+	);
 
 	// Drivers not yet assigned (for the add list)
 	const unassignedDrivers = (driversData?.drivers ?? []).filter(
@@ -132,13 +139,14 @@ export function GridDriversAdmin() {
 		}
 	};
 
-	const handleAssign = async (driverId: string) => {
+	const handleAssign = async (driverId: string, reserve = false) => {
 		const driver = driversData?.drivers?.find((d) => d.id === driverId);
 		const profile: GridProfile = {
 			number: (driver as any)?.number ?? "",
 			teamName: driver?.team?.name ?? "",
 			teamColor: driver?.team?.color?.hex ?? "",
 			photoUrl: driver?.photo?.url ?? "",
+			reserve,
 		};
 		setStatus({ type: "loading", message: "Adicionando..." });
 		try {
@@ -147,7 +155,7 @@ export function GridDriversAdmin() {
 			await setDoc(doc(db, "driver_profiles", driverId), updated);
 			setAllProfiles((prev) => ({ ...prev, [driverId]: updated }));
 			setAddSearch("");
-			setStatus({ type: "success", message: "Piloto adicionado!" });
+			setStatus({ type: "success", message: reserve ? "Reserva adicionado!" : "Piloto adicionado!" });
 			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
 			// Start editing immediately so user can set number/team
 			setEditForm(profile);
@@ -251,11 +259,17 @@ export function GridDriversAdmin() {
 									{d.name}
 								</span>
 								<button
-									onClick={() => handleAssign(d.id)}
+									onClick={() => handleAssign(d.id, false)}
 									className="text-xs px-3 py-1 rounded cursor-pointer text-white"
 									style={{ backgroundColor: gridColor }}
 								>
-									Adicionar
+									Titular
+								</button>
+								<button
+									onClick={() => handleAssign(d.id, true)}
+									className="text-xs px-3 py-1 rounded cursor-pointer text-white bg-gray-400 hover:bg-gray-500"
+								>
+									Reserva
 								</button>
 							</li>
 						))}
@@ -263,24 +277,24 @@ export function GridDriversAdmin() {
 				)}
 			</div>
 
-			{/* Assigned drivers */}
+			{/* Titular drivers */}
 			<div className="border rounded-lg overflow-hidden">
 				<div
 					className="px-4 py-2"
 					style={{ backgroundColor: gridColor }}
 				>
 					<span className="text-white text-xs font-bold uppercase tracking-wider">
-						{gridLabel} — {assignedDriverIds.length} pilotos
+						{gridLabel} — {titularIds.length} pilotos
 					</span>
 				</div>
 
-				{assignedDriverIds.length === 0 ? (
+				{titularIds.length === 0 ? (
 					<p className="p-4 text-sm text-f1-lighterCarbon">
-						Nenhum piloto neste grid ainda.
+						Nenhum piloto titular neste grid ainda.
 					</p>
 				) : (
 					<ul className="divide-y">
-						{assignedDriverIds.map((driverId) => {
+						{titularIds.map((driverId) => {
 							const driver = driversData?.drivers?.find(
 								(d) => d.id === driverId,
 							);
@@ -342,71 +356,195 @@ export function GridDriversAdmin() {
 									</div>
 
 									{isEditing && (
-										<div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-											<div>
-												<label className="text-xs text-f1-lighterCarbon block mb-1">
-													Número
-												</label>
+										<div className="mt-3 space-y-3">
+											<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+												<div>
+													<label className="text-xs text-f1-lighterCarbon block mb-1">
+														Número
+													</label>
+													<input
+														type="text"
+														value={editForm.number}
+														onChange={(e) =>
+															setEditForm((p) => ({
+																...p,
+																number: e.target.value,
+															}))
+														}
+														className="w-full p-2 border rounded h-9 text-sm"
+														placeholder="Ex: 5"
+													/>
+												</div>
+												<div>
+													<label className="text-xs text-f1-lighterCarbon block mb-1">
+														Equipe
+													</label>
+													<select
+														value={editForm.teamName}
+														onChange={(e) =>
+															handleTeamChange(e.target.value)
+														}
+														className="w-full p-2 border rounded h-9 text-sm cursor-pointer"
+													>
+														<option value="">— Sem equipe —</option>
+														{(teamsData?.teams ?? []).map((t) => (
+															<option key={t.id} value={t.name}>
+																{t.name}
+															</option>
+														))}
+													</select>
+												</div>
+												<div className="flex items-end gap-2">
+													<button
+														onClick={() => handleSaveEdit(driverId)}
+														className="flex-1 px-3 py-2 bg-f1-carbon text-white rounded text-xs cursor-pointer hover:bg-f1-carbon/80 h-9"
+													>
+														Salvar
+													</button>
+													<button
+														onClick={() => setEditingId(null)}
+														className="flex-1 px-3 py-2 border rounded text-xs cursor-pointer hover:bg-gray-100 h-9"
+													>
+														Cancelar
+													</button>
+												</div>
+											</div>
+											<label className="flex items-center gap-2 cursor-pointer w-fit">
 												<input
-													type="text"
-													value={editForm.number}
+													type="checkbox"
+													checked={!!editForm.reserve}
 													onChange={(e) =>
 														setEditForm((p) => ({
 															...p,
-															number: e.target
-																.value,
+															reserve: e.target.checked,
 														}))
 													}
-													className="w-full p-2 border rounded h-9 text-sm"
-													placeholder="Ex: 5"
+													className="w-4 h-4"
 												/>
+												<span className="text-xs text-f1-lighterCarbon">Piloto reserva</span>
+											</label>
+										</div>
+									)}
+								</li>
+							);
+						})}
+					</ul>
+				)}
+			</div>
+
+			{/* Reserve drivers */}
+			<div className="border rounded-lg overflow-hidden">
+				<div className="px-4 py-2 bg-gray-400">
+					<span className="text-white text-xs font-bold uppercase tracking-wider">
+						Reservas — {reserveIds.length} pilotos
+					</span>
+				</div>
+
+				{reserveIds.length === 0 ? (
+					<p className="p-4 text-sm text-f1-lighterCarbon">
+						Nenhum reserva neste grid.
+					</p>
+				) : (
+					<ul className="divide-y">
+						{reserveIds.map((driverId) => {
+							const driver = driversData?.drivers?.find(
+								(d) => d.id === driverId,
+							);
+							const profile = allProfiles[driverId]?.[gridId ?? ""];
+							const isEditing = editingId === driverId;
+
+							return (
+								<li key={driverId} className="p-3">
+									<div className="flex items-center gap-3">
+										{(profile?.photoUrl || driver?.photo?.url) && (
+											<img
+												src={profile?.photoUrl || driver?.photo?.url}
+												alt={driver?.name ?? ""}
+												className="w-10 h-10 rounded-full object-cover shrink-0 border border-black/10"
+											/>
+										)}
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2">
+												<p className="font-semibold text-sm">{driver?.name ?? driverId}</p>
+												<span className="text-[10px] font-bold uppercase tracking-wider bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">
+													Reserva
+												</span>
 											</div>
-											<div>
-												<label className="text-xs text-f1-lighterCarbon block mb-1">
-													Equipe
-												</label>
-												<select
-													value={editForm.teamName}
-													onChange={(e) =>
-														handleTeamChange(
-															e.target.value,
-														)
-													}
-													className="w-full p-2 border rounded h-9 text-sm cursor-pointer"
-												>
-													<option value="">
-														— Sem equipe —
-													</option>
-													{(
-														teamsData?.teams ?? []
-													).map((t) => (
-														<option
-															key={t.id}
-															value={t.name}
-														>
-															{t.name}
-														</option>
-													))}
-												</select>
-											</div>
-											<div className="flex items-end gap-2">
+											{!isEditing && (
+												<p className="text-xs text-f1-lighterCarbon">
+													{profile?.number ? `#${profile.number}` : "Sem número"}
+													{profile?.teamName ? ` · ${profile.teamName}` : ""}
+												</p>
+											)}
+										</div>
+										{!isEditing && (
+											<div className="flex gap-2 shrink-0">
 												<button
-													onClick={() =>
-														handleSaveEdit(driverId)
-													}
-													className="flex-1 px-3 py-2 bg-f1-carbon text-white rounded text-xs cursor-pointer hover:bg-f1-carbon/80 h-9"
+													onClick={() => handleStartEdit(driverId)}
+													className="text-xs px-3 py-1.5 border rounded hover:bg-f1-red/10 cursor-pointer"
 												>
-													Salvar
+													Editar
 												</button>
 												<button
-													onClick={() =>
-														setEditingId(null)
-													}
-													className="flex-1 px-3 py-2 border rounded text-xs cursor-pointer hover:bg-gray-100 h-9"
+													onClick={() => handleRemove(driverId)}
+													className="text-xs px-3 py-1.5 border border-red-200 text-red-400 rounded hover:bg-red-50 cursor-pointer"
 												>
-													Cancelar
+													Remover
 												</button>
 											</div>
+										)}
+									</div>
+
+									{isEditing && (
+										<div className="mt-3 space-y-3">
+											<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+												<div>
+													<label className="text-xs text-f1-lighterCarbon block mb-1">Número</label>
+													<input
+														type="text"
+														value={editForm.number}
+														onChange={(e) => setEditForm((p) => ({ ...p, number: e.target.value }))}
+														className="w-full p-2 border rounded h-9 text-sm"
+														placeholder="Ex: 5"
+													/>
+												</div>
+												<div>
+													<label className="text-xs text-f1-lighterCarbon block mb-1">Equipe</label>
+													<select
+														value={editForm.teamName}
+														onChange={(e) => handleTeamChange(e.target.value)}
+														className="w-full p-2 border rounded h-9 text-sm cursor-pointer"
+													>
+														<option value="">— Sem equipe —</option>
+														{(teamsData?.teams ?? []).map((t) => (
+															<option key={t.id} value={t.name}>{t.name}</option>
+														))}
+													</select>
+												</div>
+												<div className="flex items-end gap-2">
+													<button
+														onClick={() => handleSaveEdit(driverId)}
+														className="flex-1 px-3 py-2 bg-f1-carbon text-white rounded text-xs cursor-pointer hover:bg-f1-carbon/80 h-9"
+													>
+														Salvar
+													</button>
+													<button
+														onClick={() => setEditingId(null)}
+														className="flex-1 px-3 py-2 border rounded text-xs cursor-pointer hover:bg-gray-100 h-9"
+													>
+														Cancelar
+													</button>
+												</div>
+											</div>
+											<label className="flex items-center gap-2 cursor-pointer w-fit">
+												<input
+													type="checkbox"
+													checked={!!editForm.reserve}
+													onChange={(e) => setEditForm((p) => ({ ...p, reserve: e.target.checked }))}
+													className="w-4 h-4"
+												/>
+												<span className="text-xs text-f1-lighterCarbon">Piloto reserva</span>
+											</label>
 										</div>
 									)}
 								</li>

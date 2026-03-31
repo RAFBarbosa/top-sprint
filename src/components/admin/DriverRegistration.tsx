@@ -208,7 +208,6 @@ export function DriverRegistration() {
 		try {
 			// Validate required fields
 			if (!formData.name) throw new Error("Nome é obrigatório");
-			if (!formData.grid) throw new Error("Grid é obrigatório");
 			if (!formData.phone) throw new Error("Telefone é obrigatório");
 
 			let photoId = null;
@@ -264,20 +263,7 @@ export function DriverRegistration() {
 				}
 			}
 
-			// Validate other fields
-			const validGrids =
-				gridData?.__type?.enumValues?.map((v) => v.name) || [];
-			if (!validGrids.includes(formData.grid)) {
-				throw new Error(`Grid inválido: ${formData.grid}`);
-			}
 
-			if (hasGridClasses(formData.grid as GridId)) {
-				const validClasses =
-					classData?.__type?.enumValues?.map((v) => v.name) || [];
-				if (!validClasses.includes(formData.class)) {
-					throw new Error(`Classe inválida: ${formData.class}`);
-				}
-			}
 
 			if (formData.stream && !formData.stream.startsWith("http")) {
 				throw new Error("URL de stream deve começar com http/https");
