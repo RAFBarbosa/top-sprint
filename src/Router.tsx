@@ -57,11 +57,26 @@ export function Router() {
 					<Route path="temporadas" element={<SeasonsAdmin />} />
 					<Route path="grids" element={<GridsAdmin />} />
 					<Route path="grids/:gridId" element={<GridConfigAdmin />} />
-					<Route path="grids/:gridId/pilotos" element={<GridDriversAdmin />} />
-					<Route path="grids/:gridId/calendarios" element={<CalendarAdmin />} />
-					<Route path="grids/:gridId/classificacao" element={<GridStandings />} />
-					<Route path="grids/:gridId/resultado-manual" element={<GridManualResults />} />
-					<Route path="grids/:gridId/ajustes" element={<PointAdjustmentsAdmin />} />
+					<Route
+						path="grids/:gridId/pilotos"
+						element={<GridDriversAdmin />}
+					/>
+					<Route
+						path="grids/:gridId/calendarios"
+						element={<CalendarAdmin />}
+					/>
+					<Route
+						path="grids/:gridId/classificacao"
+						element={<GridStandings />}
+					/>
+					<Route
+						path="grids/:gridId/resultado-manual"
+						element={<GridManualResults />}
+					/>
+					<Route
+						path="grids/:gridId/ajustes"
+						element={<PointAdjustmentsAdmin />}
+					/>
 				</Route>
 			</Route>
 		</Routes>

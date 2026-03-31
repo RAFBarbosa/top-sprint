@@ -318,7 +318,11 @@ export function Calendars({
 																		.url,
 																}
 															}
-															seasonId={getSeasonForCalendar(cal.id) ?? undefined}
+															seasonId={
+																getSeasonForCalendar(
+																	cal.id,
+																) ?? undefined
+															}
 														/>
 													</div>
 												</SwiperSlide>

@@ -18,12 +18,18 @@ export default function Sidebar() {
 			<nav className="bg-white p-4 rounded-lg border border-black/20 w-full md:w-64 shrink-0">
 				<ul className="space-y-1 md:space-y-2">
 					<li>
-						<NavLink to="/admin/painel/resultados" className={navLink}>
+						<NavLink
+							to="/admin/painel/resultados"
+							className={navLink}
+						>
 							Resultados
 						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/admin/painel/noticias" className={navLink}>
+						<NavLink
+							to="/admin/painel/noticias"
+							className={navLink}
+						>
 							Notícias
 						</NavLink>
 					</li>
@@ -38,17 +44,26 @@ export default function Sidebar() {
 						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/admin/painel/parceiros" className={navLink}>
+						<NavLink
+							to="/admin/painel/parceiros"
+							className={navLink}
+						>
 							Parceiros
 						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/admin/painel/campeoes" className={navLink}>
+						<NavLink
+							to="/admin/painel/campeoes"
+							className={navLink}
+						>
 							Mural dos Campeões
 						</NavLink>
 					</li>
 					<li>
-						<NavLink to="/admin/painel/temporadas" className={navLink}>
+						<NavLink
+							to="/admin/painel/temporadas"
+							className={navLink}
+						>
 							Temporadas
 						</NavLink>
 					</li>
@@ -94,7 +109,9 @@ export default function Sidebar() {
 													<li>
 														<NavLink
 															to={`${base}/pilotos`}
-															className={subNavLink}
+															className={
+																subNavLink
+															}
 														>
 															Pilotos
 														</NavLink>
@@ -102,7 +119,9 @@ export default function Sidebar() {
 													<li>
 														<NavLink
 															to={`${base}/calendarios`}
-															className={subNavLink}
+															className={
+																subNavLink
+															}
 														>
 															Calendário
 														</NavLink>
@@ -110,7 +129,9 @@ export default function Sidebar() {
 													<li>
 														<NavLink
 															to={`${base}/classificacao`}
-															className={subNavLink}
+															className={
+																subNavLink
+															}
 														>
 															Classificação
 														</NavLink>
@@ -118,19 +139,23 @@ export default function Sidebar() {
 													<li>
 														<NavLink
 															to={`${base}/resultado-manual`}
-															className={subNavLink}
+															className={
+																subNavLink
+															}
 														>
 															Resultado Manual
 														</NavLink>
 													</li>
-															<li>
-																<NavLink
-																	to={`${base}/ajustes`}
-																	className={subNavLink}
-																>
-																	Ajustes de Pontos
-																</NavLink>
-															</li>
+													<li>
+														<NavLink
+															to={`${base}/ajustes`}
+															className={
+																subNavLink
+															}
+														>
+															Ajustes de Pontos
+														</NavLink>
+													</li>
 												</ul>
 											)}
 										</li>

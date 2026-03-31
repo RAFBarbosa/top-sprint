@@ -32,7 +32,8 @@ interface CalendarRegistrationProps {
 
 export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 	const { seasons } = useSeasons();
-	const { setCalendarSeason, removeCalendarSeason, getSeasonForCalendar } = useCalendarSeasons();
+	const { setCalendarSeason, removeCalendarSeason, getSeasonForCalendar } =
+		useCalendarSeasons();
 
 	const [formData, setFormData] = useState({
 		trackId: "",
@@ -192,7 +193,10 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 
 				// Update season mapping in Firebase
 				if (formData.seasonId) {
-					await setCalendarSeason(selectedCalendar.id, formData.seasonId);
+					await setCalendarSeason(
+						selectedCalendar.id,
+						formData.seasonId,
+					);
 				} else {
 					await removeCalendarSeason(selectedCalendar.id);
 				}
@@ -221,7 +225,10 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 
 				// Create season mapping in Firebase
 				if (formData.seasonId && result.data?.createCalendar?.id) {
-					await setCalendarSeason(result.data.createCalendar.id, formData.seasonId);
+					await setCalendarSeason(
+						result.data.createCalendar.id,
+						formData.seasonId,
+					);
 				}
 
 				setStatus({
@@ -362,22 +369,24 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 									>
 										Todos os grids
 									</ListboxOption>
-									{gridData?.__type?.enumValues?.map((option) => (
-										<ListboxOption
-											key={option.name}
-											value={option.name}
-											className={({ active }) =>
-												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-											}
-									>
-										<span className="block truncate">
-											{getGridLabel(option.name)}
-										</span>
-									</ListboxOption>
-								))}
-							</ListboxOptions>
-						</div>
-					</Listbox>
+									{gridData?.__type?.enumValues?.map(
+										(option) => (
+											<ListboxOption
+												key={option.name}
+												value={option.name}
+												className={({ active }) =>
+													`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+												}
+											>
+												<span className="block truncate">
+													{getGridLabel(option.name)}
+												</span>
+											</ListboxOption>
+										),
+									)}
+								</ListboxOptions>
+							</div>
+						</Listbox>
 					)}
 					<input
 						type="text"
@@ -735,51 +744,55 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 											grid: value,
 										}));
 									}}
-							>
-								<div className="relative">
-									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
-										<span className="block truncate">
-											{formData.grid
-												? getGridLabel(formData.grid)
-												: "Selecione um grid"}
-										</span>
-										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-											<ChevronUpDownIcon
-												className="h-5 w-5 text-f1-silver"
-												aria-hidden="true"
-											/>
-										</span>
-									</ListboxButton>
+								>
+									<div className="relative">
+										<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+											<span className="block truncate">
+												{formData.grid
+													? getGridLabel(
+															formData.grid,
+														)
+													: "Selecione um grid"}
+											</span>
+											<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+												<ChevronUpDownIcon
+													className="h-5 w-5 text-f1-silver"
+													aria-hidden="true"
+												/>
+											</span>
+										</ListboxButton>
 
-									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
-										<ListboxOption
-											value=""
-											className={({ active }) =>
-												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-											}
-										>
-											Todos os grids
-										</ListboxOption>
-										{gridData?.__type?.enumValues?.map(
-											(option) => (
-												<ListboxOption
-													key={option.name}
-													value={option.name}
-													className={({ active }) =>
-														`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
-													}
-												>
-													<span className="block truncate">
-														{getGridLabel(
-															option.name,
-														)}
-													</span>
-												</ListboxOption>
-											),
-										)}
-									</ListboxOptions>
-								</div>
-							</Listbox>
+										<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+											<ListboxOption
+												value=""
+												className={({ active }) =>
+													`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+												}
+											>
+												Todos os grids
+											</ListboxOption>
+											{gridData?.__type?.enumValues?.map(
+												(option) => (
+													<ListboxOption
+														key={option.name}
+														value={option.name}
+														className={({
+															active,
+														}) =>
+															`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+														}
+													>
+														<span className="block truncate">
+															{getGridLabel(
+																option.name,
+															)}
+														</span>
+													</ListboxOption>
+												),
+											)}
+										</ListboxOptions>
+									</div>
+								</Listbox>
 							)}
 						</div>
 
@@ -798,7 +811,12 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
 											{formData.seasonId
-												? seasons.find(s => s.id === formData.seasonId)?.name || "Temporada não encontrada"
+												? seasons.find(
+														(s) =>
+															s.id ===
+															formData.seasonId,
+													)?.name ||
+													"Temporada não encontrada"
 												: "Selecione uma temporada"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
