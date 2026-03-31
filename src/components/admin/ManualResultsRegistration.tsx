@@ -70,6 +70,7 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 	const [penaltyValues, setPenaltyValues] = useState<number[]>(
 		Array(20).fill(0),
 	);
+	const [ncValues, setNcValues] = useState<boolean[]>(Array(20).fill(false));
 	// Prêmios Corrida
 	const [awards, setAwards] = useState<Record<string, string>>({});
 
@@ -91,6 +92,8 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 	const [sprintPenaltyValues, setSprintPenaltyValues] = useState<number[]>(
 		Array(20).fill(0),
 	);
+	const [sprintNcValues, setSprintNcValues] = useState<boolean[]>(Array(20).fill(false));
+	const [focusedPenalty, setFocusedPenalty] = useState<string | null>(null);
 	// Prêmios Sprint
 	const [sprintAwards, setSprintAwards] = useState<Record<string, string>>(
 		{},
@@ -211,6 +214,10 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 						),
 					);
 
+					// NC: build boolean arrays from saved ncDriverIds arrays
+					const ncSet = new Set<string>(data.ncDriverIds || []);
+					setNcValues(rR.map((r) => ncSet.has(r.driverId)));
+
 					const sR = mapFirebaseToState(data.sprintResults || []);
 					setSprintResults(sR);
 					setSprintQualy(
@@ -219,6 +226,8 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 					setSprintPenaltyValues(
 						mapPenaltiesToState(sR, data.sprintPenalties || []),
 					);
+					const sprintNcSet = new Set<string>(data.sprintNcDriverIds || []);
+					setSprintNcValues(sR.map((r) => sprintNcSet.has(r.driverId)));
 					setSprintAwards(
 						Object.fromEntries(
 							gridRaceAwards.map((a) => [
@@ -240,6 +249,8 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 					setSprintQualy(empty());
 					setPenaltyValues(Array(20).fill(0));
 					setSprintPenaltyValues(Array(20).fill(0));
+					setNcValues(Array(20).fill(false));
+					setSprintNcValues(Array(20).fill(false));
 					setLink("");
 					const emptyAwards = Object.fromEntries(
 						gridRaceAwards.map((a) => [a.id, ""]),
@@ -328,11 +339,17 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 				results: results.map((r) => r.driverId),
 				resultsQualy: qualyResults.map((r) => r.driverId),
 				penalties: getPToSave(results, penaltyValues),
+				ncDriverIds: results
+					.filter((r, i) => r.driverId && ncValues[i])
+					.map((r) => r.driverId),
 				...awardFields,
 
 				sprintResults: sprintResults.map((r) => r.driverId),
 				sprintResultsQualy: sprintQualy.map((r) => r.driverId),
 				sprintPenalties: getPToSave(sprintResults, sprintPenaltyValues),
+				sprintNcDriverIds: sprintResults
+					.filter((r, i) => r.driverId && sprintNcValues[i])
+					.map((r) => r.driverId),
 				...sprintAwardFields,
 
 				link: link || "",
@@ -724,7 +741,7 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 						);
 					})()}
 
-					<div className="grid grid-cols-[1fr_1fr_72px] gap-x-3 gap-y-1">
+					<div className="grid grid-cols-[1fr_1fr_72px_40px] gap-x-3 gap-y-1">
 						<label className="block mb-1 font-bold">
 							Qualificação
 						</label>
@@ -732,7 +749,10 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 							Resultado Final
 						</label>
 						<label className="block mb-1 text-center font-bold">
-							Penal. (s)
+							Penal.
+						</label>
+						<label className="block mb-1 text-center font-bold text-xs">
+							NC
 						</label>
 
 						{Array.from({ length: 20 }).map((_, i) => {
@@ -914,22 +934,20 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 									{/* Penalidade */}
 									<div className="flex items-center mb-1">
 										<input
-											type="number"
-											value={
-												currentPens[i] === 0
-													? ""
-													: currentPens[i]
-											}
-											disabled={
-												!currentResults[i].driverId
-											}
+											type="text"
+											inputMode="numeric"
+											value={(() => {
+												const key = `${isRace ? "r" : "s"}-${i}`;
+												const val = currentPens[i];
+												if (focusedPenalty === key) return val === 0 ? "" : String(val);
+												return val === 0 ? "" : `${val}s`;
+											})()}
+											disabled={!currentResults[i].driverId}
+											onFocus={() => setFocusedPenalty(`${isRace ? "r" : "s"}-${i}`)}
+											onBlur={() => setFocusedPenalty(null)}
 											onChange={(e) => {
-												const val =
-													parseInt(e.target.value) ||
-													0;
-												const setter = isRace
-													? setPenaltyValues
-													: setSprintPenaltyValues;
+												const val = parseInt(e.target.value) || 0;
+												const setter = isRace ? setPenaltyValues : setSprintPenaltyValues;
 												setter((prev) => {
 													const n = [...prev];
 													n[i] = val;
@@ -938,6 +956,31 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 											}}
 											className="w-full px-2 py-1.5 border rounded h-9 text-center text-sm disabled:opacity-20"
 											placeholder="0s"
+										/>
+									</div>
+
+									{/* NC */}
+									<div className="flex items-center justify-center mb-1">
+										<input
+											type="checkbox"
+											checked={
+												isRace
+													? ncValues[i]
+													: sprintNcValues[i]
+											}
+											disabled={!currentResults[i].driverId}
+											onChange={(e) => {
+												const setter = isRace
+													? setNcValues
+													: setSprintNcValues;
+												setter((prev) => {
+													const n = [...prev];
+													n[i] = e.target.checked;
+													return n;
+												});
+											}}
+											className="w-4 h-4 cursor-pointer disabled:opacity-20"
+											title="Não Completou"
 										/>
 									</div>
 								</div>

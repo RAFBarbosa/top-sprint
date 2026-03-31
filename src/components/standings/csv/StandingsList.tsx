@@ -156,6 +156,7 @@ export function StandingsList(props: StandingsListProps) {
 					teamLogo={item.teamLogo || ""}
 					teamColor={item.teamColor || ""}
 					teamDrivers={item.drivers || ""}
+					reserve={item.reserve}
 					activeTab={props.activeTab}
 					activeGrid={activeGrid}
 					isActive={isFirstPlaceMobile || activeCard === position}

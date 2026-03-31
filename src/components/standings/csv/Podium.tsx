@@ -34,6 +34,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[1].photo}
 							teamColor={props.topThree[1].teamColor}
 							teamName={props.topThree[1].teamName}
+							teamLogo={props.topThree[1].teamLogo}
 							points={props.topThree[1].pts}
 							position={2}
 							photoStyle={props.photoStyle}
@@ -69,6 +70,7 @@ export function Podium(props: PodiumProps) {
 							photo={props.topThree[2].photo}
 							teamColor={props.topThree[2].teamColor}
 							teamName={props.topThree[2].teamName}
+							teamLogo={props.topThree[2].teamLogo}
 							photoStyle={props.photoStyle}
 							points={props.topThree[2].pts}
 							position={3}
@@ -87,6 +89,7 @@ export function Podium(props: PodiumProps) {
 							name={props.topThree[0].name}
 							photo={props.topThree[0].photo}
 							teamColor={props.topThree[0].teamColor}
+							teamLogo={props.topThree[0].teamLogo}
 							photoStyle={props.photoStyle}
 							points={props.topThree[0].pts}
 							position={1}

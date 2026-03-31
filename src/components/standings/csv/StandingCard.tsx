@@ -23,6 +23,7 @@ interface StandingCardProps {
 	teamDrivers?: string[];
 	badge: Array<{ url: string }>;
 	badgeTitle: string;
+	reserve?: boolean;
 	valueKey: string;
 	valueLabel: string;
 	activeTab: GridId;
@@ -138,7 +139,7 @@ export function StandingCard(props: StandingCardProps) {
 		return {
 			primaryName: firstName,
 			secondaryName: secondName,
-			detail: cleanedTeamDrivers.join(" / ") || "No drivers",
+			detail: cleanedTeamDrivers.join(" / ") || "",
 		};
 	};
 
@@ -215,7 +216,9 @@ export function StandingCard(props: StandingCardProps) {
 								"bg-f1-silver rounded-lg pr-1 md:bg-transparent"
 							}`}
 						>
-							{displayInfo.detail}
+							{isDrivers && props.reserve
+								? `Reserva`
+								: displayInfo.detail}
 						</span>
 					</div>
 				</div>
