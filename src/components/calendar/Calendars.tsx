@@ -70,17 +70,10 @@ export function Calendars({
 		hygraphWinner?: any,
 	) => {
 		const result = raceResultsMap[calendarId];
-		if (result?.results) {
+		if (result?.results && result.results.length > 0) {
 			const snapshot = result.driverSnapshots ?? {};
-			const winnerId = (result.results as string[]).find((id) => {
-				// prefer profile grid membership, fall back to Hygraph grid
-				const profile = snapshot[id];
-				return (
-					(profile?.grid ?? driverLookup[id]?.grid) === targetGrid ||
-					driverLookup[id]?.grid === targetGrid
-				);
-			});
-			if (!winnerId) return null;
+			// The first driver in the results array is the winner, regardless of grid
+			const winnerId = result.results[0];
 			const driver = driverLookup[winnerId];
 			if (!driver) return null;
 			const snap = snapshot[winnerId];
@@ -325,6 +318,7 @@ export function Calendars({
 																		.url,
 																}
 															}
+															seasonId={getSeasonForCalendar(cal.id) ?? undefined}
 														/>
 													</div>
 												</SwiperSlide>

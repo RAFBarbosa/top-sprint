@@ -12,6 +12,7 @@ export interface PointSystem {
 	race: number[];
 	sprint?: number[];
 	poleBonus?: number;
+	presenceBonus?: number;
 }
 
 export interface GridConfig {

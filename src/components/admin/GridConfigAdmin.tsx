@@ -242,6 +242,23 @@ export function GridConfigAdmin() {
 							min={0}
 						/>
 					</div>
+					<div>
+						<label className="text-xs text-f1-lighterCarbon block mb-1">
+							Bônus Presença
+						</label>
+						<input
+							type="number"
+							value={editGrid.pointSystem?.presenceBonus ?? 0}
+							onChange={(e) =>
+								updatePointSystem(
+									"presenceBonus",
+									parseInt(e.target.value) || 0,
+								)
+							}
+							className="w-full p-2 border rounded h-10 text-sm"
+							min={0}
+						/>
+					</div>
 				</div>
 			</div>
 

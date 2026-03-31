@@ -10,7 +10,6 @@ import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
-import { CalendarSeasonsContext } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 
 // Resolve raceAwards for any grid, falling back to the first tenant grid
@@ -156,6 +155,7 @@ function buildRows(
 			const racePointsArr = ps?.race ?? [];
 			const sprintPointsArr = ps?.sprint ?? [];
 			const poleBonus = ps?.poleBonus ?? 0;
+			const presenceBonus = ps?.presenceBonus ?? 0;
 
 			const pointsArr =
 				sessionType === "sprint" ? sprintPointsArr : racePointsArr;
@@ -166,13 +166,17 @@ function buildRows(
 					if (gridRank === 1) points = poleBonus;
 				} else if (gridRank > 0 && gridRank <= pointsArr.length) {
 					points = pointsArr[gridRank - 1];
-					gridRaceAwards.forEach((award) => {
-						if (
-							awardWinners[award.id] === driverId &&
-							award.points > 0
-						)
-							points += award.points;
-					});
+					// Presence bonus applies to race only (not sprint or quali)
+					if (sessionType === "race") {
+						points += presenceBonus;
+						gridRaceAwards.forEach((award) => {
+							if (
+								awardWinners[award.id] === driverId &&
+								award.points > 0
+							)
+								points += award.points;
+						});
+					}
 				}
 			}
 
@@ -264,7 +268,7 @@ function WinnerCard({
 				<p className="text-xs text-white/80 mt-0.5">{row.teamName}</p>
 			</div>
 
-			{/* Pole position — same style as FL, shown above it */}
+			{/* Pole position — race only */}
 			{sessionType === "race" && poleRow && (
 				<div className="bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-b border-black/10">
 					<div
@@ -315,8 +319,8 @@ function WinnerCard({
 				</div>
 			)}
 
-			{/* Configurable race awards */}
-			{sessionType !== "quali" &&
+			{/* Configurable race awards — race only, not sprint or quali */}
+			{sessionType === "race" &&
 				awardRows?.map(({ award, driver }) => (
 					<div
 						key={award.id}
@@ -656,15 +660,8 @@ function RaceHeader({
 							)}
 							<div className="flex flex-col gap-2">
 								<div className="flex items-center gap-2 flex-wrap leading-3">
-									{/* <span
-										className="text-xs font-bold tracking-wider uppercase leading-3"
-										style={{ color: gridColor }}
-									>
-										{gridLabel}
-									</span> */}
 									{season && (
 										<>
-											{/* <span className="text-black/20">·</span> */}
 											<span className="text-xs font-bold uppercase tracking-wider text-f1-lighterCarbon leading-3">
 												{season.name}
 											</span>
@@ -763,6 +760,8 @@ export function SessionResult({
 	const [error, setError] = useState<string | null>(null);
 
 	const { data: driversData } = useGetDriversQuery();
+	const { seasons } = useSeasons();
+	const { getSeasonForCalendar } = useCalendarSeasons();
 
 	useEffect(() => {
 		if (!calendarId) {
@@ -866,7 +865,7 @@ export function SessionResult({
 
 			<div className="bg-f1-bg-silver pb-10">
 				{hasSprint && (
-					<div className="mx-auto max-w-screen-xl px-3">
+					<div className="mx-auto max-w-screen-xl px-0 md:px-3">
 						<div className="bg-white border-b border-black/10">
 							<div className="flex gap-0">
 								<button
