@@ -48,7 +48,9 @@ interface ManualResultsRegistrationProps {
 	gridId?: string;
 }
 
-export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationProps) {
+export function ManualResultsRegistration({
+	gridId,
+}: ManualResultsRegistrationProps) {
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race">("race");
 
@@ -92,7 +94,9 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 	const [sprintPenaltyValues, setSprintPenaltyValues] = useState<number[]>(
 		Array(20).fill(0),
 	);
-	const [sprintNcValues, setSprintNcValues] = useState<boolean[]>(Array(20).fill(false));
+	const [sprintNcValues, setSprintNcValues] = useState<boolean[]>(
+		Array(20).fill(false),
+	);
 	const [focusedPenalty, setFocusedPenalty] = useState<string | null>(null);
 	// Prêmios Sprint
 	const [sprintAwards, setSprintAwards] = useState<Record<string, string>>(
@@ -226,8 +230,12 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 					setSprintPenaltyValues(
 						mapPenaltiesToState(sR, data.sprintPenalties || []),
 					);
-					const sprintNcSet = new Set<string>(data.sprintNcDriverIds || []);
-					setSprintNcValues(sR.map((r) => sprintNcSet.has(r.driverId)));
+					const sprintNcSet = new Set<string>(
+						data.sprintNcDriverIds || [],
+					);
+					setSprintNcValues(
+						sR.map((r) => sprintNcSet.has(r.driverId)),
+					);
 					setSprintAwards(
 						Object.fromEntries(
 							gridRaceAwards.map((a) => [
@@ -300,7 +308,12 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 			);
 			const driverSnapshots: Record<
 				string,
-				{ teamName: string; teamColor: string; number: string; photoUrl: string }
+				{
+					teamName: string;
+					teamColor: string;
+					number: string;
+					photoUrl: string;
+				}
 			> = {};
 			allIds.forEach((id) => {
 				const driver = driversData?.drivers?.find((d) => d.id === id);
@@ -308,15 +321,11 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 					const profile =
 						allProfiles[id]?.[selectedCalendar.grid ?? ""];
 					driverSnapshots[id] = {
-						teamName:
-							profile?.teamName ?? driver.team?.name ?? "",
+						teamName: profile?.teamName ?? driver.team?.name ?? "",
 						teamColor:
-							profile?.teamColor ??
-							driver.team?.color?.hex ??
-							"",
+							profile?.teamColor ?? driver.team?.color?.hex ?? "",
 						number: profile?.number ?? driver.number ?? "",
-						photoUrl:
-							profile?.photoUrl ?? driver.photo?.url ?? "",
+						photoUrl: profile?.photoUrl ?? driver.photo?.url ?? "",
 					};
 				}
 			});
@@ -398,8 +407,7 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 				// Show if they have a Firebase profile for this grid,
 				// or fall back to Hygraph grid field for drivers not yet migrated
 				return (
-					allProfiles[d.id]?.[grid] !== undefined ||
-					d.grid === grid
+					allProfiles[d.id]?.[grid] !== undefined || d.grid === grid
 				);
 			})
 			.filter((d) => q === "" || d.name?.toLowerCase().includes(q))
@@ -939,15 +947,32 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 											value={(() => {
 												const key = `${isRace ? "r" : "s"}-${i}`;
 												const val = currentPens[i];
-												if (focusedPenalty === key) return val === 0 ? "" : String(val);
-												return val === 0 ? "" : `${val}s`;
+												if (focusedPenalty === key)
+													return val === 0
+														? ""
+														: String(val);
+												return val === 0
+													? ""
+													: `${val}s`;
 											})()}
-											disabled={!currentResults[i].driverId}
-											onFocus={() => setFocusedPenalty(`${isRace ? "r" : "s"}-${i}`)}
-											onBlur={() => setFocusedPenalty(null)}
+											disabled={
+												!currentResults[i].driverId
+											}
+											onFocus={() =>
+												setFocusedPenalty(
+													`${isRace ? "r" : "s"}-${i}`,
+												)
+											}
+											onBlur={() =>
+												setFocusedPenalty(null)
+											}
 											onChange={(e) => {
-												const val = parseInt(e.target.value) || 0;
-												const setter = isRace ? setPenaltyValues : setSprintPenaltyValues;
+												const val =
+													parseInt(e.target.value) ||
+													0;
+												const setter = isRace
+													? setPenaltyValues
+													: setSprintPenaltyValues;
 												setter((prev) => {
 													const n = [...prev];
 													n[i] = val;
@@ -968,7 +993,9 @@ export function ManualResultsRegistration({ gridId }: ManualResultsRegistrationP
 													? ncValues[i]
 													: sprintNcValues[i]
 											}
-											disabled={!currentResults[i].driverId}
+											disabled={
+												!currentResults[i].driverId
+											}
 											onChange={(e) => {
 												const setter = isRace
 													? setNcValues
