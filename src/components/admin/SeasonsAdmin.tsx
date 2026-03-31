@@ -3,12 +3,15 @@ import { useSeasons } from "../../contexts/SeasonsContext";
 import { Season } from "../../contexts/SeasonsContext";
 
 export function SeasonsAdmin() {
-	const { seasons, loading, saveSeason, updateSeason, deleteSeason } = useSeasons();
+	const { seasons, loading, saveSeason, updateSeason, deleteSeason } =
+		useSeasons();
 	const [isCreating, setIsCreating] = useState(true);
 	const [editingSeason, setEditingSeason] = useState<Season | null>(null);
 	const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
 	const [searchTerm, setSearchTerm] = useState("");
-	const [activeFilter, setActiveFilter] = useState<"all" | "active" | "inactive">("all");
+	const [activeFilter, setActiveFilter] = useState<
+		"all" | "active" | "inactive"
+	>("all");
 
 	const [formData, setFormData] = useState({ name: "", active: true });
 
@@ -48,7 +51,11 @@ export function SeasonsAdmin() {
 	};
 
 	const handleDelete = async (season: Season) => {
-		if (window.confirm(`Tem certeza que deseja excluir a temporada "${season.name}"?`)) {
+		if (
+			window.confirm(
+				`Tem certeza que deseja excluir a temporada "${season.name}"?`,
+			)
+		) {
 			try {
 				await deleteSeason(season.id);
 			} catch (error) {
@@ -90,7 +97,11 @@ export function SeasonsAdmin() {
 							<button
 								key={value}
 								type="button"
-								onClick={() => setActiveFilter(value as "all" | "active" | "inactive")}
+								onClick={() =>
+									setActiveFilter(
+										value as "all" | "active" | "inactive",
+									)
+								}
 								className={`flex-1 py-2 cursor-pointer transition-colors duration-120 ${
 									activeFilter === value
 										? "bg-f1-red text-white font-medium"
@@ -118,13 +129,19 @@ export function SeasonsAdmin() {
 								<div
 									onClick={() => handleSelectSeason(season)}
 									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
-										selectedSeason?.id === season.id ? "bg-f1-red/20 font-bold" : ""
+										selectedSeason?.id === season.id
+											? "bg-f1-red/20 font-bold"
+											: ""
 									}`}
 								>
 									<div className="flex flex-col items-start">
-										<span className="truncate max-w-36">{season.name}</span>
+										<span className="truncate max-w-36">
+											{season.name}
+										</span>
 										{!season.active && (
-											<span className="text-xs text-gray-500">Inativo</span>
+											<span className="text-xs text-gray-500">
+												Inativo
+											</span>
 										)}
 									</div>
 
@@ -136,8 +153,18 @@ export function SeasonsAdmin() {
 										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 										title="Excluir"
 									>
-										<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+										<svg
+											className="h-4 w-4"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+											/>
 										</svg>
 									</button>
 								</div>
@@ -158,15 +185,24 @@ export function SeasonsAdmin() {
 						<div className="flex justify-between items-center mb-6">
 							<div>
 								<h2 className="text-2xl font-bold">
-									{editingSeason ? "Editar Temporada" : "Cadastrar Nova Temporada"}
+									{editingSeason
+										? "Editar Temporada"
+										: "Cadastrar Nova Temporada"}
 								</h2>
 								<div className="flex items-center justify-start gap-2 mt-4">
-									<span className="text-sm font-medium">Ativo</span>
+									<span className="text-sm font-medium">
+										Ativo
+									</span>
 									<label className="relative inline-flex items-center cursor-pointer">
 										<input
 											type="checkbox"
 											checked={formData.active}
-											onChange={(e) => setFormData((prev) => ({ ...prev, active: e.target.checked }))}
+											onChange={(e) =>
+												setFormData((prev) => ({
+													...prev,
+													active: e.target.checked,
+												}))
+											}
 											className="sr-only peer"
 										/>
 										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
@@ -190,7 +226,12 @@ export function SeasonsAdmin() {
 								<input
 									type="text"
 									value={formData.name}
-									onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+									onChange={(e) =>
+										setFormData((prev) => ({
+											...prev,
+											name: e.target.value,
+										}))
+									}
 									className="w-full p-2 border rounded h-11"
 									placeholder="Ex: Temporada 2025"
 									required

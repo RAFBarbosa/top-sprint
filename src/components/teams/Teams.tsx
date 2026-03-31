@@ -66,7 +66,18 @@ export function Teams() {
 					photo: driverTeam?.photo,
 				},
 			};
-			return applyProfile(withTeam, gridId);
+			const profiled = applyProfile(withTeam, gridId);
+			// If the profile changed the team name, look up the new team's logo
+			const resolvedTeam = teamsData?.teams.find((t) => t.name === profiled.team?.name);
+			return {
+				...profiled,
+				team: {
+					...profiled.team,
+					photo: resolvedTeam?.photo ?? profiled.team?.photo,
+					class: resolvedTeam?.class ?? profiled.team?.class,
+				},
+				teamColor: resolvedTeam?.color?.hex ?? profiled.teamColor,
+			};
 		})
 		.filter((driver) => !driver.reserve)
 		.sort((a, b) => {

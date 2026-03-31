@@ -343,7 +343,9 @@ export function ResultsRegistration() {
 										<div className="flex flex-col items-start">
 											<div>
 												<span className="truncate max-w-40">
-													{getGridLabel(dataItem.grid)}
+													{getGridLabel(
+														dataItem.grid,
+													)}
 												</span>
 												{dataItem.csv?.url && (
 													<span className="text-sm">

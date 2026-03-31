@@ -5,7 +5,13 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
-import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+import {
+	collection,
+	getDocs,
+	doc,
+	setDoc,
+	deleteDoc,
+} from "firebase/firestore";
 import { db } from "../lib/adminClient";
 import { tenant } from "../shared/config/tenants";
 
@@ -18,7 +24,7 @@ export interface Season {
 interface SeasonsContextType {
 	seasons: Season[];
 	loading: boolean;
-	saveSeason: (season: Omit<Season, 'id'>) => Promise<void>;
+	saveSeason: (season: Omit<Season, "id">) => Promise<void>;
 	updateSeason: (id: string, season: Partial<Season>) => Promise<void>;
 	deleteSeason: (id: string) => Promise<void>;
 }
@@ -47,12 +53,17 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 	const loadSeasons = async () => {
 		try {
 			const snap = await getDocs(collection(db, FIRESTORE_COLLECTION));
-			const seasonsData = snap.docs.map(d => ({
-				id: d.id,
-				name: d.data().name ?? d.id,
-				active: d.data().active ?? false,
-			} as Season));
-			setSeasons(seasonsData.sort((a, b) => a.name.localeCompare(b.name)));
+			const seasonsData = snap.docs.map(
+				(d) =>
+					({
+						id: d.id,
+						name: d.data().name ?? d.id,
+						active: d.data().active ?? false,
+					}) as Season,
+			);
+			setSeasons(
+				seasonsData.sort((a, b) => a.name.localeCompare(b.name)),
+			);
 		} catch (e) {
 			console.error("Failed to load seasons", e);
 		} finally {
@@ -60,7 +71,7 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 		}
 	};
 
-	const saveSeason = async (seasonData: Omit<Season, 'id'>) => {
+	const saveSeason = async (seasonData: Omit<Season, "id">) => {
 		const id = nameToId(seasonData.name);
 		try {
 			await setDoc(doc(db, FIRESTORE_COLLECTION, id), {
@@ -77,7 +88,9 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 
 	const updateSeason = async (id: string, updates: Partial<Season>) => {
 		try {
-			await setDoc(doc(db, FIRESTORE_COLLECTION, id), updates, { merge: true });
+			await setDoc(doc(db, FIRESTORE_COLLECTION, id), updates, {
+				merge: true,
+			});
 			await loadSeasons();
 		} catch (e) {
 			console.error("Failed to update season", e);
@@ -96,7 +109,9 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 	};
 
 	return (
-		<SeasonsContext.Provider value={{ seasons, loading, saveSeason, updateSeason, deleteSeason }}>
+		<SeasonsContext.Provider
+			value={{ seasons, loading, saveSeason, updateSeason, deleteSeason }}
+		>
 			{children}
 		</SeasonsContext.Provider>
 	);
