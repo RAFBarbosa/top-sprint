@@ -26,6 +26,7 @@ import ptBR from "date-fns/locale/pt-BR";
 // Firebase
 import { doc, getDoc, setDoc, getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
+import type { PointAdjustment } from "./PointAdjustmentsAdmin";
 
 interface GridProfile {
 	number: string;
@@ -52,7 +53,16 @@ export function ManualResultsRegistration({
 	gridId,
 }: ManualResultsRegistrationProps) {
 	// Aba Ativa
-	const [activeTab, setActiveTab] = useState<"sprint" | "race">("race");
+	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
+
+	// --- ESTADOS AJUSTES ---
+	const [calendarAdjustments, setCalendarAdjustments] = useState<PointAdjustment[]>([]);
+	const [adjDriverQuery, setAdjDriverQuery] = useState("");
+	const [adjSelectedDriverId, setAdjSelectedDriverId] = useState("");
+	const [adjPoints, setAdjPoints] = useState<number>(0);
+	const [adjReason, setAdjReason] = useState("");
+	const [adjEditId, setAdjEditId] = useState<string | null>(null);
+	const [adjStatus, setAdjStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
 
 	// --- ESTADOS CORRIDA ---
 	const [results, setResults] = useState<RaceResult[]>(
@@ -275,14 +285,75 @@ export function ManualResultsRegistration({
 
 	// Garantir que a aba Sprint não fique aberta em etapas sem Sprint
 	useEffect(() => {
-		if (
-			selectedCalendar &&
-			!selectedCalendar.sprint &&
-			activeTab === "sprint"
-		) {
+		if (selectedCalendar && !selectedCalendar.sprint && activeTab === "sprint") {
 			setActiveTab("race");
 		}
 	}, [selectedCalendar]);
+
+	// Carregar ajustes de pontos da etapa selecionada
+	useEffect(() => {
+		if (!selectedCalendar?.id) {
+			setCalendarAdjustments([]);
+			return;
+		}
+		const load = async () => {
+			try {
+				const snap = await getDoc(doc(db, "point_adjustments", selectedCalendar.id));
+				setCalendarAdjustments(snap.exists() ? (snap.data().adjustments ?? []) : []);
+			} catch (e) {
+				console.error(e);
+			}
+		};
+		load();
+	}, [selectedCalendar?.id]);
+
+	const saveAdjustments = async (next: PointAdjustment[]) => {
+		if (!selectedCalendar?.id) return;
+		setAdjStatus({ type: "loading", message: "Salvando..." });
+		try {
+			await setDoc(doc(db, "point_adjustments", selectedCalendar.id), {
+				adjustments: next,
+				grid: selectedCalendar.grid ?? "",
+				calendarId: selectedCalendar.id,
+			});
+			setCalendarAdjustments(next);
+			setAdjStatus({ type: "success", message: "Salvo!" });
+			setTimeout(() => setAdjStatus({ type: "idle", message: "" }), 2000);
+		} catch (e: any) {
+			setAdjStatus({ type: "error", message: "Erro: " + e.message });
+		}
+	};
+
+	const handleAddAdjustment = async () => {
+		if (!adjSelectedDriverId || adjPoints === 0 || !adjReason.trim()) return;
+		const next = adjEditId
+			? calendarAdjustments.map((a) =>
+				a.id === adjEditId
+					? { ...a, driverId: adjSelectedDriverId, points: adjPoints, reason: adjReason.trim() }
+					: a,
+			)
+			: [...calendarAdjustments, { id: crypto.randomUUID(), driverId: adjSelectedDriverId, points: adjPoints, reason: adjReason.trim() }];
+		await saveAdjustments(next);
+		setAdjSelectedDriverId("");
+		setAdjDriverQuery("");
+		setAdjPoints(0);
+		setAdjReason("");
+		setAdjEditId(null);
+	};
+
+	const handleEditAdjustment = (adj: PointAdjustment) => {
+		const driver = getFilteredDrivers("").find((d) => d.id === adj.driverId)
+			?? driversData?.drivers?.find((d) => d.id === adj.driverId);
+		setAdjEditId(adj.id);
+		setAdjSelectedDriverId(adj.driverId);
+		setAdjDriverQuery(driver?.name ?? "");
+		setAdjPoints(adj.points);
+		setAdjReason(adj.reason);
+	};
+
+	const handleDeleteAdjustment = async (id: string) => {
+		await saveAdjustments(calendarAdjustments.filter((a) => a.id !== id));
+	};
 
 	// --- GRAVAÇÃO ---
 	const handleSubmit = async (e: FormEvent) => {
@@ -584,15 +655,15 @@ export function ManualResultsRegistration({
 							)}
 						</div>
 						<div className="flex items-center gap-2">
-							{selectedCalendar?.sprint && (
-								<div className="flex rounded border overflow-hidden text-sm">
-									<button
-										type="button"
-										onClick={() => setActiveTab("race")}
-										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "race" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
-									>
-										Corrida
-									</button>
+							<div className="flex rounded border overflow-hidden text-sm">
+								<button
+									type="button"
+									onClick={() => setActiveTab("race")}
+									className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "race" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+								>
+									Corrida
+								</button>
+								{selectedCalendar?.sprint && (
 									<button
 										type="button"
 										onClick={() => setActiveTab("sprint")}
@@ -600,8 +671,17 @@ export function ManualResultsRegistration({
 									>
 										Sprint
 									</button>
-								</div>
-							)}
+								)}
+								{selectedCalendar && (
+									<button
+										type="button"
+										onClick={() => setActiveTab("adjustments")}
+										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "adjustments" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+									>
+										Ajustes
+									</button>
+								)}
+							</div>
 							<button
 								type="button"
 								onClick={handleSubmit}
@@ -620,6 +700,149 @@ export function ManualResultsRegistration({
 							{status.message}
 						</div>
 					)}
+
+					{/* Ajustes de Pontos tab */}
+					{activeTab === "adjustments" && (
+						<div className="space-y-6">
+							{/* Add form */}
+							<div className="border border-black/10 rounded-lg p-4 space-y-4">
+								<h3 className="font-semibold text-sm">Novo Ajuste</h3>
+								<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+									<div className="relative">
+										<label className="text-xs text-f1-lighterCarbon block mb-1">Piloto</label>
+										<input
+											type="text"
+											className="w-full p-2 border rounded h-10 text-sm"
+											placeholder="Buscar piloto..."
+											value={adjSelectedDriverId
+												? getFilteredDrivers("").find((d) => d.id === adjSelectedDriverId)?.name ?? adjDriverQuery
+												: adjDriverQuery}
+											onChange={(e) => { setAdjDriverQuery(e.target.value); setAdjSelectedDriverId(""); }}
+										/>
+										{adjDriverQuery && !adjSelectedDriverId && (
+											<ul className="absolute z-20 mt-1 w-full bg-white border rounded shadow max-h-48 overflow-y-auto text-sm">
+												{getFilteredDrivers(adjDriverQuery).map((d) => (
+													<li
+														key={d.id}
+														className="px-3 py-2 hover:bg-f1-red/10 cursor-pointer"
+														onClick={() => { setAdjSelectedDriverId(d.id); setAdjDriverQuery(""); }}
+													>
+														{d.name}
+													</li>
+												))}
+											</ul>
+										)}
+									</div>
+									<div>
+										<label className="text-xs text-f1-lighterCarbon block mb-1">
+											Pontos <span className="font-normal">(negativo = penalidade)</span>
+										</label>
+										<input
+											type="number"
+											className="w-full p-2 border rounded h-10 text-sm"
+											value={adjPoints === 0 ? "" : adjPoints}
+											placeholder="Ex: -5 ou +3"
+											onChange={(e) => setAdjPoints(parseInt(e.target.value) || 0)}
+										/>
+									</div>
+									<div>
+										<label className="text-xs text-f1-lighterCarbon block mb-1">Motivo</label>
+										<input
+											type="text"
+											className="w-full p-2 border rounded h-10 text-sm"
+											placeholder="Ex: Penalidade Comissários"
+											value={adjReason}
+											onChange={(e) => setAdjReason(e.target.value)}
+										/>
+									</div>
+								</div>
+								<div className="flex items-center gap-3">
+									<button
+										type="button"
+										onClick={handleAddAdjustment}
+										disabled={!adjSelectedDriverId || adjPoints === 0 || !adjReason.trim() || adjStatus.type === "loading"}
+										className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed"
+									>
+										{adjEditId ? "Salvar" : "Adicionar"}
+									</button>
+									{adjEditId && (
+										<button
+											type="button"
+											onClick={() => { setAdjEditId(null); setAdjSelectedDriverId(""); setAdjDriverQuery(""); setAdjPoints(0); setAdjReason(""); }}
+											className="px-4 py-2 rounded text-sm border border-black/20 hover:bg-black/5"
+										>
+											Cancelar
+										</button>
+									)}
+									{adjStatus.message && (
+										<span className={`text-sm font-medium ${adjStatus.type === "error" ? "text-f1-red" : adjStatus.type === "success" ? "text-green-600" : "text-f1-lighterCarbon"}`}>
+											{adjStatus.message}
+										</span>
+									)}
+								</div>
+							</div>
+
+							{/* List */}
+							{calendarAdjustments.length === 0 ? (
+								<p className="text-sm text-f1-lighterCarbon">Nenhum ajuste para esta etapa.</p>
+							) : (
+								<div className="border border-black/10 rounded-lg overflow-hidden">
+									<table className="min-w-full text-sm">
+										<thead>
+											<tr className="text-xs uppercase tracking-wide text-f1-lighterCarbon border-b border-black/10 bg-f1-bg-silver">
+												<th className="py-2 px-4 text-left">Piloto</th>
+												<th className="py-2 px-4 text-left">Motivo</th>
+												<th className="py-2 px-4 text-right">Pts</th>
+												<th className="py-2 px-4 text-right w-20"></th>
+											</tr>
+										</thead>
+										<tbody>
+											{calendarAdjustments.map((adj, i) => {
+												const driver = getFilteredDrivers("").find((d) => d.id === adj.driverId)
+													?? driversData?.drivers?.find((d) => d.id === adj.driverId);
+												return (
+													<tr key={adj.id} className={`${i % 2 === 0 ? "bg-white" : "bg-f1-bg-silver"} ${adjEditId === adj.id ? "ring-2 ring-inset ring-blue-400" : ""}`}>
+														<td className="py-2 px-4 font-medium">{driver?.name ?? adj.driverId}</td>
+														<td className="py-2 px-4 text-f1-lighterCarbon">{adj.reason}</td>
+														<td className={`py-2 px-4 text-right font-bold ${adj.points > 0 ? "text-green-600" : "text-f1-red"}`}>
+															{adj.points > 0 ? `+${adj.points}` : adj.points}
+														</td>
+														<td className="py-2 px-4 text-right">
+															<div className="flex items-center justify-end gap-2">
+																<button
+																	type="button"
+																	onClick={() => handleEditAdjustment(adj)}
+																	className="text-f1-lighterCarbon hover:text-blue-500 transition-colors"
+																	title="Editar"
+																>
+																	<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+																		<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+																	</svg>
+																</button>
+																<button
+																	type="button"
+																	onClick={() => handleDeleteAdjustment(adj.id)}
+																	className="text-f1-lighterCarbon hover:text-f1-red transition-colors"
+																	title="Remover"
+																>
+																	<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+																		<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+																	</svg>
+																</button>
+															</div>
+														</td>
+													</tr>
+												);
+											})}
+										</tbody>
+									</table>
+								</div>
+							)}
+						</div>
+					)}
+
+					{activeTab !== "adjustments" && (
+					<>
 
 					{/* Link da corrida */}
 					<div className="mb-6 pb-6 border-b border-f1-black/20">
@@ -640,7 +863,7 @@ export function ManualResultsRegistration({
 						const gridRaceAwards = selectedCalendar
 							? resolveRaceAwards(selectedCalendar.grid)
 							: [];
-						if (gridRaceAwards.length === 0) return null;
+						if (gridRaceAwards.length === 0 || activeTab === "sprint") return null;
 						return (
 							<div className="mb-6 pb-6 border-b border-f1-black/20">
 								<h3 className="font-bold mb-2">
@@ -1014,6 +1237,8 @@ export function ManualResultsRegistration({
 							);
 						})}
 					</div>
+					</>
+					)}
 				</form>
 			</div>
 		</div>

@@ -30,12 +30,12 @@ function AppLayout() {
 			<SeasonsProvider>
 				<CalendarSeasonsProvider>
 					<DriverProfilesProvider>
-					<TabProvider>
-						{!isAdmin && <Header />}
-						<Router />
-						<Analytics />
-						{!isAdmin && <Footer />}
-					</TabProvider>
+						<TabProvider>
+							{!isAdmin && <Header />}
+							<Router />
+							<Analytics />
+							{!isAdmin && <Footer />}
+						</TabProvider>
 					</DriverProfilesProvider>
 				</CalendarSeasonsProvider>
 			</SeasonsProvider>

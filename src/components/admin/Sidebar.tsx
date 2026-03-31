@@ -123,6 +123,14 @@ export default function Sidebar() {
 															Resultado Manual
 														</NavLink>
 													</li>
+															<li>
+																<NavLink
+																	to={`${base}/ajustes`}
+																	className={subNavLink}
+																>
+																	Ajustes de Pontos
+																</NavLink>
+															</li>
 												</ul>
 											)}
 										</li>

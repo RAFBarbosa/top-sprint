@@ -20,6 +20,7 @@ interface CalendarProps {
 	date: Date;
 	map?: { url: string };
 	externalLink?: string;
+	seasonId?: string;
 }
 
 export function Calendar(props: CalendarProps) {
@@ -69,10 +70,9 @@ export function Calendar(props: CalendarProps) {
 			.replace(/[^a-z0-9]+/g, "-")
 			.replace(/^-|-$/g, "");
 
-	const year = new Date(props.date).getFullYear();
-	const month = String(new Date(props.date).getMonth() + 1).padStart(2, "0");
 	const gridLabel = getGridConfig(props.grid)?.label ?? props.grid;
-	const resultsSlug = `/resultados/${year}-${month}-${slugify(gridLabel)}-${slugify(props.round)}-${slugify(props.track)}`;
+	const seasonPart = props.seasonId ? `${slugify(props.seasonId)}-` : "";
+	const resultsSlug = `/resultados/${seasonPart}${slugify(gridLabel)}-${slugify(props.round)}-${slugify(props.track)}`;
 
 	// Add name filtering logic - remove any suffix with -
 	const filterDriverName = (name: string) => {

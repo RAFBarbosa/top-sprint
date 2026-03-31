@@ -26,6 +26,7 @@ import { GridDriversAdmin } from "./components/admin/GridDriversAdmin";
 import { GridStandings } from "./components/admin/GridStandings";
 import { GridManualResults } from "./components/admin/GridManualResults";
 import { SeasonsAdmin } from "./components/admin/SeasonsAdmin";
+import { PointAdjustmentsAdmin } from "./components/admin/PointAdjustmentsAdmin";
 
 export function Router() {
 	const RulesPage = {
@@ -52,12 +53,16 @@ export function Router() {
 					<Route path="parceiros" element={<PartnerAdmin />} />
 					<Route path="resultados" element={<ResultsAdmin />} />
 					<Route path="noticias" element={<NewsAdmin />} />
-					<Route path="campeoes" element={<HallOfFameAdmin />} />					<Route path="temporadas" element={<SeasonsAdmin />} />
-<Route path="grids" element={<GridsAdmin />} />
+					<Route path="campeoes" element={<HallOfFameAdmin />} />
+					<Route path="temporadas" element={<SeasonsAdmin />} />
+					<Route path="grids" element={<GridsAdmin />} />
 					<Route path="grids/:gridId" element={<GridConfigAdmin />} />
-					<Route path="grids/:gridId/pilotos" element={<GridDriversAdmin />} />					<Route path="grids/:gridId/calendarios" element={<CalendarAdmin />} />
+					<Route path="grids/:gridId/pilotos" element={<GridDriversAdmin />} />
+					<Route path="grids/:gridId/calendarios" element={<CalendarAdmin />} />
 					<Route path="grids/:gridId/classificacao" element={<GridStandings />} />
-					<Route path="grids/:gridId/resultado-manual" element={<GridManualResults />} />				</Route>
+					<Route path="grids/:gridId/resultado-manual" element={<GridManualResults />} />
+					<Route path="grids/:gridId/ajustes" element={<PointAdjustmentsAdmin />} />
+				</Route>
 			</Route>
 		</Routes>
 	);

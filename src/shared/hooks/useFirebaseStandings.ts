@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
+import type { PointAdjustment } from "../../components/admin/PointAdjustmentsAdmin";
 import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generated";
 import { getGridConfig, type GridId } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -30,6 +31,7 @@ function calcStandings(
 	const racePointsArr = ps?.race ?? [];
 	const sprintPointsArr = ps?.sprint ?? [];
 	const poleBonus = ps?.poleBonus ?? 0;
+	const presenceBonus = ps?.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	const driverPts: Record<string, { pts: number; bestRaceFinishes: number[] }> = {};
@@ -50,7 +52,7 @@ function calcStandings(
 			ensure(driverId);
 			const pos = i + 1;
 			const pts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
-			driverPts[driverId].pts += pts;
+			driverPts[driverId].pts += pts + presenceBonus;
 			driverPts[driverId].bestRaceFinishes.push(pos);
 			raceAwards.forEach((award) => {
 				if (result[award.id] === driverId && award.points > 0) {
@@ -66,19 +68,13 @@ function calcStandings(
 			driverPts[poleId].pts += poleBonus;
 		}
 
-		// Sprint points
+		// Sprint points — no pole bonus, no race awards
 		if (cal.sprint && sprintOrder.length > 0) {
 			sprintOrder.forEach((driverId, i) => {
 				ensure(driverId);
 				const pos = i + 1;
 				const pts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
 				driverPts[driverId].pts += pts;
-				raceAwards.forEach((award) => {
-					const key = `sprint${award.id.charAt(0).toUpperCase()}${award.id.slice(1)}`;
-					if (result[key] === driverId && award.points > 0) {
-						driverPts[driverId].pts += award.points;
-					}
-				});
 			});
 		}
 	}
@@ -128,6 +124,7 @@ function calcStandings(
 
 export function useFirebaseStandings(gridId: GridId) {
 	const [allResults, setAllResults] = useState<Record<string, RaceResultDoc>>({});
+	const [allAdjustments, setAllAdjustments] = useState<Record<string, PointAdjustment[]>>({});
 	const [loadingResults, setLoadingResults] = useState(true);
 
 	const { data: calendarsData } = useGetCalendarsQuery();
@@ -139,12 +136,19 @@ export function useFirebaseStandings(gridId: GridId) {
 	useEffect(() => {
 		const load = async () => {
 			try {
-				const snap = await getDocs(collection(db, "race_results"));
-				const map: Record<string, RaceResultDoc> = {};
-				snap.forEach((d) => { map[d.id] = d.data() as RaceResultDoc; });
-				setAllResults(map);
+				const [resultsSnap, adjSnap] = await Promise.all([
+					getDocs(collection(db, "race_results")),
+					getDocs(collection(db, "point_adjustments")),
+				]);
+				const resultsMap: Record<string, RaceResultDoc> = {};
+				resultsSnap.forEach((d) => { resultsMap[d.id] = d.data() as RaceResultDoc; });
+				setAllResults(resultsMap);
+
+				const adjMap: Record<string, PointAdjustment[]> = {};
+				adjSnap.forEach((d) => { adjMap[d.id] = d.data().adjustments ?? []; });
+				setAllAdjustments(adjMap);
 			} catch (e) {
-				console.error("Failed to load race results", e);
+				console.error("Failed to load standings data", e);
 			} finally {
 				setLoadingResults(false);
 			}
@@ -175,7 +179,31 @@ export function useFirebaseStandings(gridId: GridId) {
 			(driversData.drivers ?? []).map((d) => [d.id, d]),
 		);
 
-		const standings = calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile);
+		// Helper: sum adjustments for a set of calendar ids
+		const applyAdj = (rows: any[], calendarIds: Set<string>) =>
+			rows.map((row) => {
+				const adj = calendarIds
+					? [...calendarIds].flatMap((cid) => allAdjustments[cid] ?? [])
+							.filter((a) => a.driverId === row.id)
+							.reduce((sum, a) => sum + a.points, 0)
+					: 0;
+				return adj !== 0 ? { ...row, pts: row.pts + adj } : row;
+			}).sort((a: any, b: any) => {
+				if (b.pts !== a.pts) return b.pts - a.pts;
+				const maxLen = Math.max(a._bestFinishes.length, b._bestFinishes.length);
+				for (let i = 0; i < maxLen; i++) {
+					const aPos = a._bestFinishes[i] ?? Infinity;
+					const bPos = b._bestFinishes[i] ?? Infinity;
+					if (aPos !== bPos) return aPos - bPos;
+				}
+				return 0;
+			});
+
+		const allCalendarIds = new Set(relevantCalendars.map((c) => c.id));
+		const standings = applyAdj(
+			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile),
+			allCalendarIds,
+		);
 
 		// Find the most recently raced calendar (by date) that has results
 		const lastRaced = [...relevantCalendars].sort((a, b) => {
@@ -184,15 +212,19 @@ export function useFirebaseStandings(gridId: GridId) {
 			return db_ - da;
 		})[0];
 
-		// Previous = standings without the last raced race
+		// Previous = standings without the last raced race (and without its adjustments)
 		const previousCalendars = lastRaced
 			? relevantCalendars.filter((c) => c.id !== lastRaced.id)
 			: relevantCalendars;
+		const previousCalendarIds = new Set(previousCalendars.map((c) => c.id));
 
-		const previousStandings = calcStandings(previousCalendars, allResults, gridId, driverLookup, applyProfile);
+		const previousStandings = applyAdj(
+			calcStandings(previousCalendars, allResults, gridId, driverLookup, applyProfile),
+			previousCalendarIds,
+		);
 
 		return { standings, previousStandings };
-	}, [allResults, calendarsData, driversData, seasons, mappings, profiles, gridId]);
+	}, [allResults, allAdjustments, calendarsData, driversData, seasons, mappings, profiles, gridId]);
 
 	return {
 		standings,

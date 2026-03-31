@@ -4,6 +4,7 @@ import { SessionResult } from "./SessionResult";
 import { useGetCalendarsQuery } from "../../graphql/generated";
 import { getGridConfig } from "../../shared/config/grids";
 import { Divider } from "../layout/Divider";
+import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 
 const slugify = (str: string) =>
 	str
@@ -13,27 +14,19 @@ const slugify = (str: string) =>
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-|-$/g, "");
 
-function toSlug(calendar: {
-	date?: any;
-	grid: string;
-	round?: string | null;
-	track?: { name?: string | null } | null;
-}) {
-	const year = new Date(calendar.date).getFullYear();
-	const month = String(new Date(calendar.date).getMonth() + 1).padStart(
-		2,
-		"0",
-	);
-	const gridLabel = getGridConfig(calendar.grid)?.label ?? calendar.grid;
-	return `${year}-${month}-${slugify(gridLabel)}-${slugify(calendar.round ?? "")}-${slugify(calendar.track?.name ?? "")}`;
-}
-
 export function SessionResults() {
 	const { slug } = useParams();
 	const { data } = useGetCalendarsQuery();
+	const { getSeasonForCalendar } = useCalendarSeasons();
 
 	const matched = slug
-		? data?.calendars.find((c) => toSlug(c) === slug)
+		? data?.calendars.find((c) => {
+				const gridLabel = getGridConfig(c.grid)?.label ?? c.grid;
+				const seasonId = getSeasonForCalendar(c.id);
+				const seasonPart = seasonId ? `${slugify(seasonId)}-` : "";
+				const calSlug = `${seasonPart}${slugify(gridLabel)}-${slugify(c.round ?? "")}-${slugify(c.track?.name ?? "")}`;
+				return calSlug === slug;
+			})
 		: null;
 
 	return (
@@ -43,11 +36,6 @@ export function SessionResults() {
 					Resultados
 				</h1>
 				<Divider />
-				{/* {!matched && (
-					<p className="text-f1-text mt-6 mb-2">
-						Selecione uma etapa abaixo para ver os resultados.
-					</p>
-				)} */}
 			</div>
 			<Calendars hideHeader />
 			<SessionResult

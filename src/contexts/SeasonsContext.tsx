@@ -12,10 +12,6 @@ import { tenant } from "../shared/config/tenants";
 export interface Season {
 	id: string;
 	name: string;
-	year: number;
-	slug: string;
-	startDate: string; // ISO date string
-	endDate: string; // ISO date string
 	active: boolean;
 }
 
@@ -25,12 +21,20 @@ interface SeasonsContextType {
 	saveSeason: (season: Omit<Season, 'id'>) => Promise<void>;
 	updateSeason: (id: string, season: Partial<Season>) => Promise<void>;
 	deleteSeason: (id: string) => Promise<void>;
-	getSeasonByDate: (date: Date) => Season | null;
 }
 
 const SeasonsContext = createContext<SeasonsContextType | undefined>(undefined);
 
 const FIRESTORE_COLLECTION = `seasons/${tenant.id}/seasons`;
+
+function nameToId(name: string): string {
+	return name
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-|-$/g, "");
+}
 
 export function SeasonsProvider({ children }: { children: ReactNode }) {
 	const [seasons, setSeasons] = useState<Season[]>([]);
@@ -43,11 +47,12 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 	const loadSeasons = async () => {
 		try {
 			const snap = await getDocs(collection(db, FIRESTORE_COLLECTION));
-			const seasonsData = snap.docs.map(doc => ({
-				id: doc.id,
-				...doc.data()
+			const seasonsData = snap.docs.map(d => ({
+				id: d.id,
+				name: d.data().name ?? d.id,
+				active: d.data().active ?? false,
 			} as Season));
-			setSeasons(seasonsData.sort((a, b) => b.year - a.year));
+			setSeasons(seasonsData.sort((a, b) => a.name.localeCompare(b.name)));
 		} catch (e) {
 			console.error("Failed to load seasons", e);
 		} finally {
@@ -56,13 +61,14 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 	};
 
 	const saveSeason = async (seasonData: Omit<Season, 'id'>) => {
-		const id = seasonData.slug;
+		const id = nameToId(seasonData.name);
 		try {
 			await setDoc(doc(db, FIRESTORE_COLLECTION, id), {
-				...seasonData,
+				name: seasonData.name,
+				active: seasonData.active,
 				id,
 			});
-			await loadSeasons(); // Refresh the list
+			await loadSeasons();
 		} catch (e) {
 			console.error("Failed to save season", e);
 			throw e;
@@ -71,9 +77,8 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 
 	const updateSeason = async (id: string, updates: Partial<Season>) => {
 		try {
-			const seasonRef = doc(db, FIRESTORE_COLLECTION, id);
-			await setDoc(seasonRef, updates, { merge: true });
-			await loadSeasons(); // Refresh the list
+			await setDoc(doc(db, FIRESTORE_COLLECTION, id), updates, { merge: true });
+			await loadSeasons();
 		} catch (e) {
 			console.error("Failed to update season", e);
 			throw e;
@@ -83,32 +88,15 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 	const deleteSeason = async (id: string) => {
 		try {
 			await deleteDoc(doc(db, FIRESTORE_COLLECTION, id));
-			await loadSeasons(); // Refresh the list
+			await loadSeasons();
 		} catch (e) {
 			console.error("Failed to delete season", e);
 			throw e;
 		}
 	};
 
-	const getSeasonByDate = (date: Date): Season | null => {
-		return seasons.find(season => {
-			const start = new Date(season.startDate);
-			const end = new Date(season.endDate);
-			return date >= start && date <= end && season.active;
-		}) || null;
-	};
-
 	return (
-		<SeasonsContext.Provider
-			value={{
-				seasons,
-				loading,
-				saveSeason,
-				updateSeason,
-				deleteSeason,
-				getSeasonByDate,
-			}}
-		>
+		<SeasonsContext.Provider value={{ seasons, loading, saveSeason, updateSeason, deleteSeason }}>
 			{children}
 		</SeasonsContext.Provider>
 	);
