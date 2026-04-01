@@ -3,8 +3,9 @@ import { Standings } from "../standings/Standings";
 import { useTab } from "../../contexts/TabContext";
 import { useEffect } from "react";
 
-export function GridStandings() {
-	const { gridId } = useParams<{ gridId: string }>();
+export function GridStandings({ gridId: gridIdProp }: { gridId?: string } = {}) {
+	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
+	const gridId = gridIdProp ?? gridIdParam;
 	const { setActiveTab } = useTab();
 
 	useEffect(() => {

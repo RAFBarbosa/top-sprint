@@ -766,13 +766,17 @@ export function SessionResult({
 	const { getSeasonForCalendar } = useCalendarSeasons();
 
 	// Map of bannerId → calendarId from Firestore
-	const [bannerCalendarMap, setBannerCalendarMap] = useState<Record<string, string>>({});
+	const [bannerCalendarMap, setBannerCalendarMap] = useState<
+		Record<string, string>
+	>({});
 
 	useEffect(() => {
 		getDocs(collection(db, "banner_calendar"))
 			.then((snap) => {
 				const map: Record<string, string> = {};
-				snap.forEach((d) => { map[d.id] = d.data().calendarId; });
+				snap.forEach((d) => {
+					map[d.id] = d.data().calendarId;
+				});
 				setBannerCalendarMap(map);
 			})
 			.catch(() => {});
@@ -955,41 +959,56 @@ export function SessionResult({
 
 				{/* Linked news */}
 				{linkedBanners.length > 0 && (
-					<div className="mx-auto max-w-[1256px] px-3 pb-4">
-						<div className="border-t border-black/10 pt-6">
-							<p className="text-xs font-bold uppercase tracking-widest text-f1-lighterCarbon mb-4">Notícias da Etapa</p>
-							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+					<div className="mx-auto max-w-screen-xl px-3 pb-8">
+						<div className="pt-6">
+							<p className="font-semibold text-2xl leading-none md:text-3xl tracking-wide">
+								Notícias
+							</p>
+							<div className="w-full h-2 bg-f1-text mt-4 mb-5"></div>
+							<div className="flex flex-col divide-y divide-black/10">
 								{linkedBanners.map((banner) => (
-									<a
+									<div
 										key={banner.id}
-										href={banner.link || undefined}
-										target="_blank"
-										rel="noopener noreferrer"
-										className={`group flex gap-3 items-center rounded-lg border border-black/10 p-3 bg-white hover:bg-f1-bg-silver transition-colors ${!banner.link ? "pointer-events-none" : ""}`}
+										className="flex gap-4 py-5 items-start"
 									>
 										{banner.photo?.url && (
-											<div className="shrink-0 w-14 h-14 overflow-hidden rounded-md">
+											<div className="shrink-0 w-36 sm:w-48 overflow-hidden rounded-lg">
 												<img
 													src={banner.photo.url}
 													alt={banner.content ?? ""}
-													className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-150"
+													className="w-full h-auto object-contain"
 												/>
 											</div>
 										)}
-										<div className="min-w-0 flex flex-col gap-0.5">
+										<div className="flex flex-col gap-2 min-w-0 justify-center">
 											{banner.title && (
-												<span
-													style={{ color: "var(--color-brand-primary)" }}
-													className="text-xs font-bold uppercase tracking-wide leading-none"
+												<p
+													style={{
+														color: "var(--color-brand-primary)",
+													}}
+													className="text-sm md:text-base font-bold uppercase tracking-wider md:tracking-wide leading-none"
 												>
 													{banner.title}
-												</span>
+												</p>
 											)}
-											<p className="text-sm font-semibold leading-snug line-clamp-2 group-hover:underline">
+											<p className="text-sm md:text-base font-semibold leading-snug text-f1-text">
 												{banner.content}
 											</p>
+											{banner.link && (
+												<a
+													href={banner.link}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide mt-1 hover:underline"
+													style={{
+														color: "var(--color-brand-primary)",
+													}}
+												>
+													↗ Ver mais
+												</a>
+											)}
 										</div>
-									</a>
+									</div>
 								))}
 							</div>
 						</div>

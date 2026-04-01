@@ -5,7 +5,6 @@ import { Season } from "../../contexts/SeasonsContext";
 export function SeasonsAdmin() {
 	const { seasons, loading, saveSeason, updateSeason, deleteSeason } =
 		useSeasons();
-	const [isCreating, setIsCreating] = useState(true);
 	const [editingSeason, setEditingSeason] = useState<Season | null>(null);
 	const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -17,7 +16,6 @@ export function SeasonsAdmin() {
 
 	const resetForm = () => {
 		setFormData({ name: "", active: true });
-		setIsCreating(false);
 		setEditingSeason(null);
 		setSelectedSeason(null);
 	};
@@ -38,13 +36,11 @@ export function SeasonsAdmin() {
 
 	const handleSelectSeason = (season: Season) => {
 		setSelectedSeason(season);
-		setIsCreating(false);
 		setEditingSeason(season);
 		setFormData({ name: season.name, active: season.active });
 	};
 
 	const handleNewSeason = () => {
-		setIsCreating(true);
 		setSelectedSeason(null);
 		setEditingSeason(null);
 		setFormData({ name: "", active: true });
@@ -134,15 +130,17 @@ export function SeasonsAdmin() {
 											: ""
 									}`}
 								>
-									<div className="flex flex-col items-start">
-										<span className="truncate max-w-36">
-											{season.name}
-										</span>
-										{!season.active && (
-											<span className="text-xs text-gray-500">
-												Inativo
+									<div className="flex items-center gap-2">
+										<div className="flex flex-col items-start">
+											<span className="truncate max-w-36">
+												{season.name}
 											</span>
-										)}
+											{!season.active && (
+												<span className="text-xs text-gray-500">
+													Inativo
+												</span>
+											)}
+										</div>
 									</div>
 
 									<button
@@ -154,7 +152,7 @@ export function SeasonsAdmin() {
 										title="Excluir"
 									>
 										<svg
-											className="h-4 w-4"
+											className="h-5 w-5"
 											fill="none"
 											viewBox="0 0 24 24"
 											stroke="currentColor"
@@ -180,94 +178,79 @@ export function SeasonsAdmin() {
 
 			{/* Registration Form */}
 			<div className="mx-auto max-w-3xl w-full">
-				{(isCreating || editingSeason) && (
-					<div className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md">
-						<div className="flex justify-between items-center mb-6">
-							<div>
-								<h2 className="text-2xl font-bold">
-									{editingSeason
-										? "Editar Temporada"
-										: "Cadastrar Nova Temporada"}
-								</h2>
-								<div className="flex items-center justify-start gap-2 mt-4">
-									<span className="text-sm font-medium">
-										Ativo
-									</span>
-									<label className="relative inline-flex items-center cursor-pointer">
-										<input
-											type="checkbox"
-											checked={formData.active}
-											onChange={(e) =>
-												setFormData((prev) => ({
-													...prev,
-													active: e.target.checked,
-												}))
-											}
-											className="sr-only peer"
-										/>
-										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
-									</label>
-								</div>
+				<form
+					onSubmit={handleSubmit}
+					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
+				>
+					<div className="flex justify-between items-center mb-6">
+						<div>
+							<h2 className="text-2xl font-bold">
+								{editingSeason
+									? "Editar Temporada"
+									: "Cadastrar Nova Temporada"}
+							</h2>
+							<div className="flex items-center justify-start gap-2 mt-4">
+								<span className="text-sm font-medium">Ativo</span>
+								<label className="relative inline-flex items-center cursor-pointer">
+									<input
+										type="checkbox"
+										checked={formData.active}
+										onChange={(e) =>
+											setFormData((prev) => ({
+												...prev,
+												active: e.target.checked,
+											}))
+										}
+										className="sr-only peer"
+									/>
+									<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+								</label>
 							</div>
-							{editingSeason && (
-								<button
-									type="button"
-									onClick={handleNewSeason}
-									className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
-								>
-									Nova Temporada
-								</button>
-							)}
 						</div>
-
-						<form onSubmit={handleSubmit} className="space-y-4">
-							<div>
-								<label className="block mb-1">Nome *</label>
-								<input
-									type="text"
-									value={formData.name}
-									onChange={(e) =>
-										setFormData((prev) => ({
-											...prev,
-											name: e.target.value,
-										}))
-									}
-									className="w-full p-2 border rounded h-11"
-									placeholder="Ex: Temporada 2025"
-									required
-								/>
-							</div>
-							<div className="flex gap-2">
-								<button
-									type="submit"
-									className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-								>
-									{editingSeason ? "Atualizar" : "Criar"}
-								</button>
-								<button
-									type="button"
-									onClick={resetForm}
-									className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-								>
-									Cancelar
-								</button>
-							</div>
-						</form>
+						{editingSeason && (
+							<button
+								type="button"
+								onClick={handleNewSeason}
+								className="px-4 py-1 self-start bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+							>
+								Nova Temporada
+							</button>
+						)}
 					</div>
-				)}
 
-				{!isCreating && !editingSeason && (
-					<div className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md">
-						<div className="text-center py-12">
-							<h3 className="text-lg font-medium text-gray-900 mb-2">
-								Selecione uma temporada
-							</h3>
-							<p className="text-gray-500">
-								Clique em uma temporada na lista para editar.
-							</p>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div className="md:col-span-2">
+							<label className="block mb-1">Nome *</label>
+							<input
+								type="text"
+								value={formData.name}
+								onChange={(e) =>
+									setFormData((prev) => ({
+										...prev,
+										name: e.target.value,
+									}))
+								}
+								className="w-full p-2 border rounded h-11"
+								placeholder="Ex: Temporada 2025"
+								required
+							/>
 						</div>
 					</div>
-				)}
+
+					<button
+						type="submit"
+						disabled={loading}
+						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
+					>
+						{loading
+							? editingSeason
+								? "Atualizando..."
+								: "Cadastrando..."
+							: editingSeason
+								? "Atualizar"
+								: "Cadastrar"}
+					</button>
+				</form>
 			</div>
 		</div>
 	);

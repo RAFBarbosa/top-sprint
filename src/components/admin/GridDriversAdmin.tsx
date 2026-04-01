@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
 	getDocs,
 	setDoc,
@@ -21,10 +21,11 @@ interface GridProfile {
 	reserve?: boolean;
 }
 
-export function GridDriversAdmin() {
-	const { gridId } = useParams<{ gridId: string }>();
+export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
+	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
+	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading: gridsLoading } = useGrids();
-	const navigate = useNavigate();
+
 
 	const { data: driversData } = useGetDriversRegistrationQuery();
 	const { data: teamsData } = useGetTeamsQuery();
@@ -191,22 +192,6 @@ export function GridDriversAdmin() {
 		<div className="space-y-5">
 			{/* Header */}
 			<div className="flex items-center gap-3 flex-wrap">
-				<button
-					onClick={() => navigate("/admin/painel/grids")}
-					className="text-f1-lighterCarbon hover:text-f1-text text-sm cursor-pointer"
-				>
-					← Grids
-				</button>
-				<span className="text-f1-lighterCarbon">/</span>
-				<button
-					onClick={() =>
-						navigate(`/admin/painel/grids/${gridId}`)
-					}
-					className="text-f1-lighterCarbon hover:text-f1-text text-sm cursor-pointer"
-				>
-					{gridLabel}
-				</button>
-				<span className="text-f1-lighterCarbon">/</span>
 				<h2 className="text-2xl font-bold">Pilotos</h2>
 			</div>
 

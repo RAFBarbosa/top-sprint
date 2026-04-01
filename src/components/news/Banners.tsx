@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetBannersQuery, useGetCalendarsQuery } from "../../graphql/generated";
+import {
+	useGetBannersQuery,
+	useGetCalendarsQuery,
+} from "../../graphql/generated";
 import { Banner } from "./Banner";
 import { SecondaryBanners } from "./SecondaryBanners";
 import { Skeleton } from "@mui/material";
@@ -40,13 +43,17 @@ export function Banners() {
 	const { data: calendarsData } = useGetCalendarsQuery();
 	const { mappings } = useCalendarSeasons();
 
-	const [bannerCalendarMap, setBannerCalendarMap] = useState<Record<string, string>>({});
+	const [bannerCalendarMap, setBannerCalendarMap] = useState<
+		Record<string, string>
+	>({});
 
 	useEffect(() => {
 		getDocs(collection(db, "banner_calendar"))
 			.then((snap) => {
 				const map: Record<string, string> = {};
-				snap.forEach((d) => { map[d.id] = d.data().calendarId; });
+				snap.forEach((d) => {
+					map[d.id] = d.data().calendarId;
+				});
 				setBannerCalendarMap(map);
 			})
 			.catch(() => {});
@@ -57,7 +64,8 @@ export function Banners() {
 		if (!calendarId) return null;
 		const cal = calendarsData?.calendars?.find((c) => c.id === calendarId);
 		if (!cal) return null;
-		const seasonId = mappings.find((m) => m.calendarId === calendarId)?.seasonId ?? "";
+		const seasonId =
+			mappings.find((m) => m.calendarId === calendarId)?.seasonId ?? "";
 		const gridLabel = getGridConfig(cal.grid)?.label ?? cal.grid;
 		const seasonPart = seasonId ? `${slugify(seasonId)}-` : "";
 		return `/resultados/${seasonPart}${slugify(gridLabel)}-${slugify(cal.round ?? "")}-${slugify(cal.track?.name ?? "")}`;
@@ -68,12 +76,20 @@ export function Banners() {
 
 	const featuredBanners = data?.banners
 		?.filter((banner) => banner.category === "destaque")
-		?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+		?.sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() -
+				new Date(a.createdAt).getTime(),
+		);
 
 	const secondaryBanners =
 		data?.banners
 			?.filter((banner) => banner.category === "secundario")
-			?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+			?.sort(
+				(a, b) =>
+					new Date(b.createdAt).getTime() -
+					new Date(a.createdAt).getTime(),
+			)
 			?.slice(0, 4) || [];
 
 	const latestFeaturedBanner = featuredBanners?.[0];
@@ -85,7 +101,9 @@ export function Banners() {
 	}));
 
 	const featuredResolvedLink = latestFeaturedBanner
-		? (getResultsLink(latestFeaturedBanner.id) ?? latestFeaturedBanner.link ?? "")
+		? (getResultsLink(latestFeaturedBanner.id) ??
+			latestFeaturedBanner.link ??
+			"")
 		: "";
 
 	return (
@@ -103,7 +121,11 @@ export function Banners() {
 							category={latestFeaturedBanner.category || ""}
 							title={latestFeaturedBanner.title || ""}
 							content={latestFeaturedBanner.content || ""}
-							photo={latestFeaturedBanner.photo || { url: tenant.logo.url }}
+							photo={
+								latestFeaturedBanner.photo || {
+									url: tenant.logo.url,
+								}
+							}
 						/>
 					) : (
 						<p>Nenhum banner em destaque encontrado</p>
@@ -114,8 +136,9 @@ export function Banners() {
 
 			{/* Secondary Banners */}
 			<aside
-				style={{ borderColor: "var(--color-brand-primary)" }}
-				className="md:w-3/7 flex flex-col border-t-4 pt-3"
+				// style={{ borderColor: "var(--color-brand-primary)" }}
+				// className="md:w-3/7 flex flex-col border-t-4 pt-3"
+				className="md:w-3/7 flex flex-col"
 			>
 				<SecondaryBanners banners={secondaryBannersWithLinks} />
 			</aside>
