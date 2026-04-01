@@ -18,6 +18,7 @@ export interface PointSystem {
 export interface GridConfig {
 	id: GridId;
 	label: string;
+	active?: boolean;
 	primaryColor: string;
 	accentColor: string;
 	hoverPrimaryColor: string;

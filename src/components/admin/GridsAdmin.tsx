@@ -23,7 +23,14 @@ interface DraggableGridItemProps {
 	onDelete: (grid: GridConfig) => void;
 }
 
-function DraggableGridItem({ grid, index, isSelected, onMove, onSelect, onDelete }: DraggableGridItemProps) {
+function DraggableGridItem({
+	grid,
+	index,
+	isSelected,
+	onMove,
+	onSelect,
+	onDelete,
+}: DraggableGridItemProps) {
 	const [{ isDragging }, drag] = useDrag({
 		type: ItemTypes.GRID,
 		item: { index },
@@ -40,7 +47,10 @@ function DraggableGridItem({ grid, index, isSelected, onMove, onSelect, onDelete
 	});
 
 	return (
-		<li ref={(node) => drag(drop(node))} className={isDragging ? "opacity-50" : ""}>
+		<li
+			ref={(node) => drag(drop(node))}
+			className={isDragging ? "opacity-50" : ""}
+		>
 			<div
 				onClick={() => onSelect(grid)}
 				className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
@@ -60,16 +70,30 @@ function DraggableGridItem({ grid, index, isSelected, onMove, onSelect, onDelete
 					/>
 					<div className="flex flex-col items-start">
 						<span className="truncate max-w-36">{grid.label}</span>
+						{grid.active === false && (
+							<span className="text-xs text-gray-500">Inativo</span>
+						)}
 					</div>
 				</div>
 
 				<button
-					onClick={(e) => { e.stopPropagation(); onDelete(grid); }}
+					onClick={(e) => {
+						e.stopPropagation();
+						onDelete(grid);
+					}}
 					className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 					title="Excluir"
 				>
-					<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+					<svg
+						className="h-5 w-5"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
 							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
 						/>
 					</svg>
@@ -79,7 +103,13 @@ function DraggableGridItem({ grid, index, isSelected, onMove, onSelect, onDelete
 	);
 }
 
-type SubView = "configurar" | "pilotos" | "ajustes" | "calendario" | "resultado-manual" | null; // | "classificacao"
+type SubView =
+	| "configurar"
+	| "pilotos"
+	| "ajustes"
+	| "calendario"
+	| "resultado-manual"
+	| null; // | "classificacao"
 
 export function GridsAdmin() {
 	const { grids, loading, saveGrids } = useGrids();
@@ -90,7 +120,9 @@ export function GridsAdmin() {
 	const [localGrids, setLocalGrids] = useState(grids);
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-	useEffect(() => { setLocalGrids(grids); }, [grids]);
+	useEffect(() => {
+		setLocalGrids(grids);
+	}, [grids]);
 
 	if (loading) return <div className="p-4">Carregando grids...</div>;
 
@@ -105,7 +137,11 @@ export function GridsAdmin() {
 	};
 
 	const handleDelete = async (grid: GridConfig) => {
-		if (window.confirm(`Tem certeza que deseja remover o grid "${grid.label}"?`)) {
+		if (
+			window.confirm(
+				`Tem certeza que deseja remover o grid "${grid.label}"?`,
+			)
+		) {
 			try {
 				await saveGrids(grids.filter((g) => g.id !== grid.id));
 				if (selectedGrid?.id === grid.id) setSelectedGrid(null);
@@ -146,12 +182,18 @@ export function GridsAdmin() {
 		setLocalGrids(newGrids);
 		if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
 		saveTimeoutRef.current = setTimeout(async () => {
-			try { await saveGrids(newGrids); } catch (e) { console.error(e); }
+			try {
+				await saveGrids(newGrids);
+			} catch (e) {
+				console.error(e);
+			}
 		}, 1000);
 	};
 
 	const filteredGrids = localGrids.filter((g) =>
-		searchTerm ? g.label.toLowerCase().includes(searchTerm.toLowerCase()) : true
+		searchTerm
+			? g.label.toLowerCase().includes(searchTerm.toLowerCase())
+			: true,
 	);
 
 	return (
@@ -209,7 +251,12 @@ export function GridsAdmin() {
 						</div>
 
 						{!selectedGrid ? (
-							<form onSubmit={(e) => { e.preventDefault(); handleAdd(); }}>
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									handleAdd();
+								}}
+							>
 								<div className="md:col-span-2">
 									<label className="block mb-1">Nome *</label>
 									<input
@@ -230,27 +277,69 @@ export function GridsAdmin() {
 						) : (
 							<div>
 								<div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-									{(["configurar", "pilotos", "ajustes", "calendario", "resultado-manual"] as SubView[]).map((view) => (
+									{(
+										[
+											"configurar",
+											"pilotos",
+											"ajustes",
+											"calendario",
+											"resultado-manual",
+										] as SubView[]
+									).map((view) => (
 										<button
 											key={view}
 											type="button"
-											onClick={() => setActiveSubView(activeSubView === view ? null : view)}
+											onClick={() =>
+												setActiveSubView(
+													activeSubView === view
+														? null
+														: view,
+												)
+											}
 											className={`p-3 border rounded-lg cursor-pointer text-sm font-semibold transition-colors ${
 												activeSubView === view
 													? "bg-f1-red text-white border-f1-red"
 													: "hover:bg-f1-red/10"
 											}`}
 										>
-											{view === "configurar" ? "Configurar" : view === "pilotos" ? "Pilotos" : view === "ajustes" ? "Ajustes de Pontos" : view === "calendario" ? "Calendário" : "Resultado Manual"}
+											{view === "configurar"
+												? "Configurar"
+												: view === "pilotos"
+													? "Pilotos"
+													: view === "ajustes"
+														? "Ajustes de Pontos"
+														: view === "calendario"
+															? "Calendário"
+															: "Resultado Manual"}
 										</button>
 									))}
 								</div>
 								<div className="pt-6 border-t border-black/10">
-									{activeSubView === "configurar" && <GridConfigAdmin gridId={selectedGrid.id} />}
-									{activeSubView === "pilotos" && <GridDriversAdmin gridId={selectedGrid.id} />}
-									{activeSubView === "ajustes" && <PointAdjustmentsAdmin gridId={selectedGrid.id} />}
-									{activeSubView === "calendario" && <CalendarRegistration gridId={selectedGrid.id} />}
-									{activeSubView === "resultado-manual" && <ManualResultsRegistration gridId={selectedGrid.id} />}
+									{activeSubView === "configurar" && (
+										<GridConfigAdmin
+											gridId={selectedGrid.id}
+										/>
+									)}
+									{activeSubView === "pilotos" && (
+										<GridDriversAdmin
+											gridId={selectedGrid.id}
+										/>
+									)}
+									{activeSubView === "ajustes" && (
+										<PointAdjustmentsAdmin
+											gridId={selectedGrid.id}
+										/>
+									)}
+									{activeSubView === "calendario" && (
+										<CalendarRegistration
+											gridId={selectedGrid.id}
+										/>
+									)}
+									{activeSubView === "resultado-manual" && (
+										<ManualResultsRegistration
+											gridId={selectedGrid.id}
+										/>
+									)}
 									{/* activeSubView === "classificacao" && <GridStandings gridId={selectedGrid.id} /> */}
 								</div>
 							</div>
