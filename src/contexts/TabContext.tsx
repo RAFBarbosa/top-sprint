@@ -18,8 +18,8 @@ const TabContext = createContext<TabContextType | undefined>(undefined);
 export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
-	const { grids } = useGrids();
-	const tabs = grids.map(({ id, label }) => ({ id, label })) as const;
+	const { activeGrids } = useGrids();
+	const tabs = activeGrids.map(({ id, label }) => ({ id, label })) as const;
 
 	const [activeTabId, setActiveTabId] = useState<GridId>(
 		tabs.length > 0 ? tabs[0].id : "",

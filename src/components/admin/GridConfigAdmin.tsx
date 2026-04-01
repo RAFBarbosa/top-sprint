@@ -142,6 +142,18 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							className="w-full p-2 border rounded h-10 text-sm"
 						/>
 					</div>
+					<div className="flex items-center gap-3">
+						<span className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">Ativo</span>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input
+								type="checkbox"
+								checked={editGrid.active ?? true}
+								onChange={(e) => update("active", e.target.checked)}
+								className="sr-only peer"
+							/>
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-red"></div>
+						</label>
+					</div>
 					<div>
 						<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-1">
 							Cor Principal

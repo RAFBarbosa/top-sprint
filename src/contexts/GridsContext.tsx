@@ -12,6 +12,7 @@ import { setRuntimeGrids, type GridConfig } from "../shared/config/grids";
 
 interface GridsContextType {
 	grids: GridConfig[];
+	activeGrids: GridConfig[];
 	loading: boolean;
 	saveGrids: (grids: GridConfig[]) => Promise<void>;
 }
@@ -30,6 +31,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 			...(staticMap[fbGrid.id] ?? {}),
 			id: fbGrid.id,
 			label: fbGrid.label ?? fbGrid.id,
+			active: fbGrid.active ?? true,
 			primaryColor: fbGrid.primaryColor ?? "#eb1c24",
 			pointSystem: fbGrid.pointSystem ?? {},
 			raceAwards: fbGrid.raceAwards ?? [],
@@ -44,6 +46,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 		...(staticMap[id] ?? {}),
 		id,
 		label: fbGrid.label ?? id,
+		active: fbGrid.active ?? true,
 		primaryColor: fbGrid.primaryColor ?? "#eb1c24",
 		pointSystem: fbGrid.pointSystem ?? {},
 		raceAwards: fbGrid.raceAwards ?? [],
@@ -63,7 +66,7 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 				if (snap.exists()) {
 					const merged = fromFirebase(snap.data());
 					setGrids(merged);
-					setRuntimeGrids(merged);
+					setRuntimeGrids(merged.filter((g) => g.active !== false));
 				} else {
 					setRuntimeGrids(tenant.grids as GridConfig[]);
 				}
@@ -82,6 +85,7 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 			grids: updated.map((g) => ({
 				id: g.id,
 				label: g.label,
+				active: g.active ?? true,
 				primaryColor: g.primaryColor,
 				pointSystem: g.pointSystem,
 				raceAwards: g.raceAwards ?? [],
@@ -89,11 +93,13 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 		};
 		await setDoc(doc(db, FIRESTORE_DOC), payload);
 		setGrids(updated);
-		setRuntimeGrids(updated);
+		setRuntimeGrids(updated.filter((g) => g.active !== false));
 	};
 
+	const activeGrids = grids.filter((g) => g.active !== false);
+
 	return (
-		<GridsContext.Provider value={{ grids, loading, saveGrids }}>
+		<GridsContext.Provider value={{ grids, activeGrids, loading, saveGrids }}>
 			{children}
 		</GridsContext.Provider>
 	);

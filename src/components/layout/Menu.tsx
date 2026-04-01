@@ -65,7 +65,7 @@ export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
 	const location = useLocation();
 	const navigateToDriver = useNavigateToDriver();
-	const { activeTab, setActiveTab } = useTab();
+	const { activeTab, setActiveTab, tabs } = useTab();
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
 
 	const menuItems = buildMenuItems();
@@ -115,7 +115,7 @@ export function Menu() {
 				</Link>
 
 				{/* Mobile — grid switcher + hamburger */}
-				{tenant.grids.length > 1 && (
+				{tabs.length > 1 && (
 					<div className="text-xl absolute left-7 inset-x-0 font-semibold md:hidden z-50 mt-1">
 						<GridMenu />
 					</div>

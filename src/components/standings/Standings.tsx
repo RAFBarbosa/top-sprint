@@ -51,6 +51,7 @@ export function Standings() {
 				className={`md:h-[396px] h-[280px] w-full absolute left-0 ${
 					gridConfig?.standingsBgClass ?? ""
 				}`}
+				style={!gridConfig?.standingsBgClass ? { backgroundColor: gridConfig?.primaryColor ?? "#000000" } : undefined}
 			>
 				<div
 					className="absolute inset-0 rounded-lg z-0 pointer-events-none"

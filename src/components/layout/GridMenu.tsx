@@ -9,6 +9,8 @@ export function GridMenu() {
 	const { activeTab, tabs, setActiveTab } = useTab();
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 
+	if (tabs.length <= 1) return null;
+
 	const handleMobileTabSelect = (tabId: string) => {
 		setActiveTab(tabId);
 		setIsMobileDropdownOpen(false);
