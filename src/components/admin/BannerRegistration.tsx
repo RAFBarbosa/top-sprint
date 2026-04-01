@@ -25,6 +25,7 @@ import {
 } from "@headlessui/react";
 import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
+import { getGridConfig } from "../../shared/config/grids";
 
 function LimitedTextarea({
 	value,
@@ -125,7 +126,9 @@ export function BannerRegistration() {
 		}
 	};
 
-	const { data: calendarsData } = useGetCalendarsRegistrationQuery({ fetchPolicy: "cache-first" });
+	const { data: calendarsData } = useGetCalendarsRegistrationQuery({
+		fetchPolicy: "cache-first",
+	});
 
 	// GraphQL operations
 	const [createBanner, { loading: createBannerLoading }] =
@@ -172,7 +175,9 @@ export function BannerRegistration() {
 		});
 		try {
 			const snap = await getDoc(doc(db, "banner_calendar", banner.id));
-			setLinkedCalendarId(snap.exists() ? (snap.data().calendarId ?? "") : "");
+			setLinkedCalendarId(
+				snap.exists() ? (snap.data().calendarId ?? "") : "",
+			);
 		} catch {
 			setLinkedCalendarId("");
 		}
@@ -285,9 +290,15 @@ export function BannerRegistration() {
 				if (result.errors) throw new Error(result.errors[0].message);
 
 				// Save/clear race link
-				const bannerCalRef = doc(db, "banner_calendar", selectedBanner.id);
+				const bannerCalRef = doc(
+					db,
+					"banner_calendar",
+					selectedBanner.id,
+				);
 				if (linkedCalendarId) {
-					await setDoc(bannerCalRef, { calendarId: linkedCalendarId });
+					await setDoc(bannerCalRef, {
+						calendarId: linkedCalendarId,
+					});
 				} else {
 					await deleteDoc(bannerCalRef).catch(() => {});
 				}
@@ -318,7 +329,9 @@ export function BannerRegistration() {
 				// Save race link for newly created banner
 				const newBannerId = result.data?.createBanner?.id;
 				if (newBannerId && linkedCalendarId) {
-					await setDoc(doc(db, "banner_calendar", newBannerId), { calendarId: linkedCalendarId });
+					await setDoc(doc(db, "banner_calendar", newBannerId), {
+						calendarId: linkedCalendarId,
+					});
 				}
 
 				setStatus({
@@ -685,22 +698,35 @@ export function BannerRegistration() {
 						</div>
 
 						<div className="md:col-span-2">
-							<label className="block mb-1">Vincular à Etapa</label>
-							<Listbox value={linkedCalendarId} onChange={setLinkedCalendarId}>
+							<label className="block mb-1">
+								Vincular à Etapa
+							</label>
+							<Listbox
+								value={linkedCalendarId}
+								onChange={setLinkedCalendarId}
+							>
 								<div className="relative">
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11 text-left">
 										<span className="block truncate">
 											{linkedCalendarId
 												? (() => {
-													const cal = calendarsData?.calendars?.find((c) => c.id === linkedCalendarId);
-													return cal
-														? `${cal.track?.name ?? cal.round} — ${format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}`
-														: linkedCalendarId;
-												})()
+														const cal =
+															calendarsData?.calendars?.find(
+																(c) =>
+																	c.id ===
+																	linkedCalendarId,
+															);
+														return cal
+															? `${getGridConfig(cal.grid)?.label ?? cal.grid} - ${cal.track?.name ?? cal.round} - ${format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}`
+															: linkedCalendarId;
+													})()
 												: "Nenhuma etapa"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-											<ChevronUpDownIcon className="h-5 w-5 text-f1-silver" aria-hidden="true" />
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
 										</span>
 									</ListboxButton>
 									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
@@ -713,7 +739,11 @@ export function BannerRegistration() {
 											Nenhuma etapa
 										</ListboxOption>
 										{[...(calendarsData?.calendars ?? [])]
-											.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+											.sort(
+												(a, b) =>
+													new Date(b.date).getTime() -
+													new Date(a.date).getTime(),
+											)
 											.map((cal) => (
 												<ListboxOption
 													key={cal.id}
@@ -723,7 +753,18 @@ export function BannerRegistration() {
 													}
 												>
 													<span className="block truncate">
-														{cal.track?.name ?? cal.round} — {format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}
+														{getGridConfig(cal.grid)
+															?.label ??
+															cal.grid}{" "}
+														-{" "}
+														{cal.track?.name ??
+															cal.round}{" "}
+														-{" "}
+														{format(
+															new Date(cal.date),
+															"dd MMM yyyy",
+															{ locale: ptBR },
+														)}
 													</span>
 												</ListboxOption>
 											))}

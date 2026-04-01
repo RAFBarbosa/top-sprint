@@ -14,36 +14,37 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 	const isInternal = props.link.startsWith("/");
 
 	const inner = (
-		<>
+		<div className="flex flex-row md:flex-col w-full h-24 md:h-auto rounded-md border border-gray-200 overflow-hidden bg-f1-bg-silver">
 			{/* Image */}
-			<div className="shrink-0 w-16 h-16 overflow-hidden rounded-lg">
+			<div className="relative w-24 shrink-0 md:w-full md:aspect-square overflow-hidden">
 				<HygraphImg
 					src={props.photo?.url || GenericLogo}
 					alt={props.content}
-					imgWidth={200}
-					imgHeight={200}
-					className="w-full h-full object-cover transform transition-transform duration-150 group-hover:scale-105"
+					imgWidth={400}
+					imgHeight={533}
+					className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-150 will-change-transform group-hover:scale-105"
 				/>
 			</div>
-
 			{/* Text */}
-			<div className="flex flex-col gap-0.5 min-w-0">
+			<div className="flex-1 flex flex-col py-2 px-2 overflow-hidden md:h-[80px] md:flex-none">
 				{props.title && (
-					<span
+					<p
 						style={{ color: "var(--color-brand-primary)" }}
-						className="text-xs font-bold uppercase tracking-wide leading-none"
+						className="text-xs font-bold uppercase tracking-wider leading-none mb-1 line-clamp-2"
 					>
 						{props.title}
-					</span>
+					</p>
 				)}
-				<p className="text-sm font-semibold leading-snug line-clamp-2 group-hover:underline">
-					{props.content}
-				</p>
+				<div className="flex-1 flex items-center">
+					<p className="text-sm font-semibold leading-none text-f1-text line-clamp-2 group-hover:underline">
+						{props.content}
+					</p>
+				</div>
 			</div>
-		</>
+		</div>
 	);
 
-	const className = "group flex gap-4 items-center border-b border-black/8 last:border-0 py-3 first:pt-0 last:pb-0";
+	const className = "group block h-full";
 
 	if (!props.link) {
 		return <div className={className}>{inner}</div>;
@@ -58,7 +59,12 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 	}
 
 	return (
-		<a href={props.link} target="_blank" rel="noopener noreferrer" className={className}>
+		<a
+			href={props.link}
+			target="_blank"
+			rel="noopener noreferrer"
+			className={className}
+		>
 			{inner}
 		</a>
 	);

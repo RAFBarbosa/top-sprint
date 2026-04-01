@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGrids } from "../../contexts/GridsContext";
 import type { GridConfig, RaceAward } from "../../shared/config/grids";
 
-export function GridConfigAdmin() {
-	const { gridId } = useParams<{ gridId: string }>();
+export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
+	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
+	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading, saveGrids } = useGrids();
-	const navigate = useNavigate();
+
 
 	const [editGrid, setEditGrid] = useState<GridConfig | null>(null);
 	const [status, setStatus] = useState<{
@@ -98,25 +99,8 @@ export function GridConfigAdmin() {
 		<div className="space-y-6">
 			{/* Header */}
 			<div className="flex items-center gap-3">
-				<button
-					onClick={() => navigate("/admin/painel/grids")}
-					className="text-f1-lighterCarbon hover:text-f1-text text-sm cursor-pointer"
-				>
-					← Grids
-				</button>
-				<span className="text-f1-lighterCarbon">/</span>
 				<h2 className="text-2xl font-bold">{editGrid.label}</h2>
-				<div className="ml-auto flex gap-2">
-					<button
-						onClick={() =>
-							navigate(
-								`/admin/painel/grids/${gridId}/pilotos`,
-							)
-						}
-						className="text-sm px-4 py-2 border rounded hover:bg-f1-red/10 cursor-pointer"
-					>
-						Pilotos
-					</button>
+				<div className="ml-auto">
 					<button
 						onClick={handleSave}
 						disabled={status.type === "loading"}

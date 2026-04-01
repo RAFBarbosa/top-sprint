@@ -16,8 +16,9 @@ export interface PointAdjustment {
 	reason: string;
 }
 
-export function PointAdjustmentsAdmin() {
-	const { gridId } = useParams<{ gridId: string }>();
+export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
+	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
+	const gridId = gridIdProp ?? gridIdParam;
 	const { data: driversData } = useGetDriversQuery();
 	const { data: calendarsData } = useGetCalendarsRegistrationQuery({ fetchPolicy: "network-only" });
 	const { seasons } = useSeasons();
