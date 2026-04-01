@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
+import { useGetBannersQuery } from "../../graphql/generated";
 import {
 	useGetDriversQuery,
 	type GetDriversQuery,
@@ -760,8 +761,22 @@ export function SessionResult({
 	const [error, setError] = useState<string | null>(null);
 
 	const { data: driversData } = useGetDriversQuery();
+	const { data: bannersData } = useGetBannersQuery();
 	const { seasons } = useSeasons();
 	const { getSeasonForCalendar } = useCalendarSeasons();
+
+	// Map of bannerId → calendarId from Firestore
+	const [bannerCalendarMap, setBannerCalendarMap] = useState<Record<string, string>>({});
+
+	useEffect(() => {
+		getDocs(collection(db, "banner_calendar"))
+			.then((snap) => {
+				const map: Record<string, string> = {};
+				snap.forEach((d) => { map[d.id] = d.data().calendarId; });
+				setBannerCalendarMap(map);
+			})
+			.catch(() => {});
+	}, []);
 
 	useEffect(() => {
 		if (!calendarId) {
@@ -784,6 +799,11 @@ export function SessionResult({
 		};
 		fetchData();
 	}, [calendarId]);
+
+	// Banners linked to this calendar
+	const linkedBanners = (bannersData?.banners ?? []).filter(
+		(b) => bannerCalendarMap[b.id] === calendarId,
+	);
 
 	if (!calendarId) {
 		return (
@@ -931,6 +951,49 @@ export function SessionResult({
 						driverSnapshots={firebaseData.driverSnapshots}
 						ncDriverIds={firebaseData.ncDriverIds}
 					/>
+				)}
+
+				{/* Linked news */}
+				{linkedBanners.length > 0 && (
+					<div className="mx-auto max-w-[1256px] px-3 pb-4">
+						<div className="border-t border-black/10 pt-6">
+							<p className="text-xs font-bold uppercase tracking-widest text-f1-lighterCarbon mb-4">Notícias da Etapa</p>
+							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+								{linkedBanners.map((banner) => (
+									<a
+										key={banner.id}
+										href={banner.link || undefined}
+										target="_blank"
+										rel="noopener noreferrer"
+										className={`group flex gap-3 items-center rounded-lg border border-black/10 p-3 bg-white hover:bg-f1-bg-silver transition-colors ${!banner.link ? "pointer-events-none" : ""}`}
+									>
+										{banner.photo?.url && (
+											<div className="shrink-0 w-14 h-14 overflow-hidden rounded-md">
+												<img
+													src={banner.photo.url}
+													alt={banner.content ?? ""}
+													className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-150"
+												/>
+											</div>
+										)}
+										<div className="min-w-0 flex flex-col gap-0.5">
+											{banner.title && (
+												<span
+													style={{ color: "var(--color-brand-primary)" }}
+													className="text-xs font-bold uppercase tracking-wide leading-none"
+												>
+													{banner.title}
+												</span>
+											)}
+											<p className="text-sm font-semibold leading-snug line-clamp-2 group-hover:underline">
+												{banner.content}
+											</p>
+										</div>
+									</a>
+								))}
+							</div>
+						</div>
+					</div>
 				)}
 			</div>
 		</>

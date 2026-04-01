@@ -11,6 +11,7 @@ import {
 	useGetBannersCategoriesQuery,
 	useUpdateBannerMutation,
 	useCreateAssetMutation,
+	useGetCalendarsRegistrationQuery,
 	GetBannersRegistrationDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
@@ -22,6 +23,8 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
+import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
 
 function LimitedTextarea({
 	value,
@@ -83,6 +86,7 @@ export function BannerRegistration() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("");
+	const [linkedCalendarId, setLinkedCalendarId] = useState<string>("");
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -121,6 +125,8 @@ export function BannerRegistration() {
 		}
 	};
 
+	const { data: calendarsData } = useGetCalendarsRegistrationQuery({ fetchPolicy: "cache-first" });
+
 	// GraphQL operations
 	const [createBanner, { loading: createBannerLoading }] =
 		useCreateBannerMutation({
@@ -155,7 +161,7 @@ export function BannerRegistration() {
 			.replace(/([A-Z])/g, " $1")
 			.replace(/^./, (str) => str.toUpperCase());
 
-	const handleSelectBanner = (banner: any) => {
+	const handleSelectBanner = async (banner: any) => {
 		setSelectedBanner(banner);
 		setIsEditing(true);
 		setFormData({
@@ -164,6 +170,12 @@ export function BannerRegistration() {
 			link: banner.link || "",
 			category: banner.category,
 		});
+		try {
+			const snap = await getDoc(doc(db, "banner_calendar", banner.id));
+			setLinkedCalendarId(snap.exists() ? (snap.data().calendarId ?? "") : "");
+		} catch {
+			setLinkedCalendarId("");
+		}
 	};
 
 	const resetForm = () => {
@@ -176,6 +188,7 @@ export function BannerRegistration() {
 			category: "",
 		});
 		setPhotoFile(null);
+		setLinkedCalendarId("");
 	};
 
 	const handleBanner = async (event: FormEvent) => {
@@ -271,6 +284,14 @@ export function BannerRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
+				// Save/clear race link
+				const bannerCalRef = doc(db, "banner_calendar", selectedBanner.id);
+				if (linkedCalendarId) {
+					await setDoc(bannerCalRef, { calendarId: linkedCalendarId });
+				} else {
+					await deleteDoc(bannerCalRef).catch(() => {});
+				}
+
 				setStatus({
 					type: "success",
 					message: "Notícia atualizada com sucesso!",
@@ -293,6 +314,12 @@ export function BannerRegistration() {
 				});
 
 				if (result.errors) throw new Error(result.errors[0].message);
+
+				// Save race link for newly created banner
+				const newBannerId = result.data?.createBanner?.id;
+				if (newBannerId && linkedCalendarId) {
+					await setDoc(doc(db, "banner_calendar", newBannerId), { calendarId: linkedCalendarId });
+				}
 
 				setStatus({
 					type: "success",
@@ -655,6 +682,54 @@ export function BannerRegistration() {
 								onChange={handleChange}
 								className="w-full p-2 border rounded h-11"
 							/>
+						</div>
+
+						<div className="md:col-span-2">
+							<label className="block mb-1">Vincular à Etapa</label>
+							<Listbox value={linkedCalendarId} onChange={setLinkedCalendarId}>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11 text-left">
+										<span className="block truncate">
+											{linkedCalendarId
+												? (() => {
+													const cal = calendarsData?.calendars?.find((c) => c.id === linkedCalendarId);
+													return cal
+														? `${cal.track?.name ?? cal.round} — ${format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}`
+														: linkedCalendarId;
+												})()
+												: "Nenhuma etapa"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon className="h-5 w-5 text-f1-silver" aria-hidden="true" />
+										</span>
+									</ListboxButton>
+									<ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer text-sm ${active ? "bg-f1-red/20" : ""}`
+											}
+										>
+											Nenhuma etapa
+										</ListboxOption>
+										{[...(calendarsData?.calendars ?? [])]
+											.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+											.map((cal) => (
+												<ListboxOption
+													key={cal.id}
+													value={cal.id}
+													className={({ active }) =>
+														`flex items-center gap-2 p-2 cursor-pointer text-sm ${active ? "bg-f1-red/20" : ""}`
+													}
+												>
+													<span className="block truncate">
+														{cal.track?.name ?? cal.round} — {format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}
+													</span>
+												</ListboxOption>
+											))}
+									</ListboxOptions>
+								</div>
+							</Listbox>
 						</div>
 
 						<div className="md:col-span-2">
