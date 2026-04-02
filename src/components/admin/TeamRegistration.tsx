@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import {
 	Listbox,
 	ListboxButton,
@@ -13,6 +13,8 @@ import {
 	useUpdateDriverMutation,
 	GetTeamsDocument,
 } from "../../graphql/generated";
+import { getDocs, collection, setDoc, doc } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import {
 	Dialog,
@@ -104,6 +106,17 @@ export function TeamRegistration() {
 			}
 		},
 	});
+
+	// Firebase driver profiles (teamName per grid)
+	const [allProfiles, setAllProfiles] = useState<Record<string, Record<string, { teamName?: string; reserve?: boolean }>>>({});
+
+	useEffect(() => {
+		getDocs(collection(db, "driver_profiles")).then((snap) => {
+			const map: Record<string, Record<string, { teamName?: string }>> = {};
+			snap.forEach((d) => { map[d.id] = d.data() as any; });
+			setAllProfiles(map);
+		}).catch(() => {});
+	}, []);
 
 	// Queries
 	const {
@@ -269,6 +282,23 @@ export function TeamRegistration() {
 		}
 	};
 
+	const handleRemoveDriver = async (driverId: string, gridId: string) => {
+		// Clear teamName in Firebase profile for this grid
+		const profiles = allProfiles[driverId];
+		if (profiles?.[gridId]) {
+			const updated = {
+				...profiles,
+				[gridId]: { ...profiles[gridId], teamName: "", teamColor: "" },
+			};
+			await setDoc(doc(db, "driver_profiles", driverId), updated);
+			setAllProfiles((prev) => ({ ...prev, [driverId]: updated }));
+		}
+		// Also disconnect Hygraph team relation
+		updateDriver({
+			variables: { where: { id: driverId }, data: { team: { disconnect: true } } },
+		});
+	};
+
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
 	) => {
@@ -288,19 +318,36 @@ export function TeamRegistration() {
 				: true;
 		}) || [];
 
-	// Compute team drivers for the form
-	const teamDrivers =
-		isEditing && selectedTeam
-			? (teamsData?.drivers ?? []).filter(
-					(d) => d.team?.id === selectedTeam.id,
-				)
-			: [];
+	// Compute team drivers for the form — merge Hygraph team relation + Firebase grid profiles
+	const teamDrivers = isEditing && selectedTeam
+		? (teamsData?.drivers ?? []).filter((d) => {
+				// Match via Hygraph team relation
+				if (d.team?.id === selectedTeam.id) return true;
+				// Match via any Firebase grid profile
+				const profiles = allProfiles[d.id];
+				if (!profiles) return false;
+				return Object.values(profiles).some(
+					(p) => p?.teamName === selectedTeam.name,
+				);
+			})
+		: [];
 
+	// Build grid grouping — prefer Firebase profile grid, fall back to Hygraph grid field
 	const byGrid = teamDrivers.reduce<Record<string, typeof teamDrivers>>(
 		(acc, d) => {
-			const key = d.grid ?? "Sem grid";
-			if (!acc[key]) acc[key] = [];
-			acc[key].push(d);
+			const profiles = allProfiles[d.id];
+			const gridsFromProfiles = profiles
+				? Object.entries(profiles)
+						.filter(([, p]) => p?.teamName === selectedTeam?.name)
+						.map(([gridId]) => gridId)
+				: [];
+			const keys = gridsFromProfiles.length > 0
+				? gridsFromProfiles
+				: [d.grid ?? "Sem grid"];
+			keys.forEach((key) => {
+				if (!acc[key]) acc[key] = [];
+				if (!acc[key].find((x) => x.id === d.id)) acc[key].push(d);
+			});
 			return acc;
 		},
 		{},
@@ -615,33 +662,25 @@ export function TeamRegistration() {
 																className="w-full h-full object-cover object-top scale-125 translate-y-1"
 															/>
 														</div>
-														<div>
+														<div className="flex items-center gap-1.5 flex-wrap">
 															<span className="text-sm font-medium">
 																{d.name}
 															</span>
 															{d.number && (
-																<span className="text-xs text-gray-400 ml-1">
+																<span className="text-xs text-gray-400">
 																	#{d.number}
+																</span>
+															)}
+															{allProfiles[d.id]?.[grid]?.reserve && (
+																<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																	Res
 																</span>
 															)}
 														</div>
 													</div>
 													<button
 														type="button"
-														onClick={() =>
-															updateDriver({
-																variables: {
-																	where: {
-																		id: d.id,
-																	},
-																	data: {
-																		team: {
-																			disconnect: true,
-																		},
-																	},
-																},
-															})
-														}
+														onClick={() => handleRemoveDriver(d.id, grid)}
 														className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 														title="Remover da equipe"
 													>

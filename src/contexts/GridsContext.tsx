@@ -33,11 +33,11 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 			label: fbGrid.label ?? fbGrid.id,
 			active: fbGrid.active ?? true,
 			primaryColor: fbGrid.primaryColor ?? "#eb1c24",
-			pointSystem: fbGrid.pointSystem ?? {},
+			...(fbGrid.pointSystem !== undefined ? { pointSystem: fbGrid.pointSystem } : {}),
 			raceAwards: fbGrid.raceAwards ?? [],
 		})) as GridConfig[];
 	}
-	
+
 	// Fallback for old object format
 	const staticMap = Object.fromEntries(
 		(tenant.grids as any[]).map((g) => [g.id, g]),
@@ -48,7 +48,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 		label: fbGrid.label ?? id,
 		active: fbGrid.active ?? true,
 		primaryColor: fbGrid.primaryColor ?? "#eb1c24",
-		pointSystem: fbGrid.pointSystem ?? {},
+		...(fbGrid.pointSystem !== undefined ? { pointSystem: fbGrid.pointSystem } : {}),
 		raceAwards: fbGrid.raceAwards ?? [],
 	})) as GridConfig[];
 }
@@ -99,7 +99,9 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 	const activeGrids = grids.filter((g) => g.active !== false);
 
 	return (
-		<GridsContext.Provider value={{ grids, activeGrids, loading, saveGrids }}>
+		<GridsContext.Provider
+			value={{ grids, activeGrids, loading, saveGrids }}
+		>
 			{children}
 		</GridsContext.Provider>
 	);

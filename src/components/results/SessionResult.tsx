@@ -170,6 +170,10 @@ function buildRows(
 					// Presence bonus applies to race only (not sprint or quali)
 					if (sessionType === "race") {
 						points += presenceBonus;
+						// Pole bonus: awarded to whoever was first in qualy
+						if (poleBonus > 0 && qualyOrder.length > 0 && qualyOrder[0] === driverId) {
+							points += poleBonus;
+						}
 						gridRaceAwards.forEach((award) => {
 							if (
 								awardWinners[award.id] === driverId &&
@@ -224,6 +228,7 @@ function WinnerCard({
 	const gridConfig = getGridConfig(gridId);
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
 	const poleBonus = gridConfig?.pointSystem?.poleBonus ?? 0;
+	const presenceBonus = gridConfig?.pointSystem?.presenceBonus ?? 0;
 	const title =
 		sessionType === "quali"
 			? "Pole Position"
@@ -314,7 +319,7 @@ function WinnerCard({
 					</div>
 					{poleBonus > 0 && (
 						<p className="text-xs text-f1-lighterCarbon font-bold ml-auto shrink-0">
-							+{poleBonus} pt
+							+{poleBonus} {poleBonus === 1 ? "pt" : "pts"}
 						</p>
 					)}
 				</div>
@@ -374,11 +379,24 @@ function WinnerCard({
 						</div>
 						{award.points > 0 && (
 							<p className="text-xs text-f1-lighterCarbon font-bold ml-auto shrink-0">
-								+{award.points} pt
+								+{award.points}{" "}
+								{award.points === 1 ? "pt" : "pts"}
 							</p>
 						)}
 					</div>
 				))}
+
+			{/* Participation bonus — race only, shown only when configured */}
+			{sessionType === "race" && presenceBonus > 0 && (
+				<div className="bg-f1-bg-silver px-4 py-2 flex items-center justify-between border-t border-black/10">
+					<p className="text-xs uppercase tracking-wide text-f1-lighterCarbon font-bold">
+						Participação
+					</p>
+					<p className="text-xs text-f1-lighterCarbon font-bold shrink-0">
+						+{presenceBonus} {presenceBonus === 1 ? "pt" : "pts"}
+					</p>
+				</div>
+			)}
 		</div>
 	);
 }
@@ -603,6 +621,23 @@ function ResultsSection({
 						</table>
 					</div>
 				</div>
+				<p className="text-[10px] text-f1-lighterCarbon mt-1.5 text-right italic">
+					{(() => {
+						const awardLabels = [
+							...new Set(
+								gridsPresent.flatMap((gId) =>
+									resolveRaceAwards(gId).map((a) => a.label),
+								),
+							),
+						];
+						const bonuses = [
+							"Pole",
+							...awardLabels,
+							"Participação",
+						];
+						return `* Os pontos incluem todos os bônus da etapa (${bonuses.join(", ")}).`;
+					})()}
+				</p>
 			</div>
 		</section>
 	);

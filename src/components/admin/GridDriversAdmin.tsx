@@ -9,11 +9,19 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetDriversRegistrationQuery, useGetTeamsQuery } from "../../graphql/generated";
+import {
+	useGetDriversRegistrationQuery,
+	useGetTeamsQuery,
+} from "../../graphql/generated";
 import { useGrids } from "../../contexts/GridsContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
-import { Dialog, DialogTitle, DialogPanel, Description } from "@headlessui/react";
+import {
+	Dialog,
+	DialogTitle,
+	DialogPanel,
+	Description,
+} from "@headlessui/react";
 
 interface GridProfile {
 	number: string;
@@ -23,7 +31,9 @@ interface GridProfile {
 	reserve?: boolean;
 }
 
-export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
+export function GridDriversAdmin({
+	gridId: gridIdProp,
+}: { gridId?: string } = {}) {
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading: gridsLoading } = useGrids();
@@ -31,14 +41,24 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 	const { data: driversData } = useGetDriversRegistrationQuery();
 	const { data: teamsData } = useGetTeamsQuery();
 
-	const [allProfiles, setAllProfiles] = useState<Record<string, Record<string, GridProfile>>>({});
+	const [allProfiles, setAllProfiles] = useState<
+		Record<string, Record<string, GridProfile>>
+	>({});
 	const [profilesLoading, setProfilesLoading] = useState(true);
 
 	const [editingId, setEditingId] = useState<string | null>(null);
-	const [editForm, setEditForm] = useState<GridProfile>({ number: "", teamName: "", teamColor: "", photoUrl: "" });
+	const [editForm, setEditForm] = useState<GridProfile>({
+		number: "",
+		teamName: "",
+		teamColor: "",
+		photoUrl: "",
+	});
 
 	const [addSearch, setAddSearch] = useState("");
-	const [status, setStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
+	const [status, setStatus] = useState<{
+		type: "idle" | "loading" | "success" | "error";
+		message: string;
+	}>({ type: "idle", message: "" });
 
 	const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState<"name" | "team">("name");
@@ -48,7 +68,9 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 			try {
 				const snap = await getDocs(collection(db, "driver_profiles"));
 				const map: Record<string, Record<string, GridProfile>> = {};
-				snap.forEach((d) => { map[d.id] = d.data() as Record<string, GridProfile>; });
+				snap.forEach((d) => {
+					map[d.id] = d.data() as Record<string, GridProfile>;
+				});
 				setAllProfiles(map);
 			} catch (e) {
 				console.error("Failed to load driver profiles", e);
@@ -67,7 +89,9 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 	const gridLabel = gridConfig?.label ?? gridId ?? "";
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
 
-	const assignedDriverIds = Object.keys(allProfiles).filter((dId) => allProfiles[dId]?.[gridId ?? ""]);
+	const assignedDriverIds = Object.keys(allProfiles).filter(
+		(dId) => allProfiles[dId]?.[gridId ?? ""],
+	);
 
 	const sortIds = (ids: string[]) =>
 		[...ids].sort((a, b) => {
@@ -77,35 +101,63 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 				const cmp = teamA.localeCompare(teamB, "pt-BR");
 				if (cmp !== 0) return cmp;
 			}
-			const nameA = driversData?.drivers?.find((d) => d.id === a)?.name ?? a;
-			const nameB = driversData?.drivers?.find((d) => d.id === b)?.name ?? b;
+			const nameA =
+				driversData?.drivers?.find((d) => d.id === a)?.name ?? a;
+			const nameB =
+				driversData?.drivers?.find((d) => d.id === b)?.name ?? b;
 			return nameA.localeCompare(nameB, "pt-BR");
 		});
 
-	const titularIds = sortIds(assignedDriverIds.filter((dId) => !allProfiles[dId]?.[gridId ?? ""]?.reserve));
-	const reserveIds = sortIds(assignedDriverIds.filter((dId) => !!allProfiles[dId]?.[gridId ?? ""]?.reserve));
+	const titularIds = sortIds(
+		assignedDriverIds.filter(
+			(dId) => !allProfiles[dId]?.[gridId ?? ""]?.reserve,
+		),
+	);
+	const reserveIds = sortIds(
+		assignedDriverIds.filter(
+			(dId) => !!allProfiles[dId]?.[gridId ?? ""]?.reserve,
+		),
+	);
 
-	const unassignedDrivers = (driversData?.drivers ?? []).filter((d) => !d.deleted && !assignedDriverIds.includes(d.id));
+	const unassignedDrivers = (driversData?.drivers ?? []).filter(
+		(d) => !d.deleted && !assignedDriverIds.includes(d.id),
+	);
 	const filteredUnassigned = unassignedDrivers
-		.filter((d) => addSearch === "" || d.name?.toLowerCase().includes(addSearch.toLowerCase()))
+		.filter(
+			(d) =>
+				addSearch === "" ||
+				d.name?.toLowerCase().includes(addSearch.toLowerCase()),
+		)
 		.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", "pt-BR"));
 
 	const handleStartEdit = (driverId: string) => {
-		const profile = allProfiles[driverId]?.[gridId ?? ""] ?? { number: "", teamName: "", teamColor: "", photoUrl: "" };
+		const profile = allProfiles[driverId]?.[gridId ?? ""] ?? {
+			number: "",
+			teamName: "",
+			teamColor: "",
+			photoUrl: "",
+		};
 		setEditingId(driverId);
 		setEditForm(profile);
 	};
 
 	const handleTeamChange = (teamName: string) => {
 		const team = teamsData?.teams?.find((t) => t.name === teamName);
-		setEditForm((prev) => ({ ...prev, teamName: team?.name ?? "", teamColor: team?.color?.hex ?? "" }));
+		setEditForm((prev) => ({
+			...prev,
+			teamName: team?.name ?? "",
+			teamColor: team?.color?.hex ?? "",
+		}));
 	};
 
 	const handleSaveEdit = async (driverId: string) => {
 		setStatus({ type: "loading", message: "Salvando..." });
 		try {
 			const driver = driversData?.drivers?.find((d) => d.id === driverId);
-			const profileToSave: GridProfile = { ...editForm, photoUrl: driver?.photo?.url ?? editForm.photoUrl ?? "" };
+			const profileToSave: GridProfile = {
+				...editForm,
+				photoUrl: driver?.photo?.url ?? editForm.photoUrl ?? "",
+			};
 			const existing = allProfiles[driverId] ?? {};
 			const updated = { ...existing, [gridId ?? ""]: profileToSave };
 			await setDoc(doc(db, "driver_profiles", driverId), updated);
@@ -134,7 +186,10 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 			await setDoc(doc(db, "driver_profiles", driverId), updated);
 			setAllProfiles((prev) => ({ ...prev, [driverId]: updated }));
 			setAddSearch("");
-			setStatus({ type: "success", message: reserve ? "Reserva adicionado!" : "Piloto adicionado!" });
+			setStatus({
+				type: "success",
+				message: reserve ? "Reserva adicionado!" : "Piloto adicionado!",
+			});
 			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
 			setEditForm(profile);
 			setEditingId(driverId);
@@ -147,7 +202,9 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 		if (!confirmRemoveId) return;
 		setStatus({ type: "loading", message: "Removendo..." });
 		try {
-			await updateDoc(doc(db, "driver_profiles", confirmRemoveId), { [gridId ?? ""]: deleteField() });
+			await updateDoc(doc(db, "driver_profiles", confirmRemoveId), {
+				[gridId ?? ""]: deleteField(),
+			});
 			setAllProfiles((prev) => {
 				const copy = { ...prev };
 				if (copy[confirmRemoveId]) {
@@ -175,33 +232,61 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 		return (
 			<li key={driverId} className={isEditing ? "bg-f1-red/5" : ""}>
 				<div
-					onClick={() => isEditing ? setEditingId(null) : handleStartEdit(driverId)}
-					className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${isEditing ? "bg-f1-red/20 font-bold" : ""}`}
+					onClick={() =>
+						isEditing
+							? setEditingId(null)
+							: handleStartEdit(driverId)
+					}
+					className={`w-full p-2 hover:bg-f1-red/20 flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${isEditing ? "bg-f1-red/20 font-bold" : ""}`}
 				>
 					<div className="flex items-center gap-2">
-						{profile?.teamColor && (
-							<div className="w-1 self-stretch rounded-full shrink-0" style={{ backgroundColor: profile.teamColor }} />
-						)}
 						<img
-							src={profile?.photoUrl || driver?.photo?.url || tenant.fallbackDriverPhoto}
+							src={
+								profile?.photoUrl ||
+								driver?.photo?.url ||
+								tenant.fallbackDriverPhoto
+							}
 							alt={driver?.name ?? ""}
 							className="w-8 h-8 rounded-full object-cover shrink-0 border border-black/10"
 						/>
+						{profile?.teamColor && (
+							<div
+								className="w-1 self-stretch shrink-0"
+								style={{ backgroundColor: profile.teamColor }}
+							/>
+						)}
 						<div className="flex flex-col items-start">
-							<span className="text-sm">{driver?.name ?? driverId}</span>
+							<span className="text-sm">
+								{driver?.name ?? driverId}
+							</span>
 							<span className="text-xs text-f1-lighterCarbon">
-								{profile?.number ? `#${profile.number}` : "Sem número"}
-								{profile?.teamName ? ` · ${profile.teamName}` : ""}
+								{profile?.number
+									? `#${profile.number}`
+									: "Sem número"}
+								{profile?.teamName
+									? ` · ${profile.teamName}`
+									: ""}
 							</span>
 						</div>
 					</div>
 					<button
-						onClick={(e) => { e.stopPropagation(); setConfirmRemoveId(driverId); }}
+						onClick={(e) => {
+							e.stopPropagation();
+							setConfirmRemoveId(driverId);
+						}}
 						className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 						title="Remover"
 					>
-						<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+						<svg
+							className="h-5 w-5"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
 								d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
 							/>
 						</svg>
@@ -212,25 +297,38 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 					<div className="p-4 space-y-3">
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 							<div>
-								<label className="text-xs text-f1-lighterCarbon block mb-1">Número</label>
+								<label className="text-xs text-f1-lighterCarbon block mb-1">
+									Número
+								</label>
 								<input
 									type="text"
 									value={editForm.number}
-									onChange={(e) => setEditForm((p) => ({ ...p, number: e.target.value }))}
+									onChange={(e) =>
+										setEditForm((p) => ({
+											...p,
+											number: e.target.value,
+										}))
+									}
 									className="w-full p-2 border rounded h-9 text-sm"
 									placeholder="Ex: 5"
 								/>
 							</div>
 							<div>
-								<label className="text-xs text-f1-lighterCarbon block mb-1">Equipe</label>
+								<label className="text-xs text-f1-lighterCarbon block mb-1">
+									Equipe
+								</label>
 								<select
 									value={editForm.teamName}
-									onChange={(e) => handleTeamChange(e.target.value)}
-									className="w-full p-2 border rounded h-9 text-sm cursor-pointer"
+									onChange={(e) =>
+										handleTeamChange(e.target.value)
+									}
+									className="w-full px-2 border rounded h-9 text-sm cursor-pointer"
 								>
-									<option value="">— Sem equipe —</option>
+									<option value="">— Sem Equipe —</option>
 									{(teamsData?.teams ?? []).map((t) => (
-										<option key={t.id} value={t.name}>{t.name}</option>
+										<option key={t.id} value={t.name}>
+											{t.name}
+										</option>
 									))}
 								</select>
 							</div>
@@ -239,10 +337,17 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 							<input
 								type="checkbox"
 								checked={!!editForm.reserve}
-								onChange={(e) => setEditForm((p) => ({ ...p, reserve: e.target.checked }))}
+								onChange={(e) =>
+									setEditForm((p) => ({
+										...p,
+										reserve: e.target.checked,
+									}))
+								}
 								className="w-4 h-4"
 							/>
-							<span className="text-xs text-f1-lighterCarbon">Piloto reserva</span>
+							<span className="text-xs text-f1-lighterCarbon">
+								Piloto reserva
+							</span>
 						</label>
 						<div className="flex gap-2">
 							<button
@@ -264,18 +369,27 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 		);
 	};
 
-	const confirmDriver = driversData?.drivers?.find((d) => d.id === confirmRemoveId);
+	const confirmDriver = driversData?.drivers?.find(
+		(d) => d.id === confirmRemoveId,
+	);
 
 	return (
 		<div className="space-y-6">
 			{/* Confirm remove modal */}
-			<Dialog open={!!confirmRemoveId} onClose={() => setConfirmRemoveId(null)} className="relative z-50">
+			<Dialog
+				open={!!confirmRemoveId}
+				onClose={() => setConfirmRemoveId(null)}
+				className="relative z-50"
+			>
 				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 				<div className="fixed inset-0 flex items-center justify-center p-4">
 					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
-						<DialogTitle className="text-lg font-bold">Remover Piloto</DialogTitle>
+						<DialogTitle className="text-lg font-bold">
+							Remover Piloto
+						</DialogTitle>
 						<Description className="mt-1">
-							Tem certeza que deseja remover <strong>{confirmDriver?.name}</strong> deste grid?
+							Tem certeza que deseja remover{" "}
+							<strong>{confirmDriver?.name}</strong> deste grid?
 						</Description>
 						<div className="mt-6 flex justify-end gap-2">
 							<button
@@ -296,18 +410,24 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 			</Dialog>
 
 			{status.type !== "idle" && (
-				<div className={`p-3 rounded text-sm ${
-					status.type === "error" ? "bg-red-100 text-red-700 border border-red-300"
-					: status.type === "success" ? "bg-green-100 text-green-700 border border-green-300"
-					: "bg-blue-100 text-blue-700 border border-blue-300"
-				}`}>
+				<div
+					className={`p-3 rounded text-sm ${
+						status.type === "error"
+							? "bg-red-100 text-red-700 border border-red-300"
+							: status.type === "success"
+								? "bg-green-100 text-green-700 border border-green-300"
+								: "bg-blue-100 text-blue-700 border border-blue-300"
+					}`}
+				>
 					{status.message}
 				</div>
 			)}
 
 			{/* Add driver */}
 			<div className="border rounded-lg p-4 space-y-3">
-				<p className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">Adicionar Piloto</p>
+				<p className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
+					Adicionar Piloto
+				</p>
 				<input
 					type="text"
 					placeholder="Buscar piloto..."
@@ -318,12 +438,20 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 				{addSearch && (
 					<ul className="border rounded divide-y max-h-48 overflow-y-auto">
 						{filteredUnassigned.length === 0 && (
-							<li className="p-2 text-sm text-f1-lighterCarbon">Nenhum piloto encontrado.</li>
+							<li className="p-2 text-sm text-f1-lighterCarbon">
+								Nenhum piloto encontrado.
+							</li>
 						)}
 						{filteredUnassigned.map((d) => (
-							<li key={d.id} className="flex items-center gap-3 p-2 hover:bg-f1-bg-silver">
+							<li
+								key={d.id}
+								className="flex items-center gap-3 p-2 hover:bg-f1-bg-silver"
+							>
 								<img
-									src={d.photo?.url || tenant.fallbackDriverPhoto}
+									src={
+										d.photo?.url ||
+										tenant.fallbackDriverPhoto
+									}
 									alt={d.name ?? ""}
 									className="w-8 h-8 rounded-full object-cover shrink-0"
 								/>
@@ -349,14 +477,18 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 
 			{/* Sort toggle */}
 			<div className="flex items-center gap-2">
-				<span className="text-xs text-f1-lighterCarbon">Ordenar por:</span>
+				<span className="text-xs text-f1-lighterCarbon">
+					Ordenar por:
+				</span>
 				{(["name", "team"] as const).map((opt) => (
 					<button
 						key={opt}
 						type="button"
 						onClick={() => setSortBy(opt)}
 						className={`text-xs px-3 py-1 rounded border cursor-pointer transition-colors ${
-							sortBy === opt ? "bg-f1-red text-white border-f1-red" : "border-black/20 hover:bg-f1-red/10"
+							sortBy === opt
+								? "bg-f1-red text-white border-f1-red"
+								: "border-black/20 hover:bg-f1-red/10"
 						}`}
 					>
 						{opt === "name" ? "Piloto A-Z" : "Equipe A-Z"}
@@ -367,16 +499,24 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 			{/* Titular drivers */}
 			<div className="border rounded-lg overflow-hidden">
 				<div className="px-4 py-2 flex items-center gap-2 border-b border-black/10 bg-f1-bg-silver">
-					<span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: gridColor }} />
+					{/* <span
+						className="w-2.5 h-2.5 rounded-full shrink-0"
+						style={{ backgroundColor: gridColor }}
+					/> */}
 					<span className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
-						{gridLabel} — {titularIds.length} pilotos
+						{/* {gridLabel} — {titularIds.length} pilotos */}
+						Titulares — {titularIds.length} pilotos
 					</span>
 				</div>
 				{titularIds.length === 0 ? (
-					<p className="p-4 text-sm text-f1-lighterCarbon">Nenhum piloto titular neste grid ainda.</p>
+					<p className="p-4 text-sm text-f1-lighterCarbon">
+						Nenhum piloto titular neste grid ainda.
+					</p>
 				) : (
 					<ul className="grid grid-cols-1 md:grid-cols-2 divide-y md:[&>li:nth-child(2)]:border-t-0 md:[&>li:nth-child(odd)]:border-r">
-						{titularIds.map((driverId) => <DriverRow key={driverId} driverId={driverId} />)}
+						{titularIds.map((driverId) => (
+							<DriverRow key={driverId} driverId={driverId} />
+						))}
 					</ul>
 				)}
 			</div>
@@ -389,10 +529,14 @@ export function GridDriversAdmin({ gridId: gridIdProp }: { gridId?: string } = {
 					</span>
 				</div>
 				{reserveIds.length === 0 ? (
-					<p className="p-4 text-sm text-f1-lighterCarbon">Nenhum reserva neste grid.</p>
+					<p className="p-4 text-sm text-f1-lighterCarbon">
+						Nenhum reserva neste grid.
+					</p>
 				) : (
 					<ul className="grid grid-cols-1 md:grid-cols-2 divide-y md:[&>li:nth-child(2)]:border-t-0 md:[&>li:nth-child(odd)]:border-r">
-						{reserveIds.map((driverId) => <DriverRow key={driverId} driverId={driverId} />)}
+						{reserveIds.map((driverId) => (
+							<DriverRow key={driverId} driverId={driverId} />
+						))}
 					</ul>
 				)}
 			</div>
