@@ -65,7 +65,7 @@ export function StandingsList(props: StandingsListProps) {
 	});
 
 	useEffect(() => {
-		if (props.data.length > 0) setIsLoading(false);
+		setIsLoading(false);
 	}, [props.data]);
 
 	const handleCardClick = (index: number) => {

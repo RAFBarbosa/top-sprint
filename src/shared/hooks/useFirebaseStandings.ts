@@ -161,7 +161,17 @@ export function useFirebaseStandings(gridId: GridId) {
 			return { standings: [], previousStandings: [] };
 		}
 
-		const activeSeason = seasons.find((s) => s.active);
+		// Prefer globally-active season; fall back to most recent season linked to this grid's calendars
+		const gridCalendarIds = new Set(
+			(calendarsData.calendars ?? []).filter((c) => c.grid === gridId).map((c) => c.id),
+		);
+		const gridSeasonIds = new Set(
+			mappings.filter((m) => gridCalendarIds.has(m.calendarId)).map((m) => m.seasonId),
+		);
+		const activeSeason =
+			seasons.find((s) => s.active && gridSeasonIds.has(s.id)) ??
+			seasons.find((s) => s.active) ??
+			seasons.filter((s) => gridSeasonIds.has(s.id)).slice(-1)[0];
 		if (!activeSeason) return { standings: [], previousStandings: [] };
 
 		const seasonCalendarIds = new Set(

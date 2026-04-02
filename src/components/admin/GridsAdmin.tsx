@@ -305,7 +305,7 @@ export function GridsAdmin() {
 											{view === "configurar"
 												? "Configurar"
 												: view === "pilotos"
-													? "Pilotos"
+													? "Pilotos do Grid"
 													: view === "ajustes"
 														? "Ajustes de Pontos"
 														: view === "calendario"

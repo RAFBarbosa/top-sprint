@@ -9,6 +9,9 @@ import {
 	ListboxButton,
 	ListboxOption,
 	ListboxOptions,
+	Dialog,
+	DialogPanel,
+	DialogTitle,
 } from "@headlessui/react";
 import {
 	useGetCalendarsRegistrationQuery,
@@ -17,7 +20,7 @@ import {
 	useGetDriversQuery,
 	useGridOptionsQuery,
 } from "../../graphql/generated";
-import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
+import { ChevronUpDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { getGridLabel, getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { format } from "date-fns";
@@ -62,50 +65,51 @@ export function ManualResultsRegistration({
 	const [adjPoints, setAdjPoints] = useState<number>(0);
 	const [adjReason, setAdjReason] = useState("");
 	const [adjEditId, setAdjEditId] = useState<string | null>(null);
+	const [adjConfirmDeleteId, setAdjConfirmDeleteId] = useState<string | null>(null);
 	const [adjStatus, setAdjStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
 
 	// --- ESTADOS CORRIDA ---
 	const [results, setResults] = useState<RaceResult[]>(
-		Array.from({ length: 20 }, (_, i) => ({
+		Array.from({ length: 22 }, (_, i) => ({
 			position: i + 1,
 			driverId: "",
 			driverName: "",
 		})),
 	);
 	const [qualyResults, setQualyResults] = useState<RaceResult[]>(
-		Array.from({ length: 20 }, (_, i) => ({
+		Array.from({ length: 22 }, (_, i) => ({
 			position: i + 1,
 			driverId: "",
 			driverName: "",
 		})),
 	);
 	const [penaltyValues, setPenaltyValues] = useState<number[]>(
-		Array(20).fill(0),
+		Array(22).fill(0),
 	);
-	const [ncValues, setNcValues] = useState<boolean[]>(Array(20).fill(false));
+	const [ncValues, setNcValues] = useState<boolean[]>(Array(22).fill(false));
 	// Prêmios Corrida
 	const [awards, setAwards] = useState<Record<string, string>>({});
 
 	// --- ESTADOS SPRINT ---
 	const [sprintResults, setSprintResults] = useState<RaceResult[]>(
-		Array.from({ length: 20 }, (_, i) => ({
+		Array.from({ length: 22 }, (_, i) => ({
 			position: i + 1,
 			driverId: "",
 			driverName: "",
 		})),
 	);
 	const [sprintQualy, setSprintQualy] = useState<RaceResult[]>(
-		Array.from({ length: 20 }, (_, i) => ({
+		Array.from({ length: 22 }, (_, i) => ({
 			position: i + 1,
 			driverId: "",
 			driverName: "",
 		})),
 	);
 	const [sprintPenaltyValues, setSprintPenaltyValues] = useState<number[]>(
-		Array(20).fill(0),
+		Array(22).fill(0),
 	);
 	const [sprintNcValues, setSprintNcValues] = useState<boolean[]>(
-		Array(20).fill(false),
+		Array(22).fill(false),
 	);
 	const [focusedPenalty, setFocusedPenalty] = useState<string | null>(null);
 	// Prêmios Sprint
@@ -115,16 +119,16 @@ export function ManualResultsRegistration({
 
 	// Queries de busca
 	const [raceQueries, setRaceQueries] = useState<string[]>(
-		Array(20).fill(""),
+		Array(22).fill(""),
 	);
 	const [qualyQueries, setQualyQueries] = useState<string[]>(
-		Array(20).fill(""),
+		Array(22).fill(""),
 	);
 	const [sprintRaceQueries, setSprintRaceQueries] = useState<string[]>(
-		Array(20).fill(""),
+		Array(22).fill(""),
 	);
 	const [sprintQualyQueries, setSprintQualyQueries] = useState<string[]>(
-		Array(20).fill(""),
+		Array(22).fill(""),
 	);
 	// Queries de busca para prêmios
 	const [awardQueries, setAwardQueries] = useState<Record<string, string>>(
@@ -180,7 +184,7 @@ export function ManualResultsRegistration({
 				const docSnap = await getDoc(docRef);
 
 				const mapFirebaseToState = (driverIds: string[]) => {
-					return Array.from({ length: 20 }, (_, i) => {
+					return Array.from({ length: 22 }, (_, i) => {
 						const id = driverIds?.[i];
 						const info = id
 							? driversData.drivers?.find((d) => d.id === id)
@@ -197,7 +201,7 @@ export function ManualResultsRegistration({
 					resList: RaceResult[],
 					pList: Penalty[],
 				) => {
-					const vals = Array(20).fill(0);
+					const vals = Array(22).fill(0);
 					resList.forEach((res, index) => {
 						const p = pList?.find(
 							(fp) => fp.driverId === res.driverId,
@@ -256,7 +260,7 @@ export function ManualResultsRegistration({
 					);
 				} else {
 					const empty = () =>
-						Array.from({ length: 20 }, (_, i) => ({
+						Array.from({ length: 22 }, (_, i) => ({
 							position: i + 1,
 							driverId: "",
 							driverName: "",
@@ -265,10 +269,10 @@ export function ManualResultsRegistration({
 					setQualyResults(empty());
 					setSprintResults(empty());
 					setSprintQualy(empty());
-					setPenaltyValues(Array(20).fill(0));
-					setSprintPenaltyValues(Array(20).fill(0));
-					setNcValues(Array(20).fill(false));
-					setSprintNcValues(Array(20).fill(false));
+					setPenaltyValues(Array(22).fill(0));
+					setSprintPenaltyValues(Array(22).fill(0));
+					setNcValues(Array(22).fill(false));
+					setSprintNcValues(Array(22).fill(false));
 					setLink("");
 					const emptyAwards = Object.fromEntries(
 						gridRaceAwards.map((a) => [a.id, ""]),
@@ -341,6 +345,14 @@ export function ManualResultsRegistration({
 		setAdjEditId(null);
 	};
 
+	const resetAdj = () => {
+		setAdjEditId(null);
+		setAdjSelectedDriverId("");
+		setAdjDriverQuery("");
+		setAdjPoints(0);
+		setAdjReason("");
+	};
+
 	const handleEditAdjustment = (adj: PointAdjustment) => {
 		const driver = getFilteredDrivers("").find((d) => d.id === adj.driverId)
 			?? driversData?.drivers?.find((d) => d.id === adj.driverId);
@@ -353,6 +365,8 @@ export function ManualResultsRegistration({
 
 	const handleDeleteAdjustment = async (id: string) => {
 		await saveAdjustments(calendarAdjustments.filter((a) => a.id !== id));
+		if (adjEditId === id) { setAdjEditId(null); setAdjSelectedDriverId(""); setAdjDriverQuery(""); setAdjPoints(0); setAdjReason(""); }
+		setAdjConfirmDeleteId(null);
 	};
 
 	// --- GRAVAÇÃO ---
@@ -451,10 +465,10 @@ export function ManualResultsRegistration({
 	const handleSelectCalendar = (calendar: any) => {
 		setSelectedCalendar(calendar);
 		setLink("");
-		setRaceQueries(Array(20).fill(""));
-		setQualyQueries(Array(20).fill(""));
-		setSprintRaceQueries(Array(20).fill(""));
-		setSprintQualyQueries(Array(20).fill(""));
+		setRaceQueries(Array(22).fill(""));
+		setQualyQueries(Array(22).fill(""));
+		setSprintRaceQueries(Array(22).fill(""));
+		setSprintQualyQueries(Array(22).fill(""));
 		const emptyAwards = Object.fromEntries(
 			(getGridConfig(calendar.grid)?.raceAwards ?? []).map((a) => [
 				a.id,
@@ -469,7 +483,7 @@ export function ManualResultsRegistration({
 
 	const getFilteredDrivers = (query: string) => {
 		if (!driversData?.drivers || !selectedCalendar) return [];
-		const q = query.toLowerCase();
+		const q = (query ?? "").toLowerCase();
 		const grid = selectedCalendar.grid;
 		return driversData.drivers
 			.filter((d) => {
@@ -502,10 +516,10 @@ export function ManualResultsRegistration({
 	const formatDateWithCapitalizedMonth = (dateString: string) => {
 		const date = new Date(dateString);
 		const day = format(date, "dd", { locale: ptBR });
-		const month = format(date, "MMMM", { locale: ptBR });
+		const month = format(date, "MMM", { locale: ptBR });
 		const year = format(date, "yyyy", { locale: ptBR });
 		const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
-		return `${day} de ${capitalizedMonth} de ${year}`;
+		return `${day} ${capitalizedMonth} ${year}`;
 	};
 
 	const filteredCalendars = (
@@ -529,10 +543,10 @@ export function ManualResultsRegistration({
 		});
 
 	return (
-		<div className="flex flex-col md:flex-row w-full">
-			{/* Calendar sidebar */}
-			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
-				<div className="mb-4 space-y-2">
+		<>
+		<div className="w-full">
+			{/* Calendar list */}
+				<div className="mb-3 space-y-2">
 					<div className="flex rounded border overflow-hidden text-sm">
 						{["all", "active", "inactive"].map((val) => (
 							<button
@@ -551,7 +565,7 @@ export function ManualResultsRegistration({
 					{!gridId && (
 						<Listbox value={gridFilter} onChange={setGridFilter}>
 							<div className="relative">
-								<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+								<ListboxButton className="w-full px-2 border rounded flex items-center justify-between cursor-pointer h-9 text-sm bg-white">
 									<span className="block truncate">
 										{gridFilter
 											? getGridLabel(gridFilter)
@@ -593,93 +607,58 @@ export function ManualResultsRegistration({
 					<input
 						type="text"
 						placeholder="Buscar etapas..."
-						className="w-full p-2 border rounded h-11"
+						className="w-full px-2 border rounded h-9 text-sm"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
 				</div>
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
-					{filteredCalendars.map((calendar) => (
-						<li key={calendar.id}>
-							<div
-								onClick={() => handleSelectCalendar(calendar)}
-								className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${selectedCalendar?.id === calendar.id ? "bg-f1-red/20 font-bold" : ""}`}
-							>
-								<div className="flex flex-col items-start truncate">
-									<span className="truncate max-w-40">
-										{calendar.track?.name ?? calendar.round}
-									</span>
-									<span className="text-xs text-gray-500">
-										• {calendar.round}
-									</span>
-									<span className="text-xs text-gray-500">
-										•{" "}
-										{formatDateWithCapitalizedMonth(
-											calendar.date,
-										)}
-									</span>
-								</div>
-								<div className="flex gap-4 items-center">
-									{calendar.track?.flag?.url && (
-										<img
-											src={calendar.track.flag.url}
-											alt=""
-											className="w-[45px] h-[25px] object-cover rounded border border-black/20 shrink-0"
-										/>
-									)}
-								</div>
-							</div>
-						</li>
-					))}
-				</ul>
-			</div>
-
-			{/* Main content */}
-			<div className="mx-auto max-w-3xl w-full">
-				<form
-					onSubmit={handleSubmit}
-					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
-				>
-					<div className="flex justify-between items-center mb-6">
-						<div>
-							<h2 className="text-2xl font-bold">
-								{activeTab === "race"
-									? "Resultados Corrida"
-									: "Resultados Sprint"}
-							</h2>
-							{selectedCalendar && (
-								<p className="text-sm mt-1 text-gray-600">
-									{selectedCalendar.track?.name} —{" "}
-									{selectedCalendar.round}
-								</p>
+			<ul className="space-y-[2px]">
+				{filteredCalendars.map((calendar) => (
+					<li
+						key={calendar.id}
+						className={`bg-white rounded ${selectedCalendar?.id === calendar.id ? "ring-1 ring-f1-red/30" : ""}`}
+					>
+						<div
+							onClick={() => handleSelectCalendar(calendar)}
+							className={`w-full px-3 py-2 hover:bg-f1-red/10 flex items-center gap-3 cursor-pointer justify-between ${selectedCalendar?.id === calendar.id ? "bg-f1-red/10" : ""}`}
+						>
+							{calendar.track?.flag?.url && (
+								<img
+									src={calendar.track.flag.url}
+									alt=""
+									className="w-[36px] h-[20px] object-cover rounded border border-black/20 shrink-0"
+								/>
 							)}
+							<div className="flex flex-col flex-1 min-w-0">
+								<span className={`text-sm truncate ${selectedCalendar?.id === calendar.id ? "font-bold" : "font-medium"}`}>
+									{calendar.track?.name ?? calendar.round}
+								</span>
+								<span className={`text-xs text-gray-500 ${selectedCalendar?.id === calendar.id ? "font-bold" : ""}`}>
+									{calendar.round} · {formatDateWithCapitalizedMonth(calendar.date)}
+									{calendar.sprint && (
+										<span className="ml-1 text-[10px] bg-f1-purple/20 text-f1-purple px-1 rounded font-medium">SPRINT</span>
+									)}
+								</span>
+							</div>
 						</div>
-						<div className="flex items-center gap-2">
-							<div className="flex rounded border overflow-hidden text-sm">
-								<button
-									type="button"
-									onClick={() => setActiveTab("race")}
-									className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "race" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+
+						{selectedCalendar?.id === calendar.id && (
+							<div className="border-t border-f1-red/20 bg-f1-red/5">
+								<form
+									onSubmit={handleSubmit}
+									className="p-4"
 								>
-									Corrida
-								</button>
-								{selectedCalendar?.sprint && (
-									<button
-										type="button"
-										onClick={() => setActiveTab("sprint")}
-										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "sprint" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
-									>
-										Sprint
-									</button>
-								)}
+					<div className="mb-6">
+						<div className="flex justify-between items-start mb-3">
+							<div>
+								<h2 className="text-2xl font-bold">
+									{activeTab === "race" ? "Resultados Corrida" : activeTab === "sprint" ? "Resultados Sprint" : "Ajustes de Pontos"}
+								</h2>
 								{selectedCalendar && (
-									<button
-										type="button"
-										onClick={() => setActiveTab("adjustments")}
-										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "adjustments" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
-									>
-										Ajustes
-									</button>
+									<p className="text-sm mt-1 text-gray-600">
+										{selectedCalendar.track?.name} —{" "}
+										{selectedCalendar.round}
+									</p>
 								)}
 							</div>
 							<button
@@ -691,6 +670,33 @@ export function ManualResultsRegistration({
 								Gravar Dados
 							</button>
 						</div>
+						{selectedCalendar && (
+							<div className="flex rounded border overflow-hidden text-sm w-fit">
+								<button
+									type="button"
+									onClick={() => setActiveTab("race")}
+									className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "race" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+								>
+									Corrida
+								</button>
+								{selectedCalendar.sprint && (
+									<button
+										type="button"
+										onClick={() => setActiveTab("sprint")}
+										className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "sprint" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+									>
+										Sprint
+									</button>
+								)}
+								<button
+									type="button"
+									onClick={() => setActiveTab("adjustments")}
+									className={`px-4 py-2 cursor-pointer transition-colors duration-120 ${activeTab === "adjustments" ? "bg-f1-red text-white font-medium" : "bg-white text-gray-600 hover:bg-f1-red/10"}`}
+								>
+									Ajustes
+								</button>
+							</div>
+						)}
 					</div>
 
 					{status.type !== "idle" && (
@@ -706,13 +712,13 @@ export function ManualResultsRegistration({
 						<div className="space-y-6">
 							{/* Add form */}
 							<div className="border border-black/10 rounded-lg p-4 space-y-4">
-								<h3 className="font-semibold text-sm">Novo Ajuste</h3>
+								<h3 className="font-semibold text-sm">{adjEditId ? "Editar Ajuste" : "Novo Ajuste"}</h3>
 								<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 									<div className="relative">
 										<label className="text-xs text-f1-lighterCarbon block mb-1">Piloto</label>
 										<input
 											type="text"
-											className="w-full p-2 border rounded h-10 text-sm"
+											className="w-full px-2 border rounded h-9 text-sm bg-white"
 											placeholder="Buscar piloto..."
 											value={adjSelectedDriverId
 												? getFilteredDrivers("").find((d) => d.id === adjSelectedDriverId)?.name ?? adjDriverQuery
@@ -739,7 +745,7 @@ export function ManualResultsRegistration({
 										</label>
 										<input
 											type="number"
-											className="w-full p-2 border rounded h-10 text-sm"
+											className="w-full px-2 border rounded h-9 text-sm bg-white"
 											value={adjPoints === 0 ? "" : adjPoints}
 											placeholder="Ex: -5 ou +3"
 											onChange={(e) => setAdjPoints(parseInt(e.target.value) || 0)}
@@ -749,7 +755,7 @@ export function ManualResultsRegistration({
 										<label className="text-xs text-f1-lighterCarbon block mb-1">Motivo</label>
 										<input
 											type="text"
-											className="w-full p-2 border rounded h-10 text-sm"
+											className="w-full px-2 border rounded h-9 text-sm bg-white"
 											placeholder="Ex: Penalidade Comissários"
 											value={adjReason}
 											onChange={(e) => setAdjReason(e.target.value)}
@@ -761,7 +767,7 @@ export function ManualResultsRegistration({
 										type="button"
 										onClick={handleAddAdjustment}
 										disabled={!adjSelectedDriverId || adjPoints === 0 || !adjReason.trim() || adjStatus.type === "loading"}
-										className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed"
+										className="bg-f1-red text-white px-4 py-2 rounded text-sm hover:bg-f1-red/80 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
 									>
 										{adjEditId ? "Salvar" : "Adicionar"}
 									</button>
@@ -801,35 +807,27 @@ export function ManualResultsRegistration({
 												const driver = getFilteredDrivers("").find((d) => d.id === adj.driverId)
 													?? driversData?.drivers?.find((d) => d.id === adj.driverId);
 												return (
-													<tr key={adj.id} className={`${i % 2 === 0 ? "bg-white" : "bg-f1-bg-silver"} ${adjEditId === adj.id ? "ring-2 ring-inset ring-blue-400" : ""}`}>
+													<tr
+														key={adj.id}
+														onClick={() => adjEditId === adj.id ? resetAdj() : handleEditAdjustment(adj)}
+														className={`cursor-pointer transition-colors ${adjEditId === adj.id ? "ring-2 ring-inset ring-f1-red/40 bg-f1-red/5" : `${i % 2 === 0 ? "bg-white" : "bg-f1-bg-silver"} hover:bg-f1-red/10`}`}
+													>
 														<td className="py-2 px-4 font-medium">{driver?.name ?? adj.driverId}</td>
 														<td className="py-2 px-4 text-f1-lighterCarbon">{adj.reason}</td>
 														<td className={`py-2 px-4 text-right font-bold ${adj.points > 0 ? "text-green-600" : "text-f1-red"}`}>
 															{adj.points > 0 ? `+${adj.points}` : adj.points}
 														</td>
 														<td className="py-2 px-4 text-right">
-															<div className="flex items-center justify-end gap-2">
-																<button
-																	type="button"
-																	onClick={() => handleEditAdjustment(adj)}
-																	className="text-f1-lighterCarbon hover:text-blue-500 transition-colors"
-																	title="Editar"
-																>
-																	<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-																		<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-																	</svg>
-																</button>
-																<button
-																	type="button"
-																	onClick={() => handleDeleteAdjustment(adj.id)}
-																	className="text-f1-lighterCarbon hover:text-f1-red transition-colors"
-																	title="Remover"
-																>
-																	<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-																		<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-																	</svg>
-																</button>
-															</div>
+															<button
+																type="button"
+																onClick={(e) => { e.stopPropagation(); setAdjConfirmDeleteId(adj.id); }}
+																className="text-f1-lighterCarbon hover:text-f1-red hover:bg-f1-red/10 rounded p-1 transition-colors cursor-pointer"
+																title="Remover"
+															>
+																<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+																	<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+																</svg>
+															</button>
 														</td>
 													</tr>
 												);
@@ -854,7 +852,7 @@ export function ManualResultsRegistration({
 							value={link}
 							onChange={(e) => setLink(e.target.value)}
 							placeholder="https://youtube.com/watch?v=..."
-							className="w-full p-2 border rounded h-11"
+							className="w-full px-2 border rounded h-9 text-sm bg-white"
 						/>
 					</div>
 
@@ -918,7 +916,7 @@ export function ManualResultsRegistration({
 												>
 													<div className="relative">
 														<ComboboxInput
-															className="w-full p-2 border rounded h-11"
+															className="w-full px-2 border rounded h-9 text-sm bg-white"
 															placeholder="Piloto..."
 															displayValue={() =>
 																driverName
@@ -986,7 +984,7 @@ export function ManualResultsRegistration({
 							NC
 						</label>
 
-						{Array.from({ length: 20 }).map((_, i) => {
+						{Array.from({ length: 22 }).map((_, i) => {
 							const pos = i + 1;
 							const isRace = activeTab === "race";
 
@@ -1006,6 +1004,10 @@ export function ManualResultsRegistration({
 								? raceQueries
 								: sprintRaceQueries;
 
+							const qualySelectedIds = new Set(currentQualy.filter((_, idx) => idx !== i).map(r => r.driverId).filter(Boolean));
+							const raceSelectedIds = new Set(currentResults.filter((_, idx) => idx !== i).map(r => r.driverId).filter(Boolean));
+							const qualyDriverOptions = getFilteredDrivers(currentQueriesQ[i]).filter(d => !qualySelectedIds.has(d.id));
+							const raceDriverOptions = getFilteredDrivers(currentQueriesR[i]).filter(d => !raceSelectedIds.has(d.id));
 							return (
 								<div
 									key={`row-${pos}`}
@@ -1044,7 +1046,7 @@ export function ManualResultsRegistration({
 										>
 											<div className="relative flex-1">
 												<ComboboxInput
-													className="w-full p-2 border rounded h-11"
+													className="w-full px-2 border rounded h-9 text-sm bg-white"
 													displayValue={(n: string) =>
 														n
 													}
@@ -1061,6 +1063,18 @@ export function ManualResultsRegistration({
 														});
 													}}
 												/>
+												{currentQualy[i].driverId && (
+													<button
+														type="button"
+														onClick={() => {
+															const setter = isRace ? setQualyResults : setSprintQualy;
+															setter(prev => prev.map((item, idx) => idx === i ? { ...item, driverId: "", driverName: "" } : item));
+														}}
+														className="absolute inset-y-0 right-6 flex items-center px-1 text-gray-400 hover:text-f1-red z-10"
+													>
+														<XMarkIcon className="h-3.5 w-3.5" />
+													</button>
+												)}
 												<ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
 													<ChevronUpDownIcon
 														className="h-4 w-4 text-gray-400"
@@ -1068,9 +1082,7 @@ export function ManualResultsRegistration({
 													/>
 												</ComboboxButton>
 												<ComboboxOptions className="absolute z-50 mt-1 max-h-40 w-full overflow-auto rounded bg-white py-1 shadow-xl border border-gray-100">
-													{getFilteredDrivers(
-														currentQueriesQ[i],
-													).map((d) => (
+													{qualyDriverOptions.map((d) => (
 														<ComboboxOption
 															key={d.id}
 															value={d.name}
@@ -1118,7 +1130,7 @@ export function ManualResultsRegistration({
 										>
 											<div className="relative flex-1">
 												<ComboboxInput
-													className="w-full p-2 border rounded h-11"
+													className="w-full px-2 border rounded h-9 text-sm bg-white"
 													displayValue={(n: string) =>
 														n
 													}
@@ -1135,6 +1147,18 @@ export function ManualResultsRegistration({
 														});
 													}}
 												/>
+												{currentResults[i].driverId && (
+													<button
+														type="button"
+														onClick={() => {
+															const setter = isRace ? setResults : setSprintResults;
+															setter(prev => prev.map((item, idx) => idx === i ? { ...item, driverId: "", driverName: "" } : item));
+														}}
+														className="absolute inset-y-0 right-6 flex items-center px-1 text-gray-400 hover:text-f1-red z-10"
+													>
+														<XMarkIcon className="h-3.5 w-3.5" />
+													</button>
+												)}
 												<ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
 													<ChevronUpDownIcon
 														className="h-4 w-4 text-gray-400"
@@ -1142,9 +1166,7 @@ export function ManualResultsRegistration({
 													/>
 												</ComboboxButton>
 												<ComboboxOptions className="absolute z-50 mt-1 max-h-40 w-full overflow-auto rounded bg-white py-1 shadow-xl border border-gray-100">
-													{getFilteredDrivers(
-														currentQueriesR[i],
-													).map((d) => (
+													{raceDriverOptions.map((d) => (
 														<ComboboxOption
 															key={d.id}
 															value={d.name}
@@ -1202,7 +1224,7 @@ export function ManualResultsRegistration({
 													return n;
 												});
 											}}
-											className="w-full px-2 py-1.5 border rounded h-9 text-center text-sm disabled:opacity-20"
+											className="w-full px-2 border rounded h-9 text-center text-sm bg-white disabled:opacity-20"
 											placeholder="0s"
 										/>
 									</div>
@@ -1236,11 +1258,43 @@ export function ManualResultsRegistration({
 								</div>
 							);
 						})}
+						</div>
+						</>
+						)}
+						</form>
 					</div>
-					</>
 					)}
-				</form>
-			</div>
+				</li>
+			))}
+			</ul>
 		</div>
+
+		{/* Confirm delete adjustment modal */}
+		<Dialog open={adjConfirmDeleteId !== null} onClose={() => setAdjConfirmDeleteId(null)} className="relative z-50">
+			<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+			<div className="fixed inset-0 flex items-center justify-center p-4">
+				<DialogPanel className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+					<DialogTitle className="text-lg font-bold mb-2">Remover Ajuste</DialogTitle>
+					<p className="text-f1-lighterCarbon mb-6">Tem certeza que deseja remover este ajuste?</p>
+					<div className="flex gap-3 justify-end">
+						<button
+							type="button"
+							onClick={() => setAdjConfirmDeleteId(null)}
+							className="px-4 py-2 rounded border border-f1-black/20 text-sm font-medium hover:bg-f1-bg-silver transition-colors cursor-pointer"
+						>
+							Cancelar
+						</button>
+						<button
+							type="button"
+							onClick={() => adjConfirmDeleteId && handleDeleteAdjustment(adjConfirmDeleteId)}
+							className="px-4 py-2 rounded bg-f1-red text-white text-sm font-medium hover:bg-f1-red/80 transition-colors cursor-pointer"
+						>
+							Remover
+						</button>
+					</div>
+				</DialogPanel>
+			</div>
+		</Dialog>
+		</>
 	);
 }

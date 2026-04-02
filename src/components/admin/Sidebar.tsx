@@ -13,14 +13,6 @@ export default function Sidebar() {
 				<ul className="space-y-1 md:space-y-2">
 					<li>
 						<NavLink
-							to="/admin/painel/resultados"
-							className={navLink}
-						>
-							Resultados
-						</NavLink>
-					</li>
-					<li>
-						<NavLink
 							to="/admin/painel/noticias"
 							className={navLink}
 						>
