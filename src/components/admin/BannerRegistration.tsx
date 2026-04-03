@@ -30,7 +30,7 @@ import { getGridConfig } from "../../shared/config/grids";
 function LimitedTextarea({
 	value,
 	onChange,
-	maxLength = 300,
+	maxLength = 1200,
 	...props
 }: {
 	value: string;

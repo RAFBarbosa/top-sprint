@@ -1,10 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { Calendars } from "../calendar/Calendars";
 import { SessionResult } from "./SessionResult";
 import { useGetCalendarsQuery } from "../../graphql/generated";
 import { getGridConfig } from "../../shared/config/grids";
 import { Divider } from "../layout/Divider";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
+import { useTab } from "../../contexts/TabContext";
 
 const slugify = (str: string) =>
 	str
@@ -18,6 +20,9 @@ export function SessionResults() {
 	const { slug } = useParams();
 	const { data } = useGetCalendarsQuery();
 	const { getSeasonForCalendar } = useCalendarSeasons();
+	const { activeTab, setActiveTab } = useTab();
+	const navigate = useNavigate();
+	const prevTabRef = useRef(activeTab.id);
 
 	const matched = slug
 		? data?.calendars.find((c) => {
@@ -29,6 +34,22 @@ export function SessionResults() {
 			})
 		: null;
 
+	// When arriving via news or direct URL on the wrong grid, sync to the result's grid.
+	useEffect(() => {
+		if (matched?.grid && matched.grid !== activeTab.id) {
+			setActiveTab(matched.grid);
+		}
+	}, [matched?.id]);
+
+	// When the user manually switches grid while on a result, go to results home.
+	useEffect(() => {
+		const prev = prevTabRef.current;
+		prevTabRef.current = activeTab.id;
+		if (slug && matched && prev === matched.grid && activeTab.id !== matched.grid) {
+			navigate("/resultados", { replace: true });
+		}
+	}, [activeTab.id, matched?.id]);
+
 	return (
 		<aside className="bg-f1-bg-silver">
 			<div className="w-full mx-auto max-w-screen-xl px-3 pt-8">
@@ -37,7 +58,7 @@ export function SessionResults() {
 				</h1>
 				<Divider />
 			</div>
-			<Calendars hideHeader />
+			<Calendars hideHeader noPadding />
 			<SessionResult
 				calendarId={matched?.id ?? null}
 				calendarData={matched ?? null}

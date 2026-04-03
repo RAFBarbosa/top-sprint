@@ -44,7 +44,7 @@ export function Banner(props: BannerProps) {
 
 	if (isInternal) {
 		return (
-			<Link to={props.link} className={className}>
+			<Link to={props.link} state={{ fromNews: true }} className={className}>
 				{inner}
 			</Link>
 		);

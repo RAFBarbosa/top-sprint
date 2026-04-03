@@ -46,14 +46,19 @@ function calcStandings(
 		const raceOrder = (result.results ?? []).filter(Boolean);
 		const qualyOrder = (result.resultsQualy ?? []).filter(Boolean);
 		const sprintOrder = (result.sprintResults ?? []).filter(Boolean);
+		const ncSet = new Set<string>(result.ncDriverIds ?? []);
+		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
 
 		// Race points
 		raceOrder.forEach((driverId, i) => {
 			ensure(driverId);
-			const pos = i + 1;
-			const pts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
-			driverPts[driverId].pts += pts + presenceBonus;
-			driverPts[driverId].bestRaceFinishes.push(pos);
+			if (!ncSet.has(driverId)) {
+				const pos = i + 1;
+				const pts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
+				driverPts[driverId].pts += pts;
+				driverPts[driverId].bestRaceFinishes.push(pos);
+			}
+			// Race awards apply regardless of NC
 			raceAwards.forEach((award) => {
 				if (result[award.id] === driverId && award.points > 0) {
 					driverPts[driverId].pts += award.points;
@@ -61,7 +66,7 @@ function calcStandings(
 			});
 		});
 
-		// Pole bonus
+		// Pole bonus — applies regardless of NC
 		if (poleBonus > 0 && qualyOrder.length > 0) {
 			const poleId = qualyOrder[0];
 			ensure(poleId);
@@ -72,9 +77,20 @@ function calcStandings(
 		if (cal.sprint && sprintOrder.length > 0) {
 			sprintOrder.forEach((driverId, i) => {
 				ensure(driverId);
-				const pos = i + 1;
-				const pts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
-				driverPts[driverId].pts += pts;
+				if (!sprintNcSet.has(driverId)) {
+					const pos = i + 1;
+					const pts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
+					driverPts[driverId].pts += pts;
+				}
+			});
+		}
+
+		// Presence bonus — awarded once per driver per event, to any who participated in any session
+		if (presenceBonus > 0) {
+			const participants = new Set([...raceOrder, ...(cal.sprint ? sprintOrder : []), ...qualyOrder]);
+			participants.forEach((driverId) => {
+				ensure(driverId);
+				driverPts[driverId].pts += presenceBonus;
 			});
 		}
 	}
@@ -104,6 +120,7 @@ function calcStandings(
 			badge: driver.badge || "",
 			badgeTitle: driver.badgeTitle || "",
 			reserve: profiled.reserve ?? false,
+			exDriver: profiled.exDriver ?? false,
 			_bestFinishes: [...data.bestRaceFinishes].sort((a, b) => a - b),
 		};
 	}).filter(Boolean) as any[];
@@ -214,7 +231,6 @@ export function useFirebaseStandings(gridId: GridId) {
 			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile),
 			allCalendarIds,
 		);
-
 		// Find the most recently raced calendar (by date) that has results
 		const lastRaced = [...relevantCalendars].sort((a, b) => {
 			const da = a.date ? new Date(a.date).getTime() : 0;

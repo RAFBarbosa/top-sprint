@@ -12,6 +12,108 @@ import { tenant } from "../shared/config/tenants";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { HygraphImg } from "../components/utils/HygraphImg";
 import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
+import { useDriverStats } from "../shared/hooks/useDriverStats";
+import type { DriverStatsShape } from "../shared/hooks/useDriverStats";
+
+function StatItem({ label, value }: { label: string; value: number }) {
+	if (!value) return null;
+	return (
+		<div className="flex flex-col items-center justify-center bg-white rounded-sm p-1 text-center">
+			<span className="text-lg md:text-xl font-bold md:font-extrabold leading-none tracking-tighter md:tracking-normal text-f1-text">
+				{value}
+			</span>
+			<span className="text-[10px] uppercase tracking-normal md:tracking-wide text-f1-lighterCarbon font-semibold mt-0.5 ">
+				{label}
+			</span>
+		</div>
+	);
+}
+
+function StatsBlock({
+	label,
+	stats,
+}: {
+	label: string;
+	stats: DriverStatsShape;
+}) {
+	const hasAny = Object.values(stats).some((v) => v > 0);
+	if (!hasAny) return null;
+	return (
+		<div>
+			<p className="text-xs font-bold uppercase tracking-wide text-f1-text mb-2">
+				{label}
+			</p>
+			<div className="grid grid-cols-3 gap-2">
+				<StatItem label="Participações" value={stats.participations} />
+				<StatItem label="Pontos" value={stats.points} />
+				<StatItem label="Temporadas" value={stats.seasons} />
+				<StatItem label="Vitórias" value={stats.wins} />
+				<StatItem label="Vit. Sprint" value={stats.sprintWins} />
+				<StatItem label="Pódios" value={stats.podiums} />
+				<StatItem label="Pód. Sprint" value={stats.sprintPodiums} />
+				<StatItem label="Poles" value={stats.poles} />
+				<StatItem label="Volt. Rápidas" value={stats.fastestLaps} />
+				<StatItem label="NCs" value={stats.ncs} />
+				<StatItem label="Campeonatos" value={stats.championships} />
+				<StatItem
+					label="Camp. Equipe"
+					value={stats.teamChampionships}
+				/>
+			</div>
+		</div>
+	);
+}
+
+function DriverInfoItem({
+	label,
+	value,
+	link,
+}: {
+	label: string;
+	value: string;
+	link?: string;
+}) {
+	if (!value) return null;
+
+	if (link) {
+		return (
+			<div className="flex flex-col gap-1">
+				<span className="text-[10px] uppercase tracking-wide text-f1-text font-bold">
+					{label}
+				</span>
+				<a
+					href={link}
+					target="_blank"
+					rel="noopener noreferrer"
+					style={{ color: "var(--color-brand-primary)" }}
+					className="hover:opacity-80 transition-all duration-200 flex items-center gap-1 text-sm font-semibold"
+				>
+					Assistir
+					<LiveTvIcon fontSize="small" aria-hidden="true" />
+				</a>
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex flex-col gap-1">
+			<span className="text-[10px] uppercase tracking-wide text-f1-text font-bold">
+				{label}
+			</span>
+			<span className="text-sm font-medium">{value}</span>
+		</div>
+	);
+}
+
+function StatsHeader({ title }: { title: string }) {
+	return (
+		<div className="flex items-center gap-2 mb-3">
+			<p className="text-xs font-bold uppercase tracking-wide text-f1-text">
+				{title}
+			</p>
+		</div>
+	);
+}
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
@@ -38,7 +140,7 @@ export function Profile() {
 				normalizeString(driverName?.toLowerCase() ?? ""),
 		);
 		setCurrentIndex(index >= 0 ? index : filteredDrivers.length - 1);
-	}, [driverName, filteredDrivers, activeTab.id]); // Added activeTab.id to dependencies
+	}, [driverName, filteredDrivers, activeTab.id]);
 
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
@@ -59,6 +161,11 @@ export function Profile() {
 
 	const driverData =
 		currentIndex !== null ? filteredDrivers[currentIndex] : null;
+
+	const { season: seasonStats, career: careerStats } = useDriverStats(
+		driverData?.id,
+		activeTab.id,
+	);
 
 	return (
 		currentIndex !== null &&
@@ -254,9 +361,6 @@ export function Profile() {
 
 					{/* Split Layout Container */}
 					<div className="w-full bg-white md:rounded md:py-8 px-3 pt-4">
-						{/* <div className="mb-4">
-							<TabSwitch />
-						</div> */}
 						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-4">
 							{/* Left Half - Fixed Card */}
 							<div className="md:w-1/2 flex justify-center md:justify-end">
@@ -269,150 +373,60 @@ export function Profile() {
 									) : (
 										<p>Driver not found</p>
 									)}
-									{/* <div className="self-center group mt-6">
-										<ShareButton
-											cardRef={cardRef}
-											data={driverData}
-										/>
-									</div> */}
 								</div>
 							</div>
 
 							{/* Right Half - Stats */}
-							<div className="md:w-1/2 pb-4 md:pb-0">
-								<div className="md:grid md:grid-cols-2 md:gap-y-3 md:space-y-0">
-									{driverData?.city && (
-										<>
-											<p className="font-bold">Cidade</p>
-											<p>{driverData.city}</p>
-										</>
-									)}
-									{driverData?.stats?.championships && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Campeonatos Vencidos
-											</p>
-											<p>
-												{driverData.stats.championships}
-											</p>
-										</>
-									)}
-									{driverData?.stats?.totalWins && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Vitórias em Corridas
-											</p>
-											<p>{driverData.stats.totalWins}</p>
-										</>
-									)}
-									{driverData?.stats?.totalWinsB > 0 && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Vitórias em Corridas Classe B
-											</p>
-											<p>{driverData.stats.totalWinsB}</p>
-										</>
-									)}
-									{driverData?.stats?.totalSprintWins && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Vitórias em Sprint
-											</p>
-											<p>
-												{
-													driverData.stats
-														.totalSprintWins
-												}
-											</p>
-										</>
-									)}
-									{driverData?.stats?.totalPodiums && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Pódios
-											</p>
-											<p>
-												{driverData.stats.totalPodiums}
-											</p>
-										</>
-									)}
-									{driverData?.stats?.poles && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Poles
-											</p>
-											<p>{driverData.stats.poles}</p>
-										</>
-									)}
-									{driverData?.stats?.fastestLaps && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Voltas Rápidas
-											</p>
-											<p>
-												{driverData.stats.fastestLaps}
-											</p>
-										</>
-									)}
-									{driverData?.stats?.totalPointsA > 0 && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Pontos Classe A
-											</p>
-											<p>
-												{driverData.stats.totalPointsA}
-											</p>
-										</>
-									)}
-									{driverData?.stats?.totalPointsB > 0 && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Pontos Classe B
-											</p>
-											<p>
-												{driverData.stats.totalPointsB}
-											</p>
-										</>
-									)}
-									{driverData?.stats?.totalPart && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Participações
-											</p>
-											<p>{driverData.stats.totalPart}</p>
-										</>
-									)}
-									{driverData?.equipment && (
-										<>
-											<p className="font-bold mt-2 md:mt-0">
-												Equipamento
-											</p>
-											<p>{driverData.equipment}</p>
-										</>
-									)}
-									{driverData?.stream && (
-										<a
-											href={`${driverData.stream}`}
-											target="_blank"
-											rel="noopener noreferrer"
-											aria-label={`Assistir stream de ${driverData.name} (abre em nova janela)`}
-											style={{
-												color: "var(--color-brand-primary)",
-											}}
-											className="hover:opacity-80 transition-all duration-200"
-										>
-											<div className="flex items-center gap-2 mt-2 md:mt-0">
-												<p className="font-bold">
-													Stream
-												</p>
-												<LiveTvIcon
-													fontSize="small"
-													aria-hidden="true"
+							<div className="md:w-1/2 pb-4 md:pb-0 flex flex-col gap-6">
+								{/* Driver info */}
+								<div className="bg-f1-bg-silver rounded-lg p-4">
+									<StatsHeader title="Informações do Piloto" />
+									<div className="grid grid-cols-2 gap-4">
+										<DriverInfoItem
+											label="Cidade"
+											value={driverData?.city}
+										/>
+										<DriverInfoItem
+											label="Equipamento"
+											value={driverData?.equipment}
+										/>
+										{driverData?.stream && (
+											<div className="col-span-2">
+												<DriverInfoItem
+													label="Stream"
+													value={driverData.stream}
+													link={driverData.stream}
 												/>
 											</div>
-										</a>
-									)}
+										)}
+									</div>
 								</div>
+
+								{/* Season stats */}
+								{seasonStats &&
+									Object.values(seasonStats).some(
+										(v) => v > 0,
+									) && (
+										<div className="bg-f1-bg-silver rounded-lg p-4">
+											<StatsBlock
+												label="Temporada Atual"
+												stats={seasonStats}
+											/>
+										</div>
+									)}
+
+								{/* Career stats */}
+								{careerStats &&
+									Object.values(careerStats).some(
+										(v) => v > 0,
+									) && (
+										<div className="bg-f1-bg-silver rounded-lg p-4">
+											<StatsBlock
+												label="Carreira"
+												stats={careerStats}
+											/>
+										</div>
+									)}
 							</div>
 						</div>
 					</div>

@@ -79,7 +79,7 @@ export function Teams() {
 				teamColor: resolvedTeam?.color?.hex ?? profiled.teamColor,
 			};
 		})
-		.filter((driver) => !driver.reserve)
+		.filter((driver) => !driver.reserve && !driver.exDriver)
 		.sort((a, b) => {
 			const teamNameA = a.team?.name || "";
 			const teamNameB = b.team?.name || "";

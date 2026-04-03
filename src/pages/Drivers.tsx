@@ -15,7 +15,8 @@ const Drivers: React.FC = () => {
 			if (!driver.id) return true;
 			return isInGrid(driver.id, activeTab.id) || !profiles[driver.id];
 		})
-		.map((driver) => applyProfile(driver, activeTab.id));
+		.map((driver) => applyProfile(driver, activeTab.id))
+		.filter((driver) => !driver.reserve && !driver.exDriver);
 
 	return (
 		<div id="pilotos" className="bg-f1-lightSilver w-full pb-8">

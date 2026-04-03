@@ -14,6 +14,7 @@ export interface GridProfile {
 	teamColor?: string;
 	photoUrl?: string;
 	reserve?: boolean;
+	exDriver?: boolean;
 }
 
 // driverId → gridId → GridProfile
@@ -90,6 +91,7 @@ export function DriverProfilesProvider({ children }: { children: ReactNode }) {
 			teamName: profile.teamName ?? driver.teamName,
 			// teamLogo comes from the team object; don't override
 			reserve: profile.reserve ?? false,
+			exDriver: profile.exDriver ?? false,
 		};
 	};
 

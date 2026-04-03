@@ -105,7 +105,7 @@ body {
 .swiper-button-prev,
 .swiper-button-next {
 	position: absolute;
-	bottom: -50px; /* Adjust this value as needed */
+	bottom: -50px;
 	z-index: 10;
 	cursor: pointer;
 	display: flex;
@@ -118,7 +118,7 @@ body {
 	width: 100px;
 	height: 50px;
 	transition: all 0.15s ease;
-	transform: translateY(230%); /* This pushes it completely outside */
+	transform: translateY(230%);
 }
 
 .swiper-button-prev:hover,
@@ -172,12 +172,12 @@ body {
 
 	.swiper-button-prev {
 		left: auto;
-		right: 128px; /* Position from right */
+		right: 116px; /* Position from right */
 	}
 
 	.swiper-button-next {
 		left: auto;
-		right: 20px; /* Position from right */
+		right: 8px; /* Position from right */
 	}
 }
 

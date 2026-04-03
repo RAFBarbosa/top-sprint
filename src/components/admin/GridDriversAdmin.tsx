@@ -29,6 +29,7 @@ interface GridProfile {
 	teamColor: string;
 	photoUrl?: string;
 	reserve?: boolean;
+	exDriver?: boolean;
 }
 
 export function GridDriversAdmin({
@@ -109,13 +110,19 @@ export function GridDriversAdmin({
 		});
 
 	const titularIds = sortIds(
-		assignedDriverIds.filter(
-			(dId) => !allProfiles[dId]?.[gridId ?? ""]?.reserve,
-		),
+		assignedDriverIds.filter((dId) => {
+			const p = allProfiles[dId]?.[gridId ?? ""];
+			return !p?.reserve && !p?.exDriver;
+		}),
 	);
 	const reserveIds = sortIds(
 		assignedDriverIds.filter(
 			(dId) => !!allProfiles[dId]?.[gridId ?? ""]?.reserve,
+		),
+	);
+	const exDriverIds = sortIds(
+		assignedDriverIds.filter(
+			(dId) => !!allProfiles[dId]?.[gridId ?? ""]?.exDriver,
 		),
 	);
 
@@ -170,7 +177,7 @@ export function GridDriversAdmin({
 		}
 	};
 
-	const handleAssign = async (driverId: string, reserve = false) => {
+	const handleAssign = async (driverId: string, reserve = false, exDriver = false) => {
 		const driver = driversData?.drivers?.find((d) => d.id === driverId);
 		const profile: GridProfile = {
 			number: (driver as any)?.number ?? "",
@@ -178,6 +185,7 @@ export function GridDriversAdmin({
 			teamColor: driver?.team?.color?.hex ?? "",
 			photoUrl: driver?.photo?.url ?? "",
 			reserve,
+			exDriver,
 		};
 		setStatus({ type: "loading", message: "Adicionando..." });
 		try {
@@ -333,22 +341,42 @@ export function GridDriversAdmin({
 								</select>
 							</div>
 						</div>
-						<label className="flex items-center gap-2 cursor-pointer w-fit">
-							<input
-								type="checkbox"
-								checked={!!editForm.reserve}
-								onChange={(e) =>
-									setEditForm((p) => ({
-										...p,
-										reserve: e.target.checked,
-									}))
-								}
-								className="w-4 h-4"
-							/>
-							<span className="text-xs text-f1-lighterCarbon">
-								Piloto reserva
-							</span>
-						</label>
+						<div className="flex gap-4">
+							<label className="flex items-center gap-2 cursor-pointer w-fit">
+								<input
+									type="checkbox"
+									checked={!!editForm.reserve}
+									onChange={(e) =>
+										setEditForm((p) => ({
+											...p,
+											reserve: e.target.checked,
+											exDriver: e.target.checked ? false : p.exDriver,
+										}))
+									}
+									className="w-4 h-4"
+								/>
+								<span className="text-xs text-f1-lighterCarbon">
+									Piloto reserva
+								</span>
+							</label>
+							<label className="flex items-center gap-2 cursor-pointer w-fit">
+								<input
+									type="checkbox"
+									checked={!!editForm.exDriver}
+									onChange={(e) =>
+										setEditForm((p) => ({
+											...p,
+											exDriver: e.target.checked,
+											reserve: e.target.checked ? false : p.reserve,
+										}))
+									}
+									className="w-4 h-4"
+								/>
+								<span className="text-xs text-f1-lighterCarbon">
+									Ex-Piloto
+								</span>
+							</label>
+						</div>
 						<div className="flex gap-2">
 							<button
 								onClick={() => handleSaveEdit(driverId)}
@@ -469,6 +497,12 @@ export function GridDriversAdmin({
 								>
 									Reserva
 								</button>
+								<button
+									onClick={() => handleAssign(d.id, false, true)}
+									className="text-xs px-3 py-1 rounded cursor-pointer text-white bg-f1-lighterCarbon hover:bg-f1-carbon"
+								>
+									Ex
+								</button>
 							</li>
 						))}
 					</ul>
@@ -535,6 +569,26 @@ export function GridDriversAdmin({
 				) : (
 					<ul className="grid grid-cols-1 md:grid-cols-2 divide-y md:[&>li:nth-child(2)]:border-t-0 md:[&>li:nth-child(odd)]:border-r">
 						{reserveIds.map((driverId) => (
+							<DriverRow key={driverId} driverId={driverId} />
+						))}
+					</ul>
+				)}
+			</div>
+
+			{/* Ex-Pilotos */}
+			<div className="border rounded-lg overflow-hidden">
+				<div className="px-4 py-2 flex items-center gap-2 border-b border-black/10 bg-f1-bg-silver">
+					<span className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
+						Ex-Pilotos — {exDriverIds.length} pilotos
+					</span>
+				</div>
+				{exDriverIds.length === 0 ? (
+					<p className="p-4 text-sm text-f1-lighterCarbon">
+						Nenhum ex-piloto neste grid.
+					</p>
+				) : (
+					<ul className="grid grid-cols-1 md:grid-cols-2 divide-y md:[&>li:nth-child(2)]:border-t-0 md:[&>li:nth-child(odd)]:border-r">
+						{exDriverIds.map((driverId) => (
 							<DriverRow key={driverId} driverId={driverId} />
 						))}
 					</ul>
