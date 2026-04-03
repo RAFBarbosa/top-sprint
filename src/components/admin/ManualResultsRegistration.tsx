@@ -30,6 +30,7 @@ import ptBR from "date-fns/locale/pt-BR";
 import { doc, getDoc, setDoc, getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "./PointAdjustmentsAdmin";
+import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 
 interface GridProfile {
 	number: string;
@@ -55,6 +56,8 @@ interface ManualResultsRegistrationProps {
 export function ManualResultsRegistration({
 	gridId,
 }: ManualResultsRegistrationProps) {
+	const { triggerForGrid } = useCalculateCards();
+
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
 
@@ -457,6 +460,10 @@ export function ManualResultsRegistration({
 				message: `Dados de ${activeTab === "race" ? "Corrida" : "Sprint"} salvos!`,
 			});
 			setTimeout(() => setStatus({ type: "idle", message: "" }), 3000);
+
+			if (selectedCalendar.grid) {
+				triggerForGrid(selectedCalendar.grid).catch(console.error);
+			}
 		} catch (error: any) {
 			setStatus({ type: "error", message: "Erro: " + error.message });
 		}

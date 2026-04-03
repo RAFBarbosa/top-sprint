@@ -7,6 +7,7 @@ import { useGetDriversQuery, useGetCalendarsRegistrationQuery } from "../../grap
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
+import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
@@ -25,6 +26,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { profiles, isInGrid } = useDriverProfiles();
+	const { triggerForGrid } = useCalculateCards();
 
 	// Derive seasons available for this grid from its calendars
 	const gridCalendarIds = new Set(
@@ -147,6 +149,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 			setAllAdjustments((prev) => ({ ...prev, [selectedCalendarId]: next }));
 			setStatus({ type: "success", message: "Salvo!" });
 			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
+			if (gridId) triggerForGrid(gridId).catch(console.error);
 		} catch (e: any) {
 			setStatus({ type: "error", message: "Erro: " + e.message });
 		}

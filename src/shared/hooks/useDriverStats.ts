@@ -40,7 +40,10 @@ const EMPTY_STATS: DriverStatsShape = {
 	teamChampionships: 0,
 };
 
-function addStats(a: DriverStatsShape, b: Partial<DriverStatsShape>): DriverStatsShape {
+function addStats(
+	a: DriverStatsShape,
+	b: Partial<DriverStatsShape>,
+): DriverStatsShape {
 	return {
 		participations: a.participations + (b.participations ?? 0),
 		wins: a.wins + (b.wins ?? 0),
@@ -79,8 +82,12 @@ function calcStatsForCalendars(
 		if (!result) continue;
 
 		const raceOrder: string[] = (result.results ?? []).filter(Boolean);
-		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(Boolean);
-		const sprintOrder: string[] = (result.sprintResults ?? []).filter(Boolean);
+		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(
+			Boolean,
+		);
+		const sprintOrder: string[] = (result.sprintResults ?? []).filter(
+			Boolean,
+		);
 		const ncSet = new Set<string>(result.ncDriverIds ?? []);
 		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
 
@@ -98,7 +105,8 @@ function calcStatsForCalendars(
 		const isNC = ncSet.has(driverId);
 		if (racePos !== -1 && !isNC) {
 			const pos = racePos + 1;
-			const racePts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
+			const racePts =
+				pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
 			stats.points += racePts;
 			if (pos === 1) stats.wins += 1;
 			if (pos <= 3) stats.podiums += 1;
@@ -130,7 +138,10 @@ function calcStatsForCalendars(
 			const isSprintNC = sprintNcSet.has(driverId);
 			if (sprintPos !== -1 && !isSprintNC) {
 				const pos = sprintPos + 1;
-				const sprintPts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
+				const sprintPts =
+					pos <= sprintPointsArr.length
+						? sprintPointsArr[pos - 1]
+						: 0;
 				stats.points += sprintPts;
 				if (pos === 1) stats.sprintWins += 1;
 				if (pos <= 3) stats.sprintPodiums += 1;
@@ -139,16 +150,23 @@ function calcStatsForCalendars(
 
 		// Point adjustments
 		const adjs: any[] = allAdjustments[calId] ?? [];
-		const adj = adjs.filter((a) => a.driverId === driverId).reduce((sum, a) => sum + a.points, 0);
+		const adj = adjs
+			.filter((a) => a.driverId === driverId)
+			.reduce((sum, a) => sum + a.points, 0);
 		stats.points += adj;
 	}
 
 	return stats;
 }
 
-export function useDriverStats(driverId: string | null | undefined, gridId: string) {
+export function useDriverStats(
+	driverId: string | null | undefined,
+	gridId: string,
+) {
 	const [allResults, setAllResults] = useState<Record<string, any>>({});
-	const [allAdjustments, setAllAdjustments] = useState<Record<string, any[]>>({});
+	const [allAdjustments, setAllAdjustments] = useState<Record<string, any[]>>(
+		{},
+	);
 	const [offsets, setOffsets] = useState<DriverStatsOffsets>({});
 	const [loading, setLoading] = useState(true);
 
@@ -166,15 +184,21 @@ export function useDriverStats(driverId: string | null | undefined, gridId: stri
 				]);
 
 				const resultsMap: Record<string, any> = {};
-				resultsSnap.forEach((d) => { resultsMap[d.id] = d.data(); });
+				resultsSnap.forEach((d) => {
+					resultsMap[d.id] = d.data();
+				});
 				setAllResults(resultsMap);
 
 				const adjMap: Record<string, any[]> = {};
-				adjSnap.forEach((d) => { adjMap[d.id] = d.data().adjustments ?? []; });
+				adjSnap.forEach((d) => {
+					adjMap[d.id] = d.data().adjustments ?? [];
+				});
 				setAllAdjustments(adjMap);
 
 				const offsetsMap: DriverStatsOffsets = {};
-				offsetsSnap.forEach((d) => { offsetsMap[d.id] = d.data() as DriverStatsOffsets[string]; });
+				offsetsSnap.forEach((d) => {
+					offsetsMap[d.id] = d.data() as DriverStatsOffsets[string];
+				});
 				setOffsets(offsetsMap);
 			} catch (e) {
 				console.error("Failed to load driver stats", e);
@@ -199,7 +223,9 @@ export function useDriverStats(driverId: string | null | undefined, gridId: stri
 
 		// Active season for this grid
 		const gridSeasonIds = new Set(
-			mappings.filter((m) => gridCalendarIds.has(m.calendarId)).map((m) => m.seasonId),
+			mappings
+				.filter((m) => gridCalendarIds.has(m.calendarId))
+				.map((m) => m.seasonId),
 		);
 		const activeSeason =
 			seasons.find((s) => s.active && gridSeasonIds.has(s.id)) ??
@@ -207,12 +233,28 @@ export function useDriverStats(driverId: string | null | undefined, gridId: stri
 			seasons.filter((s) => gridSeasonIds.has(s.id)).slice(-1)[0];
 
 		const activeSeasonCalendarIds = activeSeason
-			? new Set(mappings.filter((m) => m.seasonId === activeSeason.id).map((m) => m.calendarId))
+			? new Set(
+					mappings
+						.filter((m) => m.seasonId === activeSeason.id)
+						.map((m) => m.calendarId),
+				)
 			: new Set<string>();
+
+		const gridBInSeason = allCalendars.filter(
+			(c) => c.grid === gridId && activeSeasonCalendarIds.has(c.id),
+		);
+		const gridBWithResults = gridBInSeason.filter(
+			(c) => !!allResults[c.id],
+		);
 
 		// Season calendars: grid + active season + has results
 		const seasonCalendars = allCalendars
-			.filter((c) => c.grid === gridId && activeSeasonCalendarIds.has(c.id) && !!allResults[c.id])
+			.filter(
+				(c) =>
+					c.grid === gridId &&
+					activeSeasonCalendarIds.has(c.id) &&
+					!!allResults[c.id],
+			)
 			.map((c) => c.id);
 
 		// Career calendars: all grid calendars with results
@@ -220,14 +262,35 @@ export function useDriverStats(driverId: string | null | undefined, gridId: stri
 			.filter((c) => c.grid === gridId && !!allResults[c.id])
 			.map((c) => c.id);
 
-		const seasonStats = calcStatsForCalendars(seasonCalendars, allResults, allAdjustments, driverId, gridId);
+		const seasonStats = calcStatsForCalendars(
+			seasonCalendars,
+			allResults,
+			allAdjustments,
+			driverId,
+			gridId,
+		);
 
-		const careerFromWebsite = calcStatsForCalendars(careerCalendars, allResults, allAdjustments, driverId, gridId);
+		const careerFromWebsite = calcStatsForCalendars(
+			careerCalendars,
+			allResults,
+			allAdjustments,
+			driverId,
+			gridId,
+		);
 		const historicOffset = (offsets[driverId] as any)?.[gridId] ?? {};
 		const careerStats = addStats(careerFromWebsite, historicOffset);
 
 		return { season: seasonStats, career: careerStats };
-	}, [driverId, gridId, allResults, allAdjustments, offsets, calendarsData, seasons, mappings]);
+	}, [
+		driverId,
+		gridId,
+		allResults,
+		allAdjustments,
+		offsets,
+		calendarsData,
+		seasons,
+		mappings,
+	]);
 
 	return { season, career, loading };
 }

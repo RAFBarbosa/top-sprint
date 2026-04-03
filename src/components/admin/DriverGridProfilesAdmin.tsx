@@ -12,6 +12,7 @@ interface GridProfile {
 	number: string;
 	teamName: string;
 	teamColor: string;
+	teamLogoUrl: string;
 }
 
 type DriverProfiles = Record<string, GridProfile>;
@@ -59,6 +60,7 @@ export function DriverGridProfilesAdmin() {
 				number: "",
 				teamName: "",
 				teamColor: "",
+				teamLogoUrl: "",
 			};
 		});
 		setEditProfiles(profiles);
@@ -102,6 +104,7 @@ export function DriverGridProfilesAdmin() {
 				...prev[gridId],
 				teamName: team?.name ?? "",
 				teamColor: team?.color?.hex ?? "",
+				teamLogoUrl: team?.photo?.url ?? "",
 			},
 		}));
 	};
@@ -206,6 +209,7 @@ export function DriverGridProfilesAdmin() {
 									number: "",
 									teamName: "",
 									teamColor: "",
+									teamLogoUrl: "",
 								};
 								return (
 									<div

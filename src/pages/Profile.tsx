@@ -1,7 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import PlayerCard from "../components/utils/PlayerCard";
-import ShareButton from "../components/utils/ShareButton";
-import { useEnhancedCards } from "../shared/hooks/useEnhancedCards";
 import { useParams, useNavigate } from "react-router-dom";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { normalizeString } from "../shared/utils/normalizeString";
@@ -14,6 +12,8 @@ import { HygraphImg } from "../components/utils/HygraphImg";
 import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
 import { useDriverStats } from "../shared/hooks/useDriverStats";
 import type { DriverStatsShape } from "../shared/hooks/useDriverStats";
+import { useGetDriversQuery } from "../graphql/generated";
+import { useDriverCards } from "../shared/hooks/useDriverCards";
 
 function StatItem({ label, value }: { label: string; value: number }) {
 	if (!value) return null;
@@ -86,10 +86,14 @@ function DriverInfoItem({
 					target="_blank"
 					rel="noopener noreferrer"
 					style={{ color: "var(--color-brand-primary)" }}
-					className="hover:opacity-80 transition-all duration-200 flex items-center gap-1 text-sm font-semibold"
+					className="hover:opacity-80 flex items-center gap-1 text-sm font-semibold"
 				>
 					Assistir
-					<LiveTvIcon fontSize="small" aria-hidden="true" />
+					<LiveTvIcon
+						fontSize="small"
+						aria-hidden="true"
+						className="mb-0.5"
+					/>
 				</a>
 			</div>
 		);
@@ -119,19 +123,39 @@ export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
 	const { activeTab, setActiveTab } = useTab();
 
-	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
-	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
+	const { applyProfile, isInGrid } = useDriverProfiles();
+	const { data } = useGetDriversQuery();
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 
-	// Filter drivers based on active tab, using Firebase profiles when available
-	const filteredDrivers = enhancedCards
-		.filter((driver) => {
-			if (!driver.id) return true;
-			return isInGrid(driver.id, activeTab.id) || !profiles[driver.id];
+	// Build a name→logo map from all drivers' team data
+	const teamLogoByName = useMemo(() => {
+		const map: Record<string, string> = {};
+		(data?.drivers ?? []).forEach((d) => {
+			if (d.team?.name && d.team?.photo?.url) {
+				map[d.team.name] = d.team.photo.url;
+			}
+		});
+		return map;
+	}, [data]);
+
+	const filteredDrivers = (data?.drivers ?? [])
+		.filter((driver) => isInGrid(driver.id, activeTab.id))
+		.map((driver) => {
+			const applied = applyProfile(driver, activeTab.id);
+			const resolvedTeamName = applied.team?.name ?? applied.teamName ?? "";
+			return {
+				...applied,
+				photo: applied.photo?.url ?? applied.photo ?? "",
+				teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
+				teamName: resolvedTeamName,
+				teamLogo: teamLogoByName[resolvedTeamName] ?? "",
+				num: applied.number ?? "",
+				stats: applied.stats ?? {},
+			};
 		})
-		.map((driver) => applyProfile(driver, activeTab.id));
+		.filter((driver) => !driver.reserve && !driver.exDriver);
 
 	useEffect(() => {
 		const index = filteredDrivers.findIndex(
@@ -166,6 +190,9 @@ export function Profile() {
 		driverData?.id,
 		activeTab.id,
 	);
+
+	const driverCards = useDriverCards(activeTab.id);
+	const cardStats = driverData?.id ? driverCards[driverData.id] : null;
 
 	return (
 		currentIndex !== null &&
@@ -368,7 +395,15 @@ export function Profile() {
 									{driverData ? (
 										<PlayerCard
 											ref={cardRef}
-											data={driverData}
+											data={{
+												...driverData,
+												rating: cardStats?.rating?.toString() ?? "",
+												prevRating: cardStats?.prevRating?.toString() ?? "",
+												racecraft: cardStats?.racecraft?.toString() ?? "",
+												awareness: cardStats?.awareness?.toString() ?? "",
+												pace: cardStats?.pace?.toString() ?? "",
+												experience: cardStats?.experience?.toString() ?? "",
+											}}
 										/>
 									) : (
 										<p>Driver not found</p>

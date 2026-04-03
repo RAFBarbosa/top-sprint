@@ -5,6 +5,7 @@ import { useGetDriversRegistrationQuery } from "../../graphql/generated";
 import { tenant } from "../../shared/config/tenants";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import { ImportDriverStatsOffsets } from "./ImportDriverStatsOffsets";
+import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 
 const STAT_FIELDS: { key: keyof DriverStatsShape; label: string }[] = [
 	{ key: "participations", label: "Participações" },
@@ -40,11 +41,13 @@ export function DriverStatsOffsetsAdmin() {
 	const { data: driversData } = useGetDriversRegistrationQuery();
 	const [allOffsets, setAllOffsets] = useState<Record<string, any>>({});
 	const [selectedDriver, setSelectedDriver] = useState<any>(null);
-	const [editOffsets, setEditOffsets] = useState<Record<string, Partial<DriverStatsShape>>>({});
+	const [editOffsets, setEditOffsets] = useState<Record<string, Partial<DriverStatsShape> & { penaltyRate?: number }>>({});
 	const [searchTerm, setSearchTerm] = useState("");
 	const [status, setStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
 	const [activeSection, setActiveSection] = useState<"edit" | "import">("edit");
+	const [calcStatus, setCalcStatus] = useState<Record<string, "idle" | "loading" | "done" | "error">>({});
 
+	const { triggerForGrid } = useCalculateCards();
 	const grids = tenant.grids as any[];
 
 	useEffect(() => {
@@ -59,9 +62,9 @@ export function DriverStatsOffsetsAdmin() {
 		setSelectedDriver(driver);
 		setStatus({ type: "idle", message: "" });
 		const existing = allOffsets[driver.id] ?? {};
-		const offsets: Record<string, Partial<DriverStatsShape>> = {};
+		const offsets: Record<string, Partial<DriverStatsShape> & { penaltyRate?: number }> = {};
 		grids.forEach((g) => {
-			offsets[g.id] = { ...EMPTY_OFFSET(), ...(existing[g.id] ?? {}) };
+			offsets[g.id] = { ...EMPTY_OFFSET(), penaltyRate: 0, ...(existing[g.id] ?? {}) };
 		});
 		setEditOffsets(offsets);
 	};
@@ -94,6 +97,27 @@ export function DriverStatsOffsetsAdmin() {
 			<div className="flex gap-2 border-b border-black/10 pb-2">
 				<button onClick={() => setActiveSection("edit")} className={`text-sm font-bold px-4 py-1.5 rounded ${activeSection === "edit" ? "bg-f1-red text-white" : "hover:bg-f1-bg-silver"}`}>Editar Histórico</button>
 				<button onClick={() => setActiveSection("import")} className={`text-sm font-bold px-4 py-1.5 rounded ${activeSection === "import" ? "bg-f1-red text-white" : "hover:bg-f1-bg-silver"}`}>Importar CSV</button>
+				<div className="ml-auto flex items-center gap-2">
+					{grids.map((grid) => (
+						<button
+							key={grid.id}
+							disabled={calcStatus[grid.id] === "loading"}
+							onClick={async () => {
+								setCalcStatus((p) => ({ ...p, [grid.id]: "loading" }));
+								try {
+									await triggerForGrid(grid.id);
+									setCalcStatus((p) => ({ ...p, [grid.id]: "done" }));
+									setTimeout(() => setCalcStatus((p) => ({ ...p, [grid.id]: "idle" })), 3000);
+								} catch {
+									setCalcStatus((p) => ({ ...p, [grid.id]: "error" }));
+								}
+							}}
+							className="text-xs font-bold px-3 py-1.5 rounded border border-black/20 hover:bg-f1-bg-silver disabled:opacity-50"
+						>
+							{calcStatus[grid.id] === "loading" ? "Calculando..." : calcStatus[grid.id] === "done" ? `✓ ${grid.label}` : calcStatus[grid.id] === "error" ? "Erro" : `Recalcular ${grid.label}`}
+						</button>
+					))}
+				</div>
 			</div>
 			{activeSection === "import" ? <ImportDriverStatsOffsets /> : (
 		<div className="flex gap-4 h-full">
@@ -146,6 +170,26 @@ export function DriverStatsOffsetsAdmin() {
 											/>
 										</div>
 									))}
+									<div className="col-span-full border-t border-black/10 pt-3 mt-1">
+										<label className="text-xs text-f1-lighterCarbon uppercase tracking-wide font-bold block mb-1">
+											Taxa de Penalidades Históricas (0.0 – 1.0)
+										</label>
+										<input
+											type="number"
+											step="0.01"
+											min="0"
+											max="1"
+											value={editOffsets[grid.id]?.penaltyRate ?? 0}
+											onChange={(e) =>
+												setEditOffsets((prev) => ({
+													...prev,
+													[grid.id]: { ...prev[grid.id], penaltyRate: Number(e.target.value) },
+												}))
+											}
+											className="border border-black/20 rounded px-3 py-1.5 text-sm w-full max-w-[140px]"
+										/>
+										<p className="text-xs text-f1-lighterCarbon mt-1">Ex: 0.15 = 15% das corridas com penalidade</p>
+									</div>
 								</div>
 							</div>
 						))}
