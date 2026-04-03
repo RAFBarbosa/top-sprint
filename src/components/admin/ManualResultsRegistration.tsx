@@ -463,6 +463,10 @@ export function ManualResultsRegistration({
 	};
 
 	const handleSelectCalendar = (calendar: any) => {
+		if (selectedCalendar?.id === calendar.id) {
+			setSelectedCalendar(null);
+			return;
+		}
 		setSelectedCalendar(calendar);
 		setLink("");
 		setRaceQueries(Array(22).fill(""));

@@ -32,7 +32,8 @@ const loadingSkeleton = () => (
 
 export function Calendars({
 	hideHeader = false,
-}: { hideHeader?: boolean } = {}) {
+	noPadding = false,
+}: { hideHeader?: boolean; noPadding?: boolean } = {}) {
 	const { data, error, loading } = useGetCalendarsQuery();
 	const { data: driversData } = useGetDriversQuery();
 	const { activeTab } = useTab();
@@ -179,7 +180,7 @@ export function Calendars({
 		}
 	}
 	return (
-		<aside className="bg-f1-bg-silver">
+		<aside className={`bg-f1-bg-silver ${noPadding ? "" : "pt-10 pb-4.5"}`}>
 			<div className="flex flex-col overflow-hidden">
 				{!hideHeader && (
 					<div className="w-full mx-auto max-w-screen-xl px-3">

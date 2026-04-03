@@ -27,6 +27,7 @@ import { GridStandings } from "./components/admin/GridStandings";
 import { GridManualResults } from "./components/admin/GridManualResults";
 import { SeasonsAdmin } from "./components/admin/SeasonsAdmin";
 import { PointAdjustmentsAdmin } from "./components/admin/PointAdjustmentsAdmin";
+import { DriverStatsOffsetsAdmin } from "./components/admin/DriverStatsOffsetsAdmin";
 
 export function Router() {
 	const RulesPage = {
@@ -77,6 +78,7 @@ export function Router() {
 						path="grids/:gridId/ajustes"
 						element={<PointAdjustmentsAdmin />}
 					/>
+					<Route path="historico-pilotos" element={<DriverStatsOffsetsAdmin />} />
 				</Route>
 			</Route>
 		</Routes>

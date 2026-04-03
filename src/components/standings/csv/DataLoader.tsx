@@ -25,9 +25,12 @@ export function DataLoader(props: DataLoaderProps) {
 			const key = driver.teamName;
 			if (!key) return;
 			if (!map[key]) map[key] = { name: key, pts: 0, teamColor: driver.teamColor, teamLogo: driver.teamLogo, drivers: [] };
-			if (driver.reserve) return;
+			// All drivers (titular, reserve, ex) contribute points
 			map[key].pts += driver.pts;
-			map[key].drivers.push(driver.name);
+			// Only titular drivers show in the team card list
+			if (!driver.reserve && !driver.exDriver) {
+				map[key].drivers.push(driver.name);
+			}
 		});
 		return Object.values(map).sort((a, b) => b.pts - a.pts);
 	};

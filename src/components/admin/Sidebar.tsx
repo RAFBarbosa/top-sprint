@@ -25,6 +25,11 @@ export default function Sidebar() {
 						</NavLink>
 					</li>
 					<li>
+						<NavLink to="/admin/painel/historico-pilotos" className={navLink}>
+							Histórico Pilotos
+						</NavLink>
+					</li>
+					<li>
 						<NavLink to="/admin/painel/equipes" className={navLink}>
 							Equipes
 						</NavLink>

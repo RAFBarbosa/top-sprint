@@ -12,6 +12,7 @@ import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 import { tenant } from "../../shared/config/tenants";
 import { normalizeString } from "../../shared/utils/normalizeString";
+import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,11 +68,16 @@ export function Menu() {
 	const navigateToDriver = useNavigateToDriver();
 	const { activeTab, setActiveTab, tabs } = useTab();
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
+	const { profiles } = useDriverProfiles();
 
 	const menuItems = buildMenuItems();
 
 	const activeGridDrivers = Array.isArray(enhancedCards)
-		? enhancedCards.filter((driver) => driver.grid === activeTab.id)
+		? enhancedCards.filter((driver) => {
+			if (driver.grid !== activeTab.id) return false;
+			const p = driver.id ? profiles[driver.id]?.[activeTab.id] : undefined;
+			return !p?.reserve && !p?.exDriver;
+		})
 		: [];
 
 	const handleLinkClick = () => {

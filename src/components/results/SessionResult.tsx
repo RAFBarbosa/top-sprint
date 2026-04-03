@@ -114,6 +114,7 @@ function buildRows(
 	>,
 	ncDriverIds?: string[],
 	reserveSet?: Set<string>,
+	countPresence = false,
 ): DriverRow[] {
 	const lookup = Object.fromEntries((drivers ?? []).map((d) => [d.id, d]));
 
@@ -162,27 +163,25 @@ function buildRows(
 				sessionType === "sprint" ? sprintPointsArr : racePointsArr;
 			const isNC = ncDriverIds?.includes(driverId) ?? false;
 			let points = 0;
+			// Presence bonus — always, regardless of NC
+			if (countPresence) points += presenceBonus;
+			// Race position points — 0 if NC
 			if (!isNC) {
 				if (sessionType === "quali") {
-					if (gridRank === 1) points = poleBonus;
+					if (gridRank === 1) points += poleBonus;
 				} else if (gridRank > 0 && gridRank <= pointsArr.length) {
-					points = pointsArr[gridRank - 1];
-					// Presence bonus applies to race only (not sprint or quali)
-					if (sessionType === "race") {
-						points += presenceBonus;
-						// Pole bonus: awarded to whoever was first in qualy
-						if (poleBonus > 0 && qualyOrder.length > 0 && qualyOrder[0] === driverId) {
-							points += poleBonus;
-						}
-						gridRaceAwards.forEach((award) => {
-							if (
-								awardWinners[award.id] === driverId &&
-								award.points > 0
-							)
-								points += award.points;
-						});
-					}
+					points += pointsArr[gridRank - 1];
 				}
+			}
+			// Pole bonus + race awards — regardless of NC
+			if (countPresence && sessionType !== "quali") {
+				if (poleBonus > 0 && qualyOrder.length > 0 && qualyOrder[0] === driverId) {
+					points += poleBonus;
+				}
+				gridRaceAwards.forEach((award) => {
+					if (awardWinners[award.id] === driverId && award.points > 0)
+						points += award.points;
+				});
 			}
 
 			const penalty = penalties?.find((p) => p.driverId === driverId);
@@ -407,18 +406,21 @@ function ResultsSection({
 	qualyOrder,
 	awardWinners,
 	penalties,
+	pointAdjustments = [],
 	drivers,
 	sessionType,
 	calGrid,
 	showLabel = true,
 	driverSnapshots,
 	ncDriverIds,
+	countPresence = false,
 }: {
 	label: string;
 	raceOrder: string[];
 	qualyOrder: string[];
 	awardWinners: Record<string, string>;
 	penalties: Penalty[];
+	pointAdjustments?: { driverId: string; points: number; reason: string }[];
 	drivers: GetDriversQuery["drivers"] | undefined;
 	sessionType: "race" | "sprint" | "quali";
 	calGrid: string;
@@ -433,6 +435,7 @@ function ResultsSection({
 		}
 	>;
 	ncDriverIds?: string[];
+	countPresence?: boolean;
 }) {
 	const { getProfile } = useDriverProfiles();
 	const reserveSet = new Set(
@@ -452,8 +455,15 @@ function ResultsSection({
 		driverSnapshots,
 		ncDriverIds,
 		reserveSet,
+		countPresence ?? false,
 	);
 	if (rows.length === 0) return null;
+
+	// Apply point adjustments to displayed points
+	const adjustedRows = rows.map((row) => {
+		const adj = pointAdjustments.filter((p) => p.driverId === row.id).reduce((sum, p) => sum + p.points, 0);
+		return adj !== 0 ? { ...row, points: row.points + adj } : row;
+	});
 
 	const gridsPresent = [...new Set(rows.map((r) => r.gridId))];
 	const getWinner = (gridId: string) => rows.find((r) => r.gridId === gridId);
@@ -491,7 +501,7 @@ function ResultsSection({
 			<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-6">
 				{/* Side-by-side on desktop: winner cards fixed sidebar + table */}
 				<div className="flex flex-col md:flex-row gap-4 items-start">
-					{/* Winner cards sidebar */}
+					{/* Winner cards sidebar + adjustments (desktop) */}
 					<div className="flex flex-row md:flex-col gap-2 w-full md:w-[220px] shrink-0">
 						{gridsPresent.map((gridId) => (
 							<WinnerCard
@@ -503,10 +513,35 @@ function ResultsSection({
 								poleRow={getPoleForGrid(gridId)}
 							/>
 						))}
+						{/* Point adjustments — desktop only, under bonus card */}
+						{pointAdjustments.length > 0 && (
+							<div className="hidden md:block border border-black/10 rounded-lg overflow-hidden">
+								<div className="bg-f1-bg-silver px-4 py-2 border-b border-black/10">
+									<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">Penalidades</p>
+								</div>
+								{pointAdjustments.map((p) => {
+									const driver = rows.find((r) => r.id === p.driverId);
+									if (!driver) return null;
+									return (
+										<div key={p.driverId} className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white">
+											<div className="flex items-center gap-2 min-w-0">
+												<span className="w-1 self-stretch shrink-0" style={{ backgroundColor: driver.teamColor ?? driver.gridColor }} />
+												<div className="min-w-0">
+													<p className="text-xs font-semibold uppercase truncate">{driver.name}</p>
+													{p.reason && <p className="text-[10px] text-f1-lighterCarbon">{p.reason}</p>}
+												</div>
+											</div>
+											<span className="text-xs font-bold text-f1-red shrink-0 ml-2">{p.points > 0 ? `+${p.points}` : p.points} pts</span>
+										</div>
+									);
+								})}
+							</div>
+						)}
 					</div>
 
 					{/* Results table */}
-					<div className="w-full md:flex-1 md:w-auto min-w-0 overflow-x-auto border border-black/10 rounded-lg">
+					<div className="w-full md:flex-1 md:w-auto min-w-0 flex flex-col">
+					<div className="overflow-x-auto border border-black/10 rounded-lg">
 						<table className="min-w-full text-sm">
 							<thead>
 								<tr className="text-xs uppercase tracking-wide text-f1-lighterCarbon border-b border-black/10">
@@ -525,7 +560,7 @@ function ResultsSection({
 								</tr>
 							</thead>
 							<tbody>
-								{rows.map((row, index) => (
+								{adjustedRows.map((row, index) => (
 									<tr
 										key={row.id}
 										className={
@@ -620,8 +655,49 @@ function ResultsSection({
 							</tbody>
 						</table>
 					</div>
+					{/* Note — desktop only, always pinned under the table */}
+					<p className="hidden md:block text-[10px] text-f1-lighterCarbon mt-1.5 text-right italic">
+						{(() => {
+							const awardLabels = [
+								...new Set(
+									gridsPresent.flatMap((gId) =>
+										resolveRaceAwards(gId).map((a) => a.label),
+									),
+								),
+							];
+							const bonuses = ["Pole", ...awardLabels, "Participação"];
+							return `* Os pontos incluem todos os bônus da etapa (${bonuses.join(", ")})${pointAdjustments.length > 0 ? " e descontam penalidades aplicadas" : ""}.`;
+						})()}
+					</p>
+					</div>
 				</div>
-				<p className="text-[10px] text-f1-lighterCarbon mt-1.5 text-right italic">
+
+				{/* Point adjustments — mobile only */}
+				{pointAdjustments.length > 0 && (
+					<div className="mt-4 md:hidden border border-black/10 rounded-lg overflow-hidden">
+						<div className="bg-f1-bg-silver px-4 py-2 border-b border-black/10">
+							<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">Penalidades</p>
+						</div>
+						{pointAdjustments.map((p) => {
+							const driver = rows.find((r) => r.id === p.driverId);
+							if (!driver) return null;
+							return (
+								<div key={p.driverId} className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white">
+									<div className="flex items-center gap-2 min-w-0">
+										<span className="w-1 self-stretch shrink-0" style={{ backgroundColor: driver.teamColor ?? driver.gridColor }} />
+										<div className="min-w-0">
+											<p className="text-xs font-semibold uppercase truncate">{driver.name}</p>
+											{p.reason && <p className="text-[10px] text-f1-lighterCarbon">{p.reason}</p>}
+										</div>
+									</div>
+									<span className="text-xs font-bold text-f1-red shrink-0 ml-2">{p.points > 0 ? `+${p.points}` : p.points} pts</span>
+								</div>
+							);
+						})}
+					</div>
+				)}
+				{/* Note — mobile only, after penalidades */}
+				<p className="md:hidden text-[10px] text-f1-lighterCarbon mt-1.5 text-right italic">
 					{(() => {
 						const awardLabels = [
 							...new Set(
@@ -630,12 +706,8 @@ function ResultsSection({
 								),
 							),
 						];
-						const bonuses = [
-							"Pole",
-							...awardLabels,
-							"Participação",
-						];
-						return `* Os pontos incluem todos os bônus da etapa (${bonuses.join(", ")}).`;
+						const bonuses = ["Pole", ...awardLabels, "Participação"];
+						return `* Os pontos incluem todos os bônus da etapa (${bonuses.join(", ")})${pointAdjustments.length > 0 ? " e descontam penalidades aplicadas" : ""}.`;
 					})()}
 				</p>
 			</div>
@@ -677,7 +749,7 @@ function RaceHeader({
 		: null;
 
 	return (
-		<div className="bg-f1-bg-silver pt-10">
+		<div className="bg-f1-bg-silver">
 			<div className="mx-auto max-w-[1256px] px-3 bg-white rounded-t p-4">
 				<div
 					className="border-t-8 border-r-8 rounded-tr-3xl pt-3"
@@ -794,6 +866,7 @@ export function SessionResult({
 	const [loading, setLoading] = useState(false);
 	const [activeTab, setActiveTab] = useState<"race" | "sprint">("race");
 	const [error, setError] = useState<string | null>(null);
+	const [pointAdjustments, setPointAdjustments] = useState<{ driverId: string; points: number; reason: string }[]>([]);
 
 	const { data: driversData } = useGetDriversQuery();
 	const { data: bannersData } = useGetBannersQuery();
@@ -826,10 +899,14 @@ export function SessionResult({
 			setLoading(true);
 			setError(null);
 			try {
-				const snap = await getDoc(doc(db, "race_results", calendarId));
+				const [snap, adjSnap] = await Promise.all([
+					getDoc(doc(db, "race_results", calendarId)),
+					getDoc(doc(db, "point_adjustments", calendarId)),
+				]);
 				setFirebaseData(
 					snap.exists() ? (snap.data() as FirebaseResult) : null,
 				);
+				setPointAdjustments(adjSnap.exists() ? (adjSnap.data().adjustments ?? []) : []);
 			} catch (err: any) {
 				setError(err.message);
 			} finally {
@@ -894,9 +971,9 @@ export function SessionResult({
 		);
 	}
 
-	const hasSprint = !!(
-		calData?.sprint && firebaseData.sprintResults?.some(Boolean)
-	);
+	const hasSprint = !!calData?.sprint;
+	const hasSprintData = !!(firebaseData.sprintResults?.some(Boolean));
+	const hasRaceData = !!(firebaseData.results?.some(Boolean));
 	const drivers = driversData?.drivers;
 
 	const calGrid = calData?.grid ?? "";
@@ -965,31 +1042,45 @@ export function SessionResult({
 				)}
 
 				{hasSprint && activeTab === "sprint" ? (
-					<ResultsSection
-						label="Sprint"
-						raceOrder={firebaseData.sprintResults ?? []}
-						qualyOrder={firebaseData.sprintResultsQualy ?? []}
-						awardWinners={sprintAwardWinners}
-						penalties={firebaseData.sprintPenalties ?? []}
-						drivers={drivers}
-						sessionType="sprint"
-						calGrid={calGrid}
-						driverSnapshots={firebaseData.driverSnapshots}
-						ncDriverIds={firebaseData.sprintNcDriverIds}
-					/>
-				) : (
+					hasSprintData ? (
+						<ResultsSection
+							label="Sprint"
+							raceOrder={firebaseData.sprintResults ?? []}
+							qualyOrder={firebaseData.sprintResultsQualy ?? []}
+							awardWinners={sprintAwardWinners}
+							penalties={firebaseData.sprintPenalties ?? []}
+							pointAdjustments={pointAdjustments}
+							drivers={drivers}
+							sessionType="sprint"
+							calGrid={calGrid}
+							driverSnapshots={firebaseData.driverSnapshots}
+							ncDriverIds={firebaseData.sprintNcDriverIds}
+							countPresence={!hasRaceData}
+						/>
+					) : (
+						<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
+							<p className="text-f1-lighterCarbon text-sm">Resultado da Sprint não disponível para esta etapa.</p>
+						</div>
+					)
+				) : hasRaceData ? (
 					<ResultsSection
 						label="Corrida Principal"
 						raceOrder={firebaseData.results ?? []}
 						qualyOrder={firebaseData.resultsQualy ?? []}
 						awardWinners={raceAwardWinners}
 						penalties={firebaseData.penalties ?? []}
+						pointAdjustments={pointAdjustments}
 						drivers={drivers}
 						sessionType="race"
 						calGrid={calGrid}
 						driverSnapshots={firebaseData.driverSnapshots}
 						ncDriverIds={firebaseData.ncDriverIds}
+						countPresence
 					/>
+				) : (
+					<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
+						<p className="text-f1-lighterCarbon text-sm">Resultado da Corrida não disponível para esta etapa.</p>
+					</div>
 				)}
 
 				{/* Linked news */}
