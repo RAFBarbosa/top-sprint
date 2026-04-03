@@ -1,21 +1,40 @@
-import { useEnhancedCards } from "../shared/hooks/useEnhancedCards";
+import { useMemo } from "react";
 import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
+import { useGetDriversQuery } from "../graphql/generated";
 
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
-	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
-	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
+	const { isInGrid, applyProfile } = useDriverProfiles();
+	const { data } = useGetDriversQuery();
 
-	const activeDrivers = enhancedCards
-		.filter((driver) => {
-			if (!driver.id) return true;
-			return isInGrid(driver.id, activeTab.id) || !profiles[driver.id];
+	const teamLogoByName = useMemo(() => {
+		const map: Record<string, string> = {};
+		(data?.drivers ?? []).forEach((d) => {
+			if (d.team?.name && d.team?.photo?.url) {
+				map[d.team.name] = d.team.photo.url;
+			}
+		});
+		return map;
+	}, [data]);
+
+	const activeDrivers = (data?.drivers ?? [])
+		.filter((driver) => isInGrid(driver.id, activeTab.id))
+		.map((driver) => {
+			const applied = applyProfile(driver, activeTab.id);
+			const resolvedTeamName = applied.team?.name ?? applied.teamName ?? "";
+			return {
+				...applied,
+				photo: applied.photo?.url ?? applied.photo ?? "",
+				teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
+				teamName: resolvedTeamName,
+				teamLogo: teamLogoByName[resolvedTeamName] ?? "",
+				num: applied.number ?? "",
+			};
 		})
-		.map((driver) => applyProfile(driver, activeTab.id))
 		.filter((driver) => !driver.reserve && !driver.exDriver);
 
 	return (

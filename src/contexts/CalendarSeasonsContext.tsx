@@ -5,7 +5,13 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
-import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+import {
+	collection,
+	getDocs,
+	doc,
+	setDoc,
+	deleteDoc,
+} from "firebase/firestore";
 import { db } from "../lib/adminClient";
 import { tenant } from "../shared/config/tenants";
 
@@ -22,7 +28,9 @@ interface CalendarSeasonsContextType {
 	getSeasonForCalendar: (calendarId: string) => string | null;
 }
 
-const CalendarSeasonsContext = createContext<CalendarSeasonsContextType | undefined>(undefined);
+const CalendarSeasonsContext = createContext<
+	CalendarSeasonsContextType | undefined
+>(undefined);
 
 const FIRESTORE_COLLECTION = `calendar-seasons/${tenant.id}/mappings`;
 
@@ -37,13 +45,15 @@ export function CalendarSeasonsProvider({ children }: { children: ReactNode }) {
 	const loadMappings = async () => {
 		try {
 			const snap = await getDocs(collection(db, FIRESTORE_COLLECTION));
-			const mappingsData = snap.docs.map(doc => ({
-				calendarId: doc.id,
-				seasonId: doc.data().seasonId,
-			} as CalendarSeasonMapping));
+			const mappingsData = snap.docs.map(
+				(doc) =>
+					({
+						calendarId: doc.id,
+						seasonId: doc.data().seasonId,
+					}) as CalendarSeasonMapping,
+			);
 			setMappings(mappingsData);
 		} catch (e) {
-			console.error("Failed to load calendar-season mappings", e);
 		} finally {
 			setLoading(false);
 		}
@@ -56,7 +66,6 @@ export function CalendarSeasonsProvider({ children }: { children: ReactNode }) {
 			});
 			await loadMappings(); // Refresh the list
 		} catch (e) {
-			console.error("Failed to set calendar season", e);
 			throw e;
 		}
 	};
@@ -66,13 +75,12 @@ export function CalendarSeasonsProvider({ children }: { children: ReactNode }) {
 			await deleteDoc(doc(db, FIRESTORE_COLLECTION, calendarId));
 			await loadMappings(); // Refresh the list
 		} catch (e) {
-			console.error("Failed to remove calendar season", e);
 			throw e;
 		}
 	};
 
 	const getSeasonForCalendar = (calendarId: string): string | null => {
-		const mapping = mappings.find(m => m.calendarId === calendarId);
+		const mapping = mappings.find((m) => m.calendarId === calendarId);
 		return mapping?.seasonId || null;
 	};
 
@@ -94,7 +102,9 @@ export function CalendarSeasonsProvider({ children }: { children: ReactNode }) {
 export function useCalendarSeasons() {
 	const context = useContext(CalendarSeasonsContext);
 	if (!context) {
-		throw new Error("useCalendarSeasons must be used within a CalendarSeasonsProvider");
+		throw new Error(
+			"useCalendarSeasons must be used within a CalendarSeasonsProvider",
+		);
 	}
 	return context;
 }

@@ -220,7 +220,6 @@ export function PartnerRegistration() {
 				setStatus({ type: "idle", message: "" });
 			}, 5000);
 		} catch (error) {
-			console.error("Registration error:", error);
 			setStatus({
 				type: "error",
 				message:

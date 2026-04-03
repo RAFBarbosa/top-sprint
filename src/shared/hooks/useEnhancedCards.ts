@@ -18,11 +18,13 @@ export function useEnhancedCards(gridId: GridId) {
 
 		return cards
 			.map((card: any) => {
+				const cardNameNormalized = normalizeString(
+					card.name.replace(/-[BCbc]$/, ""),
+				);
 				const driverFromData = data?.drivers?.find((d: any) =>
 					card.id
 						? d.id === card.id
-						: normalizeString(d.name) ===
-							normalizeString(card.name),
+						: normalizeString(d.name) === cardNameNormalized,
 				);
 
 				if (!driverFromData)
@@ -42,8 +44,7 @@ export function useEnhancedCards(gridId: GridId) {
 				const driverStats = stats.find((stat: any) =>
 					card.id
 						? stat.id === card.id
-						: normalizeString(stat.name) ===
-							normalizeString(card.name),
+						: normalizeString(stat.name) === cardNameNormalized,
 				);
 
 				return {

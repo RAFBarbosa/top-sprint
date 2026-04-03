@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
+import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
 
 interface Driver {
 	id?: string;
@@ -17,17 +18,16 @@ interface Driver {
 interface MenuDriverListProps {
 	gridName?: string;
 	drivers: Driver[];
-	onDriverClick: (driverName: string) => void;
 	photoStyle?: "portrait" | "round" | "bust";
 }
 
 const MenuDriverList: React.FC<MenuDriverListProps> = ({
 	gridName = "",
 	drivers,
-	onDriverClick,
 	photoStyle,
 }) => {
 	const location = useLocation();
+	const navigateToDriver = useNavigateToDriver();
 
 	const splitDriverName = (name: string) => {
 		const nameParts = name.split(" ");
@@ -39,11 +39,18 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 		return { firstName, secondName };
 	};
 
+	const getCleanName = (name: string) => {
+		return name.replace(/-[BC]$/, "");
+	};
+
+	const handleDriverClick = (driverName: string) => {
+		const cleanName = getCleanName(driverName);
+		navigateToDriver(normalizeString(cleanName));
+	};
 	return (
 		<div className="w-full px-3">
 			<h2
 				className={`font-extrabold text-3xl tracking-wide mb-6 ${
-					// className={`font-f1Title text-lg tracking-wider ${
 					gridName == "Reservas e Ex-Pilotos"
 						? "border-t-1 border-t-white/30 mb-4 pt-2"
 						: "mb-4"
@@ -86,13 +93,13 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 										"rgba(255, 255, 255, 0.5)";
 								}
 							}}
-							onClick={() => onDriverClick(driver.name)}
+							onClick={() => handleDriverClick(driver.name)}
 							role="button"
 							tabIndex={0}
 							onKeyDown={(e) => {
 								if (e.key === "Enter" || e.key === " ") {
 									e.preventDefault();
-									onDriverClick(driver.name);
+									handleDriverClick(driver.name);
 								}
 							}}
 							aria-label={`Ver perfil de ${driver.name}`}
@@ -133,13 +140,6 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 										/>
 									)}
 								</div>
-								{/* <span
-									className="ml-1 mr-2 w-1 h-4"
-									style={{
-										backgroundColor:
-											driver.teamColor || "#fff",
-									}}
-								/> */}
 								<span>
 									<span
 										className={

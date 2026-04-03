@@ -69,10 +69,10 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 		const teamColor = data.teamColor || "#fff";
 
 		const hasSpecialAchievement = [
-			data.stats.championships,
-			data.stats.totalSprintWins,
-			data.stats.totalWins,
-			data.stats.totalWinsB,
+			data.stats?.championships,
+			data.stats?.totalSprintWins,
+			data.stats?.totalWins,
+			data.stats?.totalWinsB,
 		].some((value) => value && Number(value) > 1);
 
 		const isCrystalBorder = hasSpecialAchievement && Math.random() < 0.01;

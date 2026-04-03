@@ -12,6 +12,7 @@ export interface GridProfile {
 	number?: string;
 	teamName?: string;
 	teamColor?: string;
+	teamLogoUrl?: string;
 	photoUrl?: string;
 	reserve?: boolean;
 	exDriver?: boolean;
@@ -83,13 +84,13 @@ export function DriverProfilesProvider({ children }: { children: ReactNode }) {
 				color: profile.teamColor
 					? { hex: profile.teamColor }
 					: driver.team?.color,
-				// preserve team logo — profiles don't store it
-				photo: driver.team?.photo,
+				photo: profile.teamLogoUrl
+					? { url: profile.teamLogoUrl }
+					: driver.team?.photo,
 			},
-			// flat fields used by CSV-enhanced cards
 			teamColor: profile.teamColor ?? driver.teamColor,
 			teamName: profile.teamName ?? driver.teamName,
-			// teamLogo comes from the team object; don't override
+			teamLogo: profile.teamLogoUrl ?? driver.teamLogo,
 			reserve: profile.reserve ?? false,
 			exDriver: profile.exDriver ?? false,
 		};
