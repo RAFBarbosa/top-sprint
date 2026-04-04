@@ -5,6 +5,7 @@ import { useTab } from "../../contexts/TabContext";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
+import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
 
 // Import Swiper components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -30,6 +31,8 @@ export function Teams() {
 	const { data: driversData } = useGetDriversQuery();
 	const { activeTab } = useTab();
 	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
+	const gridId = activeTab.id;
+	const activeSeason = useActiveSeason(gridId);
 
 	if (loading || !driversData) return loadingSkeleton();
 	if (error)
@@ -39,7 +42,6 @@ export function Teams() {
 			</div>
 		);
 
-	const gridId = activeTab.id;
 	const hasProfiles = Object.keys(profiles).length > 0;
 
 	// Filter: prefer Firebase profile membership, fall back to Hygraph driver.grid
@@ -94,7 +96,7 @@ export function Teams() {
 	));
 
 	return (
-		<aside className="py-10 overflow-hidden">
+		<aside className="py-10 overflow-hidden bg-white">
 			<div className="max-w-screen-xl mx-auto">
 				<div className="w-full mx-auto max-w-screen-xl px-3">
 					<div
@@ -115,7 +117,11 @@ export function Teams() {
 				</div>
 
 				{/* Swiper Carousel */}
-				{driverCards.length > 0 && (
+				{!activeSeason ? (
+					<p className="text-f1-lighterCarbon text-sm py-6 text-center px-3">
+						Nenhuma temporada ativa no momento.
+					</p>
+				) : driverCards.length > 0 && (
 					<div className="w-full mt-10 cursor-pointer overflow-visible relative px-3">
 						<Swiper
 							modules={[Navigation]}

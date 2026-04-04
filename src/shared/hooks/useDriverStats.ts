@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetCalendarsQuery } from "../../graphql/generated";
+import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generated";
 import { getGridConfig } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
@@ -58,6 +58,98 @@ function addStats(
 		championships: a.championships + (b.championships ?? 0),
 		teamChampionships: a.teamChampionships + (b.teamChampionships ?? 0),
 	};
+}
+
+function calcSeasonStandings(
+	calendarIds: string[],
+	allResults: Record<string, any>,
+	allAdjustments: Record<string, any[]>,
+	gridId: string,
+	driverTeamMap: Record<string, string>, // driverId → teamName
+): { driverPts: Record<string, number>; teamPts: Record<string, number> } {
+	const gridConfig = getGridConfig(gridId);
+	const ps = gridConfig?.pointSystem;
+	const racePointsArr = ps?.race ?? [];
+	const sprintPointsArr = ps?.sprint ?? [];
+	const poleBonus = ps?.poleBonus ?? 0;
+	const presenceBonus = ps?.presenceBonus ?? 0;
+	const raceAwards = gridConfig?.raceAwards ?? [];
+
+	const driverPts: Record<string, number> = {};
+	const teamPts: Record<string, number> = {};
+	const ensure = (id: string) => { if (!driverPts[id]) driverPts[id] = 0; };
+	const ensureTeam = (name: string) => { if (name && !teamPts[name]) teamPts[name] = 0; };
+
+	for (const calId of calendarIds) {
+		const result = allResults[calId];
+		if (!result) continue;
+		const raceOrder: string[] = (result.results ?? []).filter(Boolean);
+		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(Boolean);
+		const sprintOrder: string[] = (result.sprintResults ?? []).filter(Boolean);
+		const ncSet = new Set<string>(result.ncDriverIds ?? []);
+		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
+
+		raceOrder.forEach((driverId, i) => {
+			ensure(driverId);
+			const team = driverTeamMap[driverId] ?? "";
+			ensureTeam(team);
+			if (!ncSet.has(driverId)) {
+				const pos = i + 1;
+				const pts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
+				driverPts[driverId] += pts;
+				if (team) teamPts[team] += pts;
+			}
+			raceAwards.forEach((award: any) => {
+				if (result[award.id] === driverId) {
+					driverPts[driverId] += award.points;
+					if (team) teamPts[team] += award.points;
+				}
+			});
+		});
+
+		if (poleBonus > 0 && qualyOrder[0]) {
+			const poleId = qualyOrder[0];
+			ensure(poleId);
+			driverPts[poleId] += poleBonus;
+			const team = driverTeamMap[poleId] ?? "";
+			ensureTeam(team);
+			if (team) teamPts[team] += poleBonus;
+		}
+
+		if (presenceBonus > 0) {
+			const participants = new Set([...raceOrder, ...qualyOrder, ...sprintOrder]);
+			participants.forEach((driverId) => {
+				ensure(driverId);
+				driverPts[driverId] += presenceBonus;
+				const team = driverTeamMap[driverId] ?? "";
+				ensureTeam(team);
+				if (team) teamPts[team] += presenceBonus;
+			});
+		}
+
+		sprintOrder.forEach((driverId, i) => {
+			ensure(driverId);
+			if (!sprintNcSet.has(driverId)) {
+				const pos = i + 1;
+				const pts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
+				driverPts[driverId] += pts;
+				const team = driverTeamMap[driverId] ?? "";
+				ensureTeam(team);
+				if (team) teamPts[team] += pts;
+			}
+		});
+
+		const adjs: any[] = allAdjustments[calId] ?? [];
+		adjs.forEach((a) => {
+			ensure(a.driverId);
+			driverPts[a.driverId] += a.points;
+			const team = driverTeamMap[a.driverId] ?? "";
+			ensureTeam(team);
+			if (team) teamPts[team] += a.points;
+		});
+	}
+
+	return { driverPts, teamPts };
 }
 
 function calcStatsForCalendars(
@@ -171,6 +263,7 @@ export function useDriverStats(
 	const [loading, setLoading] = useState(true);
 
 	const { data: calendarsData } = useGetCalendarsQuery();
+	const { data: driversData } = useGetDriversQuery();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 
@@ -277,8 +370,61 @@ export function useDriverStats(
 			driverId,
 			gridId,
 		);
+
+		// Build driverId → teamName map using Firebase profiles (via applyProfile not available here,
+		// so use raw Hygraph team as fallback — good enough for standings)
+		const driverTeamMap: Record<string, string> = {};
+		(driversData?.drivers ?? []).forEach((d) => {
+			if (d.team?.name) driverTeamMap[d.id] = d.team.name;
+		});
+
+		// Completed seasons for this grid (inactive, with at least 1 result)
+		const completedSeasons = seasons.filter((s) => !s.active && gridSeasonIds.has(s.id));
+
+		let websiteSeasons = 0;
+		let websiteChampionships = 0;
+		let websiteTeamChampionships = 0;
+
+		for (const season of completedSeasons) {
+			const seasonCalIds = mappings
+				.filter((m) => m.seasonId === season.id)
+				.map((m) => m.calendarId)
+				.filter((cid) => gridCalendarIds.has(cid) && !!allResults[cid]);
+
+			if (seasonCalIds.length === 0) continue;
+
+			const { driverPts, teamPts } = calcSeasonStandings(
+				seasonCalIds, allResults, allAdjustments, gridId, driverTeamMap,
+			);
+
+			// Did this driver participate?
+			if ((driverPts[driverId] ?? 0) > 0 || careerCalendars.some(
+				(cid) => seasonCalIds.includes(cid) &&
+					((allResults[cid]?.results ?? []).includes(driverId) ||
+					(allResults[cid]?.resultsQualy ?? []).includes(driverId)),
+			)) {
+				websiteSeasons += 1;
+			}
+
+			// Driver championship
+			const topDriver = Object.entries(driverPts).sort((a, b) => b[1] - a[1])[0];
+			if (topDriver?.[0] === driverId) websiteChampionships += 1;
+
+			// Team championship
+			const driverTeam = driverTeamMap[driverId];
+			if (driverTeam) {
+				const topTeam = Object.entries(teamPts).sort((a, b) => b[1] - a[1])[0];
+				if (topTeam?.[0] === driverTeam) websiteTeamChampionships += 1;
+			}
+		}
+
 		const historicOffset = (offsets[driverId] as any)?.[gridId] ?? {};
-		const careerStats = addStats(careerFromWebsite, historicOffset);
+		const careerStats = addStats(careerFromWebsite, {
+			...historicOffset,
+			seasons: (historicOffset.seasons ?? 0) + websiteSeasons,
+			championships: (historicOffset.championships ?? 0) + websiteChampionships,
+			teamChampionships: (historicOffset.teamChampionships ?? 0) + websiteTeamChampionships,
+		});
 
 		return { season: seasonStats, career: careerStats };
 	}, [
@@ -288,6 +434,7 @@ export function useDriverStats(
 		allAdjustments,
 		offsets,
 		calendarsData,
+		driversData,
 		seasons,
 		mappings,
 	]);

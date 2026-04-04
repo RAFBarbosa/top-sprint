@@ -97,11 +97,22 @@ export function Calendars({
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
 
-	// Filter calendars by grid first
-	const gridCalendars =
-		data?.calendars.filter((calendar) => {
-			return calendar.grid === activeTab.id;
-		}) || [];
+	const gridCalendarIds = new Set(
+		(data?.calendars ?? []).filter((c) => c.grid === activeTab.id).map((c) => c.id),
+	);
+	const gridSeasonIds = new Set(
+		[...gridCalendarIds].map((cid) => getSeasonForCalendar(cid)).filter(Boolean) as string[],
+	);
+	const activeSeason = seasons.find((s) => s.active && gridSeasonIds.has(s.id)) ?? null;
+
+	// Filter calendars by grid and active season only
+	const gridCalendars = activeSeason
+		? (data?.calendars ?? []).filter((calendar) => {
+			if (calendar.grid !== activeTab.id) return false;
+			const sid = getSeasonForCalendar(calendar.id);
+			return sid === activeSeason.id;
+		})
+		: [];
 
 	// Group calendars by season
 	const calendarsBySeason = gridCalendars.reduce(
@@ -202,7 +213,12 @@ export function Calendars({
 						</div>
 					</div>
 				)}
-
+				{!activeSeason ? (
+					<p className="text-f1-lighterCarbon text-sm py-6 text-center px-3">
+						Nenhuma temporada ativa no momento.
+					</p>
+				) : (
+				<>
 				{sortedSeasonKeys.length > 0 && (
 					<div className="w-full mx-auto max-w-screen-xl px-3 space-y-12">
 						{sortedSeasonKeys.map((seasonKey) => {
@@ -336,6 +352,8 @@ export function Calendars({
 							);
 						})}
 					</div>
+				)}
+				</>
 				)}
 			</div>
 		</aside>

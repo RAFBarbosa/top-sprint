@@ -5,11 +5,13 @@ import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { useGetDriversQuery } from "../graphql/generated";
+import { useActiveSeason } from "../shared/hooks/useActiveSeason";
 
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
 	const { isInGrid, applyProfile } = useDriverProfiles();
 	const { data } = useGetDriversQuery();
+	const activeSeason = useActiveSeason(activeTab.id);
 
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
@@ -53,10 +55,16 @@ const Drivers: React.FC = () => {
 				</div>
 			</div>
 			<div className="max-w-screen-xl mx-auto bg-white rounded-b p-6 space-y-6">
-				<DriverList
-					gridName={activeTab.label}
-					drivers={activeDrivers}
-				/>
+				{activeSeason ? (
+					<DriverList
+						gridName={activeTab.label}
+						drivers={activeDrivers}
+					/>
+				) : (
+					<p className="text-f1-lighterCarbon text-sm py-6 text-center">
+						Nenhuma temporada ativa no momento.
+					</p>
+				)}
 			</div>
 		</div>
 	);
