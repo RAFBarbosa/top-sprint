@@ -21,6 +21,7 @@ interface CalendarProps {
 	map?: { url: string };
 	externalLink?: string;
 	seasonId?: string;
+	preventScrollOnClick?: boolean;
 }
 
 export function Calendar(props: CalendarProps) {
@@ -277,7 +278,12 @@ export function Calendar(props: CalendarProps) {
 				<Link
 					to={isFutureDate ? "#" : resultsSlug}
 					onClick={(e) => {
-						if (isFutureDate) e.preventDefault();
+						if (isFutureDate) {
+							e.preventDefault();
+						} else if (props.preventScrollOnClick) {
+							const scrollPos = window.scrollY;
+							setTimeout(() => window.scrollTo(0, scrollPos), 0);
+						}
 					}}
 					className="h-full flex flex-col group"
 				>

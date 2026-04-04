@@ -93,6 +93,7 @@ type DriverRow = {
 	penaltySeconds: number;
 	isNC: boolean;
 	isReserve: boolean;
+	sex?: string | null;
 };
 
 function buildRows(
@@ -115,6 +116,7 @@ function buildRows(
 	ncDriverIds?: string[],
 	reserveSet?: Set<string>,
 	countPresence = false,
+	driverSexMap?: Record<string, string>,
 ): DriverRow[] {
 	const lookup = Object.fromEntries((drivers ?? []).map((d) => [d.id, d]));
 
@@ -175,7 +177,11 @@ function buildRows(
 			}
 			// Pole bonus + race awards — regardless of NC
 			if (countPresence && sessionType !== "quali") {
-				if (poleBonus > 0 && qualyOrder.length > 0 && qualyOrder[0] === driverId) {
+				if (
+					poleBonus > 0 &&
+					qualyOrder.length > 0 &&
+					qualyOrder[0] === driverId
+				) {
 					points += poleBonus;
 				}
 				gridRaceAwards.forEach((award) => {
@@ -205,6 +211,7 @@ function buildRows(
 				penaltySeconds: penalty?.seconds ?? 0,
 				isNC: ncDriverIds?.includes(driverId) ?? false,
 				isReserve: reserveSet?.has(driverId) ?? false,
+				sex: driverSexMap?.[driverId] ?? null,
 			};
 		})
 		.filter((r): r is NonNullable<typeof r> => r !== null) as DriverRow[];
@@ -228,17 +235,10 @@ function WinnerCard({
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
 	const poleBonus = gridConfig?.pointSystem?.poleBonus ?? 0;
 	const presenceBonus = gridConfig?.pointSystem?.presenceBonus ?? 0;
-	const title =
-		sessionType === "quali"
-			? "Pole Position"
-			: ["Carolinne Walker", "Micaely Gusmão", "Lesly Stoeberl"].includes(
-						row.name,
-				  )
-				? "Vencedora"
-				: "Vencedor";
+	const title = row.sex === "F" ? "Vencedora" : "Vencedor";
 
 	return (
-		<div className="flex-1 rounded-lg overflow-hidden border border-black/10 flex flex-col min-w-0">
+		<div className="flex-1 rounded-sm overflow-hidden border border-black/10 flex flex-col min-w-0">
 			{/* Grid-colored header */}
 			<div
 				className="px-4 py-2 text-white uppercase text-center"
@@ -254,17 +254,37 @@ function WinnerCard({
 			{/* Photo — fixed crop matching OG */}
 			{(row.photo || tenant.fallbackDriverPhoto) && (
 				<div className="flex items-center justify-center w-9/10 mx-auto overflow-hidden">
-					<img
-						src={row.photo || tenant.fallbackDriverPhoto}
-						alt={row.name}
-						className="max-w-full object-contain scale-125 transform translate-y-8"
-					/>
+					{tenant.defaultPhotoStyle === "round" ? (
+						<HygraphImg
+							src={row.photo || tenant.fallbackDriverPhoto}
+							alt={row.name}
+							imgWidth={120}
+							imgHeight={120}
+							className="max-w-full mt-6 mb-11 w-38 h-38 scale-123 object-contain rounded-full border-2 border-f1-carbon"
+						/>
+					) : tenant.defaultPhotoStyle === "bust" ? (
+						<HygraphImg
+							src={row.photo || tenant.fallbackDriverPhoto}
+							alt={row.name}
+							imgWidth={120}
+							imgHeight={120}
+							className="max-w-full object-cover translate-y-2"
+						/>
+					) : (
+						<HygraphImg
+							src={row.photo || tenant.fallbackDriverPhoto}
+							alt={row.name}
+							imgWidth={200}
+							imgHeight={200}
+							className="max-w-full object-cover scale-120 md:scale-135 translate-y-10"
+						/>
+					)}
 				</div>
 			)}
 
 			{/* Name + team — dark carbon bar */}
 			<div
-				className="px-4 py-3 text-white -mt-10 relative z-10"
+				className="px-4 py-3 text-white -mt-5 relative z-10"
 				style={{ backgroundColor: "#15151e" }}
 			>
 				<p className="font-bold uppercase text-base leading-tight">
@@ -413,7 +433,7 @@ function ResultsSection({
 	showLabel = true,
 	driverSnapshots,
 	ncDriverIds,
-	countPresence = false,
+	driverSexMap,
 }: {
 	label: string;
 	raceOrder: string[];
@@ -435,7 +455,7 @@ function ResultsSection({
 		}
 	>;
 	ncDriverIds?: string[];
-	countPresence?: boolean;
+	driverSexMap?: Record<string, string>;
 }) {
 	const { getProfile } = useDriverProfiles();
 	const reserveSet = new Set(
@@ -455,21 +475,17 @@ function ResultsSection({
 		driverSnapshots,
 		ncDriverIds,
 		reserveSet,
-		countPresence ?? false,
+		false, // Always false for table — bonuses are shown separately
+		driverSexMap,
 	);
 	if (rows.length === 0) return null;
-
-	// Apply point adjustments to displayed points
-	const adjustedRows = rows.map((row) => {
-		const adj = pointAdjustments.filter((p) => p.driverId === row.id).reduce((sum, p) => sum + p.points, 0);
-		return adj !== 0 ? { ...row, points: row.points + adj } : row;
-	});
 
 	const gridsPresent = [...new Set(rows.map((r) => r.gridId))];
 	const getWinner = (gridId: string) => rows.find((r) => r.gridId === gridId);
 	const getAwardRowsForGrid = (gridId: string) => {
 		const awards: RaceAward[] = resolveRaceAwards(gridId);
 		return awards
+			.filter((award) => award.points > 0)
 			.map((award) => ({
 				award,
 				driver: rows.find(
@@ -515,23 +531,48 @@ function ResultsSection({
 						))}
 						{/* Point adjustments — desktop only, under bonus card */}
 						{pointAdjustments.length > 0 && (
-							<div className="hidden md:block border border-black/10 rounded-lg overflow-hidden">
+							<div className="hidden md:block border border-black/10 rounded-sm overflow-hidden">
 								<div className="bg-f1-bg-silver px-4 py-2 border-b border-black/10">
-									<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">Penalidades</p>
+									<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">
+										Penalidades
+									</p>
 								</div>
 								{pointAdjustments.map((p) => {
-									const driver = rows.find((r) => r.id === p.driverId);
+									const driver = rows.find(
+										(r) => r.id === p.driverId,
+									);
 									if (!driver) return null;
 									return (
-										<div key={p.driverId} className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white">
+										<div
+											key={p.driverId}
+											className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white"
+										>
 											<div className="flex items-center gap-2 min-w-0">
-												<span className="w-1 self-stretch shrink-0" style={{ backgroundColor: driver.teamColor ?? driver.gridColor }} />
+												<span
+													className="w-1 self-stretch shrink-0"
+													style={{
+														backgroundColor:
+															driver.teamColor ??
+															driver.gridColor,
+													}}
+												/>
 												<div className="min-w-0">
-													<p className="text-xs font-semibold uppercase truncate">{driver.name}</p>
-													{p.reason && <p className="text-[10px] text-f1-lighterCarbon">{p.reason}</p>}
+													<p className="text-xs font-semibold uppercase truncate">
+														{driver.name}
+													</p>
+													{p.reason && (
+														<p className="text-[10px] text-f1-lighterCarbon">
+															{p.reason}
+														</p>
+													)}
 												</div>
 											</div>
-											<span className="text-xs font-bold text-f1-red shrink-0 ml-2">{p.points > 0 ? `+${p.points}` : p.points} pts</span>
+											<span className="text-xs font-bold text-f1-red shrink-0 ml-2">
+												{p.points > 0
+													? `+${p.points}`
+													: p.points}{" "}
+												pts
+											</span>
 										</div>
 									);
 								})}
@@ -541,156 +582,196 @@ function ResultsSection({
 
 					{/* Results table */}
 					<div className="w-full md:flex-1 md:w-auto min-w-0 flex flex-col">
-					<div className="overflow-x-auto border border-black/10 rounded-lg">
-						<table className="min-w-full text-sm">
-							<thead>
-								<tr className="text-xs uppercase tracking-wide text-f1-lighterCarbon border-b border-black/10">
-									<th className="py-2 px-4 text-left w-16">
-										Pos
-									</th>
-									<th className="py-2 px-4 text-left">
-										Piloto
-									</th>
-									<th className="py-2 px-4 text-left hidden md:table-cell">
-										Equipe
-									</th>
-									<th className="py-2 px-4 text-right">
-										Pts
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{adjustedRows.map((row, index) => (
-									<tr
-										key={row.id}
-										className={
-											index % 2 === 0
-												? "bg-white"
-												: "bg-f1-bg-silver"
-										}
-									>
-										<td className="py-3 px-4">
-											<div className="flex items-center gap-1.5">
-												<span className="font-bold w-5 flex justify-center">
-													{row.overallPos}
-												</span>
-												{sessionType === "race" &&
-													(row.positionChange ===
-														null ||
-													row.positionChange === 0 ? (
-														<span className="text-f1-lighterCarbon text-xs w-6 flex justify-center">
-															–
-														</span>
-													) : row.positionChange >
-													  0 ? (
-														<span className="text-green-600 text-xs font-bold w-6 flex justify-center">
-															▲
-															{row.positionChange}
-														</span>
-													) : (
-														<span className="text-f1-red text-xs font-bold w-6 flex justify-center">
-															▼
-															{Math.abs(
-																row.positionChange,
-															)}
-														</span>
-													))}
-											</div>
-										</td>
+						<div className="overflow-x-auto border border-black/10 rounded-sm">
+							<table className="min-w-full text-sm">
+								<thead>
+									<tr className="text-xs uppercase tracking-wide text-f1-lighterCarbon border-b border-black/10">
+										<th className="py-2 px-4 text-left w-16">
+											Pos
+										</th>
+										<th className="py-2 px-4 text-left">
+											Piloto
+										</th>
+										<th className="py-2 px-4 text-left hidden md:table-cell">
+											Equipe
+										</th>
+										<th className="py-2 px-4 text-right">
+											Pts
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{rows.map((row, index) => (
+										<tr
+											key={row.id}
+											className={
+												index % 2 === 0
+													? "bg-white"
+													: "bg-f1-bg-silver"
+											}
+										>
+											<td className="py-3 px-4">
+												<div className="flex items-center gap-1.5">
+													<span className="font-bold w-5 flex justify-center">
+														{row.overallPos}
+													</span>
+													{sessionType === "race" &&
+														(row.positionChange ===
+															null ||
+														row.positionChange ===
+															0 ? (
+															<span className="text-f1-lighterCarbon text-xs w-6 flex justify-center">
+																–
+															</span>
+														) : row.positionChange >
+														  0 ? (
+															<span className="text-green-600 text-xs font-bold w-6 flex justify-center">
+																▲
+																{
+																	row.positionChange
+																}
+															</span>
+														) : (
+															<span className="text-f1-red text-xs font-bold w-6 flex justify-center">
+																▼
+																{Math.abs(
+																	row.positionChange,
+																)}
+															</span>
+														))}
+												</div>
+											</td>
 
-										<td className="py-3 px-4">
-											<div className="flex items-center gap-1">
-												<span
-													className="mx-1 w-1 self-center h-8 md:h-3.5 shrink-0"
-													style={{
-														backgroundColor:
-															row.teamColor ??
-															row.gridColor,
-													}}
-												/>
-												<div>
-													<div className="flex items-center gap-2 flex-wrap">
-														{/* {row.number && (
+											<td className="py-3 px-4">
+												<div className="flex items-center gap-1">
+													<span
+														className="mx-1 w-1 self-center h-8 md:h-3.5 shrink-0"
+														style={{
+															backgroundColor:
+																row.teamColor ??
+																row.gridColor,
+														}}
+													/>
+													<div>
+														<div className="flex items-center gap-2 flex-wrap">
+															{/* {row.number && (
 															<span className="text-xs font-bold text-f1-lighterCarbon w-5 text-right shrink-0">
 																{row.number}
 															</span>
 														)} */}
-														<span className="text-sm font-semibold uppercase">
-															{row.name}
-														</span>
-														{row.isNC && (
-															<span className="bg-gray-400 text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																NC
+															<span className="text-sm font-semibold uppercase">
+																{row.name}
 															</span>
-														)}
-														{row.isReserve && (
-															<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																Res
-															</span>
-														)}
-														{row.isFastestLap &&
-															sessionType ===
-																"race" && (
-																<span className="bg-f1-purple text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																	VR
+															{row.isNC && (
+																<span className="bg-gray-400 text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																	NC
 																</span>
 															)}
+															{row.isReserve && (
+																<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																	Res
+																</span>
+															)}
+															{row.isFastestLap &&
+																sessionType ===
+																	"race" && (
+																	<span className="bg-f1-purple text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																		VR
+																	</span>
+																)}
+														</div>
+														<p className="text-xs text-f1-lighterCarbon mt-0.5 md:hidden">
+															{row.teamName}
+														</p>
 													</div>
-													<p className="text-xs text-f1-lighterCarbon mt-0.5 md:hidden">
-														{row.teamName}
-													</p>
 												</div>
-											</div>
-										</td>
+											</td>
 
-										<td className="py-3 px-4 text-sm text-f1-lighterCarbon hidden md:table-cell">
-											{row.teamName}
-										</td>
+											<td className="py-3 px-4 text-sm text-f1-lighterCarbon hidden md:table-cell">
+												{row.teamName}
+											</td>
 
-										<td className="py-3 px-4 font-bold text-sm text-right">
-											{row.points}
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-					{/* Note — desktop only, always pinned under the table */}
-					<p className="hidden md:block text-[10px] text-f1-lighterCarbon mt-1.5 text-right italic">
-						{(() => {
-							const awardLabels = [
-								...new Set(
-									gridsPresent.flatMap((gId) =>
-										resolveRaceAwards(gId).map((a) => a.label),
+											<td className="py-3 px-4 font-bold text-sm text-right">
+												{row.points}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+						{/* Note — desktop only, always pinned under the table */}
+						<p className="hidden md:block text-[10px] text-f1-lighterCarbon mt-1.5 text-right italic">
+							{(() => {
+								const awardLabels = [
+									...new Set(
+										gridsPresent.flatMap((gId) =>
+											resolveRaceAwards(gId).map(
+												(a) => a.label,
+											),
+										),
 									),
-								),
-							];
-							const bonuses = ["Pole", ...awardLabels, "Participação"];
-							return `* Os pontos incluem todos os bônus da etapa (${bonuses.join(", ")})${pointAdjustments.length > 0 ? " e descontam penalidades aplicadas" : ""}.`;
-						})()}
-					</p>
+								];
+								const bonuses = [
+									"Pole",
+									...awardLabels,
+									...(gridsPresent.some(
+										(gId) =>
+											(getGridConfig(gId)?.pointSystem
+												?.presenceBonus ?? 0) > 0,
+									)
+										? ["Participação"]
+										: []),
+								];
+								return `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
+							})()}
+						</p>
 					</div>
 				</div>
 
 				{/* Point adjustments — mobile only */}
 				{pointAdjustments.length > 0 && (
-					<div className="mt-4 md:hidden border border-black/10 rounded-lg overflow-hidden">
+					<div className="mt-4 md:hidden border border-black/10 rounded-sm overflow-hidden">
 						<div className="bg-f1-bg-silver px-4 py-2 border-b border-black/10">
-							<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">Penalidades</p>
+							<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">
+								Penalidades
+							</p>
 						</div>
 						{pointAdjustments.map((p) => {
-							const driver = rows.find((r) => r.id === p.driverId);
+							const driver = rows.find(
+								(r) => r.id === p.driverId,
+							);
 							if (!driver) return null;
 							return (
-								<div key={p.driverId} className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white">
+								<div
+									key={p.driverId}
+									className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white"
+								>
 									<div className="flex items-center gap-2 min-w-0">
-										<span className="w-1 self-stretch shrink-0" style={{ backgroundColor: driver.teamColor ?? driver.gridColor }} />
+										<span
+											className="w-1 self-stretch shrink-0"
+											style={{
+												backgroundColor:
+													driver.teamColor ??
+													driver.gridColor,
+											}}
+										/>
 										<div className="min-w-0">
-											<p className="text-xs font-semibold uppercase truncate">{driver.name}</p>
-											{p.reason && <p className="text-[10px] text-f1-lighterCarbon">{p.reason}</p>}
+											<p className="text-xs font-semibold uppercase truncate">
+												{driver.name}
+											</p>
+											{p.reason && (
+												<p className="text-[10px] text-f1-lighterCarbon">
+													{p.reason}
+												</p>
+											)}
 										</div>
 									</div>
-									<span className="text-xs font-bold text-f1-red shrink-0 ml-2">{p.points > 0 ? `+${p.points}` : p.points} pts</span>
+									<span className="text-xs font-bold text-f1-red shrink-0 ml-2">
+										{p.points > 0
+											? `+${p.points}`
+											: p.points}{" "}
+										pts
+									</span>
 								</div>
 							);
 						})}
@@ -706,8 +787,18 @@ function ResultsSection({
 								),
 							),
 						];
-						const bonuses = ["Pole", ...awardLabels, "Participação"];
-						return `* Os pontos incluem todos os bônus da etapa (${bonuses.join(", ")})${pointAdjustments.length > 0 ? " e descontam penalidades aplicadas" : ""}.`;
+						const bonuses = [
+							"Pole",
+							...awardLabels,
+							...(gridsPresent.some(
+								(gId) =>
+									(getGridConfig(gId)?.pointSystem
+										?.presenceBonus ?? 0) > 0,
+							)
+								? ["Participação"]
+								: []),
+						];
+						return `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
 					})()}
 				</p>
 			</div>
@@ -809,7 +900,7 @@ function RaceHeader({
 										href={link}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="md:hidden inline-flex items-center gap-2 px-3 py-2 mt-4 md:mt-1 text-xs font-bold uppercase tracking-wider rounded-lg self-start border transition-all duration-150"
+										className="md:hidden inline-flex items-center gap-2 px-3 py-2 mt-4 md:mt-1 text-xs font-bold uppercase tracking-wider rounded-sm self-start border transition-all duration-150"
 										style={{
 											backgroundColor: gridColor,
 											borderColor: gridColor,
@@ -827,7 +918,7 @@ function RaceHeader({
 								href={link}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="hidden md:inline-flex items-center mr-3 gap-2 px-3 py-3 text-xs font-bold uppercase tracking-wider rounded-lg shrink-0 self-start border transition-all duration-150"
+								className="hidden md:inline-flex items-center mr-3 gap-2 px-3 py-3 text-xs font-bold uppercase tracking-wider rounded-sm shrink-0 self-start border transition-all duration-150"
 								style={{
 									backgroundColor: gridColor,
 									borderColor: gridColor,
@@ -866,7 +957,12 @@ export function SessionResult({
 	const [loading, setLoading] = useState(false);
 	const [activeTab, setActiveTab] = useState<"race" | "sprint">("race");
 	const [error, setError] = useState<string | null>(null);
-	const [pointAdjustments, setPointAdjustments] = useState<{ driverId: string; points: number; reason: string }[]>([]);
+	const [pointAdjustments, setPointAdjustments] = useState<
+		{ driverId: string; points: number; reason: string }[]
+	>([]);
+	const [driverSexMap, setDriverSexMap] = useState<Record<string, string>>(
+		{},
+	);
 
 	const { data: driversData } = useGetDriversQuery();
 	const { data: bannersData } = useGetBannersQuery();
@@ -899,14 +995,25 @@ export function SessionResult({
 			setLoading(true);
 			setError(null);
 			try {
-				const [snap, adjSnap] = await Promise.all([
+				const [snap, adjSnap, driversSnap] = await Promise.all([
 					getDoc(doc(db, "race_results", calendarId)),
 					getDoc(doc(db, "point_adjustments", calendarId)),
+					getDocs(collection(db, "drivers")),
 				]);
 				setFirebaseData(
 					snap.exists() ? (snap.data() as FirebaseResult) : null,
 				);
-				setPointAdjustments(adjSnap.exists() ? (adjSnap.data().adjustments ?? []) : []);
+				setPointAdjustments(
+					adjSnap.exists() ? (adjSnap.data().adjustments ?? []) : [],
+				);
+				// Build driver sex map
+				const sexMap: Record<string, string> = {};
+				driversSnap.forEach((d) => {
+					const driverId = d.id;
+					const sex = d.data().sex;
+					if (sex) sexMap[driverId] = sex;
+				});
+				setDriverSexMap(sexMap);
 			} catch (err: any) {
 				setError(err.message);
 			} finally {
@@ -972,8 +1079,8 @@ export function SessionResult({
 	}
 
 	const hasSprint = !!calData?.sprint;
-	const hasSprintData = !!(firebaseData.sprintResults?.some(Boolean));
-	const hasRaceData = !!(firebaseData.results?.some(Boolean));
+	const hasSprintData = !!firebaseData.sprintResults?.some(Boolean);
+	const hasRaceData = !!firebaseData.results?.some(Boolean);
 	const drivers = driversData?.drivers;
 
 	const calGrid = calData?.grid ?? "";
@@ -1055,11 +1162,14 @@ export function SessionResult({
 							calGrid={calGrid}
 							driverSnapshots={firebaseData.driverSnapshots}
 							ncDriverIds={firebaseData.sprintNcDriverIds}
-							countPresence={!hasRaceData}
+							driverSexMap={driverSexMap}
 						/>
 					) : (
 						<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
-							<p className="text-f1-lighterCarbon text-sm">Resultado da Sprint não disponível para esta etapa.</p>
+							<p className="text-f1-lighterCarbon text-sm">
+								Resultado da Sprint não disponível para esta
+								etapa.
+							</p>
 						</div>
 					)
 				) : hasRaceData ? (
@@ -1075,11 +1185,13 @@ export function SessionResult({
 						calGrid={calGrid}
 						driverSnapshots={firebaseData.driverSnapshots}
 						ncDriverIds={firebaseData.ncDriverIds}
-						countPresence
+						driverSexMap={driverSexMap}
 					/>
 				) : (
 					<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
-						<p className="text-f1-lighterCarbon text-sm">Resultado da Corrida não disponível para esta etapa.</p>
+						<p className="text-f1-lighterCarbon text-sm">
+							Resultado da Corrida não disponível para esta etapa.
+						</p>
 					</div>
 				)}
 
@@ -1098,7 +1210,7 @@ export function SessionResult({
 										className="flex gap-4 py-5 items-start"
 									>
 										{banner.photo?.url && (
-											<div className="shrink-0 w-36 sm:w-48 overflow-hidden rounded-lg">
+											<div className="shrink-0 w-36 sm:w-48 overflow-hidden rounded-sm">
 												<img
 													src={banner.photo.url}
 													alt={banner.content ?? ""}

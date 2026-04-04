@@ -23,6 +23,7 @@ import {
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import { getGridLabel } from "../../shared/config/grids";
+import { useCalculateDriverStats } from "../../shared/hooks/useCalculateDriverStats";
 
 const NEW_ID = "__new__";
 
@@ -60,6 +61,7 @@ export function ResultsRegistration() {
 		loading: gridLoading,
 		error: gridError,
 	} = useGridOptionsQuery();
+	const { triggerForGrid } = useCalculateDriverStats();
 
 	const formatDateShort = (dateString: string) => {
 		const date = new Date(dateString);
@@ -179,6 +181,8 @@ export function ResultsRegistration() {
 				setCsvFile(null);
 				setUploadProgress(null);
 			}
+
+			if (grid) triggerForGrid(grid).catch(console.error);
 
 			setTimeout(() => setStatus({ type: "idle", message: "" }), 5000);
 		} catch (error) {

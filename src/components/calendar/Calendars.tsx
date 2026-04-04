@@ -33,7 +33,8 @@ const loadingSkeleton = () => (
 export function Calendars({
 	hideHeader = false,
 	noPadding = false,
-}: { hideHeader?: boolean; noPadding?: boolean } = {}) {
+	preventScrollOnClick = false,
+}: { hideHeader?: boolean; noPadding?: boolean; preventScrollOnClick?: boolean } = {}) {
 	const { data, error, loading } = useGetCalendarsQuery();
 	const { data: driversData } = useGetDriversQuery();
 	const { activeTab } = useTab();
@@ -312,6 +313,7 @@ export function Calendars({
 																cal.winnerA,
 															)}
 															winnerB={null}
+															preventScrollOnClick={preventScrollOnClick}
 															externalLink={
 																!raceResultsMap[
 																	cal.id
