@@ -14,6 +14,7 @@ import { useDriverStats } from "../shared/hooks/useDriverStats";
 import type { DriverStatsShape } from "../shared/hooks/useDriverStats";
 import { useGetDriversQuery } from "../graphql/generated";
 import { useDriverCards } from "../shared/hooks/useDriverCards";
+import { useRealLifeTeamLogos } from "../shared/hooks/useRealLifeTeamLogos";
 
 function StatItem({ label, value }: { label: string; value: number }) {
 	if (!value) return null;
@@ -46,7 +47,7 @@ function StatsBlock({
 			<div className="grid grid-cols-3 gap-2">
 				<StatItem label="Participações" value={stats.participations} />
 				<StatItem label="Pontos" value={stats.points} />
-				<StatItem label="Temporadas" value={stats.seasons} />
+				<StatItem label="Temp. Completas" value={stats.seasons} />
 				<StatItem label="Vitórias" value={stats.wins} />
 				<StatItem label="Vit. Sprint" value={stats.sprintWins} />
 				<StatItem label="Pódios" value={stats.podiums} />
@@ -140,6 +141,11 @@ export function Profile() {
 		return map;
 	}, [data]);
 
+	// Get real life team logos and nationalities for drivers in current grid
+	const { logos: realLifeTeamLogos, nationalities } = useRealLifeTeamLogos(
+		activeTab.id
+	);
+
 	const filteredDrivers = (data?.drivers ?? [])
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
@@ -151,6 +157,8 @@ export function Profile() {
 				teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
 				teamName: resolvedTeamName,
 				teamLogo: teamLogoByName[resolvedTeamName] ?? "",
+				realLifeTeamLogoUrl: realLifeTeamLogos[driver.id] ?? "",
+				nationality: nationalities[driver.id] ?? "",
 				num: applied.number ?? "",
 				stats: applied.stats ?? {},
 			};
@@ -164,7 +172,7 @@ export function Profile() {
 				normalizeString(driverName?.toLowerCase() ?? ""),
 		);
 		setCurrentIndex(index >= 0 ? index : filteredDrivers.length - 1);
-	}, [driverName, filteredDrivers, activeTab.id]);
+	}, [driverName, filteredDrivers]);
 
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {

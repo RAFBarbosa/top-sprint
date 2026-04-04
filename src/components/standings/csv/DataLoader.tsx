@@ -41,6 +41,14 @@ export function DataLoader(props: DataLoaderProps) {
 
 	if (loading) return null;
 
+	if (standings.length === 0) {
+		return (
+			<p className="text-f1-lighterCarbon text-sm py-6 text-center">
+				Nenhuma temporada ativa no momento.
+			</p>
+		);
+	}
+
 	return (
 		<div className="w-full mx-auto">
 			{isAdminPage ? (

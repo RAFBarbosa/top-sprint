@@ -234,6 +234,7 @@ export function TeamRegistration() {
 							name: formData.name,
 							color: { hex: formData.color },
 							photo: logoId ? { connect: { id: logoId } } : null,
+							deleted: false,
 						},
 					},
 					update(cache, { data }) {

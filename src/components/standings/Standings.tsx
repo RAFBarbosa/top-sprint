@@ -4,6 +4,7 @@ import DataLoader from "./csv/DataLoader";
 import { useState } from "react";
 import { useTab } from "../../contexts/TabContext";
 import { getGridConfig } from "../../shared/config/grids";
+import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
 
 const loadingSkeleton = () => {
 	return (
@@ -31,11 +32,13 @@ const loadingSkeleton = () => {
 export function Standings() {
 	const { data, error, loading } = useGetTeamsQuery();
 	const [isTabLoading, setIsTabLoading] = useState(false);
-	const [previousData, setPreviousData] = useState(data);
+	const [previousData] = useState(data);
 
-	const { activeTab, setActiveTab } = useTab();
+	const { activeTab } = useTab();
 
 	const gridConfig = getGridConfig(activeTab.id);
+	const activeSeason = useActiveSeason(activeTab.id);
+	const title = gridConfig?.standingsTitle ?? "";
 
 	if (loading && !previousData) return loadingSkeleton();
 	if (error)
@@ -46,7 +49,7 @@ export function Standings() {
 		);
 
 	return (
-		<aside className="pb-10 flex flex-col relative bg-f1-lightSilver">
+		<aside className="pb-10 flex flex-col relative bg-f1-lightSilver overflow-hidden">
 			<div
 				className={`md:h-[396px] h-[280px] w-full absolute left-0 ${
 					gridConfig?.standingsBgClass ?? ""
@@ -66,25 +69,38 @@ export function Standings() {
 			</div>
 
 			<div className="px-3 w-full md:max-w-screen-xl mx-auto z-10">
-				<div
-					aria-busy={isTabLoading}
-					className={`transition-opacity duration-300 md:min-h-full min-h-full ${
-						isTabLoading ? "opacity-50" : "opacity-100"
-					}`}
-				>
-					<DataLoader
-						data={isTabLoading ? previousData : data}
-						activeTab={activeTab.id}
-					/>
-				</div>
-				{isTabLoading && (
-					<div
-						className="absolute inset-0 flex items-center justify-center"
-						role="status"
-						aria-label="Carregando classificação..."
-					>
-						<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
-					</div>
+				{!activeSeason ? (
+					<>
+						<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center my-10">
+							Classificação {title}
+						</h2>
+						<p className="text-white text-sm py-6 text-center">
+							Nenhuma temporada ativa no momento.
+						</p>
+					</>
+				) : (
+					<>
+						<div
+							aria-busy={isTabLoading}
+							className={`transition-opacity duration-300 md:min-h-full min-h-full ${
+								isTabLoading ? "opacity-50" : "opacity-100"
+							}`}
+						>
+							<DataLoader
+								data={isTabLoading ? previousData : data}
+								activeTab={activeTab.id}
+							/>
+						</div>
+						{isTabLoading && (
+							<div
+								className="absolute inset-0 flex items-center justify-center"
+								role="status"
+								aria-label="Carregando classificação..."
+							>
+								<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
+							</div>
+						)}
+					</>
 				)}
 			</div>
 		</aside>

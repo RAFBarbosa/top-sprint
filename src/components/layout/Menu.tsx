@@ -13,6 +13,7 @@ import { GridMenu } from "./GridMenu";
 import { tenant } from "../../shared/config/tenants";
 import { normalizeString } from "../../shared/utils/normalizeString";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
+import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,6 +70,7 @@ export function Menu() {
 	const { activeTab, setActiveTab, tabs } = useTab();
 	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
 	const { profiles } = useDriverProfiles();
+	const activeSeason = useActiveSeason(activeTab.id);
 
 	const menuItems = buildMenuItems();
 
@@ -237,28 +239,23 @@ export function Menu() {
 													<div className="text-white p-4">
 														Carregando pilotos...
 													</div>
+												) : !activeSeason ? (
+													<div className="text-white/60 p-4 text-sm">
+														Nenhuma temporada ativa no momento.
+													</div>
 												) : error ? (
 													<div className="text-red-300 p-4">
 														Erro ao carregar pilotos
 													</div>
-												) : !Array.isArray(
-														enhancedCards,
-												  ) ? (
+												) : !Array.isArray(enhancedCards) ? (
 													<div className="text-yellow-300 p-4">
-														Dados de pilotos
-														inválidos
+														Dados de pilotos inválidos
 													</div>
 												) : (
 													<MenuDriverList
-														drivers={
-															activeGridDrivers
-														}
-														onDriverClick={
-															handleDriverClick
-														}
-														photoStyle={
-															tenant.defaultPhotoStyle
-														}
+														drivers={activeGridDrivers}
+														onDriverClick={handleDriverClick}
+														photoStyle={tenant.defaultPhotoStyle}
 													/>
 												)}
 											</div>

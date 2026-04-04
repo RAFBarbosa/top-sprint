@@ -1,10 +1,17 @@
 import { forwardRef } from "react";
 import { HygraphImg } from "./HygraphImg";
-import bgCard from "/src/assets/img/card-backgrounds/topsprint-a.jpg";
-import bgCardChuva from "/src/assets/img/card-backgrounds/topsprint-chuva.jpg";
-import DoubleArrowOutlined from "@mui/icons-material/DoubleArrowOutlined";
 import { Tooltip } from "react-tooltip";
 import { tenant } from "../../shared/config/tenants";
+import Flag from "react-world-flags";
+import { COUNTRY_CODE_MAP } from "../../shared/constants/countryCodeMap";
+import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
+
+import bgRatingShape from "/src/assets/img/card-v2/bg-ratingshape.png";
+import bgRatingBgShape from "/src/assets/img/card-v2/bg-ratingbgshape.png";
+import bgRatingNameplate from "/src/assets/img/card-v2/bg-ratingnameplate.png";
+import bgRatingNumberplate from "/src/assets/img/card-v2/bg-ratingnumberplate.png";
+import bgStatsDivider from "/src/assets/img/card-v2/bg-statsdivider.png";
+import { useTab } from "../../contexts/TabContext";
 
 interface PlayerCardProps {
 	data: {
@@ -20,6 +27,8 @@ interface PlayerCardProps {
 		teamColor: string;
 		teamName: string;
 		teamLogo: string;
+		realLifeTeamLogoUrl?: string;
+		nationality?: string;
 		grid: string;
 		class: string;
 		badge: Array<{ url: string }>;
@@ -35,22 +44,43 @@ interface PlayerCardProps {
 }
 
 function formatBadgeTitle(title: string): string {
-	// Handle null/undefined and non-string types
 	if (typeof title !== "string" || !title.trim()) return "";
-
-	// Handle camelCase and PascalCase
 	const spaced = title
-		.replace(/([A-Z][a-z]+)/g, " $1") // Handle capital letters followed by lowercase
-		.replace(/([A-Z]+)/g, " $1") // Handle all-caps abbreviations
+		.replace(/([A-Z][a-z]+)/g, " $1")
+		.replace(/([A-Z]+)/g, " $1")
 		.trim();
-
-	// Capitalize first letter of each word and lowercase the rest
 	return spaced
 		.toLowerCase()
 		.split(" ")
-		.filter((word) => word) // Remove empty strings
+		.filter((word) => word)
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ");
+}
+
+function getTextColor(hexColor: string): string {
+	if (!hexColor || hexColor === "#000000") return "#FFFFFF";
+
+	// Remove the hash if it exists
+	const hex = hexColor.replace("#", "");
+
+	// Handle shorthand hex (e.g., "fff" -> "ffffff")
+	const fullHex =
+		hex.length === 3
+			? hex
+					.split("")
+					.map((c) => c + c)
+					.join("")
+			: hex;
+
+	const r = parseInt(fullHex.substring(0, 2), 16);
+	const g = parseInt(fullHex.substring(2, 4), 16);
+	const b = parseInt(fullHex.substring(4, 6), 16);
+
+	// Calculate luminance using the correct formula
+	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+	// Use black for bright backgrounds (luminance > 0.5), white for dark backgrounds
+	return luminance > 0.5 ? "#000000" : "#FFFFFF";
 }
 
 const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
@@ -66,7 +96,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 		};
 
 		const { firstName, secondName } = splitDriverName(data.name);
-		const teamColor = data.teamColor || "#fff";
+		const teamColor = data.teamColor || "#1a1a2e";
 
 		const hasSpecialAchievement = [
 			data.stats?.championships,
@@ -77,7 +107,15 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 		const isCrystalBorder = hasSpecialAchievement && Math.random() < 0.01;
 
-		const borderColor = isCrystalBorder
+		const glowColor = isCrystalBorder
+			? "#b3f0ff"
+			: parseFloat(data.rating) >= 90
+				? "#ffd700"
+				: parseFloat(data.rating) >= 80
+					? "#c0c0c0"
+					: "#cd7f32";
+
+		const borderGradient = isCrystalBorder
 			? "repeating-linear-gradient(145deg, #b3f0ff, #a0e7f5 10%, #b2fff5 20%, #aaf2d5 30%, #aaf2aa 40%, #d7ff8f 50%, #fff5b3 60%, #ffe0a0 70%, #ffb3a0 80%, #e0aaff 90%)"
 			: parseFloat(data.rating) >= 90
 				? "repeating-linear-gradient(145deg, #ffd700, #e6c200 15%, #b88a00 20%)"
@@ -85,281 +123,403 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					? "repeating-linear-gradient(145deg, #c0c0c0, #a8a8a8 15%, #8c8c8c 20%)"
 					: "repeating-linear-gradient(145deg, #cd7f32, #c0802d 15%, #a6672a 20%)";
 
+		const ratingUp =
+			data.prevRating &&
+			data.rating &&
+			parseFloat(data.rating) > parseFloat(data.prevRating);
+		const ratingDown =
+			data.prevRating &&
+			data.rating &&
+			parseFloat(data.rating) < parseFloat(data.prevRating);
+
+		const stats = [
+			{ label: "EXP", value: data.experience, tooltip: "Experiência" },
+			{ label: "PIL", value: data.racecraft, tooltip: "Pilotagem" },
+			{ label: "ATN", value: data.awareness, tooltip: "Atenção" },
+			{ label: "RIT", value: data.pace, tooltip: "Ritmo" },
+		];
+
+		const isFirstNameLong = firstName.length > 9;
+		const isSecondNameLong = secondName?.length > 9;
+		const needsSmallFont = isFirstNameLong || isSecondNameLong;
+		const nameSizeClass = needsSmallFont
+			? "text-[clamp(12px,5.3vw,18px)]"
+			: "text-[clamp(16px,5.3vw,22px)]";
+
+		const { activeTab } = useTab();
+		const gridColor = activeTab?.id
+			? tenant.grids.find((grid) => grid.id === activeTab.id)
+					?.primaryColor
+			: "#eb1c24";
+
+		const statsTextColor = getTextColor(gridColor);
+
 		return (
 			<div
 				ref={ref}
-				className="text-white tracking-wider overflow-hidden w-[340px] h-[440px] rounded-lg p-[10px]"
+				className="relative flex-shrink-0"
 				style={{
-					fontFamily: `'Titillium Web Local', sans-serif`,
-					boxShadow: `rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px`,
-					background: `${borderColor}`,
+					width: "clamp(300px, 95vw, 370px)",
+					aspectRatio: "700 / 1000",
+					// filter: `drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 0 6px ${glowColor}66)`,
 				}}
 			>
-				<div className="bg-black relative w-full h-full flex flex-col justify-between">
-					<img
-						className={`object-none object-right-top absolute top-0 left-0 h-full w-full ${
-							data.badgeTitle?.includes("reiDaChuva") ||
-							data.badgeTitle?.includes("mestreDaChuva")
-								? "opacity-50"
-								: "opacity-70"
-						}`}
-						src={
-							data.badgeTitle?.includes("reiDaChuva") ||
-							data.badgeTitle?.includes("mestreDaChuva")
-								? bgCardChuva
-								: (data.cardBackground ??
-									tenant.grids.find((g) => g.id === data.grid)
-										?.cardBackground ??
-									bgCard)
-						}
-						alt=""
-						aria-hidden="true"
-					/>
+				{/* Border gradient ring */}
+				<div
+					className="absolute inset-0 z-0"
+					style={{
+						background: teamColor,
+						WebkitMaskImage: `url(${bgRatingShape})`,
+						maskImage: `url(${bgRatingShape})`,
+						WebkitMaskSize: "100% 100%",
+						maskSize: "100% 100%",
+						WebkitMaskRepeat: "no-repeat",
+						maskRepeat: "no-repeat",
 
-					{data.badge.length > 0 && (
-						<div className="absolute top-13 left-32 z-30 flex gap-1">
-							{data.badge.map((badge, index) => (
-								<div key={index} className="relative">
-									<HygraphImg
-										src={badge.url}
-										alt={`Badge ${index + 1}`}
-										imgWidth={48}
-										imgHeight={48}
-										fit="clip"
-										data-tooltip-id="badge-tooltip"
-										data-tooltip-content={formatBadgeTitle(
-											data.badgeTitle.toString(),
-										)}
-										className="w-12 h-12 object-contain cursor-help"
+						// subtle depth
+						filter: `
+			drop-shadow(0 1px 1px rgba(0,0,0,0.25))
+			drop-shadow(0 -1px 1px rgba(255,255,255,0.08))
+		`,
+
+						// slight texture overlay
+						backgroundImage: `
+			radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 40%),
+			radial-gradient(circle at 70% 80%, rgba(0,0,0,0.25), transparent 45%)
+		`,
+
+						backgroundBlendMode: "overlay",
+					}}
+				/>
+
+				{/* Main card surface */}
+				<div
+					className="absolute inset-2.5 z-10 overflow-hidden"
+					style={{
+						WebkitMaskImage: `url(${bgRatingShape})`,
+						maskImage: `url(${bgRatingShape})`,
+						WebkitMaskSize: "100% 100%",
+						maskSize: "100% 100%",
+						WebkitMaskRepeat: "no-repeat",
+						maskRepeat: "no-repeat",
+						backgroundColor: "#0d0d0d",
+					}}
+				>
+					<div className="absolute inset-0">
+						<div
+							className="w-full h-full relative"
+							style={{ background: teamColor }}
+						>
+							{/* Dark overlay for bright colors */}
+							<div
+								className="absolute inset-0"
+								style={{
+									background:
+										"radial-gradient(circle at 30% 20%, rgba(0,0,0,0.2), rgba(0,0,0,0.3))",
+									mixBlendMode: "multiply",
+								}}
+							/>
+							<img
+								src={bgRatingBgShape}
+								alt=""
+								aria-hidden="true"
+								className="absolute inset-0 w-full h-full"
+								style={{
+									mixBlendMode: "overlay",
+									opacity: 0.4,
+								}}
+							/>
+						</div>
+					</div>
+
+					{/* {data.num && (
+						<div className="absolute top-8 inset-x-0 mx-auto h-[40%] flex items-center justify-center opacity-15">
+							<span
+								className="text-8xl text-white font-f1Title font-black italic leading-none"
+								style={{
+									textShadow: `0 0 12px ${teamColor}`,
+									// color: teamColor,
+								}}
+							>
+								{data.num}
+							</span>
+						</div>
+					)} */}
+
+					{/* Real Life Team Logo */}
+					{data.realLifeTeamLogoUrl && (
+						<HygraphImg
+							className="absolute top-43 bg-black/60 rounded-r-sm border border-y-white/60 border-r-white/60 inset-x-0 h-auto max-w-22.5 object-contain z-50"
+							// className="absolute bottom-4 z-50 inset-x-0 left-43 h-10 w-auto object-contain"
+							src={data.realLifeTeamLogoUrl}
+							alt="Real life team logo"
+							imgWidth={120}
+							imgHeight={120}
+							fit="clip"
+						/>
+					)}
+
+					{/* ── Layer 2: Driver photo ── */}
+					<div
+						className="absolute top-1 left-5 z-[20] overflow-hidden"
+						style={{ height: "auto", width: "125%" }}
+					>
+						<HygraphImg
+							className="w-full h-full object-cover object-top"
+							src={data.photo || tenant.fallbackDriverPhoto}
+							alt={data.name}
+							imgWidth={300}
+							imgHeight={300}
+						/>
+					</div>
+
+					{/* ── Rating number (top-left, above photo) ── */}
+					<div
+						className="absolute z-[30] flex flex-col items-center leading-none"
+						style={{ top: "18%", left: "11%" }}
+						// style={{ top: "15%", left: "11%" }}
+					>
+						<span className="text-xs font-semibold uppercase tracking-wider text-f1-bg-silver">
+							Nota Geral
+						</span>
+						<div className="relative flex items-center justify-center mt-1">
+							<div className="relative">
+								{/* Invisible placeholder to maintain width */}
+								<span className="invisible text-[clamp(22px,9vw,34px)] font-f1Title font-bold leading-none tracking-widest">
+									99
+								</span>
+								{/* Actual rating number centered */}
+								<span className="absolute inset-0 flex items-center justify-center text-[clamp(22px,9vw,34px)] font-f1Title font-bold leading-none tracking-widest drop-shadow-lg text-f1-bg-silver">
+									{data.rating || "—"}
+								</span>
+							</div>
+							{ratingUp && (
+								<span
+									className="absolute text-green-500 text-sm md:text-lg leading-none -right-5 top-1/2 -translate-y-1/2"
+									style={{
+										WebkitTextStroke: "1px white",
+										textStroke: "1px white",
+									}}
+								>
+									▲
+								</span>
+							)}
+							{ratingDown && (
+								<span
+									className="absolute text-f1-red text-sm md:text-lg leading-none -right-5 top-1/2 -translate-y-1/2"
+									style={{
+										WebkitTextStroke: "1px white",
+										textStroke: "1px white",
+									}}
+								>
+									▼
+								</span>
+							)}
+						</div>
+					</div>
+
+					{/* ── Layer 3: Nameplate (name + flag) ── */}
+					<div className="absolute inset-0 z-[40]">
+						{/* Container with the same mask as the nameplate */}
+						<div
+							className="absolute inset-0 w-full h-full"
+							style={{
+								WebkitMaskImage: `url(${bgRatingNameplate})`,
+								maskImage: `url(${bgRatingNameplate})`,
+								WebkitMaskSize: "100% 100%",
+								maskSize: "100% 100%",
+								WebkitMaskRepeat: "no-repeat",
+								maskRepeat: "no-repeat",
+							}}
+						>
+							<img
+								src={bgRatingNameplate}
+								alt=""
+								aria-hidden="true"
+								className="w-full h-full object-fill"
+							/>
+
+							{/* Texture overlay - now masked to the nameplate shape */}
+							<div
+								className="absolute inset-0 w-full h-full pointer-events-none"
+								style={{
+									// background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(0,0,0,0.15) 100%)",
+									background: `linear-gradient(180deg, ${teamColor}80 0%, ${teamColor}30 50%, rgba(0,0,0,0.3) 100%)`,
+								}}
+							/>
+							<div
+								className="absolute inset-0 w-full h-full pointer-events-none"
+								style={{
+									background: `linear-gradient(135deg, ${teamColor}80 0%, ${teamColor}30 50%, rgba(0,0,0,0.3) 100%)`,
+									mixBlendMode: "overlay",
+								}}
+							/>
+						</div>
+
+						<div
+							className="absolute bottom-0 left- w-full z-10 flex flex-col pl-[4%] pr-[4%]"
+							style={{ top: "49.3%" }}
+						>
+							<div className="flex flex-col items-start gap-4 w-full ">
+								<div
+									className="border rounded-xs border-white/90"
+									style={{
+										width: "clamp(45px, 15vw, 61px)",
+										height: "clamp(23px, 7.8vw, 32px)",
+									}}
+								>
+									<Flag
+										code={
+											data.nationality
+												? COUNTRY_CODE_MAP[
+														data.nationality
+													] || "BR"
+												: "BR"
+										}
+										style={{
+											height: "100%",
+											width: "100%",
+											objectFit: "cover",
+											objectPosition: "center",
+										}}
 									/>
 								</div>
-							))}
-						</div>
-					)}
 
-					<div className={`top-0 left-0 rounded-lg`}>
-						<div
-							className={`absolute top-0 left-0 w-full h-full z-20`}
-							style={{
-								boxShadow:
-									"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
-								WebkitBoxShadow:
-									"inset 0 0 2px 3px rgba(0, 0, 0, 0.4)",
-							}}
-						/>
-					</div>
-
-					<div className="w-auto relative mt-2 px-6 py-3 ml-2 flex flex-col font-semibold">
-						<div
-							className="w-55 h-56 absolute top-0 left-3 border-t-4 border-l-4 rounded-tl-lg z-20"
-							style={{ borderColor: teamColor }}
-						/>
-						<span className="flex flex-col mb-8 leading-3 z-20">
-							<p className="text-gray-300">Nota Geral</p>
-							<div className="flex items-center">
-								<p className="text-6xl font-bold">
-									{data.rating}
-								</p>
-								{data.rating !== data.prevRating && (
+								<div className="flex flex-col leading-none gap-1">
 									<span
-										className={
-											data.rating > data.prevRating
-												? "text-green-500"
-												: "text-red-500"
-										}
+										className={`text-f1-bg-silver font-f1Title uppercase tracking-wider leading-none ${nameSizeClass}`}
 									>
-										<DoubleArrowOutlined
-											className={
-												data.rating > data.prevRating
-													? "rotate-270"
-													: "rotate-90"
-											}
-											fontSize="medium"
-											aria-hidden="true"
-										/>
+										{firstName}
 									</span>
-								)}
-							</div>
-						</span>
-						<div className="text-xs font-bold flex gap-4 justify-between w-30 flex-wrap z-30">
-							{[
-								{
-									label: "EXP",
-									value: data.experience,
-									tooltip: "Experiência",
-								},
-								{
-									label: "PIL",
-									value: data.racecraft,
-									tooltip: "Pilotagem",
-								},
-								{
-									label: "ATN",
-									value: data.awareness,
-									tooltip: "Atenção",
-								},
-								{
-									label: "RIT",
-									value: data.pace,
-									tooltip: "Ritmo",
-								},
-							].map(({ label, value, tooltip }) => (
-								<span
-									key={label}
-									className="flex flex-col items-center leading-2 cursor-help"
-									data-tooltip-id="stat-tooltip"
-									data-tooltip-content={tooltip}
-								>
-									<p className="text-gray-300 tracking-[.218m]">
-										{label}
-									</p>
-									<p className="text-4xl drop-shadow-2xl">
-										{value}
-									</p>
-								</span>
-							))}
-						</div>
-					</div>
-
-					{tenant.defaultPhotoStyle === "round" ? (
-						<div className="absolute z-20 top-3 right-3 w-[168px] h-[168px] rounded-full overflow-hidden border-4 border-f1-carbon/50">
-							<HygraphImg
-								className="w-full h-full object-cover"
-								src={data.photo || tenant.fallbackDriverPhoto}
-								alt={data.name}
-								imgWidth={168}
-								imgHeight={168}
-							/>
-						</div>
-					) : tenant.defaultPhotoStyle === "bust" ? (
-						<div className="absolute z-20 top-0 right-0 h-[280px] w-auto overflow-hidden">
-							<HygraphImg
-								className="w-[220px] h-[240px] object-cover object-top translate-y-[30px] translate-x-[30px]"
-								src={data.photo || tenant.fallbackDriverPhoto}
-								alt={data.name}
-								imgWidth={280}
-							/>
-						</div>
-					) : (
-						<div className="absolute z-20 top-0 right-0 h-[330px] w-auto overflow-hidden">
-							<HygraphImg
-								className="w-[280px] h-[330px] object-cover object-top translate-y-[10px] translate-x-[70px]"
-								src={data.photo || tenant.fallbackDriverPhoto}
-								alt={data.name}
-								imgWidth={280}
-								imgHeight={330}
-							/>
-						</div>
-					)}
-
-					<div
-						className="text-white px-4 py-5 h-[150px] flex flex-col gap-2 justify-end bg-linear-0 from-f1-carbon to-f1-silver z-20 relative"
-						style={{
-							boxShadow: `0 -10px 10px -5px rgba(0, 0, 0, .5)`,
-						}}
-					>
-						<div
-							className="dot-pattern absolute inset-0 rounded-lg z-0 pointer-events-none opacity-10"
-							style={{
-								backgroundColor: "rgba(0, 0, 0, 0.5)",
-								backgroundImage:
-									"var(--background-image-dot-pattern)",
-							}}
-						/>
-						<div className="flex items-end justify-between font-regular z-30">
-							<span className="flex flex-col text-3xl leading-3">
-								<span
-									className={
-										secondName
-											? firstName.length > 10
-												? "text-3xl leading-4"
-												: secondName
-													? "text-2xl leading-4"
-													: ""
-											: `font-bold uppercase ${
-													firstName.length > 10
-														? "text-3xl"
-														: "text-4xl"
-												}`
-									}
-								>
-									{firstName}
-								</span>
-
-								{secondName && (
-									<span
-										className={`font-bold uppercase ${
-											secondName.length > 10
-												? "text-3xl"
-												: "text-4xl"
-										}`}
-									>
-										{secondName}
-									</span>
-								)}
-							</span>
-							<div className="flex flex-col items-end gap-[2px]">
-								<h2
-									className={`font-semibold uppercase text-xs px-2 rounded leading-tight ${
-										data.class === "classA"
-											? "bg-f1-carbon text-white"
-											: data.class === "classB"
-												? "bg-f1-red text-white"
-												: "bg-white text-f1-black"
-									}`}
-								>
-									{/* {getClassLabel()} */}
-								</h2>
-								<p className="text-4xl italic mr-1">
-									{data.num}
-								</p>
-							</div>
-						</div>
-
-						<div
-							className="w-full h-1 z-30"
-							style={{ backgroundColor: teamColor }}
-						/>
-
-						<div className="flex justify-between items-start w-full z-30">
-							<div className="flex items-center gap-2 min-w-0">
-								{data.teamName && (
-									<>
-										<p
-											className="font-normal text-xl truncate"
-											title={data.teamName}
+									{secondName && (
+										<span
+											className={`text-f1-bg-silver font-f1Title uppercase tracking-wider leading-none ${nameSizeClass}`}
 										>
-											{data.teamName}
-										</p>
-										{data.teamLogo && (
-											<HygraphImg
-												className="h-5 w-auto object-contain"
-												src={data.teamLogo}
-												alt={`${data.teamName} logo`}
-												imgWidth={80}
-												imgHeight={20}
-												fit="clip"
-											/>
-										)}
-									</>
+											{secondName}
+										</span>
+									)}
+								</div>
+
+								{/* ── Driver number (top-left below rating) ── */}
+								{/* {data.num && (
+									<div className="absolute top-6 right-5 opacity-15">
+										<span
+											className="text-8xl font-f1Title font-black italic leading-none"
+											style={{
+												textShadow: `0 0 12px ${teamColor}`,
+												color: teamColor,
+											}}
+										>
+											{data.num}
+										</span>
+									</div>
+								)} */}
+
+								{data.teamLogo && (
+									<HygraphImg
+										className="absolute top-6 right-5 h-24 w-auto object-contain opacity-10"
+										src={data.teamLogo}
+										alt={`${data.teamName} logo`}
+										imgWidth={120}
+										imgHeight={120}
+										fit="clip"
+									/>
 								)}
 							</div>
-
-							<HygraphImg
-								className="h-[30px] w-auto object-contain"
-								src={tenant.logo.url}
-								alt={`${tenant.name} Logo`}
-								imgWidth={80}
-								imgHeight={30}
-								fit="clip"
-							/>
 						</div>
 					</div>
+
+					<div className="absolute inset-0 w-full h-full z-[50] pointer-events-none opacity-60">
+						<img
+							src={bgStatsDivider}
+							alt=""
+							aria-hidden="true"
+							className="w-full h-full object-fill"
+						/>
+					</div>
+
+					{/* ── Layer 4: Stats bar (stats + team logo) ── */}
+					<div className="absolute inset-0 z-[40]">
+						<div
+							className="absolute inset-0 w-full h-full"
+							style={{
+								backgroundColor: gridColor,
+								WebkitMaskImage: `url(${bgRatingNumberplate})`,
+								maskImage: `url(${bgRatingNumberplate})`,
+								WebkitMaskSize: "100% 100%",
+								maskSize: "100% 100%",
+								WebkitMaskRepeat: "no-repeat",
+								maskRepeat: "no-repeat",
+							}}
+						/>
+						<div
+							className="absolute bottom-4 right-2 w-full flex flex-col items-start justify-between px-[6%] pointer-events-auto"
+							style={{ height: "21%" }}
+						>
+							<div className="flex w-full justify-between">
+								{stats.map(({ label, value, tooltip }) => (
+									<span
+										key={label}
+										className="flex flex-col items-center cursor-help leading-none flex-1"
+										data-tooltip-id="stat-tooltip"
+										data-tooltip-content={tooltip}
+									>
+										<span
+											className="text-xs uppercase tracking-widest mb-0.5"
+											style={{ color: statsTextColor }}
+										>
+											{label}
+										</span>
+										<span
+											className="text-[clamp(19px,5.6vw,22px)] font-f1Title"
+											style={{ color: statsTextColor }}
+										>
+											{value || "—"}
+										</span>
+									</span>
+								))}
+							</div>
+
+							<div className="h-[clamp(16px,4vw,42px)] ml-2 w-auto">
+								<img
+									src={tenant.logo.url}
+									alt={tenant.logo.alt}
+									className="h-full w-auto object-contain"
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* ── Badges ── */}
+					{data.badge?.length > 0 && (
+						<div className="absolute top-[10%] right-[2%] z-[60] flex gap-1">
+							{data.badge.map((badge, index) => (
+								<HygraphImg
+									key={index}
+									src={badge.url}
+									alt={`Badge ${index + 1}`}
+									imgWidth={40}
+									imgHeight={40}
+									fit="clip"
+									data-tooltip-id="badge-tooltip"
+									data-tooltip-content={formatBadgeTitle(
+										data.badgeTitle?.toString() ?? "",
+									)}
+									className="w-10 h-10 object-contain cursor-help"
+								/>
+							))}
+						</div>
+					)}
 				</div>
-				{data.badge.length > 0 && (
-					<Tooltip id="badge-tooltip" place="top" className="!z-60" />
+
+				{data.badge?.length > 0 && (
+					<Tooltip
+						id="badge-tooltip"
+						place="top"
+						className="!z-[80]"
+					/>
 				)}
-				<Tooltip id="stat-tooltip" place="top" className="!z-60" />
+				<Tooltip id="stat-tooltip" place="top" className="!z-[80]" />
 			</div>
 		);
 	},

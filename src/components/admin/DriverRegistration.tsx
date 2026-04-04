@@ -31,6 +31,9 @@ import {
 	Description,
 } from "@headlessui/react";
 import { tenant } from "../../shared/config/tenants";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
+import { NATIONALITY_OPTIONS } from "../../shared/constants/nationalities";
 
 export function DriverRegistration() {
 	// State management
@@ -43,6 +46,10 @@ export function DriverRegistration() {
 		city: "",
 		equipment: "",
 		phone: "",
+		birthDate: "",
+		sex: "",
+		nationality: "",
+		realLifeTeamId: "",
 	});
 
 	const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -140,9 +147,33 @@ export function DriverRegistration() {
 			.replace(/([A-Z])/g, " $1")
 			.replace(/^./, (str) => str.toUpperCase());
 
-	const handleSelectDriver = (driver: any) => {
+	const handleSelectDriver = async (driver: any) => {
 		setSelectedDriver(driver);
 		setIsEditing(true);
+
+		// Load Firebase driver data
+		let firebaseData = {
+			birthDate: "",
+			sex: "",
+			nationality: "",
+			realLifeTeamId: "",
+		};
+
+		try {
+			const docSnap = await getDoc(doc(db, "drivers", driver.id));
+			if (docSnap.exists()) {
+				const data = docSnap.data();
+				firebaseData = {
+					birthDate: data.birthDate || "",
+					sex: data.sex || "",
+					nationality: data.nationality || "",
+					realLifeTeamId: data.realLifeTeamId || "",
+				};
+			}
+		} catch (error) {
+			console.error("Error loading driver Firebase data:", error);
+		}
+
 		setFormData({
 			name: driver.name,
 			number: driver.number || "",
@@ -152,6 +183,7 @@ export function DriverRegistration() {
 			city: driver.city || "",
 			equipment: driver.equipment || "",
 			phone: driver.phone,
+			...firebaseData,
 		});
 
 		setTeamId(driver.team?.id || "");
@@ -169,6 +201,10 @@ export function DriverRegistration() {
 			city: "",
 			equipment: "",
 			phone: "",
+			birthDate: "",
+			sex: "",
+			nationality: "",
+			realLifeTeamId: "",
 		});
 		setTeamId("");
 		setPhotoFile(null);
@@ -274,7 +310,7 @@ export function DriverRegistration() {
 			}
 
 			if (isEditing && selectedDriver) {
-				// Update existing driver
+				// Update existing driver in Hygraph
 				const result = await updateDriver({
 					variables: {
 						where: { id: selectedDriver.id },
@@ -301,12 +337,24 @@ export function DriverRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
+				// Save additional fields to Firebase
+				await setDoc(
+					doc(db, "drivers", selectedDriver.id),
+					{
+						birthDate: formData.birthDate || null,
+						sex: formData.sex || null,
+						nationality: formData.nationality || null,
+						realLifeTeamId: formData.realLifeTeamId || null,
+					},
+					{ merge: true }
+				);
+
 				setStatus({
 					type: "success",
 					message: "Piloto atualizado com sucesso!",
 				});
 			} else {
-				// Create new driver
+				// Create new driver in Hygraph
 				const result = await createDriver({
 					variables: {
 						data: {
@@ -328,6 +376,20 @@ export function DriverRegistration() {
 				});
 
 				if (result.errors) throw new Error(result.errors[0].message);
+
+				const newDriverId = result.data?.createDriver?.id;
+				if (!newDriverId) throw new Error("Failed to get new driver ID");
+
+				// Save additional fields to Firebase
+				await setDoc(
+					doc(db, "drivers", newDriverId),
+					{
+						birthDate: formData.birthDate || null,
+						sex: formData.sex || null,
+						nationality: formData.nationality || null,
+						realLifeTeamId: formData.realLifeTeamId || null,
+					}
+				);
 
 				setStatus({
 					type: "success",
@@ -682,6 +744,225 @@ export function DriverRegistration() {
 								onChange={handleChange}
 								className="w-full p-2 border rounded h-11"
 							/>
+						</div>
+
+						<div>
+							<label className="block mb-1">Data de Nascimento</label>
+							<input
+								name="birthDate"
+								type="date"
+								value={formData.birthDate}
+								onChange={handleChange}
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div>
+							<label className="block mb-1">Sexo</label>
+							<Listbox
+								value={formData.sex}
+								onChange={(value) =>
+									setFormData((prev) => ({
+										...prev,
+										sex: value,
+									}))
+								}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.sex === "M"
+												? "Masculino"
+												: formData.sex === "F"
+													? "Feminino"
+													: "Selecione"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
+										</span>
+									</ListboxButton>
+
+									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active ? "bg-f1-red/20" : ""
+												}`
+											}
+										>
+											Selecione
+										</ListboxOption>
+										<ListboxOption
+											value="M"
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active ? "bg-f1-red/20" : ""
+												}`
+											}
+										>
+											Masculino
+										</ListboxOption>
+										<ListboxOption
+											value="F"
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active ? "bg-f1-red/20" : ""
+												}`
+											}
+										>
+											Feminino
+										</ListboxOption>
+									</ListboxOptions>
+								</div>
+							</Listbox>
+						</div>
+
+						<div>
+							<label className="block mb-1">Nacionalidade</label>
+							<Listbox
+								value={formData.nationality}
+								onChange={(value) =>
+									setFormData((prev) => ({
+										...prev,
+										nationality: value,
+									}))
+								}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										<span className="block truncate">
+											{formData.nationality ||
+												"Selecione"}
+										</span>
+										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+											<ChevronUpDownIcon
+												className="h-5 w-5 text-f1-silver"
+												aria-hidden="true"
+											/>
+										</span>
+									</ListboxButton>
+
+									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active ? "bg-f1-red/20" : ""
+												}`
+											}
+										>
+											Selecione
+										</ListboxOption>
+										{NATIONALITY_OPTIONS.map(
+											(country) => (
+												<ListboxOption
+													key={country}
+													value={country}
+													className={({
+														active,
+													}) =>
+														`flex items-center gap-2 p-2 cursor-pointer ${
+															active
+																? "bg-f1-red/20"
+																: ""
+														}`
+													}
+												>
+													{country}
+												</ListboxOption>
+											)
+										)}
+									</ListboxOptions>
+								</div>
+							</Listbox>
+						</div>
+
+						<div>
+							<label className="block mb-1">Equipe Real</label>
+							<Listbox
+								value={formData.realLifeTeamId}
+								onChange={(value) =>
+									setFormData((prev) => ({
+										...prev,
+										realLifeTeamId: value,
+									}))
+								}
+							>
+								<div className="relative">
+									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
+										{formData.realLifeTeamId ? (
+											<div className="flex items-center gap-2">
+												<img
+													src={
+														teamsData?.teams?.find(
+															(t) =>
+																t.id ===
+																formData.realLifeTeamId
+														)?.photo?.url
+													}
+													alt=""
+													className="h-5 w-5 object-contain"
+												/>
+												<span>
+													{
+														teamsData?.teams?.find(
+															(t) =>
+																t.id ===
+																formData.realLifeTeamId
+														)?.name
+													}
+												</span>
+											</div>
+										) : (
+											"Escolha equipe"
+										)}
+										<ChevronUpDownIcon
+											className="h-5 w-5 text-f1-silver"
+											aria-hidden="true"
+										/>
+									</ListboxButton>
+									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
+										<ListboxOption
+											value=""
+											className={({ active }) =>
+												`flex items-center gap-2 p-2 cursor-pointer ${
+													active
+														? "bg-f1-red/20"
+														: ""
+												}`
+											}
+										>
+											Escolha equipe
+										</ListboxOption>
+										{teamsData?.teams?.map((team) => (
+											<ListboxOption
+												key={team.id}
+												value={team.id}
+												className={({
+													active,
+												}) =>
+													`flex items-center gap-2 p-2 cursor-pointer ${
+														active
+															? "bg-f1-red/20"
+															: ""
+														}`
+													}
+											>
+												<img
+													src={team.photo?.url}
+													alt=""
+													className="h-5 w-5 object-contain"
+												/>
+												<span>{team.name}</span>
+											</ListboxOption>
+										))}
+									</ListboxOptions>
+								</div>
+							</Listbox>
 						</div>
 
 						<div className="hidden">

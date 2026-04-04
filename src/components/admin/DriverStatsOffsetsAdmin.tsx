@@ -17,9 +17,9 @@ const STAT_FIELDS: { key: keyof DriverStatsShape; label: string }[] = [
 	{ key: "poles", label: "Poles" },
 	{ key: "fastestLaps", label: "Voltas Rápidas" },
 	{ key: "ncs", label: "NCs" },
-	{ key: "seasons", label: "Temporadas" },
-	{ key: "championships", label: "Campeonatos" },
-	{ key: "teamChampionships", label: "Camp. Equipe" },
+	{ key: "seasons", label: "Temp. Completas (históricas)" },
+	{ key: "championships", label: "Campeonatos (históricos)" },
+	{ key: "teamChampionships", label: "Camp. Equipe (históricos)" },
 ];
 
 const EMPTY_OFFSET = (): Partial<DriverStatsShape> => ({
