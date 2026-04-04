@@ -143,14 +143,15 @@ export function Profile() {
 
 	// Get real life team logos and nationalities for drivers in current grid
 	const { logos: realLifeTeamLogos, nationalities } = useRealLifeTeamLogos(
-		activeTab.id
+		activeTab.id,
 	);
 
 	const filteredDrivers = (data?.drivers ?? [])
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
 			const applied = applyProfile(driver, activeTab.id);
-			const resolvedTeamName = applied.team?.name ?? applied.teamName ?? "";
+			const resolvedTeamName =
+				applied.team?.name ?? applied.teamName ?? "";
 			return {
 				...applied,
 				photo: applied.photo?.url ?? applied.photo ?? "",
@@ -177,7 +178,9 @@ export function Profile() {
 	const handlePrevClick = () => {
 		if (currentIndex !== null && currentIndex > 0) {
 			const prevDriver = filteredDrivers[currentIndex - 1];
+			const scrollPos = window.scrollY;
 			navigate(`/pilotos/${normalizeString(prevDriver.name)}`);
+			setTimeout(() => window.scrollTo(0, scrollPos), 0);
 		}
 	};
 
@@ -187,7 +190,9 @@ export function Profile() {
 			currentIndex < filteredDrivers.length - 1
 		) {
 			const nextDriver = filteredDrivers[currentIndex + 1];
+			const scrollPos = window.scrollY;
 			navigate(`/pilotos/${normalizeString(nextDriver.name)}`);
+			setTimeout(() => window.scrollTo(0, scrollPos), 0);
 		}
 	};
 
@@ -405,12 +410,24 @@ export function Profile() {
 											ref={cardRef}
 											data={{
 												...driverData,
-												rating: cardStats?.rating?.toString() ?? "",
-												prevRating: cardStats?.prevRating?.toString() ?? "",
-												racecraft: cardStats?.racecraft?.toString() ?? "",
-												awareness: cardStats?.awareness?.toString() ?? "",
-												pace: cardStats?.pace?.toString() ?? "",
-												experience: cardStats?.experience?.toString() ?? "",
+												rating:
+													cardStats?.rating?.toString() ??
+													"",
+												prevRating:
+													cardStats?.prevRating?.toString() ??
+													"",
+												racecraft:
+													cardStats?.racecraft?.toString() ??
+													"",
+												awareness:
+													cardStats?.awareness?.toString() ??
+													"",
+												pace:
+													cardStats?.pace?.toString() ??
+													"",
+												experience:
+													cardStats?.experience?.toString() ??
+													"",
 											}}
 										/>
 									) : (
@@ -422,28 +439,32 @@ export function Profile() {
 							{/* Right Half - Stats */}
 							<div className="md:w-1/2 pb-4 md:pb-0 flex flex-col gap-6">
 								{/* Driver info */}
-								<div className="bg-f1-bg-silver rounded-lg p-4">
-									<StatsHeader title="Informações do Piloto" />
-									<div className="grid grid-cols-2 gap-4">
-										<DriverInfoItem
-											label="Cidade"
-											value={driverData?.city}
-										/>
-										<DriverInfoItem
-											label="Equipamento"
-											value={driverData?.equipment}
-										/>
-										{driverData?.stream && (
-											<div className="col-span-2">
-												<DriverInfoItem
-													label="Stream"
-													value={driverData.stream}
-													link={driverData.stream}
-												/>
-											</div>
-										)}
+								{(driverData?.city ||
+									driverData?.equipment ||
+									driverData?.stream) && (
+									<div className="bg-f1-bg-silver rounded-lg p-4">
+										<StatsHeader title="Informações do Piloto" />
+										<div className="grid grid-cols-2 gap-4">
+											<DriverInfoItem
+												label="Cidade"
+												value={driverData?.city}
+											/>
+											<DriverInfoItem
+												label="Equipamento"
+												value={driverData?.equipment}
+											/>
+											{driverData?.stream && (
+												<div className="col-span-2">
+													<DriverInfoItem
+														label="Stream"
+														value={driverData.stream}
+														link={driverData.stream}
+													/>
+												</div>
+											)}
+										</div>
 									</div>
-								</div>
+								)}
 
 								{/* Season stats */}
 								{seasonStats &&

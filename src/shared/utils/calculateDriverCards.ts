@@ -1,14 +1,19 @@
-import { getDocs, collection, doc, setDoc } from "firebase/firestore";
+import { getDocs, collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { getGridConfig } from "../config/grids";
 
 export interface DriverCardStats {
 	rating: number;
 	prevRating: number;
+	bestRating: number;
 	racecraft: number;
+	bestRacecraft: number;
 	awareness: number;
+	bestAwareness: number;
 	pace: number;
+	bestPace: number;
 	experience: number;
+	bestExperience: number;
 }
 
 function clamp(value: number, min = 0, max = 99): number {
@@ -155,13 +160,14 @@ function computeSeasonData(
 export async function calculateAndSaveCards(
 	gridId: string,
 	seasonCalendarIds: string[],
-	prevSeasonCalendarIds: string[], // all except last race
+	prevSeasonCalendarIds: string[], // all except last race (kept for backwards compat but not used)
 	driverIds: string[],
 ): Promise<void> {
-	const [resultsSnap, adjSnap, offsetsSnap] = await Promise.all([
+	const [resultsSnap, adjSnap, offsetsSnap, cardsSnap] = await Promise.all([
 		getDocs(collection(db, "race_results")),
 		getDocs(collection(db, "point_adjustments")),
 		getDocs(collection(db, "driver_stats_offsets")),
+		getDoc(doc(db, "driver_cards", gridId)),
 	]);
 
 	const allResults: Record<string, any> = {};
@@ -173,16 +179,36 @@ export async function calculateAndSaveCards(
 	const allOffsets: Record<string, any> = {};
 	offsetsSnap.forEach((d) => { allOffsets[d.id] = d.data(); });
 
+	// For each driver, find races they participated in and exclude the most recent
+	const getDriverRaces = (driverId: string): { all: string[]; prevOnly: string[] } => {
+		const participated: string[] = [];
+		for (const calId of seasonCalendarIds) {
+			const result = allResults[calId];
+			if (!result) continue;
+			const raceOrder = (result.results ?? []).filter(Boolean);
+			const qualyOrder = (result.resultsQualy ?? []).filter(Boolean);
+			const sprintOrder = (result.sprintResults ?? []).filter(Boolean);
+			if (raceOrder.includes(driverId) || qualyOrder.includes(driverId) || sprintOrder.includes(driverId)) {
+				participated.push(calId);
+			}
+		}
+		// Return all races and all except most recent
+		const all = participated;
+		const prevOnly = participated.slice(0, -1);
+		return { all, prevOnly };
+	};
+
 	// Compute season data for all drivers
 	const seasonDataMap: Record<string, DriverSeasonData> = {};
 	const prevDataMap: Record<string, DriverSeasonData> = {};
 
 	for (const driverId of driverIds) {
+		const { all, prevOnly } = getDriverRaces(driverId);
 		seasonDataMap[driverId] = computeSeasonData(
-			seasonCalendarIds, allResults, allAdj, driverId, gridId,
+			all, allResults, allAdj, driverId, gridId,
 		);
 		prevDataMap[driverId] = computeSeasonData(
-			prevSeasonCalendarIds, allResults, allAdj, driverId, gridId,
+			prevOnly, allResults, allAdj, driverId, gridId,
 		);
 	}
 
@@ -231,6 +257,9 @@ export async function calculateAndSaveCards(
 	const prevAllPenaltyRates = prevActiveDrivers.map((id) => getPenaltyRate(id, prevDataMap[id]));
 	const prevMaxPenaltyRate = Math.max(0.01, ...prevAllPenaltyRates);
 
+	// Get existing card data to track best values
+	const existingCards = cardsSnap.exists() ? (cardsSnap.data() as Record<string, DriverCardStats>) : {};
+
 	// Calculate cards for all drivers
 	const cards: Record<string, DriverCardStats> = {};
 
@@ -238,38 +267,55 @@ export async function calculateAndSaveCards(
 		const sd = seasonDataMap[driverId];
 		const pd = prevDataMap[driverId];
 		const historicWins = allOffsets[driverId]?.[gridId]?.wins ?? 0;
+		const existingCard = existingCards[driverId];
 
 		// Current rating
-		const exp = calcExperience(sd.participations);
-		const rc = calcRacecraft(getAvgPoints(sd), maxAvgPoints);
-		const aw = calcAwareness(
+		const exp = Math.round(calcExperience(sd.participations));
+		const rc = Math.round(calcRacecraft(getAvgPoints(sd), maxAvgPoints));
+		const aw = Math.round(calcAwareness(
 			sd.totalNegAdj, maxNegAdj,
 			getPenaltyRate(driverId, sd), maxPenaltyRate,
-			exp,
-		);
-		const pace = calcPace(getAvgQualyPos(sd));
+			calcExperience(sd.participations),
+		));
+		const pace = Math.round(calcPace(getAvgQualyPos(sd)));
 		const careerWins = historicWins + sd.seasonWins;
-		const rating = calcRating(rc, aw, pace, exp, sd.seasonWins, careerWins);
+		const rating = Math.round(calcRating(rc, aw, pace, exp, sd.seasonWins, careerWins));
 
-		// Previous rating (excluding last race)
-		const prevExp = calcExperience(pd.participations);
-		const prevRc = calcRacecraft(getAvgPoints(pd), prevMaxAvgPoints);
-		const prevAw = calcAwareness(
-			pd.totalNegAdj, prevMaxNegAdj,
-			getPenaltyRate(driverId, pd), prevMaxPenaltyRate,
-			prevExp,
-		);
-		const prevPace = calcPace(getAvgQualyPos(pd));
-		const prevCareerWins = historicWins + pd.seasonWins;
-		const prevRating = calcRating(prevRc, prevAw, prevPace, prevExp, pd.seasonWins, prevCareerWins);
+		// Previous rating (from previous races)
+		// If driver has no previous races, prevRating = rating (no change)
+		let prevRating = rating;
+		if (pd.participations > 0) {
+			const prevExp = calcExperience(pd.participations);
+			const prevRc = calcRacecraft(getAvgPoints(pd), prevMaxAvgPoints);
+			const prevAw = calcAwareness(
+				pd.totalNegAdj, prevMaxNegAdj,
+				getPenaltyRate(driverId, pd), prevMaxPenaltyRate,
+				prevExp,
+			);
+			const prevPace = calcPace(getAvgQualyPos(pd));
+			const prevCareerWins = historicWins + pd.seasonWins;
+			prevRating = Math.round(calcRating(prevRc, prevAw, prevPace, prevExp, pd.seasonWins, prevCareerWins));
+		}
+
+		// Track best values (compare with existing)
+		const bestRating = Math.max(rating, existingCard?.bestRating ?? 0);
+		const bestRacecraft = Math.max(rc, existingCard?.bestRacecraft ?? 0);
+		const bestAwareness = Math.max(aw, existingCard?.bestAwareness ?? 0);
+		const bestPace = Math.max(pace, existingCard?.bestPace ?? 0);
+		const bestExperience = Math.max(exp, existingCard?.bestExperience ?? 0);
 
 		cards[driverId] = {
 			rating,
 			prevRating,
-			racecraft: Math.round(rc),
-			awareness: Math.round(aw),
-			pace: Math.round(pace),
-			experience: Math.round(exp),
+			bestRating,
+			racecraft: rc,
+			bestRacecraft,
+			awareness: aw,
+			bestAwareness,
+			pace,
+			bestPace,
+			experience: exp,
+			bestExperience,
 		};
 	}
 

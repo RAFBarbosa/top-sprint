@@ -154,6 +154,13 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 		const statsTextColor = getTextColor(gridColor);
 
+		console.log(
+			"Rating:",
+			data.rating,
+			"Previous Rating:",
+			data.prevRating,
+		);
+
 		return (
 			<div
 				ref={ref}
@@ -168,7 +175,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 				<div
 					className="absolute inset-0 z-0"
 					style={{
-						background: teamColor,
+						backgroundColor: teamColor,
 						WebkitMaskImage: `url(${bgRatingShape})`,
 						maskImage: `url(${bgRatingShape})`,
 						WebkitMaskSize: "100% 100%",
@@ -260,23 +267,57 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					)}
 
 					{/* ── Layer 2: Driver photo ── */}
-					<div
-						className="absolute top-1 left-5 z-[20] overflow-hidden"
-						style={{ height: "auto", width: "125%" }}
-					>
-						<HygraphImg
-							className="w-full h-full object-cover object-top"
-							src={data.photo || tenant.fallbackDriverPhoto}
-							alt={data.name}
-							imgWidth={300}
-							imgHeight={300}
-						/>
-					</div>
+					{tenant.defaultPhotoStyle === "round" ? (
+						<div
+							className="absolute top-12 right-2 z-[20] overflow-hidden rounded-full border-4 border-white/20"
+							style={{ width: "180px", height: "180px" }}
+						>
+							<HygraphImg
+								className="w-full h-full object-cover object-center"
+								src={data.photo || tenant.fallbackDriverPhoto}
+								alt={data.name}
+								imgWidth={120}
+								imgHeight={120}
+							/>
+						</div>
+					) : tenant.defaultPhotoStyle === "bust" ? (
+						<div
+							className="absolute top-4 left-25 z-[20] overflow-hidden"
+							style={{ height: "auto", width: "80%" }}
+						>
+							<HygraphImg
+								className="w-full h-full object-cover object-top"
+								src={data.photo || tenant.fallbackDriverPhoto}
+								alt={data.name}
+								imgWidth={120}
+								imgHeight={120}
+							/>
+						</div>
+					) : (
+						<div
+							className="absolute top-1 left-5 z-[20] overflow-hidden"
+							style={{ height: "auto", width: "125%" }}
+						>
+							<HygraphImg
+								className="w-full h-full object-cover object-top"
+								src={data.photo || tenant.fallbackDriverPhoto}
+								alt={data.name}
+								imgWidth={300}
+								imgHeight={300}
+							/>
+						</div>
+					)}
 
 					{/* ── Rating number (top-left, above photo) ── */}
 					<div
 						className="absolute z-[30] flex flex-col items-center leading-none"
-						style={{ top: "18%", left: "11%" }}
+						style={{
+							top: "18%",
+							left:
+								tenant.defaultPhotoStyle === "round"
+									? "5%"
+									: "11%",
+						}}
 						// style={{ top: "15%", left: "11%" }}
 					>
 						<span className="text-xs font-semibold uppercase tracking-wider text-f1-bg-silver">
@@ -293,12 +334,12 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									{data.rating || "—"}
 								</span>
 							</div>
+
 							{ratingUp && (
 								<span
-									className="absolute text-green-500 text-sm md:text-lg leading-none -right-5 top-1/2 -translate-y-1/2"
+									className="absolute text-green-500 text-sm md:text-lg leading-none -right-4 md:-right-5 top-1/2 -translate-y-1/2"
 									style={{
 										WebkitTextStroke: "1px white",
-										textStroke: "1px white",
 									}}
 								>
 									▲
@@ -306,10 +347,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							)}
 							{ratingDown && (
 								<span
-									className="absolute text-f1-red text-sm md:text-lg leading-none -right-5 top-1/2 -translate-y-1/2"
+									className="absolute text-f1-red text-sm md:text-lg leading-none -right-4 md:-right-5 top-1/2 -translate-y-1/2"
 									style={{
 										WebkitTextStroke: "1px white",
-										textStroke: "1px white",
 									}}
 								>
 									▼
@@ -480,7 +520,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								))}
 							</div>
 
-							<div className="h-[clamp(16px,4vw,42px)] ml-2 w-auto">
+							<div className="h-11 ml-2 w-auto">
 								<img
 									src={tenant.logo.url}
 									alt={tenant.logo.alt}

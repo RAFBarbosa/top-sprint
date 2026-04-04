@@ -58,7 +58,7 @@ export function SessionResults() {
 				</h1>
 				<Divider />
 			</div>
-			<Calendars hideHeader noPadding />
+			<Calendars hideHeader noPadding preventScrollOnClick />
 			<SessionResult
 				calendarId={matched?.id ?? null}
 				calendarData={matched ?? null}
