@@ -16,20 +16,6 @@ import { useGetDriversQuery } from "../graphql/generated";
 import { useDriverCards } from "../shared/hooks/useDriverCards";
 import { useRealLifeTeamLogos } from "../shared/hooks/useRealLifeTeamLogos";
 
-function StatItem({ label, value }: { label: string; value: number }) {
-	if (!value) return null;
-	return (
-		<div className="flex flex-col items-center justify-center bg-white rounded-sm p-1 text-center">
-			<span className="text-lg md:text-xl font-bold md:font-extrabold leading-none tracking-tighter md:tracking-normal text-f1-text">
-				{value}
-			</span>
-			<span className="text-[10px] uppercase tracking-normal md:tracking-wide text-f1-lighterCarbon font-semibold mt-0.5 ">
-				{label}
-			</span>
-		</div>
-	);
-}
-
 function StatsBlock({
 	label,
 	stats,
@@ -39,27 +25,48 @@ function StatsBlock({
 }) {
 	const hasAny = Object.values(stats).some((v) => v > 0);
 	if (!hasAny) return null;
+	const items = [
+		{ label: "Participações", value: stats.participations },
+		{ label: "Pontos", value: stats.points },
+		{ label: "Temp. Completas", value: stats.seasons },
+		{ label: "Vitórias", value: stats.wins },
+		{ label: "Vit. Sprint", value: stats.sprintWins },
+		{ label: "Pódios", value: stats.podiums },
+		{ label: "Pód. Sprint", value: stats.sprintPodiums },
+		{ label: "Poles", value: stats.poles },
+		{ label: "Volt. Rápidas", value: stats.fastestLaps },
+		{ label: "NCs", value: stats.ncs },
+		{ label: "Campeonatos", value: stats.championships },
+		{ label: "Camp. Equipe", value: stats.teamChampionships },
+	].filter((item) => item.value > 0);
+
+	// Group items into rows of 2
+	const rows: typeof items[] = [];
+	for (let i = 0; i < items.length; i += 2) {
+		rows.push(items.slice(i, i + 2));
+	}
+
 	return (
-		<div>
-			<p className="text-xs font-bold uppercase tracking-wide text-f1-text mb-2">
-				{label}
-			</p>
-			<div className="grid grid-cols-3 gap-2">
-				<StatItem label="Participações" value={stats.participations} />
-				<StatItem label="Pontos" value={stats.points} />
-				<StatItem label="Temp. Completas" value={stats.seasons} />
-				<StatItem label="Vitórias" value={stats.wins} />
-				<StatItem label="Vit. Sprint" value={stats.sprintWins} />
-				<StatItem label="Pódios" value={stats.podiums} />
-				<StatItem label="Pód. Sprint" value={stats.sprintPodiums} />
-				<StatItem label="Poles" value={stats.poles} />
-				<StatItem label="Volt. Rápidas" value={stats.fastestLaps} />
-				<StatItem label="NCs" value={stats.ncs} />
-				<StatItem label="Campeonatos" value={stats.championships} />
-				<StatItem
-					label="Camp. Equipe"
-					value={stats.teamChampionships}
-				/>
+		<div className="bg-f1-bg-silver rounded-lg p-4">
+			<StatsHeader title={label} />
+			<div className="flex flex-col">
+				{rows.map((row, rowIdx) => (
+					<div
+						key={rowIdx}
+						className={`grid grid-cols-2 py-2 ${rowIdx < rows.length - 1 ? "border-b border-black/10" : ""}`}
+					>
+						{row.map((item) => (
+							<div key={item.label} className="flex items-center justify-between pr-3">
+								<span className="text-[11px] text-f1-lighterCarbon">
+									{item.label}
+								</span>
+								<span className="text-sm font-bold text-f1-text">
+									{item.value}
+								</span>
+							</div>
+						))}
+					</div>
+				))}
 			</div>
 		</div>
 	);
@@ -425,8 +432,8 @@ export function Profile() {
 												pace:
 													cardStats?.pace?.toString() ??
 													"",
-												experience:
-													cardStats?.experience?.toString() ??
+												consistency:
+													cardStats?.consistency?.toString() ??
 													"",
 											}}
 										/>
@@ -471,12 +478,10 @@ export function Profile() {
 									Object.values(seasonStats).some(
 										(v) => v > 0,
 									) && (
-										<div className="bg-f1-bg-silver rounded-lg p-4">
-											<StatsBlock
-												label="Temporada Atual"
-												stats={seasonStats}
-											/>
-										</div>
+										<StatsBlock
+											label="Temporada Atual"
+											stats={seasonStats}
+										/>
 									)}
 
 								{/* Career stats */}
@@ -484,12 +489,10 @@ export function Profile() {
 									Object.values(careerStats).some(
 										(v) => v > 0,
 									) && (
-										<div className="bg-f1-bg-silver rounded-lg p-4">
-											<StatsBlock
-												label="Carreira"
-												stats={careerStats}
-											/>
-										</div>
+										<StatsBlock
+											label="Carreira"
+											stats={careerStats}
+										/>
 									)}
 							</div>
 						</div>
