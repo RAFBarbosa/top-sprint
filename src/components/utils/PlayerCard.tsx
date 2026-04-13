@@ -9,6 +9,7 @@ import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 import bgRatingShape from "/src/assets/img/card-v2/bg-ratingshape.png";
 import bgRatingBgShape from "/src/assets/img/card-v2/bg-ratingbgshape.png";
 import bgRatingNameplate from "/src/assets/img/card-v2/bg-ratingnameplate.png";
+import bgRatingNameplateTeam from "/src/assets/img/card-v2/bg-ratingnameplateteam.png";
 import bgRatingNumberplate from "/src/assets/img/card-v2/bg-ratingnumberplate.png";
 import bgStatsDivider from "/src/assets/img/card-v2/bg-statsdivider.png";
 import { useTab } from "../../contexts/TabContext";
@@ -20,7 +21,7 @@ interface PlayerCardProps {
 		racecraft: string;
 		awareness: string;
 		pace: string;
-		experience: string;
+		consistency: string;
 		rating: string;
 		prevRating: string;
 		photo: string;
@@ -97,6 +98,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 		const { firstName, secondName } = splitDriverName(data.name);
 		const teamColor = data.teamColor || "#1a1a2e";
+		const nameplateImg = data.realLifeTeamLogoUrl
+			? bgRatingNameplateTeam
+			: bgRatingNameplate;
 
 		const hasSpecialAchievement = [
 			data.stats?.championships,
@@ -133,7 +137,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 			parseFloat(data.rating) < parseFloat(data.prevRating);
 
 		const stats = [
-			{ label: "EXP", value: data.experience, tooltip: "Experiência" },
+			{ label: "CON", value: data.consistency, tooltip: "Consistência" },
 			{ label: "PIL", value: data.racecraft, tooltip: "Pilotagem" },
 			{ label: "ATN", value: data.awareness, tooltip: "Atenção" },
 			{ label: "RIT", value: data.pace, tooltip: "Ritmo" },
@@ -253,19 +257,6 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						</div>
 					)} */}
 
-					{/* Real Life Team Logo */}
-					{data.realLifeTeamLogoUrl && (
-						<HygraphImg
-							className="absolute top-43 bg-black/60 rounded-r-sm border border-y-white/60 border-r-white/60 inset-x-0 h-auto max-w-22.5 object-contain z-50"
-							// className="absolute bottom-4 z-50 inset-x-0 left-43 h-10 w-auto object-contain"
-							src={data.realLifeTeamLogoUrl}
-							alt="Real life team logo"
-							imgWidth={120}
-							imgHeight={120}
-							fit="clip"
-						/>
-					)}
-
 					{/* ── Layer 2: Driver photo ── */}
 					{tenant.defaultPhotoStyle === "round" ? (
 						<div
@@ -318,7 +309,6 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									? "5%"
 									: "11%",
 						}}
-						// style={{ top: "15%", left: "11%" }}
 					>
 						<span className="text-xs font-semibold uppercase tracking-wider text-f1-bg-silver">
 							Nota Geral
@@ -364,8 +354,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						<div
 							className="absolute inset-0 w-full h-full"
 							style={{
-								WebkitMaskImage: `url(${bgRatingNameplate})`,
-								maskImage: `url(${bgRatingNameplate})`,
+								WebkitMaskImage: `url(${nameplateImg})`,
+								maskImage: `url(${nameplateImg})`,
 								WebkitMaskSize: "100% 100%",
 								maskSize: "100% 100%",
 								WebkitMaskRepeat: "no-repeat",
@@ -373,7 +363,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							}}
 						>
 							<img
-								src={bgRatingNameplate}
+								src={nameplateImg}
 								alt=""
 								aria-hidden="true"
 								className="w-full h-full object-fill"
@@ -387,42 +377,62 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									background: `linear-gradient(180deg, ${teamColor}80 0%, ${teamColor}30 50%, rgba(0,0,0,0.3) 100%)`,
 								}}
 							/>
-							<div
+							{/* <div
 								className="absolute inset-0 w-full h-full pointer-events-none"
 								style={{
 									background: `linear-gradient(135deg, ${teamColor}80 0%, ${teamColor}30 50%, rgba(0,0,0,0.3) 100%)`,
 									mixBlendMode: "overlay",
 								}}
-							/>
+							/> */}
 						</div>
 
 						<div
 							className="absolute bottom-0 left- w-full z-10 flex flex-col pl-[4%] pr-[4%]"
 							style={{ top: "49.3%" }}
 						>
-							<div className="flex flex-col items-start gap-4 w-full ">
-								<div
-									className="border rounded-xs border-white/90"
-									style={{
-										width: "clamp(45px, 15vw, 61px)",
-										height: "clamp(23px, 7.8vw, 32px)",
-									}}
-								>
-									<Flag
-										code={
-											data.nationality
-												? COUNTRY_CODE_MAP[
-														data.nationality
-													] || "BR"
-												: "BR"
-										}
+							<div className="flex flex-col items-start gap-4 w-full">
+								<div className="flex items-center justify-between w-5/11">
+									<div
+										className="border rounded-xs border-white/75"
 										style={{
-											height: "100%",
-											width: "100%",
-											objectFit: "cover",
-											objectPosition: "center",
+											width: "clamp(45px, 15vw, 61px)",
+											height: "clamp(23px, 7.8vw, 32px)",
 										}}
-									/>
+									>
+										<Flag
+											code={
+												data.nationality
+													? COUNTRY_CODE_MAP[
+															data.nationality
+														] || "BR"
+													: "BR"
+											}
+											style={{
+												height: "100%",
+												width: "100%",
+												objectFit: "cover",
+												objectPosition: "center",
+											}}
+										/>
+									</div>
+									{data.realLifeTeamLogoUrl && (
+										<div
+											className=""
+											style={{
+												width: "clamp(45px, 15vw, 61px)",
+												height: "clamp(23px, 7.8vw, 32px)",
+											}}
+										>
+											<HygraphImg
+												className="w-full h-full object-contain"
+												src={data.realLifeTeamLogoUrl}
+												alt="Real life team logo"
+												imgWidth={120}
+												imgHeight={120}
+												fit="clip"
+											/>
+										</div>
+									)}
 								</div>
 
 								<div className="flex flex-col leading-none gap-1">
@@ -532,7 +542,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 					{/* ── Badges ── */}
 					{data.badge?.length > 0 && (
-						<div className="absolute top-[10%] right-[2%] z-[60] flex gap-1">
+						<div className="absolute top-[36%] left-[3%] z-[60] flex gap-1">
 							{data.badge.map((badge, index) => (
 								<HygraphImg
 									key={index}
@@ -545,7 +555,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									data-tooltip-content={formatBadgeTitle(
 										data.badgeTitle?.toString() ?? "",
 									)}
-									className="w-10 h-10 object-contain cursor-help"
+									className="w-12 h-12 object-contain cursor-help"
 								/>
 							))}
 						</div>

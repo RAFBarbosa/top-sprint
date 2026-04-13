@@ -128,7 +128,7 @@ export const processCsvData = async (
                     const racecraftIdx = findHeaderIndex(headers, ["Racecraft"]);
                     const awarenessIdx = findHeaderIndex(headers, ["Awareness"]);
                     const paceIdx = findHeaderIndex(headers, ["Pace"]);
-                    const experienceIdx = findHeaderIndex(headers, ["Experience", " Experience"]);
+                    const consistencyIdx = findHeaderIndex(headers, ["Consistency", "Experience", " Experience"]);
                     const bestCardIdx = findHeaderIndex(headers, ["Melhor Carta"]);
 
                     // Stats data
@@ -236,7 +236,7 @@ export const processCsvData = async (
                             }
 
                             // Cards data collection
-                            if (cardNameIdx !== -1 && racecraftIdx !== -1 && awarenessIdx !== -1 && paceIdx !== -1 && experienceIdx !== -1 && bestCardIdx !== -1 && cardPrevRatingIdx !== -1 && cardRatingIdx !== -1) {
+                            if (cardNameIdx !== -1 && racecraftIdx !== -1 && awarenessIdx !== -1 && paceIdx !== -1 && consistencyIdx !== -1 && bestCardIdx !== -1 && cardPrevRatingIdx !== -1 && cardRatingIdx !== -1) {
                                 const cardName = row[headers[cardNameIdx]];
                                 if (cardName && cardName.trim() !== "" && cardName !== "N/A") {
                                     const cardItem = {
@@ -246,7 +246,7 @@ export const processCsvData = async (
                                         racecraft: (row[headers[racecraftIdx]] || "").trim(),
                                         awareness: (row[headers[awarenessIdx]] || "").trim(),
                                         pace: (row[headers[paceIdx]] || "").trim(),
-                                        experience: (row[headers[experienceIdx]] || "").trim(),
+                                        consistency: (row[headers[consistencyIdx]] || "").trim(),
                                         bestRating: (row[headers[bestCardIdx]] || "").trim(),
                                         prevRating: (row[headers[cardPrevRatingIdx]] || "").trim(),
                                         rating: (row[headers[cardRatingIdx]] || "").trim(),
