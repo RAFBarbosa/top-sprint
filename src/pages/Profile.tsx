@@ -41,7 +41,7 @@ function StatsBlock({
 	].filter((item) => item.value > 0);
 
 	// Group items into rows of 2
-	const rows: typeof items[] = [];
+	const rows: (typeof items)[] = [];
 	for (let i = 0; i < items.length; i += 2) {
 		rows.push(items.slice(i, i + 2));
 	}
@@ -56,11 +56,14 @@ function StatsBlock({
 						className={`grid grid-cols-2 py-2 ${rowIdx < rows.length - 1 ? "border-b border-black/10" : ""}`}
 					>
 						{row.map((item) => (
-							<div key={item.label} className="flex items-center justify-between pr-3">
-								<span className="text-[11px] text-f1-lighterCarbon">
+							<div
+								key={item.label}
+								className="flex flex-col gap-1 pr-3"
+							>
+								<span className="text-[10px] uppercase tracking-wider text-f1-text">
 									{item.label}
 								</span>
-								<span className="text-sm font-bold text-f1-text">
+								<span className="text-xl font-extrabold text-f1-text tabular-nums leading-none">
 									{item.value}
 								</span>
 							</div>
@@ -86,7 +89,7 @@ function DriverInfoItem({
 	if (link) {
 		return (
 			<div className="flex flex-col gap-1">
-				<span className="text-[10px] uppercase tracking-wide text-f1-text font-bold">
+				<span className="text-[10px] uppercase tracking-wider text-f1-text font-bold">
 					{label}
 				</span>
 				<a
@@ -109,7 +112,7 @@ function DriverInfoItem({
 
 	return (
 		<div className="flex flex-col gap-1">
-			<span className="text-[10px] uppercase tracking-wide text-f1-text font-bold">
+			<span className="text-[10px] uppercase tracking-wider text-f1-text font-bold">
 				{label}
 			</span>
 			<span className="text-sm font-medium">{value}</span>
@@ -408,7 +411,7 @@ export function Profile() {
 
 					{/* Split Layout Container */}
 					<div className="w-full bg-white md:rounded md:py-8 px-3 pt-4">
-						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto px-4">
+						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
 							{/* Left Half - Fixed Card */}
 							<div className="md:w-1/2 flex justify-center md:justify-end">
 								<div className="flex flex-col">
@@ -464,7 +467,9 @@ export function Profile() {
 												<div className="col-span-2">
 													<DriverInfoItem
 														label="Stream"
-														value={driverData.stream}
+														value={
+															driverData.stream
+														}
 														link={driverData.stream}
 													/>
 												</div>
