@@ -47,7 +47,7 @@ function StatsBlock({
 	}
 
 	return (
-		<div className="bg-f1-bg-silver rounded-lg p-4">
+		<div>
 			<StatsHeader title={label} />
 			<div className="flex flex-col">
 				{rows.map((row, rowIdx) => (
@@ -60,7 +60,7 @@ function StatsBlock({
 								key={item.label}
 								className="flex flex-col gap-1 pr-3"
 							>
-								<span className="text-[10px] uppercase tracking-wider text-f1-text">
+								<span className="text-[10px] uppercase tracking-wider text-f1-lighterCarbon">
 									{item.label}
 								</span>
 								<span className="text-xl font-extrabold text-f1-text tabular-nums leading-none">
@@ -122,7 +122,7 @@ function DriverInfoItem({
 
 function StatsHeader({ title }: { title: string }) {
 	return (
-		<div className="flex items-center gap-2 mb-3">
+		<div className="mb-3">
 			<p className="text-xs font-bold uppercase tracking-wide text-f1-text">
 				{title}
 			</p>
@@ -410,11 +410,25 @@ export function Profile() {
 					</div>
 
 					{/* Split Layout Container */}
-					<div className="w-full bg-white md:rounded md:py-8 px-3 pt-4">
-						<div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
+					<div className="w-full md:rounded-lg overflow-hidden">
+						<div className="flex flex-col md:flex-row">
 							{/* Left Half - Fixed Card */}
-							<div className="md:w-1/2 flex justify-center md:justify-end">
-								<div className="flex flex-col">
+							<div
+								className="md:w-1/2 flex justify-center items-center py-10 px-6 relative"
+								style={{
+									background: driverData?.teamColor
+										? `linear-gradient(160deg, ${driverData.teamColor} 0%, ${driverData.teamColor}dd 40%, #1a1a1a 100%)`
+										: "#1a1a1a",
+								}}
+							>
+								<div
+									className="absolute inset-0 opacity-[0.07]"
+									style={{
+										backgroundImage:
+											"repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.5) 20px, rgba(255,255,255,0.5) 21px)",
+									}}
+								/>
+								<div className="flex flex-col relative z-10" style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))" }}>
 									{driverData ? (
 										<PlayerCard
 											ref={cardRef}
@@ -447,7 +461,7 @@ export function Profile() {
 							</div>
 
 							{/* Right Half - Stats */}
-							<div className="md:w-1/2 pb-4 md:pb-0 flex flex-col gap-6">
+							<div className="md:w-1/2 flex flex-col gap-4 bg-white py-8 px-6">
 								{/* Driver info */}
 								{(driverData?.city ||
 									driverData?.equipment ||
@@ -483,10 +497,12 @@ export function Profile() {
 									Object.values(seasonStats).some(
 										(v) => v > 0,
 									) && (
-										<StatsBlock
-											label="Temporada Atual"
-											stats={seasonStats}
-										/>
+										<div className="bg-f1-bg-silver rounded-lg p-4">
+											<StatsBlock
+												label="Temporada Atual"
+												stats={seasonStats}
+											/>
+										</div>
 									)}
 
 								{/* Career stats */}
@@ -494,10 +510,12 @@ export function Profile() {
 									Object.values(careerStats).some(
 										(v) => v > 0,
 									) && (
-										<StatsBlock
-											label="Carreira"
-											stats={careerStats}
-										/>
+										<div className="bg-f1-bg-silver rounded-lg p-4">
+											<StatsBlock
+												label="Carreira"
+												stats={careerStats}
+											/>
+										</div>
 									)}
 							</div>
 						</div>
