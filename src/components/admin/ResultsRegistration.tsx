@@ -14,6 +14,7 @@ import {
 	GetDataDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import {
 	Dialog,
 	DialogTitle,
@@ -24,17 +25,16 @@ import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import { getGridLabel } from "../../shared/config/grids";
 import { useCalculateDriverStats } from "../../shared/hooks/useCalculateDriverStats";
+import { useToast } from "../../contexts/ToastContext";
 
 const NEW_ID = "__new__";
 
 export function ResultsRegistration() {
 	const [csvFile, setCsvFile] = useState<File | null>(null);
 	const [grid, setGrid] = useState("");
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+	const [saving, setSaving] = useState(false);
+	const { showToast } = useToast();
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -77,7 +77,6 @@ export function ResultsRegistration() {
 		setCsvFile(null);
 		setTitle("");
 		setUploadProgress(null);
-		setStatus({ type: "idle", message: "" });
 	};
 
 	const handleSelectData = (dataItem: any) => {
@@ -89,7 +88,6 @@ export function ResultsRegistration() {
 		setGrid(dataItem.grid);
 		setTitle(dataItem.title || "");
 		setCsvFile(null);
-		setStatus({ type: "idle", message: "" });
 	};
 
 	const handleNewResult = () => {
@@ -103,7 +101,7 @@ export function ResultsRegistration() {
 
 	const handleSubmit = async (event: FormEvent) => {
 		event.preventDefault();
-		setStatus({ type: "loading", message: "Enviando dados..." });
+		setSaving(true);
 
 		const isEditing = expandedId !== null && expandedId !== NEW_ID;
 		const selectedData = isEditing
@@ -170,10 +168,10 @@ export function ResultsRegistration() {
 				});
 			}
 
-			setStatus({
-				type: "success",
-				message: isEditing ? "Dados atualizados com sucesso!" : "Dados cadastrados com sucesso!",
-			});
+			showToast(
+				"success",
+				isEditing ? "Dados atualizados com sucesso!" : "Dados cadastrados com sucesso!",
+			);
 
 			if (!isEditing) {
 				resetFormState();
@@ -183,11 +181,11 @@ export function ResultsRegistration() {
 			}
 
 			if (grid) triggerForGrid(grid).catch(console.error);
-
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 5000);
-		} catch (error) {
-			setStatus({ type: "error", message: error.message || "Erro ao processar dados" });
+		} catch (error: any) {
+			showToast("error", error.message || "Erro ao processar dados");
 			setUploadProgress(null);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -249,25 +247,6 @@ export function ResultsRegistration() {
 		return (
 			<div className="border-t border-f1-red/20 bg-f1-red/5 p-4">
 				<form onSubmit={handleSubmit}>
-					{status.type !== "idle" && (
-						<div
-							className={`w-full p-3 rounded-md mb-4 text-sm ${
-								status.type === "error"
-									? "bg-red-100 border border-red-400 text-red-700"
-									: status.type === "success"
-										? "bg-green-100 border border-green-400 text-green-700"
-										: "bg-blue-100 border border-blue-400 text-blue-700"
-							}`}
-						>
-							<div className="flex items-center gap-2">
-								{status.type === "loading" && (
-									<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current shrink-0"></div>
-								)}
-								<span>{status.message}</span>
-							</div>
-						</div>
-					)}
-
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						<div>
 							<label className="block mb-1 text-sm">Título</label>
@@ -345,9 +324,16 @@ export function ResultsRegistration() {
 
 					<button
 						type="submit"
-						className="bg-f1-red text-white w-full px-6 py-2 rounded cursor-pointer duration-120 mt-4 hover:bg-f1-red/80 text-sm font-medium"
+						disabled={saving}
+						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon text-sm font-medium"
 					>
-						{isEditing ? "Atualizar Resultado" : "Cadastrar Resultado"}
+						{saving
+							? isEditing
+								? "Atualizando..."
+								: "Cadastrando..."
+							: isEditing
+								? "Atualizar Resultado"
+								: "Cadastrar Resultado"}
 					</button>
 				</form>
 			</div>
@@ -450,9 +436,7 @@ export function ResultsRegistration() {
 									className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120 shrink-0"
 									title={dataItem.deleted ? "Restaurar" : "Excluir"}
 								>
-									<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-										<path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-									</svg>
+									<TrashIcon className="h-4 w-4" />
 								</button>
 							</div>
 

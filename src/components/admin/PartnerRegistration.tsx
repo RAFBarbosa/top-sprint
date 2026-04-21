@@ -12,6 +12,8 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { useToast } from "../../contexts/ToastContext";
 
 export function PartnerRegistration() {
 	const [formData, setFormData] = useState({
@@ -21,11 +23,8 @@ export function PartnerRegistration() {
 	});
 
 	const [logoFile, setLogoFile] = useState<File | null>(null);
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+	const { showToast } = useToast();
 	const [selectedPartner, setSelectedPartner] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -110,7 +109,6 @@ export function PartnerRegistration() {
 
 	const handlePartner = async (event: FormEvent) => {
 		event.preventDefault();
-		setStatus({ type: "loading", message: "Enviando dados..." });
 
 		try {
 			if (!formData.name) throw new Error("Nome é obrigatório");
@@ -120,8 +118,6 @@ export function PartnerRegistration() {
 
 			let logoId = null;
 			if (logoFile) {
-				setStatus({ type: "loading", message: "Enviando imagem..." });
-
 				const assetResult = await createAsset({
 					variables: { data: {} },
 				});
@@ -182,10 +178,7 @@ export function PartnerRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
-				setStatus({
-					type: "success",
-					message: "Parceiro atualizado com sucesso!",
-				});
+				showToast("success", "Parceiro atualizado com sucesso!");
 			} else {
 				const result = await createPartner({
 					variables: {
@@ -203,10 +196,7 @@ export function PartnerRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
-				setStatus({
-					type: "success",
-					message: "Parceiro cadastrado com sucesso!",
-				});
+				showToast("success", "Parceiro cadastrado com sucesso!");
 			}
 
 			if (isEditing) {
@@ -215,16 +205,11 @@ export function PartnerRegistration() {
 				resetForm();
 			}
 			setUploadProgress(null);
-
-			setTimeout(() => {
-				setStatus({ type: "idle", message: "" });
-			}, 5000);
-		} catch (error) {
-			setStatus({
-				type: "error",
-				message:
-					error.message || "Erro desconhecido ao cadastrar parceiro",
-			});
+		} catch (error: any) {
+			showToast(
+				"error",
+				error.message || "Erro desconhecido ao cadastrar parceiro",
+			);
 			setUploadProgress(null);
 		}
 	};
@@ -350,19 +335,7 @@ export function PartnerRegistration() {
 												: "Excluir"
 										}
 									>
-										<svg
-											className="h-5 w-5"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-											/>
-										</svg>
+										<TrashIcon className="h-5 w-5" />
 									</button>
 								</div>
 							</li>
@@ -461,25 +434,6 @@ export function PartnerRegistration() {
 							</button>
 						)}
 					</div>
-
-					{status.type !== "idle" && (
-						<div
-							className={`w-full p-4 rounded-md mb-4 ${
-								status.type === "error"
-									? "bg-red-100 border border-red-400 text-red-700"
-									: status.type === "success"
-										? "bg-green-100 border border-green-400 text-green-700"
-										: "bg-blue-100 border border-blue-400 text-blue-700"
-							}`}
-						>
-							<div className="flex items-center gap-2">
-								{status.type === "loading" && (
-									<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-								)}
-								<span>{status.message}</span>
-							</div>
-						</div>
-					)}
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>

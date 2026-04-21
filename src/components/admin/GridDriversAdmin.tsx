@@ -22,6 +22,8 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { useToast } from "../../contexts/ToastContext";
 
 interface GridProfile {
 	number: string;
@@ -56,10 +58,7 @@ export function GridDriversAdmin({
 	});
 
 	const [addSearch, setAddSearch] = useState("");
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
+	const { showToast } = useToast();
 
 	const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState<"name" | "team">("name");
@@ -158,7 +157,6 @@ export function GridDriversAdmin({
 	};
 
 	const handleSaveEdit = async (driverId: string) => {
-		setStatus({ type: "loading", message: "Salvando..." });
 		try {
 			const driver = driversData?.drivers?.find((d) => d.id === driverId);
 			const profileToSave: GridProfile = {
@@ -170,10 +168,9 @@ export function GridDriversAdmin({
 			await setDoc(doc(db, "driver_profiles", driverId), updated);
 			setAllProfiles((prev) => ({ ...prev, [driverId]: updated }));
 			setEditingId(null);
-			setStatus({ type: "success", message: "Salvo!" });
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
+			showToast("success", "Piloto salvo!");
 		} catch (e: any) {
-			setStatus({ type: "error", message: "Erro: " + e.message });
+			showToast("error", "Erro: " + e.message);
 		}
 	};
 
@@ -187,28 +184,25 @@ export function GridDriversAdmin({
 			reserve,
 			exDriver,
 		};
-		setStatus({ type: "loading", message: "Adicionando..." });
 		try {
 			const existing = allProfiles[driverId] ?? {};
 			const updated = { ...existing, [gridId ?? ""]: profile };
 			await setDoc(doc(db, "driver_profiles", driverId), updated);
 			setAllProfiles((prev) => ({ ...prev, [driverId]: updated }));
 			setAddSearch("");
-			setStatus({
-				type: "success",
-				message: reserve ? "Reserva adicionado!" : "Piloto adicionado!",
-			});
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
+			showToast(
+				"success",
+				reserve ? "Reserva adicionado!" : "Piloto adicionado!",
+			);
 			setEditForm(profile);
 			setEditingId(driverId);
 		} catch (e: any) {
-			setStatus({ type: "error", message: "Erro: " + e.message });
+			showToast("error", "Erro: " + e.message);
 		}
 	};
 
 	const confirmRemove = async () => {
 		if (!confirmRemoveId) return;
-		setStatus({ type: "loading", message: "Removendo..." });
 		try {
 			await updateDoc(doc(db, "driver_profiles", confirmRemoveId), {
 				[gridId ?? ""]: deleteField(),
@@ -223,10 +217,9 @@ export function GridDriversAdmin({
 				return copy;
 			});
 			if (editingId === confirmRemoveId) setEditingId(null);
-			setStatus({ type: "success", message: "Removido!" });
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
+			showToast("success", "Piloto removido!");
 		} catch (e: any) {
-			setStatus({ type: "error", message: "Erro: " + e.message });
+			showToast("error", "Erro: " + e.message);
 		} finally {
 			setConfirmRemoveId(null);
 		}
@@ -285,19 +278,7 @@ export function GridDriversAdmin({
 						className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 						title="Remover"
 					>
-						<svg
-							className="h-5 w-5"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-							/>
-						</svg>
+						<TrashIcon className="h-5 w-5" />
 					</button>
 				</div>
 
@@ -436,20 +417,6 @@ export function GridDriversAdmin({
 					</DialogPanel>
 				</div>
 			</Dialog>
-
-			{status.type !== "idle" && (
-				<div
-					className={`p-3 rounded text-sm ${
-						status.type === "error"
-							? "bg-red-100 text-red-700 border border-red-300"
-							: status.type === "success"
-								? "bg-green-100 text-green-700 border border-green-300"
-								: "bg-blue-100 text-blue-700 border border-blue-300"
-					}`}
-				>
-					{status.message}
-				</div>
-			)}
 
 			{/* Add driver */}
 			<div className="border rounded-lg p-4 space-y-3">

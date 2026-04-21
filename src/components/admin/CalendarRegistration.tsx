@@ -15,6 +15,7 @@ import {
 } from "../../graphql/generated";
 import { format } from "date-fns";
 import { ChevronUpDownIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import ptBR from "date-fns/locale/pt-BR";
 import {
 	Dialog,
@@ -25,6 +26,7 @@ import {
 import { getGridLabel } from "../../shared/config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
+import { useToast } from "../../contexts/ToastContext";
 
 interface CalendarRegistrationProps {
 	gridId?: string;
@@ -50,10 +52,7 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 	const [formData, setFormData] = useState(emptyForm);
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
+	const { showToast } = useToast();
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [activeFilter, setActiveFilter] = useState<
@@ -142,7 +141,6 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 			grid: calendar.grid || "",
 			seasonId: seasonId || "",
 		});
-		setStatus({ type: "idle", message: "" });
 	};
 
 	const handleNewEtapa = () => {
@@ -152,7 +150,6 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 		}
 		setExpandedId(NEW_ID);
 		setFormData(emptyForm);
-		setStatus({ type: "idle", message: "" });
 	};
 
 	const handleDuplicate = (calendar: any) => {
@@ -170,13 +167,9 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 
 	const handleCalendar = async (event: FormEvent) => {
 		event.preventDefault();
-		setStatus({ type: "loading", message: "Enviando dados..." });
 
 		if (!formData.date) {
-			setStatus({
-				type: "error",
-				message: "Por favor, selecione uma data válida",
-			});
+			showToast("error", "Por favor, selecione uma data válida");
 			return;
 		}
 
@@ -212,7 +205,7 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 					await removeCalendarSeason(expandedId!);
 				}
 
-				setStatus({ type: "success", message: "Etapa atualizada com sucesso!" });
+				showToast("success", "Etapa atualizada com sucesso!");
 			} else {
 				const result = await createCalendar({
 					variables: {
@@ -237,19 +230,12 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 					);
 				}
 
-				setStatus({ type: "success", message: "Etapa cadastrada com sucesso!" });
+				showToast("success", "Etapa cadastrada com sucesso!");
 				setFormData(emptyForm);
 			}
-
-			setTimeout(() => {
-				setStatus({ type: "idle", message: "" });
-			}, 5000);
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Registration error:", error);
-			setStatus({
-				type: "error",
-				message: error.message || "Erro desconhecido ao cadastrar etapa",
-			});
+			showToast("error", error.message || "Erro desconhecido ao cadastrar etapa");
 		}
 	};
 
@@ -360,25 +346,6 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 							</button>
 						)}
 					</div>
-
-					{status.type !== "idle" && (
-						<div
-							className={`w-full p-3 rounded-md mb-4 text-sm ${
-								status.type === "error"
-									? "bg-red-100 border border-red-400 text-red-700"
-									: status.type === "success"
-										? "bg-green-100 border border-green-400 text-green-700"
-										: "bg-blue-100 border border-blue-400 text-blue-700"
-							}`}
-						>
-							<div className="flex items-center gap-2">
-								{status.type === "loading" && (
-									<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current shrink-0"></div>
-								)}
-								<span>{status.message}</span>
-							</div>
-						</div>
-					)}
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						{/* Pista */}
@@ -569,7 +536,7 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 					<button
 						type="submit"
 						disabled={createCalendarLoading || updateCalendarLoading}
-						className="bg-f1-red text-white w-full px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-f1-red/80 text-sm font-medium"
+						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 					>
 						{createCalendarLoading || updateCalendarLoading
 							? isEditing
@@ -692,19 +659,7 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 									className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120 shrink-0"
 									title={calendar.deleted ? "Restaurar" : "Excluir"}
 								>
-									<svg
-										className="h-4 w-4"
-										fill="none"
-										viewBox="0 0 24 24"
-										strokeWidth={1.5}
-										stroke="currentColor"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-										/>
-									</svg>
+									<TrashIcon className="h-4 w-4" />
 								</button>
 							</div>
 

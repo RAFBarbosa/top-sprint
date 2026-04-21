@@ -21,6 +21,7 @@ import {
 	useGridOptionsQuery,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { getGridLabel, getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { format } from "date-fns";
@@ -31,6 +32,7 @@ import { doc, getDoc, setDoc, getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "./PointAdjustmentsAdmin";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
+import { useToast } from "../../contexts/ToastContext";
 
 interface GridProfile {
 	number: string;
@@ -57,6 +59,7 @@ export function ManualResultsRegistration({
 	gridId,
 }: ManualResultsRegistrationProps) {
 	const { triggerForGrid } = useCalculateCards();
+	const { showToast } = useToast();
 
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
@@ -69,7 +72,7 @@ export function ManualResultsRegistration({
 	const [adjReason, setAdjReason] = useState("");
 	const [adjEditId, setAdjEditId] = useState<string | null>(null);
 	const [adjConfirmDeleteId, setAdjConfirmDeleteId] = useState<string | null>(null);
-	const [adjStatus, setAdjStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
+	const [adjSaving, setAdjSaving] = useState(false);
 
 	// --- ESTADOS CORRIDA ---
 	const [results, setResults] = useState<RaceResult[]>(
@@ -144,10 +147,7 @@ export function ManualResultsRegistration({
 
 	const [link, setLink] = useState("");
 
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
+	const [saving, setSaving] = useState(false);
 	const [selectedCalendar, setSelectedCalendar] = useState<any>(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [activeFilter, setActiveFilter] = useState<
@@ -316,7 +316,7 @@ export function ManualResultsRegistration({
 
 	const saveAdjustments = async (next: PointAdjustment[]) => {
 		if (!selectedCalendar?.id) return;
-		setAdjStatus({ type: "loading", message: "Salvando..." });
+		setAdjSaving(true);
 		try {
 			await setDoc(doc(db, "point_adjustments", selectedCalendar.id), {
 				adjustments: next,
@@ -324,10 +324,11 @@ export function ManualResultsRegistration({
 				calendarId: selectedCalendar.id,
 			});
 			setCalendarAdjustments(next);
-			setAdjStatus({ type: "success", message: "Salvo!" });
-			setTimeout(() => setAdjStatus({ type: "idle", message: "" }), 2000);
+			showToast("success", "Ajuste salvo!");
 		} catch (e: any) {
-			setAdjStatus({ type: "error", message: "Erro: " + e.message });
+			showToast("error", "Erro: " + e.message);
+		} finally {
+			setAdjSaving(false);
 		}
 	};
 
@@ -376,7 +377,7 @@ export function ManualResultsRegistration({
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!selectedCalendar?.id) return;
-		setStatus({ type: "loading", message: "Salvando no Firebase..." });
+		setSaving(true);
 
 		try {
 			const getPToSave = (resList: RaceResult[], penList: number[]) => {
@@ -455,17 +456,18 @@ export function ManualResultsRegistration({
 				grid: selectedCalendar.grid || "",
 			});
 
-			setStatus({
-				type: "success",
-				message: `Dados de ${activeTab === "race" ? "Corrida" : "Sprint"} salvos!`,
-			});
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 3000);
+			showToast(
+				"success",
+				`Dados de ${activeTab === "race" ? "Corrida" : "Sprint"} salvos!`,
+			);
 
 			if (selectedCalendar.grid) {
 				triggerForGrid(selectedCalendar.grid).catch(console.error);
 			}
 		} catch (error: any) {
-			setStatus({ type: "error", message: "Erro: " + error.message });
+			showToast("error", "Erro: " + error.message);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -489,7 +491,6 @@ export function ManualResultsRegistration({
 		setAwards(emptyAwards);
 		setSprintAwards({ ...emptyAwards });
 		setAwardQueries({ ...emptyAwards });
-		setStatus({ type: "idle", message: "" });
 	};
 
 	const getFilteredDrivers = (query: string) => {
@@ -675,10 +676,10 @@ export function ManualResultsRegistration({
 							<button
 								type="button"
 								onClick={handleSubmit}
-								disabled={!selectedCalendar}
+								disabled={!selectedCalendar || saving}
 								className="bg-f1-carbon border border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 							>
-								Gravar Dados
+								{saving ? "Gravando..." : "Gravar Dados"}
 							</button>
 						</div>
 						{selectedCalendar && (
@@ -709,14 +710,6 @@ export function ManualResultsRegistration({
 							</div>
 						)}
 					</div>
-
-					{status.type !== "idle" && (
-						<div
-							className={`w-full p-4 rounded-md mb-4 ${status.type === "error" ? "bg-red-100 border border-red-400 text-red-700" : status.type === "success" ? "bg-green-100 border border-green-400 text-green-700" : "bg-blue-100 border border-blue-400 text-blue-700"}`}
-						>
-							{status.message}
-						</div>
-					)}
 
 					{/* Ajustes de Pontos tab */}
 					{activeTab === "adjustments" && (
@@ -777,7 +770,7 @@ export function ManualResultsRegistration({
 									<button
 										type="button"
 										onClick={handleAddAdjustment}
-										disabled={!adjSelectedDriverId || adjPoints === 0 || !adjReason.trim() || adjStatus.type === "loading"}
+										disabled={!adjSelectedDriverId || adjPoints === 0 || !adjReason.trim() || adjSaving}
 										className="bg-f1-red text-white px-4 py-2 rounded text-sm hover:bg-f1-red/80 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
 									>
 										{adjEditId ? "Salvar" : "Adicionar"}
@@ -790,11 +783,6 @@ export function ManualResultsRegistration({
 										>
 											Cancelar
 										</button>
-									)}
-									{adjStatus.message && (
-										<span className={`text-sm font-medium ${adjStatus.type === "error" ? "text-f1-red" : adjStatus.type === "success" ? "text-green-600" : "text-f1-lighterCarbon"}`}>
-											{adjStatus.message}
-										</span>
 									)}
 								</div>
 							</div>
@@ -835,9 +823,7 @@ export function ManualResultsRegistration({
 																className="text-f1-lighterCarbon hover:text-f1-red hover:bg-f1-red/10 rounded p-1 transition-colors cursor-pointer"
 																title="Remover"
 															>
-																<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-																	<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-																</svg>
+																<TrashIcon className="h-4 w-4" />
 															</button>
 														</td>
 													</tr>

@@ -1,15 +1,28 @@
 import { useTab } from "../../contexts/TabContext";
 import { TabSwitch } from "../standings/csv/TabSwitch";
-import { Socials } from "../utils/Socials";
 import { useState } from "react";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { getGridConfig } from "../../shared/config/grids";
+import { useGrids } from "../../contexts/GridsContext";
 
 export function GridMenu() {
 	const { activeTab, tabs, setActiveTab } = useTab();
+	const { loading: gridsLoading } = useGrids();
 	const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
 
 	if (tabs.length <= 1) return null;
+
+	if (gridsLoading) {
+		return (
+			<div
+				className="h-9 md:h-11 border-b-2 md:bg-[var(--color-grid-menu-bg)]"
+				style={{
+					color: "var(--color-grid-menu-text)",
+					borderBottomColor: "var(--color-grid-menu-border)",
+				}}
+			/>
+		);
+	}
 
 	const handleMobileTabSelect = (tabId: string) => {
 		setActiveTab(tabId);
@@ -17,17 +30,15 @@ export function GridMenu() {
 	};
 
 	return (
-		<div className="grid-menu-bg text-white h-9 md:h-11">
-			<div className="max-w-screen-xl flex items-center justify-center md:justify-between h-full mx-auto px-3">
+		<div
+			className="h-9 md:h-11 border-b-2 border-transparent md:bg-[var(--color-grid-menu-bg)] md:border-b-[var(--color-grid-menu-border)]"
+			style={{
+				color: "var(--color-grid-menu-text)",
+			}}
+		>
+			<div className="max-w-screen-xl flex items-center justify-center md:justify-end h-full mx-auto px-3">
 				<div className="flex md:gap-4 items-center">
-					<h3 className="font-semibold uppercase hidden md:block">
-						Grids
-					</h3>
 					<h3 className="font-semibold md:hidden">Grid</h3>
-
-					<div className="hidden md:block">
-						<TabSwitch />
-					</div>
 
 					<div className="md:hidden relative">
 						<button
@@ -97,8 +108,9 @@ export function GridMenu() {
 					</div>
 				</div>
 
-				<div className="hidden md:block scale-75 translate-x-6">
-					<Socials />
+				<div className="hidden md:flex items-center gap-8">
+					<h3 className="font-semibold uppercase">Grid</h3>
+					<TabSwitch />
 				</div>
 			</div>
 		</div>

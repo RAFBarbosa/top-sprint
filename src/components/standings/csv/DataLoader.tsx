@@ -3,11 +3,11 @@ import { StandingsList } from "./StandingsList";
 import { useLocation } from "react-router-dom";
 import { AdminStandings } from "../../admin/AdminStandings";
 import { GridId, getGridConfig } from "../../../shared/config/grids";
-import { useFirebaseStandings } from "../../../shared/hooks/useFirebaseStandings";
 
 interface DataLoaderProps {
 	activeTab: GridId;
-	data?: any; // kept for call-site compatibility, no longer used
+	standings: any[];
+	previousStandings: any[];
 }
 
 export function DataLoader(props: DataLoaderProps) {
@@ -17,7 +17,7 @@ export function DataLoader(props: DataLoaderProps) {
 	const gridConfig = getGridConfig(props.activeTab);
 	const title = gridConfig?.standingsTitle ?? "";
 
-	const { standings, previousStandings, loading } = useFirebaseStandings(props.activeTab);
+	const { standings, previousStandings } = props;
 
 	const buildTeamStandings = (driverRows: typeof standings) => {
 		const map: Record<string, { name: string; pts: number; teamColor: string; teamLogo: string; drivers: string[] }> = {};
@@ -38,16 +38,6 @@ export function DataLoader(props: DataLoaderProps) {
 	// Build team standings: reserve drivers contribute points but are excluded from the drivers list
 	const teamStandings = useMemo(() => buildTeamStandings(standings), [standings]);
 	const previousTeamStandings = useMemo(() => buildTeamStandings(previousStandings), [previousStandings]);
-
-	if (loading) return null;
-
-	if (standings.length === 0) {
-		return (
-			<p className="text-f1-lighterCarbon text-sm py-6 text-center">
-				Nenhuma temporada ativa no momento.
-			</p>
-		);
-	}
 
 	return (
 		<div className="w-full mx-auto">

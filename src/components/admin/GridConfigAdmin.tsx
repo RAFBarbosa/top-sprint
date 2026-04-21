@@ -1,24 +1,35 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGrids } from "../../contexts/GridsContext";
-import type { GridConfig, RaceAward } from "../../shared/config/grids";
+import { useToast } from "../../contexts/ToastContext";
+import { DEFAULT_POINT_SYSTEM, type GridConfig, type RaceAward } from "../../shared/config/grids";
 
 export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading, saveGrids } = useGrids();
-
+	const { showToast } = useToast();
 
 	const [editGrid, setEditGrid] = useState<GridConfig | null>(null);
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
+	const [saving, setSaving] = useState(false);
 
 	useEffect(() => {
 		if (!loading && gridId) {
 			const found = grids.find((g) => g.id === gridId);
-			if (found) setEditGrid(JSON.parse(JSON.stringify(found)));
+			if (found) {
+				const clone: GridConfig = JSON.parse(JSON.stringify(found));
+				const ps = clone.pointSystem;
+				clone.pointSystem = {
+					race: ps?.race && ps.race.length > 0 ? ps.race : [...DEFAULT_POINT_SYSTEM.race],
+					sprint:
+						ps?.sprint && ps.sprint.length > 0
+							? ps.sprint
+							: [...(DEFAULT_POINT_SYSTEM.sprint ?? [])],
+					poleBonus: ps?.poleBonus ?? DEFAULT_POINT_SYSTEM.poleBonus ?? 0,
+					presenceBonus: ps?.presenceBonus ?? DEFAULT_POINT_SYSTEM.presenceBonus ?? 0,
+				};
+				setEditGrid(clone);
+			}
 		}
 	}, [loading, grids, gridId]);
 
@@ -83,15 +94,16 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 
 	const handleSave = async () => {
 		if (!editGrid) return;
-		setStatus({ type: "loading", message: "Salvando..." });
+		setSaving(true);
 		try {
 			await saveGrids(
 				grids.map((g) => (g.id === editGrid.id ? editGrid : g)),
 			);
-			setStatus({ type: "success", message: "Salvo com sucesso!" });
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 3000);
+			showToast("success", "Salvo com sucesso!");
 		} catch (e: any) {
-			setStatus({ type: "error", message: "Erro: " + e.message });
+			showToast("error", "Erro: " + e.message);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -103,27 +115,13 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 				<div className="ml-auto">
 					<button
 						onClick={handleSave}
-						disabled={status.type === "loading"}
+						disabled={saving}
 						className="bg-f1-carbon text-white px-5 py-2 rounded border border-f1-carbon hover:bg-transparent hover:text-f1-carbon cursor-pointer duration-120 disabled:opacity-50"
 					>
-						Salvar
+						{saving ? "Salvando..." : "Salvar"}
 					</button>
 				</div>
 			</div>
-
-			{status.type !== "idle" && (
-				<div
-					className={`p-3 rounded text-sm ${
-						status.type === "error"
-							? "bg-red-100 text-red-700 border border-red-300"
-							: status.type === "success"
-								? "bg-green-100 text-green-700 border border-green-300"
-								: "bg-blue-100 text-blue-700 border border-blue-300"
-					}`}
-				>
-					{status.message}
-				</div>
-			)}
 
 			{/* Basic info */}
 			<div className="border rounded-lg p-4 space-y-4">

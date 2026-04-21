@@ -4,7 +4,8 @@ import { useGrids } from "../../contexts/GridsContext";
 import type { GridConfig } from "../../shared/config/grids";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, TrashIcon } from "@heroicons/react/24/outline";
+import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
 import { GridConfigAdmin } from "./GridConfigAdmin";
 import { GridDriversAdmin } from "./GridDriversAdmin";
 import { PointAdjustmentsAdmin } from "./PointAdjustmentsAdmin";
@@ -84,19 +85,7 @@ function DraggableGridItem({
 					className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 					title="Excluir"
 				>
-					<svg
-						className="h-5 w-5"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-						/>
-					</svg>
+					<TrashIcon className="h-5 w-5" />
 				</button>
 			</div>
 		</li>
@@ -118,6 +107,8 @@ export function GridsAdmin() {
 	const [activeSubView, setActiveSubView] = useState<SubView>(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [localGrids, setLocalGrids] = useState(grids);
+	const [newGridName, setNewGridName] = useState("");
+	const [gridToDelete, setGridToDelete] = useState<GridConfig | null>(null);
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
@@ -136,26 +127,29 @@ export function GridsAdmin() {
 		setActiveSubView(null);
 	};
 
-	const handleDelete = async (grid: GridConfig) => {
-		if (
-			window.confirm(
-				`Tem certeza que deseja remover o grid "${grid.label}"?`,
-			)
-		) {
-			try {
-				await saveGrids(grids.filter((g) => g.id !== grid.id));
-				if (selectedGrid?.id === grid.id) setSelectedGrid(null);
-			} catch (error) {
-				console.error("Failed to delete grid:", error);
-			}
+	const handleDelete = (grid: GridConfig) => {
+		setGridToDelete(grid);
+	};
+
+	const confirmDelete = async () => {
+		if (!gridToDelete) return;
+		try {
+			await saveGrids(grids.filter((g) => g.id !== gridToDelete.id));
+			if (selectedGrid?.id === gridToDelete.id) setSelectedGrid(null);
+		} catch (error) {
+			console.error("Failed to delete grid:", error);
+		} finally {
+			setGridToDelete(null);
 		}
 	};
 
 	const handleAdd = async () => {
+		const label = newGridName.trim();
+		if (!label) return;
 		const id = `grid${String.fromCharCode(65 + grids.length)}`;
 		const newGrid: GridConfig = {
 			id,
-			label: "Novo Grid",
+			label,
 			primaryColor: "#eb1c24",
 			accentColor: "",
 			hoverPrimaryColor: "",
@@ -170,6 +164,7 @@ export function GridsAdmin() {
 			await saveGrids([...grids, newGrid]);
 			setSelectedGrid(newGrid);
 			setActiveSubView("configurar");
+			setNewGridName("");
 		} catch (error) {
 			console.error("Failed to add grid:", error);
 		}
@@ -263,13 +258,15 @@ export function GridsAdmin() {
 										type="text"
 										className="w-full p-2 border rounded h-11"
 										placeholder="Ex: Grid A"
-										disabled
+										value={newGridName}
+										onChange={(e) => setNewGridName(e.target.value)}
+										required
 									/>
 								</div>
 								<button
 									type="submit"
-									disabled={loading}
-									className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
+									disabled={loading || !newGridName.trim()}
+									className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 hover:bg-transparent hover:text-f1-carbon"
 								>
 									Criar
 								</button>
@@ -347,6 +344,38 @@ export function GridsAdmin() {
 					</div>
 				</div>
 			</div>
+			<Dialog
+				open={gridToDelete !== null}
+				onClose={() => setGridToDelete(null)}
+				className="relative z-50"
+			>
+				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+				<div className="fixed inset-0 flex items-center justify-center p-4">
+					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
+						<DialogTitle className="text-lg font-bold">
+							Excluir Grid
+						</DialogTitle>
+						<Description className="mt-1">
+							Tem certeza que deseja excluir o grid{" "}
+							<strong>{gridToDelete?.label}</strong>? Esta ação não pode ser desfeita.
+						</Description>
+						<div className="mt-6 flex justify-end gap-2">
+							<button
+								onClick={() => setGridToDelete(null)}
+								className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-f1-bg-silver cursor-pointer"
+							>
+								Cancelar
+							</button>
+							<button
+								onClick={confirmDelete}
+								className="px-4 py-2 text-white bg-f1-red rounded hover:bg-f1-red/90 cursor-pointer"
+							>
+								Excluir
+							</button>
+						</div>
+					</DialogPanel>
+				</div>
+			</Dialog>
 		</DndProvider>
 	);
 }

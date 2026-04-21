@@ -5,6 +5,7 @@ import { tenant } from "../../shared/config/tenants";
 import Flag from "react-world-flags";
 import { COUNTRY_CODE_MAP } from "../../shared/constants/countryCodeMap";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
+import { getGridConfig } from "../../shared/config/grids";
 
 import bgRatingShape from "/src/assets/img/card-v2/bg-ratingshape.png";
 import bgRatingBgShape from "/src/assets/img/card-v2/bg-ratingbgshape.png";
@@ -151,10 +152,9 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 			: "text-[clamp(16px,5.3vw,22px)]";
 
 		const { activeTab } = useTab();
-		const gridColor = activeTab?.id
-			? tenant.grids.find((grid) => grid.id === activeTab.id)
-					?.primaryColor
-			: "#eb1c24";
+		const gridColor =
+			(activeTab?.id && getGridConfig(activeTab.id)?.primaryColor) ||
+			tenant.cssVars["--color-brand-primary"];
 
 		const statsTextColor = getTextColor(gridColor);
 
@@ -164,6 +164,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 			"Previous Rating:",
 			data.prevRating,
 		);
+
+		console.log(data);
 
 		return (
 			<div

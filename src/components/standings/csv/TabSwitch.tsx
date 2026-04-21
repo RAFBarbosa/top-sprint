@@ -8,8 +8,8 @@ interface TabSwitchProps {
 }
 
 export function TabSwitch({
-	textColor = "text-white",
-	borderColor = "border-white",
+	textColor = "",
+	borderColor = "border-current",
 }: TabSwitchProps) {
 	const { activeTab, setActiveTab, tabs } = useTab();
 
@@ -33,10 +33,10 @@ export function TabSwitch({
 										getGridConfig(tab.id)?.primaryColor ??
 										"var(--color-brand-primary)",
 								}}
-								className={`absolute bottom-0 left-0 h-0.5 transition-all duration-150 ease-out ${
+								className={`absolute bottom-0 -left-1 h-0.5 transition-all duration-150 ease-out ${
 									activeTab.id === tab.id
-										? "w-full"
-										: "w-0 group-hover:w-full"
+										? "w-[calc(100%+0.5rem)]"
+										: "w-0 group-hover:w-[calc(100%+0.5rem)]"
 								}`}
 							></span>
 						</button>

@@ -6,7 +6,7 @@ import {
 	useGetDriversQuery,
 	type GetDriversQuery,
 } from "../../graphql/generated";
-import { getGridConfig, type RaceAward } from "../../shared/config/grids";
+import { getGridConfig, getPointSystem, type RaceAward } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -154,12 +154,12 @@ function buildRows(
 					: null;
 
 			const gridConfig = getGridConfig(gridId);
-			const ps = gridConfig?.pointSystem;
+			const ps = getPointSystem(gridId);
 			const gridRaceAwards: RaceAward[] = gridConfig?.raceAwards ?? [];
-			const racePointsArr = ps?.race ?? [];
-			const sprintPointsArr = ps?.sprint ?? [];
-			const poleBonus = ps?.poleBonus ?? 0;
-			const presenceBonus = ps?.presenceBonus ?? 0;
+			const racePointsArr = ps.race;
+			const sprintPointsArr = ps.sprint ?? [];
+			const poleBonus = ps.poleBonus ?? 0;
+			const presenceBonus = ps.presenceBonus ?? 0;
 
 			const pointsArr =
 				sessionType === "sprint" ? sprintPointsArr : racePointsArr;

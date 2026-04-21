@@ -6,6 +6,7 @@ import { tenant } from "../../shared/config/tenants";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import { ImportDriverStatsOffsets } from "./ImportDriverStatsOffsets";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
+import { useToast } from "../../contexts/ToastContext";
 
 const STAT_FIELDS: { key: keyof DriverStatsShape; label: string }[] = [
 	{ key: "participations", label: "Participações" },
@@ -43,11 +44,12 @@ export function DriverStatsOffsetsAdmin() {
 	const [selectedDriver, setSelectedDriver] = useState<any>(null);
 	const [editOffsets, setEditOffsets] = useState<Record<string, Partial<DriverStatsShape> & { penaltyRate?: number }>>({});
 	const [searchTerm, setSearchTerm] = useState("");
-	const [status, setStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
+	const [saving, setSaving] = useState(false);
 	const [activeSection, setActiveSection] = useState<"edit" | "import">("edit");
 	const [calcStatus, setCalcStatus] = useState<Record<string, "idle" | "loading" | "done" | "error">>({});
 
 	const { triggerForGrid } = useCalculateCards();
+	const { showToast } = useToast();
 	const grids = tenant.grids as any[];
 
 	useEffect(() => {
@@ -60,7 +62,6 @@ export function DriverStatsOffsetsAdmin() {
 
 	const handleSelectDriver = (driver: any) => {
 		setSelectedDriver(driver);
-		setStatus({ type: "idle", message: "" });
 		const existing = allOffsets[driver.id] ?? {};
 		const offsets: Record<string, Partial<DriverStatsShape> & { penaltyRate?: number }> = {};
 		grids.forEach((g) => {
@@ -78,13 +79,15 @@ export function DriverStatsOffsetsAdmin() {
 
 	const handleSave = async () => {
 		if (!selectedDriver) return;
-		setStatus({ type: "loading", message: "Salvando..." });
+		setSaving(true);
 		try {
 			await setDoc(doc(db, "driver_stats_offsets", selectedDriver.id), editOffsets);
 			setAllOffsets((prev) => ({ ...prev, [selectedDriver.id]: editOffsets }));
-			setStatus({ type: "success", message: "Salvo com sucesso!" });
+			showToast("success", "Salvo com sucesso!");
 		} catch (e: any) {
-			setStatus({ type: "error", message: e.message });
+			showToast("error", e.message);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -198,16 +201,11 @@ export function DriverStatsOffsetsAdmin() {
 					<div className="mt-6 flex items-center gap-4">
 						<button
 							onClick={handleSave}
-							disabled={status.type === "loading"}
-							className="bg-f1-red text-white font-bold px-6 py-2 rounded text-sm hover:opacity-80 transition-opacity disabled:opacity-50"
+							disabled={saving}
+							className="bg-f1-carbon border border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 						>
-							{status.type === "loading" ? "Salvando..." : "Salvar"}
+							{saving ? "Salvando..." : "Salvar"}
 						</button>
-						{status.type !== "idle" && status.type !== "loading" && (
-							<p className={`text-sm font-semibold ${status.type === "success" ? "text-green-600" : "text-f1-red"}`}>
-								{status.message}
-							</p>
-						)}
 					</div>
 				</div>
 			) : (

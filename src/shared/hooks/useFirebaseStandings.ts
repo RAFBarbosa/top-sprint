@@ -3,7 +3,7 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "../../components/admin/PointAdjustmentsAdmin";
 import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generated";
-import { getGridConfig, type GridId } from "../config/grids";
+import { getGridConfig, getPointSystem, type GridId } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
@@ -27,11 +27,11 @@ function calcStandings(
 	applyProfile: (driver: any, gridId: string) => any,
 ) {
 	const gridConfig = getGridConfig(gridId);
-	const ps = gridConfig?.pointSystem;
-	const racePointsArr = ps?.race ?? [];
-	const sprintPointsArr = ps?.sprint ?? [];
-	const poleBonus = ps?.poleBonus ?? 0;
-	const presenceBonus = ps?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const racePointsArr = ps.race;
+	const sprintPointsArr = ps.sprint ?? [];
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	const driverPts: Record<string, { pts: number; bestRaceFinishes: number[] }> = {};
