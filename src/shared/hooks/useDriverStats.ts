@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generated";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig, getPointSystem } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 
@@ -68,11 +68,11 @@ function calcSeasonStandings(
 	driverTeamMap: Record<string, string>, // driverId → teamName
 ): { driverPts: Record<string, number>; teamPts: Record<string, number> } {
 	const gridConfig = getGridConfig(gridId);
-	const ps = gridConfig?.pointSystem;
-	const racePointsArr = ps?.race ?? [];
-	const sprintPointsArr = ps?.sprint ?? [];
-	const poleBonus = ps?.poleBonus ?? 0;
-	const presenceBonus = ps?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const racePointsArr = ps.race;
+	const sprintPointsArr = ps.sprint ?? [];
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	const driverPts: Record<string, number> = {};
@@ -160,11 +160,11 @@ function calcStatsForCalendars(
 	gridId: string,
 ): DriverStatsShape {
 	const gridConfig = getGridConfig(gridId);
-	const ps = gridConfig?.pointSystem;
-	const racePointsArr = ps?.race ?? [];
-	const sprintPointsArr = ps?.sprint ?? [];
-	const poleBonus = ps?.poleBonus ?? 0;
-	const presenceBonus = ps?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const racePointsArr = ps.race;
+	const sprintPointsArr = ps.sprint ?? [];
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	let stats = { ...EMPTY_STATS };

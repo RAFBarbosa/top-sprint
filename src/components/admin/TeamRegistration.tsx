@@ -24,6 +24,7 @@ import {
 } from "@headlessui/react";
 import { tenant } from "../../shared";
 import { getGridLabel } from "../../shared/config/grids";
+import { useToast } from "../../contexts/ToastContext";
 
 export function TeamRegistration() {
 	// State management
@@ -33,11 +34,8 @@ export function TeamRegistration() {
 	});
 
 	const [logoFile, setLogoFile] = useState<File | null>(null);
-	const [status, setStatus] = useState<{
-		type: "idle" | "loading" | "success" | "error";
-		message: string;
-	}>({ type: "idle", message: "" });
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+	const { showToast } = useToast();
 	const [selectedTeam, setSelectedTeam] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -146,7 +144,6 @@ export function TeamRegistration() {
 
 	const handleTeam = async (event: FormEvent) => {
 		event.preventDefault();
-		setStatus({ type: "loading", message: "Enviando dados..." });
 
 		try {
 			// Validate required fields
@@ -155,11 +152,6 @@ export function TeamRegistration() {
 			let logoId = null;
 			if (logoFile) {
 				try {
-					setStatus({
-						type: "loading",
-						message: "Enviando logo...",
-					});
-
 					const assetResult = await createAsset({
 						variables: { data: {} },
 					});
@@ -222,10 +214,7 @@ export function TeamRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
-				setStatus({
-					type: "success",
-					message: "Equipe atualizada com sucesso!",
-				});
+				showToast("success", "Equipe atualizada com sucesso!");
 			} else {
 				// Create new team
 				const result = await createTeam({
@@ -254,31 +243,21 @@ export function TeamRegistration() {
 
 				if (result.errors) throw new Error(result.errors[0].message);
 
-				setStatus({
-					type: "success",
-					message: "Equipe cadastrada com sucesso!",
-				});
+				showToast("success", "Equipe cadastrada com sucesso!");
 			}
 
-			// Reset form after success
 			if (isEditing) {
 				setLogoFile(null);
 			} else {
 				resetForm();
 			}
 			setUploadProgress(null);
-
-			// Clear success message after 5 seconds
-			setTimeout(() => {
-				setStatus({ type: "idle", message: "" });
-			}, 5000);
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Registration error:", error);
-			setStatus({
-				type: "error",
-				message:
-					error.message || "Erro desconhecido ao cadastrar equipe",
-			});
+			showToast(
+				"error",
+				error.message || "Erro desconhecido ao cadastrar equipe",
+			);
 			setUploadProgress(null);
 		}
 	};
@@ -541,25 +520,6 @@ export function TeamRegistration() {
 							</button>
 						)}
 					</div>
-
-					{status.type !== "idle" && (
-						<div
-							className={`w-full p-4 rounded-md mb-4 ${
-								status.type === "error"
-									? "bg-red-100 border border-red-400 text-red-700"
-									: status.type === "success"
-										? "bg-green-100 border border-green-400 text-green-700"
-										: "bg-blue-100 border border-blue-400 text-blue-700"
-							}`}
-						>
-							<div className="flex items-center gap-2">
-								{status.type === "loading" && (
-									<div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-								)}
-								<span>{status.message}</span>
-							</div>
-						</div>
-					)}
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div className="md:col-span-2">

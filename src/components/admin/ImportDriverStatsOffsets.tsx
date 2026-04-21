@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { getGridConfig } from "../../shared/config/grids";
+import { getGridConfig, getPointSystem } from "../../shared/config/grids";
 import { useGetCalendarsQuery } from "../../graphql/generated";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import gridAcsv from "../../../public/top-sprint-stats.csv?raw";
@@ -119,11 +119,11 @@ function calcFirebaseStats(
 	gridId: string,
 ): DriverStatsShape {
 	const gridConfig = getGridConfig(gridId);
-	const ps = gridConfig?.pointSystem;
-	const racePointsArr = ps?.race ?? [];
-	const sprintPointsArr = ps?.sprint ?? [];
-	const poleBonus = ps?.poleBonus ?? 0;
-	const presenceBonus = ps?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const racePointsArr = ps.race;
+	const sprintPointsArr = ps.sprint ?? [];
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	let s: DriverStatsShape = {
@@ -357,7 +357,7 @@ export function ImportDriverStatsOffsets() {
 			<button
 				onClick={run}
 				disabled={running || done}
-				className="bg-f1-red text-white font-bold px-6 py-2 rounded text-sm hover:opacity-80 transition-opacity disabled:opacity-50"
+				className="bg-f1-carbon border border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 			>
 				{running
 					? "Importando..."

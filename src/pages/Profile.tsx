@@ -12,7 +12,7 @@ import { HygraphImg } from "../components/utils/HygraphImg";
 import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
 import { useDriverStats } from "../shared/hooks/useDriverStats";
 import type { DriverStatsShape } from "../shared/hooks/useDriverStats";
-import { useGetDriversQuery } from "../graphql/generated";
+import { useGetDriversQuery, useGetTeamsQuery } from "../graphql/generated";
 import { useDriverCards } from "../shared/hooks/useDriverCards";
 import { useRealLifeTeamLogos } from "../shared/hooks/useRealLifeTeamLogos";
 
@@ -136,20 +136,25 @@ export function Profile() {
 
 	const { applyProfile, isInGrid } = useDriverProfiles();
 	const { data } = useGetDriversQuery();
+	const { data: teamsData } = useGetTeamsQuery();
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const cardRef = useRef<HTMLDivElement>(null);
 
-	// Build a name→logo map from all drivers' team data
+	// Build a name→logo map from the teams collection directly (more reliable than
+	// reading through driver.team.photo, which can be broken in cloned Hygraph projects)
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
+		(teamsData?.teams ?? []).forEach((t) => {
+			if (t.name && t.photo?.url) map[t.name] = t.photo.url;
+		});
 		(data?.drivers ?? []).forEach((d) => {
-			if (d.team?.name && d.team?.photo?.url) {
+			if (d.team?.name && d.team?.photo?.url && !map[d.team.name]) {
 				map[d.team.name] = d.team.photo.url;
 			}
 		});
 		return map;
-	}, [data]);
+	}, [teamsData, data]);
 
 	// Get real life team logos and nationalities for drivers in current grid
 	const { logos: realLifeTeamLogos, nationalities } = useRealLifeTeamLogos(
@@ -167,7 +172,11 @@ export function Profile() {
 				photo: applied.photo?.url ?? applied.photo ?? "",
 				teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
 				teamName: resolvedTeamName,
-				teamLogo: teamLogoByName[resolvedTeamName] ?? "",
+				teamLogo:
+					applied.team?.photo?.url ??
+					applied.teamLogo ??
+					teamLogoByName[resolvedTeamName] ??
+					"",
 				realLifeTeamLogoUrl: realLifeTeamLogos[driver.id] ?? "",
 				nationality: nationalities[driver.id] ?? "",
 				num: applied.number ?? "",

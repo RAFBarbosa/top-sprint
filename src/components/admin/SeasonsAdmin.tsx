@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { Season } from "../../contexts/SeasonsContext";
+import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 export function SeasonsAdmin() {
 	const { seasons, loading, saveSeason, updateSeason, deleteSeason } =
@@ -11,6 +13,7 @@ export function SeasonsAdmin() {
 	const [activeFilter, setActiveFilter] = useState<
 		"all" | "active" | "inactive"
 	>("all");
+	const [seasonToDelete, setSeasonToDelete] = useState<Season | null>(null);
 
 	const [formData, setFormData] = useState({ name: "", active: true });
 
@@ -46,17 +49,18 @@ export function SeasonsAdmin() {
 		setFormData({ name: "", active: true });
 	};
 
-	const handleDelete = async (season: Season) => {
-		if (
-			window.confirm(
-				`Tem certeza que deseja excluir a temporada "${season.name}"?`,
-			)
-		) {
-			try {
-				await deleteSeason(season.id);
-			} catch (error) {
-				console.error("Failed to delete season:", error);
-			}
+	const handleDelete = (season: Season) => {
+		setSeasonToDelete(season);
+	};
+
+	const confirmDelete = async () => {
+		if (!seasonToDelete) return;
+		try {
+			await deleteSeason(seasonToDelete.id);
+		} catch (error) {
+			console.error("Failed to delete season:", error);
+		} finally {
+			setSeasonToDelete(null);
 		}
 	};
 
@@ -151,19 +155,7 @@ export function SeasonsAdmin() {
 										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 										title="Excluir"
 									>
-										<svg
-											className="h-5 w-5"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-											/>
-										</svg>
+										<TrashIcon className="h-5 w-5" />
 									</button>
 								</div>
 							</li>
@@ -252,6 +244,39 @@ export function SeasonsAdmin() {
 					</button>
 				</form>
 			</div>
+
+			<Dialog
+				open={seasonToDelete !== null}
+				onClose={() => setSeasonToDelete(null)}
+				className="relative z-50"
+			>
+				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+				<div className="fixed inset-0 flex items-center justify-center p-4">
+					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
+						<DialogTitle className="text-lg font-bold">
+							Excluir Temporada
+						</DialogTitle>
+						<Description className="mt-1">
+							Tem certeza que deseja excluir a temporada{" "}
+							<strong>{seasonToDelete?.name}</strong>? Esta ação não pode ser desfeita.
+						</Description>
+						<div className="mt-6 flex justify-end gap-2">
+							<button
+								onClick={() => setSeasonToDelete(null)}
+								className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-f1-bg-silver cursor-pointer"
+							>
+								Cancelar
+							</button>
+							<button
+								onClick={confirmDelete}
+								className="px-4 py-2 text-white bg-f1-red rounded hover:bg-f1-red/90 cursor-pointer"
+							>
+								Excluir
+							</button>
+						</div>
+					</DialogPanel>
+				</div>
+			</Dialog>
 		</div>
 	);
 }

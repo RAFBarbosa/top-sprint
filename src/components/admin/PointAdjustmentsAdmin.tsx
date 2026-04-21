@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { setDoc, getDocs, getDoc, collection, doc } from "firebase/firestore";
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { db } from "../../lib/adminClient";
 import { useGetDriversQuery, useGetCalendarsRegistrationQuery } from "../../graphql/generated";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -9,6 +10,7 @@ import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useCalculateDriverStats } from "../../shared/hooks/useCalculateDriverStats";
+import { useToast } from "../../contexts/ToastContext";
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
@@ -29,6 +31,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	const { profiles, isInGrid } = useDriverProfiles();
 	const { triggerForGrid: triggerCardsForGrid } = useCalculateCards();
 	const { triggerForGrid: triggerStatsForGrid } = useCalculateDriverStats();
+	const { showToast } = useToast();
 
 	// Derive seasons available for this grid from its calendars
 	const gridCalendarIds = new Set(
@@ -66,7 +69,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	const [reason, setReason] = useState("");
 	const [editId, setEditId] = useState<string | null>(null);
 	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-	const [status, setStatus] = useState<{ type: "idle" | "loading" | "success" | "error"; message: string }>({ type: "idle", message: "" });
+	const [saving, setSaving] = useState(false);
 	const [raceDriverIds, setRaceDriverIds] = useState<Set<string> | null>(null);
 
 	useEffect(() => {
@@ -141,7 +144,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 
 	const saveAdjustments = async (next: PointAdjustment[]) => {
 		if (!selectedCalendarId) return;
-		setStatus({ type: "loading", message: "Salvando..." });
+		setSaving(true);
 		try {
 			await setDoc(doc(db, "point_adjustments", selectedCalendarId), {
 				adjustments: next,
@@ -149,14 +152,15 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 				calendarId: selectedCalendarId,
 			});
 			setAllAdjustments((prev) => ({ ...prev, [selectedCalendarId]: next }));
-			setStatus({ type: "success", message: "Salvo!" });
-			setTimeout(() => setStatus({ type: "idle", message: "" }), 2000);
+			showToast("success", "Ajuste salvo!");
 			if (gridId) {
 				triggerCardsForGrid(gridId).catch(console.error);
 				triggerStatsForGrid(gridId).catch(console.error);
 			}
 		} catch (e: any) {
-			setStatus({ type: "error", message: "Erro: " + e.message });
+			showToast("error", "Erro: " + e.message);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -198,7 +202,6 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	const handleSelectCalendar = (calId: string) => {
 		setSelectedCalendarId(calId);
 		resetForm();
-		setStatus({ type: "idle", message: "" });
 	};
 
 	if (gridSeasons.length === 0) {
@@ -337,7 +340,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 									<button
 										type="button"
 										onClick={handleSave}
-										disabled={!selectedDriverId || points === 0 || !reason.trim() || status.type === "loading"}
+										disabled={!selectedDriverId || points === 0 || !reason.trim() || saving}
 										className="bg-f1-red text-white px-4 py-2 rounded text-sm hover:bg-f1-red/80 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
 									>
 										{editId ? "Salvar" : "Adicionar"}
@@ -350,11 +353,6 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 										>
 											Cancelar
 										</button>
-									)}
-									{status.message && (
-										<span className={`text-sm font-medium ${status.type === "error" ? "text-f1-red" : status.type === "success" ? "text-green-600" : "text-f1-lighterCarbon"}`}>
-											{status.message}
-										</span>
 									)}
 								</div>
 							</div>
@@ -394,9 +392,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 																className="text-f1-lighterCarbon hover:text-f1-red hover:bg-f1-red/10 rounded p-1 transition-colors cursor-pointer"
 																title="Remover"
 															>
-																<svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-																	<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-																</svg>
+																<TrashIcon className="h-4 w-4" />
 															</button>
 														</td>
 													</tr>

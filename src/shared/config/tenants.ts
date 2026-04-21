@@ -15,6 +15,12 @@ export interface CssVars {
 	"--color-brand-nav-active": string;
 	"--color-brand-nav-dropdown-bg": string;
 	"--color-brand-footer": string;
+	"--color-grid-menu-bg": string;
+	"--color-grid-menu-text": string;
+	"--color-grid-menu-border": string;
+	"--font-f1"?: string;
+	"--font-f1Title"?: string;
+	"--font-f1Podium"?: string;
 }
 
 export interface TenantConfig {
@@ -54,13 +60,13 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 		name: "Top Sprint",
 		defaultPhotoStyle: "portrait",
 		logo: {
-			url: "/logos/topsprint.png",
-			alt: "Logo Top Sprint",
+			url: "/logos/crt.png",
+			alt: "Logo CRT",
 		},
 		grids: [
 			{
 				id: "gridA",
-				label: "Top Sprint",
+				label: "C1",
 				primaryColor: "#eb1c24",
 				accentColor: "bg-f1-lightCarbon",
 				hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
@@ -86,13 +92,15 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			},
 			{
 				id: "gridB",
-				label: "Academy",
+				label: "C2",
 				primaryColor: "#11bf5b",
 				accentColor: "bg-f1-academy-blue",
 				hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
 				hoverAccentColor: "hover:bg-f1-academy-dark hover:text-white",
+				// standingsBgClass:
+				// 	"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsBgClass:
-					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
+					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy-darkerBlue to-100%",
 				standingsTitle: "Academy",
 				countdownBgClass: "bg-f1-academy-darker",
 				cardBackground: topSprintB,
@@ -124,23 +132,29 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				"https://docs.google.com/forms/d/19PHr-9GcvGMmp0SU2Nva9PEWDlm4R6JHjkIKD_L-YiI/edit",
 		},
 		cssVars: {
-			"--color-brand-primary": "#eb1c24",
-			"--color-brand-nav": "#eb1c24",
-			"--color-brand-nav-hover": "#15151e",
+			"--color-brand-primary": "#cd0a2a",
+			"--color-brand-nav": "#676769",
+			"--color-brand-nav-hover": "#cd0a2a",
 			"--color-brand-accent": "#15151e",
-			"--color-brand-nav-active": "#15151e",
+			"--color-brand-nav-active": "#cd0a2a",
 			"--color-brand-nav-dropdown-bg": "#15151e",
 			"--color-brand-footer": "#15151e",
+			"--color-grid-menu-bg": "#0f1014",
+			"--color-grid-menu-text": "#eeeff1",
+			"--color-grid-menu-border": "#cd0a2a",
+			"--font-f1": "'Chakra Petch', sans-serif",
+			"--font-f1Title": "'Vipnagorgialla', sans-serif",
+			"--font-f1Podium": "'FutoSans', sans-serif",
 		},
 		socials: {
-			whatsapp: "https://chat.whatsapp.com/BBUq88qF23DFffFN7mlRz1",
-			instagram: "https://www.instagram.com/ligatopsprint/",
-			youtube: "https://www.youtube.com/@ligatopsprint",
-			discord: "https://discord.gg/tZs5hwsubQ",
+			// whatsapp: "https://chat.whatsapp.com/BBUq88qF23DFffFN7mlRz1",
+			instagram: "https://www.instagram.com/crt.cup",
+			youtube: "https://www.youtube.com/@capivaracup",
+			// discord: "https://discord.gg/tZs5hwsubQ",
 		},
 		fallbackDriverPhoto:
-			"https://us-west-2.graphassets.com/AEeXs9JBOTq6bJXaWi87dz/cmkyoezu6gp7508loqaon7skm",
-		poweredBy: false,
+			"https://us-west-2.graphassets.com/cmo66v1n000gr02js1cyb6pmx/cmo6d8bg6embs07lpjska6fo7",
+		poweredBy: true,
 	},
 	feliplay: {
 		id: "feliplay",
@@ -193,6 +207,9 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-brand-nav-active": "#f50404",
 			"--color-brand-nav-dropdown-bg": "#000",
 			"--color-brand-footer": "#1c2423",
+			"--color-grid-menu-bg": "#f50404",
+			"--color-grid-menu-text": "#ffffff",
+			"--color-grid-menu-border": "transparent",
 		},
 		socials: { youtube: "https://www.youtube.com/@feliplay_TV" },
 		fallbackDriverPhoto:
@@ -323,6 +340,9 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-brand-nav-active": "#15151e",
 			"--color-brand-nav-dropdown-bg": "#15151e",
 			"--color-brand-footer": "#1c1c25",
+			"--color-grid-menu-bg": "#15151e",
+			"--color-grid-menu-text": "#ffffff",
+			"--color-grid-menu-border": "transparent",
 		},
 		socials: {
 			instagram: "https://www.instagram.com/brazukaracingleague/",

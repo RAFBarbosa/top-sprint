@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import OpenInNew from "@mui/icons-material/OpenInNew";
-import { useEnhancedCards } from "../../shared/hooks/useEnhancedCards";
 import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
 import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 import { tenant } from "../../shared/config/tenants";
-import { normalizeString } from "../../shared/utils/normalizeString";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
-import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
+import { useGetDriversQuery } from "../../graphql/generated";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,23 +65,38 @@ export function Menu() {
 	const [isOpen, setIsOpen] = useState(false);
 	const location = useLocation();
 	const navigateToDriver = useNavigateToDriver();
-	const { activeTab, setActiveTab, tabs } = useTab();
-	const { enhancedCards, loading, error } = useEnhancedCards(activeTab.id);
-	const { profiles } = useDriverProfiles();
-	const activeSeason = useActiveSeason(activeTab.id);
+	const { activeTab, tabs } = useTab();
+	const { isInGrid, applyProfile } = useDriverProfiles();
+	const { data, loading, error } = useGetDriversQuery();
 
 	const menuItems = buildMenuItems();
 
-	const activeGridDrivers = Array.isArray(enhancedCards)
-		? enhancedCards
-			.filter((driver) => {
-				if (driver.grid !== activeTab.id) return false;
-				const p = driver.id ? profiles[driver.id]?.[activeTab.id] : undefined;
-				return !p?.reserve && !p?.exDriver;
-			})
-			.slice()
-			.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
-		: [];
+	const teamLogoByName = useMemo(() => {
+		const map: Record<string, string> = {};
+		(data?.drivers ?? []).forEach((d) => {
+			if (d.team?.name && d.team?.photo?.url) {
+				map[d.team.name] = d.team.photo.url;
+			}
+		});
+		return map;
+	}, [data]);
+
+	const activeGridDrivers = (data?.drivers ?? [])
+		.filter((driver) => isInGrid(driver.id, activeTab.id))
+		.map((driver) => {
+			const applied = applyProfile(driver, activeTab.id);
+			const resolvedTeamName = applied.team?.name ?? applied.teamName ?? "";
+			return {
+				...applied,
+				photo: applied.photo?.url ?? applied.photo ?? "",
+				teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
+				teamName: resolvedTeamName,
+				teamLogo: teamLogoByName[resolvedTeamName] ?? "",
+				grid: activeTab.id,
+			};
+		})
+		.filter((driver) => !driver.reserve && !driver.exDriver)
+		.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
@@ -92,10 +105,6 @@ export function Menu() {
 
 	const handleDriverClick = (driverName: string) => {
 		setIsOpen(false);
-		const driver = enhancedCards?.find((d) => d.name === driverName);
-		if (driver && driver.grid !== activeTab.id) {
-			setActiveTab(driver.grid);
-		}
 		navigateToDriver(driverName);
 	};
 
@@ -242,17 +251,13 @@ export function Menu() {
 													<div className="text-white p-4">
 														Carregando pilotos...
 													</div>
-												) : !activeSeason ? (
-													<div className="text-white/60 p-4 text-sm">
-														Nenhuma temporada ativa no momento.
-													</div>
 												) : error ? (
 													<div className="text-red-300 p-4">
 														Erro ao carregar pilotos
 													</div>
-												) : !Array.isArray(enhancedCards) ? (
-													<div className="text-yellow-300 p-4">
-														Dados de pilotos inválidos
+												) : activeGridDrivers.length === 0 ? (
+													<div className="text-white/60 p-4 text-sm">
+														Nenhum piloto neste grid.
 													</div>
 												) : (
 													<MenuDriverList

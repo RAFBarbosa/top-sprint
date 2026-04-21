@@ -15,6 +15,27 @@ export interface PointSystem {
 	presenceBonus?: number;
 }
 
+// Official F1 point system — used as fallback when a grid has no point system configured
+export const DEFAULT_POINT_SYSTEM: PointSystem = {
+	race: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1],
+	sprint: [8, 7, 6, 5, 4, 3, 2, 1],
+	poleBonus: 0,
+	presenceBonus: 0,
+};
+
+// Returns the configured point system, or the F1 default if the grid has none or
+// has empty race points (which is the initial state for newly-created grids).
+export const getPointSystem = (gridId: GridId): PointSystem => {
+	const ps = getGridConfig(gridId)?.pointSystem;
+	if (!ps || !ps.race || ps.race.length === 0) return DEFAULT_POINT_SYSTEM;
+	return {
+		race: ps.race,
+		sprint: ps.sprint && ps.sprint.length > 0 ? ps.sprint : DEFAULT_POINT_SYSTEM.sprint,
+		poleBonus: ps.poleBonus ?? DEFAULT_POINT_SYSTEM.poleBonus,
+		presenceBonus: ps.presenceBonus ?? DEFAULT_POINT_SYSTEM.presenceBonus,
+	};
+};
+
 export interface GridConfig {
 	id: GridId;
 	label: string;

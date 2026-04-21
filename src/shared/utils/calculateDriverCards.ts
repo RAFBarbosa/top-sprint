@@ -1,6 +1,6 @@
 import { getDocs, collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig, getPointSystem } from "../config/grids";
 import { tenant } from "../config/tenants";
 
 export interface DriverCardStats {
@@ -122,11 +122,11 @@ function computeSeasonData(
 	gridId: string,
 ): DriverSeasonData {
 	const gridConfig = getGridConfig(gridId);
-	const ps = gridConfig?.pointSystem;
-	const racePointsArr = ps?.race ?? [];
-	const sprintPointsArr = ps?.sprint ?? [];
-	const poleBonus = ps?.poleBonus ?? 0;
-	const presenceBonus = ps?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const racePointsArr = ps.race;
+	const sprintPointsArr = ps.sprint ?? [];
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	let participations = 0;

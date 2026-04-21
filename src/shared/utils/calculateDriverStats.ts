@@ -1,6 +1,6 @@
 import { getDocs, collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { getGridConfig } from "../config/grids";
+import { getGridConfig, getPointSystem } from "../config/grids";
 import type { DriverStatsShape, DriverStatsOffsets } from "../hooks/useDriverStats";
 
 const EMPTY_STATS: DriverStatsShape = {
@@ -46,11 +46,11 @@ function calcStatsForCalendars(
 	gridId: string,
 ): DriverStatsShape {
 	const gridConfig = getGridConfig(gridId);
-	const ps = gridConfig?.pointSystem;
-	const racePointsArr = ps?.race ?? [];
-	const sprintPointsArr = ps?.sprint ?? [];
-	const poleBonus = ps?.poleBonus ?? 0;
-	const presenceBonus = ps?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const racePointsArr = ps.race;
+	const sprintPointsArr = ps.sprint ?? [];
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 
 	let stats = { ...EMPTY_STATS };
