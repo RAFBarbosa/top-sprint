@@ -37,7 +37,8 @@ const Drivers: React.FC = () => {
 				num: applied.number ?? "",
 			};
 		})
-		.filter((driver) => !driver.reserve && !driver.exDriver);
+		.filter((driver) => !driver.reserve && !driver.exDriver)
+		.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
 	return (
 		<div id="pilotos" className="bg-f1-lightSilver w-full pb-8">

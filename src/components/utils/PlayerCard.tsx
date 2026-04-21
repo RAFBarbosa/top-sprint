@@ -137,10 +137,10 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 			parseFloat(data.rating) < parseFloat(data.prevRating);
 
 		const stats = [
-			{ label: "CON", value: data.consistency, tooltip: "Consistência" },
 			{ label: "PIL", value: data.racecraft, tooltip: "Pilotagem" },
-			{ label: "ATN", value: data.awareness, tooltip: "Atenção" },
 			{ label: "RIT", value: data.pace, tooltip: "Ritmo" },
+			{ label: "ATN", value: data.awareness, tooltip: "Atenção" },
+			{ label: "CON", value: data.consistency, tooltip: "Consistência" },
 		];
 
 		const isFirstNameLong = firstName.length > 9;
