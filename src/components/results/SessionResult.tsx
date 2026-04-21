@@ -200,10 +200,10 @@ function buildRows(
 				gridRank,
 				gridId,
 				name: driver.name ?? driverId,
-				number: snapshot?.number ?? (driver as any).number ?? null,
-				teamName: snapshot?.teamName ?? driver.team?.name ?? "—",
-				photo: snapshot?.photoUrl ?? driver.photo?.url,
-				teamColor: snapshot?.teamColor ?? driver.team?.color?.hex,
+				number: snapshot?.number || (driver as any).number || null,
+				teamName: snapshot?.teamName || driver.team?.name || "—",
+				photo: snapshot?.photoUrl || driver.photo?.url,
+				teamColor: snapshot?.teamColor || driver.team?.color?.hex,
 				gridColor,
 				points,
 				positionChange,
@@ -303,27 +303,27 @@ function WinnerCard({
 						}}
 					>
 						{tenant.defaultPhotoStyle === "round" ? (
-							<img
-								src={
-									poleRow.photo || tenant.fallbackDriverPhoto
-								}
+							<HygraphImg
+								src={poleRow.photo || tenant.fallbackDriverPhoto}
 								alt={poleRow.name}
+								imgWidth={48}
+								imgHeight={48}
 								className="w-full h-full object-cover scale-123 translate-y-[5px]"
 							/>
 						) : tenant.defaultPhotoStyle === "bust" ? (
-							<img
-								src={
-									poleRow.photo || tenant.fallbackDriverPhoto
-								}
+							<HygraphImg
+								src={poleRow.photo || tenant.fallbackDriverPhoto}
 								alt={poleRow.name}
-								className="object-cover translate-y-[6px]"
+								imgWidth={48}
+								imgHeight={48}
+								className="w-full h-full object-cover translate-y-[6px]"
 							/>
 						) : (
-							<img
-								src={
-									poleRow.photo || tenant.fallbackDriverPhoto
-								}
+							<HygraphImg
+								src={poleRow.photo || tenant.fallbackDriverPhoto}
 								alt={poleRow.name}
+								imgWidth={48}
+								imgHeight={48}
 								className="w-full h-full object-cover scale-200 translate-y-[24px]"
 							/>
 						)}
@@ -358,30 +358,27 @@ function WinnerCard({
 							}}
 						>
 							{tenant.defaultPhotoStyle === "round" ? (
-								<img
-									src={
-										driver.photo ||
-										tenant.fallbackDriverPhoto
-									}
+								<HygraphImg
+									src={driver.photo || tenant.fallbackDriverPhoto}
 									alt={driver.name}
+									imgWidth={48}
+									imgHeight={48}
 									className="w-full h-full object-cover scale-123 translate-y-[5px]"
 								/>
 							) : tenant.defaultPhotoStyle === "bust" ? (
-								<img
-									src={
-										driver.photo ||
-										tenant.fallbackDriverPhoto
-									}
+								<HygraphImg
+									src={driver.photo || tenant.fallbackDriverPhoto}
 									alt={driver.name}
-									className="object-cover translate-y-[6px]"
+									imgWidth={48}
+									imgHeight={48}
+									className="w-full h-full object-cover translate-y-[6px]"
 								/>
 							) : (
-								<img
-									src={
-										driver.photo ||
-										tenant.fallbackDriverPhoto
-									}
+								<HygraphImg
+									src={driver.photo || tenant.fallbackDriverPhoto}
 									alt={driver.name}
+									imgWidth={48}
+									imgHeight={48}
 									className="w-full h-full object-cover scale-200 translate-y-[24px]"
 								/>
 							)}

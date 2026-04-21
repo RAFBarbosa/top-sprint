@@ -158,15 +158,6 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 		const statsTextColor = getTextColor(gridColor);
 
-		console.log(
-			"Rating:",
-			data.rating,
-			"Previous Rating:",
-			data.prevRating,
-		);
-
-		console.log(data);
-
 		return (
 			<div
 				ref={ref}

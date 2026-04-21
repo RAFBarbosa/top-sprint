@@ -40,7 +40,7 @@ const buildMenuItems = (): NavItem[] =>
 			label: "Histórico",
 			hidden: !tenant.features.archive,
 		},
-		{ id: "/regras", label: "Regras e Formato" },
+		// { id: "/regras", label: "Regras e Formato" },
 		{
 			id: tenant.nav.ticketUrl ?? "",
 			label: "Abrir Ticket",
@@ -85,7 +85,8 @@ export function Menu() {
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
 			const applied = applyProfile(driver, activeTab.id);
-			const resolvedTeamName = applied.team?.name ?? applied.teamName ?? "";
+			const resolvedTeamName =
+				applied.team?.name ?? applied.teamName ?? "";
 			return {
 				...applied,
 				photo: applied.photo?.url ?? applied.photo ?? "",
@@ -255,15 +256,23 @@ export function Menu() {
 													<div className="text-red-300 p-4">
 														Erro ao carregar pilotos
 													</div>
-												) : activeGridDrivers.length === 0 ? (
+												) : activeGridDrivers.length ===
+												  0 ? (
 													<div className="text-white/60 p-4 text-sm">
-														Nenhum piloto neste grid.
+														Nenhum piloto neste
+														grid.
 													</div>
 												) : (
 													<MenuDriverList
-														drivers={activeGridDrivers}
-														onDriverClick={handleDriverClick}
-														photoStyle={tenant.defaultPhotoStyle}
+														drivers={
+															activeGridDrivers
+														}
+														onDriverClick={
+															handleDriverClick
+														}
+														photoStyle={
+															tenant.defaultPhotoStyle
+														}
 													/>
 												)}
 											</div>
