@@ -73,7 +73,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				hoverAccentColor: "hover:bg-f1-red hover:text-white",
 				standingsBgClass:
 					"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
-				standingsTitle: "",
+				standingsTitle: "C1",
 				countdownBgClass: "bg-f1-silver",
 				cardBackground: topSprintA,
 				pointSystem: {
@@ -101,7 +101,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				// 	"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsBgClass:
 					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy-darkerBlue to-100%",
-				standingsTitle: "Academy",
+				standingsTitle: "C2",
 				countdownBgClass: "bg-f1-academy-darker",
 				cardBackground: topSprintB,
 				pointSystem: {
