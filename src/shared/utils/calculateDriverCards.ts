@@ -1,6 +1,7 @@
 import { getDocs, collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { getGridConfig } from "../config/grids";
+import { tenant } from "../config/tenants";
 
 export interface DriverCardStats {
 	rating: number;
@@ -17,13 +18,21 @@ export interface DriverCardStats {
 }
 
 /**
- * Returns the minimum attribute value for a grid.
- * gridA: 90-99, gridB: 80-89, gridC: 70-79
+ * Returns the min attribute value and the raw range size for a grid, based on
+ * its position in the tenant's grid list.
+ *
+ * - 3+ grids: first 90-99, middle 80-89, last 70-79 (range 9 each).
+ * - 2 grids: first 90-99 (range 9), last 70-89 (range 19).
+ * - 1 grid: 90-99 (range 9).
  */
-function getGridMin(gridId: string): number {
-	if (gridId === "gridA") return 90;
-	if (gridId === "gridB") return 80;
-	return 70; // gridC or default
+function getGridRange(gridId: string): { min: number; range: number } {
+	const grids = tenant.grids ?? [];
+	const idx = grids.findIndex((g: { id: string }) => g.id === gridId);
+	if (idx === -1 || grids.length <= 1) return { min: 90, range: 9 };
+	if (idx === 0) return { min: 90, range: 9 };
+	if (grids.length === 2) return { min: 70, range: 19 };
+	if (idx === grids.length - 1) return { min: 70, range: 9 };
+	return { min: 80, range: 9 };
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -31,39 +40,66 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * Racecraft raw (0-9): normalized average points vs grid best.
+ * Racecraft raw (0-range): normalized average points vs grid best.
  */
-function calcRacecraftRaw(avgPoints: number, maxAvgPoints: number): number {
+function calcRacecraftRaw(
+	avgPoints: number,
+	maxAvgPoints: number,
+	range: number,
+): number {
 	if (maxAvgPoints === 0) return 0;
-	return Math.round((avgPoints / maxAvgPoints) * 9);
+	return Math.round((avgPoints / maxAvgPoints) * range);
 }
 
 /**
- * Pace raw (0-9): normalized qualifying position vs grid.
- * Best qualifier → 9, worst → 0.
+ * Pace raw (0-range): normalized qualifying position vs grid.
+ * Best qualifier → range, worst → 0.
  */
-function calcPaceRaw(avgQualyPos: number, bestAvgQualy: number, worstAvgQualy: number): number {
-	if (worstAvgQualy <= bestAvgQualy) return 9; // only one driver or all tied
-	const normalized = (worstAvgQualy - avgQualyPos) / (worstAvgQualy - bestAvgQualy);
-	return Math.round(normalized * 9);
+function calcPaceRaw(
+	avgQualyPos: number,
+	bestAvgQualy: number,
+	worstAvgQualy: number,
+	range: number,
+): number {
+	if (worstAvgQualy <= bestAvgQualy) return range; // only one driver or all tied
+	const normalized =
+		(worstAvgQualy - avgQualyPos) / (worstAvgQualy - bestAvgQualy);
+	return Math.round(normalized * range);
 }
 
 /**
- * Awareness raw (0-9): percentage of races without time penalties (rounded up).
- * e.g. 3 clean out of 6 (50%) → ceil(0.5 * 9) = 5
+ * Awareness raw (0-range): percentage of races without time penalties (rounded up).
  */
-function calcAwarenessRaw(cleanRaces: number, totalRaces: number): number {
+function calcAwarenessRaw(
+	cleanRaces: number,
+	totalRaces: number,
+	range: number,
+): number {
 	if (totalRaces === 0) return 0;
 	const pct = cleanRaces / totalRaces;
-	return Math.ceil(pct * 9);
+	return Math.ceil(pct * range);
+}
+
+/**
+ * Consistency raw (0-range): based on average |qualy pos − race pos| across races.
+ * avgDiff ≤ 1 → range (max). avgDiff ≥ range+1 → 0 (min). Linear in between.
+ */
+function calcConsistencyRaw(avgPosDiff: number, range: number): number {
+	return clamp(Math.round(range + 1 - avgPosDiff), 0, range);
 }
 
 /**
  * Rating raw (0-9): weighted combination of all attribute raw scores.
  * 55% racecraft + 20% consistency + 15% pace + 10% awareness
  */
-function calcRatingRaw(rcRaw: number, consistencyRaw: number, paceRaw: number, awRaw: number): number {
-	const raw = 0.55 * rcRaw + 0.20 * consistencyRaw + 0.15 * paceRaw + 0.10 * awRaw;
+function calcRatingRaw(
+	rcRaw: number,
+	consistencyRaw: number,
+	paceRaw: number,
+	awRaw: number,
+): number {
+	const raw =
+		0.65 * rcRaw + 0.1 * consistencyRaw + 0.15 * paceRaw + 0.1 * awRaw;
 	return Math.round(raw);
 }
 
@@ -74,6 +110,8 @@ interface DriverSeasonData {
 	qualyCount: number;
 	seasonWins: number;
 	cleanRaces: number; // races without time penalties
+	totalPosDiff: number; // sum of |qualyPos - racePos| across valid races
+	posDiffRaces: number; // number of races with both qualy and race positions (not NC)
 }
 
 function computeSeasonData(
@@ -97,14 +135,20 @@ function computeSeasonData(
 	let qualyCount = 0;
 	let seasonWins = 0;
 	let cleanRaces = 0;
+	let totalPosDiff = 0;
+	let posDiffRaces = 0;
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
 		if (!result) continue;
 
 		const raceOrder: string[] = (result.results ?? []).filter(Boolean);
-		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(Boolean);
-		const sprintOrder: string[] = (result.sprintResults ?? []).filter(Boolean);
+		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(
+			Boolean,
+		);
+		const sprintOrder: string[] = (result.sprintResults ?? []).filter(
+			Boolean,
+		);
 		const ncSet = new Set<string>(result.ncDriverIds ?? []);
 		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
 
@@ -120,7 +164,8 @@ function computeSeasonData(
 		const isNC = ncSet.has(driverId);
 		if (racePos !== -1 && !isNC) {
 			const pos = racePos + 1;
-			totalPoints += pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
+			totalPoints +=
+				pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
 			if (pos === 1) seasonWins += 1;
 		}
 
@@ -130,6 +175,11 @@ function computeSeasonData(
 		if (qualyPos !== -1) {
 			totalQualyPos += qualyPos + 1;
 			qualyCount += 1;
+		}
+
+		if (qualyPos !== -1 && racePos !== -1 && !isNC) {
+			totalPosDiff += Math.abs(qualyPos + 1 - (racePos + 1));
+			posDiffRaces += 1;
 		}
 
 		raceAwards.forEach((award: any) => {
@@ -142,7 +192,10 @@ function computeSeasonData(
 			const sprintPos = sprintOrder.indexOf(driverId);
 			if (sprintPos !== -1 && !sprintNcSet.has(driverId)) {
 				const pos = sprintPos + 1;
-				totalPoints += pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
+				totalPoints +=
+					pos <= sprintPointsArr.length
+						? sprintPointsArr[pos - 1]
+						: 0;
 			}
 		}
 
@@ -153,17 +206,30 @@ function computeSeasonData(
 		});
 
 		// Check for time penalties in this race
-		const penalties: Array<{ driverId: string; seconds: number }> = result.penalties ?? [];
-		const sprintPenalties: Array<{ driverId: string; seconds: number }> = result.sprintPenalties ?? [];
+		const penalties: Array<{ driverId: string; seconds: number }> =
+			result.penalties ?? [];
+		const sprintPenalties: Array<{ driverId: string; seconds: number }> =
+			result.sprintPenalties ?? [];
 		const hasTimePenalty =
 			penalties.some((p) => p.driverId === driverId && p.seconds > 0) ||
-			sprintPenalties.some((p) => p.driverId === driverId && p.seconds > 0);
+			sprintPenalties.some(
+				(p) => p.driverId === driverId && p.seconds > 0,
+			);
 		if (!hasTimePenalty) {
 			cleanRaces += 1;
 		}
 	}
 
-	return { participations, totalPoints, totalQualyPos, qualyCount, seasonWins, cleanRaces };
+	return {
+		participations,
+		totalPoints,
+		totalQualyPos,
+		qualyCount,
+		seasonWins,
+		cleanRaces,
+		totalPosDiff,
+		posDiffRaces,
+	};
 }
 
 export async function calculateAndSaveCards(
@@ -179,15 +245,21 @@ export async function calculateAndSaveCards(
 	]);
 
 	const allResults: Record<string, any> = {};
-	resultsSnap.forEach((d) => { allResults[d.id] = d.data(); });
+	resultsSnap.forEach((d) => {
+		allResults[d.id] = d.data();
+	});
 
 	const allAdj: Record<string, any[]> = {};
-	adjSnap.forEach((d) => { allAdj[d.id] = d.data().adjustments ?? []; });
+	adjSnap.forEach((d) => {
+		allAdj[d.id] = d.data().adjustments ?? [];
+	});
 
-	const gridMin = getGridMin(gridId);
+	const { min: gridMin, range: gridRange } = getGridRange(gridId);
 
 	// For each driver, find races they participated in and exclude the most recent
-	const getDriverRaces = (driverId: string): { all: string[]; prevOnly: string[] } => {
+	const getDriverRaces = (
+		driverId: string,
+	): { all: string[]; prevOnly: string[] } => {
 		const participated: string[] = [];
 		for (const calId of seasonCalendarIds) {
 			const result = allResults[calId];
@@ -195,7 +267,11 @@ export async function calculateAndSaveCards(
 			const raceOrder = (result.results ?? []).filter(Boolean);
 			const qualyOrder = (result.resultsQualy ?? []).filter(Boolean);
 			const sprintOrder = (result.sprintResults ?? []).filter(Boolean);
-			if (raceOrder.includes(driverId) || qualyOrder.includes(driverId) || sprintOrder.includes(driverId)) {
+			if (
+				raceOrder.includes(driverId) ||
+				qualyOrder.includes(driverId) ||
+				sprintOrder.includes(driverId)
+			) {
 				participated.push(calId);
 			}
 		}
@@ -208,8 +284,20 @@ export async function calculateAndSaveCards(
 
 	for (const driverId of driverIds) {
 		const { all, prevOnly } = getDriverRaces(driverId);
-		seasonDataMap[driverId] = computeSeasonData(all, allResults, allAdj, driverId, gridId);
-		prevDataMap[driverId] = computeSeasonData(prevOnly, allResults, allAdj, driverId, gridId);
+		seasonDataMap[driverId] = computeSeasonData(
+			all,
+			allResults,
+			allAdj,
+			driverId,
+			gridId,
+		);
+		prevDataMap[driverId] = computeSeasonData(
+			prevOnly,
+			allResults,
+			allAdj,
+			driverId,
+			gridId,
+		);
 	}
 
 	// Helper functions
@@ -218,25 +306,51 @@ export async function calculateAndSaveCards(
 	const getAvgQualyPos = (d: DriverSeasonData) =>
 		d.qualyCount > 0 ? d.totalQualyPos / d.qualyCount : 20;
 
-	const activeDrivers = driverIds.filter((id) => seasonDataMap[id].participations > 0);
+	const activeDrivers = driverIds.filter(
+		(id) => seasonDataMap[id].participations > 0,
+	);
 
 	// Grid-wide maxes for racecraft normalization
-	const maxAvgPoints = Math.max(1, ...activeDrivers.map((id) => getAvgPoints(seasonDataMap[id])));
+	// const maxAvgPoints = Math.max(1, ...activeDrivers.map((id) => getAvgPoints(seasonDataMap[id])));
+	const maxAvgPoints = 20;
 
 	// Grid-wide min/max avgQualyPos for pace normalization
-	const allAvgQualyPos = activeDrivers.map((id) => getAvgQualyPos(seasonDataMap[id]));
-	const bestAvgQualy = Math.min(...(allAvgQualyPos.length ? allAvgQualyPos : [1]));
-	const worstAvgQualy = Math.max(...(allAvgQualyPos.length ? allAvgQualyPos : [20]));
+	const allAvgQualyPos = activeDrivers.map((id) =>
+		getAvgQualyPos(seasonDataMap[id]),
+	);
+	// const bestAvgQualy = Math.min(
+	// 	...(allAvgQualyPos.length ? allAvgQualyPos : [1]),
+	// );
+	// const worstAvgQualy = Math.max(
+	// 	...(allAvgQualyPos.length ? allAvgQualyPos : [20]),
+	// );
+	const bestAvgQualy = 2;
+	const worstAvgQualy = 20;
 
 	// Same for prevRating
-	const prevActiveDrivers = driverIds.filter((id) => prevDataMap[id].participations > 0);
-	const prevMaxAvgPoints = Math.max(1, ...prevActiveDrivers.map((id) => getAvgPoints(prevDataMap[id])));
-	const prevAllAvgQualyPos = prevActiveDrivers.map((id) => getAvgQualyPos(prevDataMap[id]));
-	const prevBestAvgQualy = Math.min(...(prevAllAvgQualyPos.length ? prevAllAvgQualyPos : [1]));
-	const prevWorstAvgQualy = Math.max(...(prevAllAvgQualyPos.length ? prevAllAvgQualyPos : [20]));
+	const prevActiveDrivers = driverIds.filter(
+		(id) => prevDataMap[id].participations > 0,
+	);
+	const prevMaxAvgPoints = Math.max(
+		1,
+		...prevActiveDrivers.map((id) => getAvgPoints(prevDataMap[id])),
+	);
+	const prevAllAvgQualyPos = prevActiveDrivers.map((id) =>
+		getAvgQualyPos(prevDataMap[id]),
+	);
+	// const prevBestAvgQualy = Math.min(
+	// 	...(prevAllAvgQualyPos.length ? prevAllAvgQualyPos : [1]),
+	// );
+	// const prevWorstAvgQualy = Math.max(
+	// 	...(prevAllAvgQualyPos.length ? prevAllAvgQualyPos : [20]),
+	// );
+	const prevBestAvgQualy = 2;
+	const prevWorstAvgQualy = 20;
 
 	// Get existing card data to read bestCard values (for consistency)
-	const existingCards = cardsSnap.exists() ? (cardsSnap.data() as Record<string, DriverCardStats>) : {};
+	const existingCards = cardsSnap.exists()
+		? (cardsSnap.data() as Record<string, DriverCardStats>)
+		: {};
 
 	// Calculate cards for all drivers
 	const cards: Record<string, DriverCardStats> = {};
@@ -246,36 +360,77 @@ export async function calculateAndSaveCards(
 		const pd = prevDataMap[driverId];
 		const existingCard = existingCards[driverId];
 
-		// --- Raw scores (0-9) ---
-		const rcRaw = calcRacecraftRaw(getAvgPoints(sd), maxAvgPoints);
-		const paceRaw = calcPaceRaw(getAvgQualyPos(sd), bestAvgQualy, worstAvgQualy);
-		const awRaw = calcAwarenessRaw(sd.cleanRaces, sd.participations);
+		// --- Raw scores (0-gridRange) ---
+		const rcRaw = calcRacecraftRaw(
+			getAvgPoints(sd),
+			maxAvgPoints,
+			gridRange,
+		);
+		const paceRaw = calcPaceRaw(
+			getAvgQualyPos(sd),
+			bestAvgQualy,
+			worstAvgQualy,
+			gridRange,
+		);
+		const awRaw = calcAwarenessRaw(
+			sd.cleanRaces,
+			sd.participations,
+			gridRange,
+		);
 
-		// Consistency: bestCard rating, or gridMin if none exists
-		// The raw (0-9) component = bestRating - gridMin, clamped 0-9
-		const bestRatingStored = existingCard?.bestRating ?? 0;
-		const consistencyRaw = bestRatingStored > 0
-			? clamp(bestRatingStored - gridMin, 0, 9)
-			: 0;
+		// Consistency: based on avg |qualy pos − race pos| across races.
+		const avgPosDiff =
+			sd.posDiffRaces > 0
+				? sd.totalPosDiff / sd.posDiffRaces
+				: gridRange + 1;
+		const consistencyRaw =
+			sd.posDiffRaces > 0
+				? calcConsistencyRaw(avgPosDiff, gridRange)
+				: 0;
 
 		const ratingRaw = calcRatingRaw(rcRaw, consistencyRaw, paceRaw, awRaw);
 
 		// --- Full values (gridMin + raw) ---
-		const rc = gridMin + clamp(rcRaw, 0, 9);
-		const pace = gridMin + clamp(paceRaw, 0, 9);
-		const aw = gridMin + clamp(awRaw, 0, 9);
+		const rc = gridMin + clamp(rcRaw, 0, gridRange);
+		const pace = gridMin + clamp(paceRaw, 0, gridRange);
+		const aw = gridMin + clamp(awRaw, 0, gridRange);
 		const consistency = gridMin + consistencyRaw;
-		const rating = gridMin + clamp(ratingRaw, 0, 9);
+		const rating = gridMin + clamp(ratingRaw, 0, gridRange);
 
 		// --- Previous rating ---
 		let prevRating = rating;
 		if (pd.participations > 0) {
-			const prevRcRaw = calcRacecraftRaw(getAvgPoints(pd), prevMaxAvgPoints);
-			const prevPaceRaw = calcPaceRaw(getAvgQualyPos(pd), prevBestAvgQualy, prevWorstAvgQualy);
-			const prevAwRaw = calcAwarenessRaw(pd.cleanRaces, pd.participations);
-			// Consistency doesn't change between races (it's based on bestCard)
-			const prevRatingRaw = calcRatingRaw(prevRcRaw, consistencyRaw, prevPaceRaw, prevAwRaw);
-			prevRating = gridMin + clamp(prevRatingRaw, 0, 9);
+			const prevRcRaw = calcRacecraftRaw(
+				getAvgPoints(pd),
+				prevMaxAvgPoints,
+				gridRange,
+			);
+			const prevPaceRaw = calcPaceRaw(
+				getAvgQualyPos(pd),
+				prevBestAvgQualy,
+				prevWorstAvgQualy,
+				gridRange,
+			);
+			const prevAwRaw = calcAwarenessRaw(
+				pd.cleanRaces,
+				pd.participations,
+				gridRange,
+			);
+			const prevAvgPosDiff =
+				pd.posDiffRaces > 0
+					? pd.totalPosDiff / pd.posDiffRaces
+					: gridRange + 1;
+			const prevConsistencyRaw =
+				pd.posDiffRaces > 0
+					? calcConsistencyRaw(prevAvgPosDiff, gridRange)
+					: 0;
+			const prevRatingRaw = calcRatingRaw(
+				prevRcRaw,
+				prevConsistencyRaw,
+				prevPaceRaw,
+				prevAwRaw,
+			);
+			prevRating = gridMin + clamp(prevRatingRaw, 0, gridRange);
 		}
 
 		// --- Best values (always track — can only go up via Math.max) ---
@@ -283,7 +438,10 @@ export async function calculateAndSaveCards(
 		const bestRacecraft = Math.max(rc, existingCard?.bestRacecraft ?? 0);
 		const bestAwareness = Math.max(aw, existingCard?.bestAwareness ?? 0);
 		const bestPace = Math.max(pace, existingCard?.bestPace ?? 0);
-		const bestConsistency = Math.max(consistency, existingCard?.bestConsistency ?? 0);
+		const bestConsistency = Math.max(
+			consistency,
+			existingCard?.bestConsistency ?? 0,
+		);
 
 		cards[driverId] = {
 			rating,

@@ -174,7 +174,8 @@ export function Profile() {
 				stats: applied.stats ?? {},
 			};
 		})
-		.filter((driver) => !driver.reserve && !driver.exDriver);
+		.filter((driver) => !driver.reserve && !driver.exDriver)
+		.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
 	useEffect(() => {
 		const index = filteredDrivers.findIndex(

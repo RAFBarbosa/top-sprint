@@ -75,11 +75,14 @@ export function Menu() {
 	const menuItems = buildMenuItems();
 
 	const activeGridDrivers = Array.isArray(enhancedCards)
-		? enhancedCards.filter((driver) => {
-			if (driver.grid !== activeTab.id) return false;
-			const p = driver.id ? profiles[driver.id]?.[activeTab.id] : undefined;
-			return !p?.reserve && !p?.exDriver;
-		})
+		? enhancedCards
+			.filter((driver) => {
+				if (driver.grid !== activeTab.id) return false;
+				const p = driver.id ? profiles[driver.id]?.[activeTab.id] : undefined;
+				return !p?.reserve && !p?.exDriver;
+			})
+			.slice()
+			.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
 		: [];
 
 	const handleLinkClick = () => {
