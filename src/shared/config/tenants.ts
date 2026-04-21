@@ -128,8 +128,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 		nav: {
 			ticketUrl:
 				"https://marvelous-barracuda-f24.notion.site/2d9a6519acc080199dc7e431afd52d5a?pvs=105",
-			registrationUrl:
-				"https://docs.google.com/forms/d/19PHr-9GcvGMmp0SU2Nva9PEWDlm4R6JHjkIKD_L-YiI/edit",
+			// registrationUrl:
+			// 	"https://docs.google.com/forms/d/19PHr-9GcvGMmp0SU2Nva9PEWDlm4R6JHjkIKD_L-YiI/edit",
 		},
 		cssVars: {
 			"--color-brand-primary": "#cd0a2a",
