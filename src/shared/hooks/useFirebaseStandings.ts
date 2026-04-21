@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "../../components/admin/PointAdjustmentsAdmin";
-import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generated";
+import { useGetCalendarsQuery, useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
 import { getGridConfig, getPointSystem, type GridId } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
@@ -25,6 +25,7 @@ function calcStandings(
 	gridId: GridId,
 	driverLookup: Record<string, any>,
 	applyProfile: (driver: any, gridId: string) => any,
+	teamLogoByName: Record<string, string> = {},
 ) {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -109,14 +110,19 @@ function calcStandings(
 
 		const profiled = applyProfile(base, gridId);
 
+		const resolvedTeamName = profiled.teamName || profiled.team?.name || "";
 		return {
 			id: driverId,
 			name: driver.name ?? driverId,
 			pts: data.pts,
 			photo: typeof profiled.photo === "string" ? profiled.photo : profiled.photo?.url || "",
-			teamName: profiled.teamName || profiled.team?.name || "",
+			teamName: resolvedTeamName,
 			teamColor: profiled.teamColor || profiled.team?.color?.hex || "",
-			teamLogo: profiled.team?.photo?.url || base.teamLogo,
+			teamLogo:
+				profiled.team?.photo?.url ||
+				base.teamLogo ||
+				teamLogoByName[resolvedTeamName] ||
+				"",
 			badge: driver.badge || "",
 			badgeTitle: driver.badgeTitle || "",
 			reserve: profiled.reserve ?? false,
@@ -146,6 +152,7 @@ export function useFirebaseStandings(gridId: GridId) {
 
 	const { data: calendarsData } = useGetCalendarsQuery();
 	const { data: driversData } = useGetDriversQuery();
+	const { data: teamsData } = useGetTeamsQuery();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { profiles, applyProfile } = useDriverProfiles();
@@ -206,6 +213,13 @@ export function useFirebaseStandings(gridId: GridId) {
 			(driversData.drivers ?? []).map((d) => [d.id, d]),
 		);
 
+		// Build a name→logo map from the teams collection directly — more reliable
+		// than driver.team.photo, which can be broken in cloned Hygraph projects.
+		const teamLogoByName: Record<string, string> = {};
+		(teamsData?.teams ?? []).forEach((t) => {
+			if (t.name && t.photo?.url) teamLogoByName[t.name] = t.photo.url;
+		});
+
 		// Helper: sum adjustments for a set of calendar ids
 		const applyAdj = (rows: any[], calendarIds: Set<string>) =>
 			rows.map((row) => {
@@ -228,7 +242,7 @@ export function useFirebaseStandings(gridId: GridId) {
 
 		const allCalendarIds = new Set(relevantCalendars.map((c) => c.id));
 		const standings = applyAdj(
-			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile),
+			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile, teamLogoByName),
 			allCalendarIds,
 		);
 		// Find the most recently raced calendar (by date) that has results
@@ -245,12 +259,12 @@ export function useFirebaseStandings(gridId: GridId) {
 		const previousCalendarIds = new Set(previousCalendars.map((c) => c.id));
 
 		const previousStandings = applyAdj(
-			calcStandings(previousCalendars, allResults, gridId, driverLookup, applyProfile),
+			calcStandings(previousCalendars, allResults, gridId, driverLookup, applyProfile, teamLogoByName),
 			previousCalendarIds,
 		);
 
 		return { standings, previousStandings };
-	}, [allResults, allAdjustments, calendarsData, driversData, seasons, mappings, profiles, gridId]);
+	}, [allResults, allAdjustments, calendarsData, driversData, teamsData, seasons, mappings, profiles, gridId]);
 
 	return {
 		standings,
