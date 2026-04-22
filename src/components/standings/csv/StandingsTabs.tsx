@@ -8,7 +8,7 @@ export function StandingsTabs({
 	setActiveGrid,
 }: StandingsTabsProps) {
 	return (
-		<div className="flex justify-center items-center font-f1Title gap-2">
+		<div className="tenant-standings-tabs flex justify-center items-center font-f1Title gap-2">
 			<StandingsTab
 				label="Pilotos"
 				isActive={activeGrid === "drivers"}

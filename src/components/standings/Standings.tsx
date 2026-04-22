@@ -54,7 +54,7 @@ export function Standings() {
 	if (!activeSeason || standings.length === 0) return null;
 
 	return (
-		<aside className="pb-10 flex flex-col relative bg-f1-lightSilver overflow-hidden">
+		<aside className="tenant-section tenant-section-standings pb-10 flex flex-col relative bg-f1-lightSilver overflow-hidden">
 			<div
 				className={`md:h-[396px] h-[280px] w-full absolute left-0 ${
 					gridConfig?.standingsBgClass ?? ""

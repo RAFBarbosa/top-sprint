@@ -104,10 +104,10 @@ export function Calendar(props: CalendarProps) {
 		<>
 			<div
 				style={{ color: "var(--color-brand-primary)" }}
-				className="font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
+				className="tenant-calendar-round-mask font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
 			>
 				{isPastTwoHours ? (
-					<span className="text-f1-text">
+					<span className="tenant-calendar-text text-f1-text">
 						{props.round} Finalizada
 					</span>
 				) : (
@@ -116,11 +116,11 @@ export function Calendar(props: CalendarProps) {
 			</div>
 			<div className="flex pb-3 mb-0 border-b border-f1-black/20 items-start flex-grow">
 				<div className="w-full mr-3 flex flex-col justify-between h-full">
-					<span className="text-sm font-semibold text-f1-text uppercase tracking-wide">
+					<span className="tenant-calendar-text text-sm font-semibold text-f1-text uppercase tracking-wide">
 						{formattedDateCapitalized}
 					</span>
 					<div className="flex items-center gap-1 mt-0.5">
-						<span className="text-lg font-bold uppercase leading-5 tracking-wide">
+						<span className="tenant-calendar-text text-lg font-bold uppercase leading-5 tracking-wide">
 							{props.track}
 						</span>
 						{!isFutureDate && (
@@ -135,7 +135,7 @@ export function Calendar(props: CalendarProps) {
 						)}
 					</div>
 					{props.location && (
-						<span className="text-f1-text mt-2 leading-4">
+						<span className="tenant-calendar-text text-f1-text mt-2 leading-4">
 							{props.location}
 						</span>
 					)}
@@ -147,7 +147,7 @@ export function Calendar(props: CalendarProps) {
 						alt={`Bandeira ${props.track}`}
 						imgWidth={180}
 						imgHeight={100}
-						className="rounded w-[45px] h-[25px] border border-black/20 self-start"
+						className="tenant-calendar-flag rounded w-[45px] h-[25px] border border-black/20 self-start"
 					/>
 					{props.sprint && (
 						<span className="text-[10px] font-bold text-f1-red tracking-wider uppercase">

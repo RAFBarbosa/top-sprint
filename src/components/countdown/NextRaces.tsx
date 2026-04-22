@@ -130,6 +130,7 @@ export function NextRaces() {
 					<NextRace
 						key={nextRace.id}
 						track={nextRace.track?.name || nextRace.round || ""}
+						round={nextRace.round || ""}
 						location={nextRace.track?.location || ""}
 						date={parseISO(nextRace.date)}
 						link={nextRace.link || ""}

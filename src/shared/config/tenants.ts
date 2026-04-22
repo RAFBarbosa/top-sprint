@@ -18,6 +18,11 @@ export interface CssVars {
 	"--color-grid-menu-bg": string;
 	"--color-grid-menu-text": string;
 	"--color-grid-menu-border": string;
+	"--color-countdown-bg": string;
+	"--color-news-bg": string;
+	"--color-calendars-bg": string;
+	"--color-standings-bg": string;
+	"--color-teams-bg": string;
 	"--font-f1"?: string;
 	"--font-f1Title"?: string;
 	"--font-f1Podium"?: string;
@@ -70,9 +75,9 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				primaryColor: "#eb1c24",
 				accentColor: "bg-f1-lightCarbon",
 				hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
-				hoverAccentColor: "hover:bg-f1-red hover:text-white",
+				hoverAccentColor: "hover:bg-crt-primary hover:text-white",
 				standingsBgClass:
-					"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
+					"bg-radial-[at_50%_150%] from-crt-primary to-crt-dark-bg to-65%",
 				standingsTitle: "C1",
 				countdownBgClass: "bg-f1-silver",
 				cardBackground: topSprintA,
@@ -100,7 +105,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				// standingsBgClass:
 				// 	"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsBgClass:
-					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy-darkerBlue to-100%",
+					"bg-radial-[at_50%_100%] from-crt-blue to-crt-dark-bg to-65%",
 				standingsTitle: "C2",
 				countdownBgClass: "bg-f1-academy-darker",
 				cardBackground: topSprintB,
@@ -139,12 +144,17 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-brand-nav-active": "#cd0a2a",
 			"--color-brand-nav-dropdown-bg": "#15151e",
 			"--color-brand-footer": "#15151e",
-			"--color-grid-menu-bg": "#0f1014",
+			"--color-grid-menu-bg": "#0c0c0c",
 			"--color-grid-menu-text": "#eeeff1",
 			"--color-grid-menu-border": "#cd0a2a",
-			"--font-f1": "'Chakra Petch', sans-serif",
+			"--color-countdown-bg": "#0c0c0c",
+			"--color-news-bg": "#111214",
+			"--color-calendars-bg": "#27292c",
+			"--color-standings-bg": "#111214",
+			"--color-teams-bg": "#27292c",
+			"--font-f1": "'FutoSans', sans-serif",
 			"--font-f1Title": "'Vipnagorgialla', sans-serif",
-			"--font-f1Podium": "'FutoSans', sans-serif",
+			"--font-f1Podium": "'Chakra Petch', sans-serif",
 		},
 		socials: {
 			// whatsapp: "https://chat.whatsapp.com/BBUq88qF23DFffFN7mlRz1",
@@ -210,6 +220,11 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-grid-menu-bg": "#f50404",
 			"--color-grid-menu-text": "#ffffff",
 			"--color-grid-menu-border": "transparent",
+			"--color-countdown-bg": "#0c0c0c",
+			"--color-news-bg": "transparent",
+			"--color-calendars-bg": "transparent",
+			"--color-standings-bg": "transparent",
+			"--color-teams-bg": "transparent",
 		},
 		socials: { youtube: "https://www.youtube.com/@feliplay_TV" },
 		fallbackDriverPhoto:
@@ -343,6 +358,11 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-grid-menu-bg": "#15151e",
 			"--color-grid-menu-text": "#ffffff",
 			"--color-grid-menu-border": "transparent",
+			"--color-countdown-bg": "#15151e",
+			"--color-news-bg": "transparent",
+			"--color-calendars-bg": "transparent",
+			"--color-standings-bg": "transparent",
+			"--color-teams-bg": "transparent",
 		},
 		socials: {
 			instagram: "https://www.instagram.com/brazukaracingleague/",
