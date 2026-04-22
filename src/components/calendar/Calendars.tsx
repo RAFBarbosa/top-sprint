@@ -34,7 +34,11 @@ export function Calendars({
 	hideHeader = false,
 	noPadding = false,
 	preventScrollOnClick = false,
-}: { hideHeader?: boolean; noPadding?: boolean; preventScrollOnClick?: boolean } = {}) {
+}: {
+	hideHeader?: boolean;
+	noPadding?: boolean;
+	preventScrollOnClick?: boolean;
+} = {}) {
 	const { data, error, loading } = useGetCalendarsQuery();
 	const { data: driversData } = useGetDriversQuery();
 	const { activeTab } = useTab();
@@ -99,20 +103,25 @@ export function Calendars({
 	if (error) return <div>Erro: {error.message}</div>;
 
 	const gridCalendarIds = new Set(
-		(data?.calendars ?? []).filter((c) => c.grid === activeTab.id).map((c) => c.id),
+		(data?.calendars ?? [])
+			.filter((c) => c.grid === activeTab.id)
+			.map((c) => c.id),
 	);
 	const gridSeasonIds = new Set(
-		[...gridCalendarIds].map((cid) => getSeasonForCalendar(cid)).filter(Boolean) as string[],
+		[...gridCalendarIds]
+			.map((cid) => getSeasonForCalendar(cid))
+			.filter(Boolean) as string[],
 	);
-	const activeSeason = seasons.find((s) => s.active && gridSeasonIds.has(s.id)) ?? null;
+	const activeSeason =
+		seasons.find((s) => s.active && gridSeasonIds.has(s.id)) ?? null;
 
 	// Filter calendars by grid and active season only
 	const gridCalendars = activeSeason
 		? (data?.calendars ?? []).filter((calendar) => {
-			if (calendar.grid !== activeTab.id) return false;
-			const sid = getSeasonForCalendar(calendar.id);
-			return sid === activeSeason.id;
-		})
+				if (calendar.grid !== activeTab.id) return false;
+				const sid = getSeasonForCalendar(calendar.id);
+				return sid === activeSeason.id;
+			})
 		: [];
 
 	// Group calendars by season
@@ -192,7 +201,9 @@ export function Calendars({
 		}
 	}
 	return (
-		<aside className={`bg-f1-bg-silver ${noPadding ? "" : "pt-10 pb-4.5"}`}>
+		<aside
+			className={`tenant-section tenant-section-calendars bg-f1-bg-silver ${noPadding ? "" : "pt-10 pb-4.5"}`}
+		>
 			<div className="flex flex-col overflow-hidden">
 				{!hideHeader && (
 					<div className="w-full mx-auto max-w-screen-xl px-3">
@@ -207,7 +218,7 @@ export function Calendars({
 							}}
 							className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center"
 						>
-							<h2 className="font-bold text-3xl md:text-4xl">
+							<h2 className="tenant-section-title font-bold text-3xl md:text-4xl">
 								Calendário{" "}
 								{currentSeason ? `${currentSeason.name}` : ""}
 							</h2>
@@ -219,143 +230,166 @@ export function Calendars({
 						Nenhuma temporada ativa no momento.
 					</p>
 				) : (
-				<>
-				{sortedSeasonKeys.length > 0 && (
-					<div className="w-full mx-auto max-w-screen-xl px-3 space-y-12">
-						{sortedSeasonKeys.map((seasonKey) => {
-							const { season, calendars } =
-								calendarsBySeason[seasonKey];
-							const seasonInitialSlide = calendars.findIndex(
-								(calendar) => {
-									return (
-										new Date(calendar.date) >= new Date()
-									);
-								},
-							);
+					<>
+						{sortedSeasonKeys.length > 0 && (
+							<div className="w-full mx-auto max-w-screen-xl px-3 space-y-12">
+								{sortedSeasonKeys.map((seasonKey) => {
+									const { season, calendars } =
+										calendarsBySeason[seasonKey];
+									const seasonInitialSlide =
+										calendars.findIndex((calendar) => {
+											return (
+												new Date(calendar.date) >=
+												new Date()
+											);
+										});
 
-							return (
-								<div key={seasonKey} className="space-y-4">
-									{/* <h3 className="font-bold text-2xl md:text-3xl border-b-2 border-f1-red pb-2">
+									return (
+										<div
+											key={seasonKey}
+											className="space-y-4"
+										>
+											{/* <h3 className="font-bold text-2xl md:text-3xl border-b-2 border-f1-red pb-2">
 										{season ? `${season.name} (${season.year})` : 'Sem Temporada'}
 									</h3> */}
 
-									<div className="w-full mt-6 cursor-pointer overflow-visible relative">
-										<Swiper
-											modules={[Navigation]}
-											slidesPerView={"auto"}
-											spaceBetween={16}
-											navigation={true}
-											initialSlide={
-												seasonInitialSlide === -1
-													? Math.max(
-															0,
-															calendars.length -
-																1,
-														)
-													: seasonInitialSlide
-											}
-											className="!ml-0"
-											breakpoints={{
-												640: {
-													slidesPerView: "auto",
-													spaceBetween: 16,
-													centeredSlides: false,
-												},
-												768: {
-													slidesPerView: "auto",
-													spaceBetween: 16,
-													centeredSlides: false,
-												},
-												1024: {
-													slidesPerView: "auto",
-													spaceBetween: 16,
-													centeredSlides: false,
-												},
-												1280: {
-													slidesPerView: "auto",
-													spaceBetween: 16,
-													centeredSlides: false,
-												},
-											}}
-										>
-											{calendars.map((cal) => (
-												<SwiperSlide
-													key={cal.id}
-													className="!w-auto !h-auto max-w-[320px]"
+											<div className="w-full mt-6 cursor-pointer overflow-visible relative">
+												<Swiper
+													modules={[Navigation]}
+													slidesPerView={"auto"}
+													spaceBetween={16}
+													navigation={true}
+													initialSlide={
+														seasonInitialSlide ===
+														-1
+															? Math.max(
+																	0,
+																	calendars.length -
+																		1,
+																)
+															: seasonInitialSlide
+													}
+													className="!ml-0"
+													breakpoints={{
+														640: {
+															slidesPerView:
+																"auto",
+															spaceBetween: 16,
+															centeredSlides: false,
+														},
+														768: {
+															slidesPerView:
+																"auto",
+															spaceBetween: 16,
+															centeredSlides: false,
+														},
+														1024: {
+															slidesPerView:
+																"auto",
+															spaceBetween: 16,
+															centeredSlides: false,
+														},
+														1280: {
+															slidesPerView:
+																"auto",
+															spaceBetween: 16,
+															centeredSlides: false,
+														},
+													}}
 												>
-													<div className="px-2 h-full">
-														<Calendar
-															round={
-																cal.round || ""
-															}
-															sprint={
-																cal.sprint ||
-																false
-															}
-															track={
-																cal.track
-																	?.name ||
-																cal.round ||
-																""
-															}
-															location={
-																cal.track
-																	?.location ||
-																""
-															}
-															date={
-																cal.date || ""
-															}
-															grid={cal.grid}
-															winnerA={getWinner(
-																cal.id,
-																cal.grid,
-																cal.winnerA,
-															)}
-															winnerB={null}
-															preventScrollOnClick={preventScrollOnClick}
-															externalLink={
-																!raceResultsMap[
-																	cal.id
-																] && cal.link
-																	? cal.link
-																	: undefined
-															}
-															map={
-																cal.track
-																	?.map || {
-																	url: tenant
-																		.logo
-																		.url,
-																}
-															}
-															flag={
-																cal.track
-																	?.flag || {
-																	url: tenant
-																		.logo
-																		.url,
-																}
-															}
-															seasonId={
-																getSeasonForCalendar(
-																	cal.id,
-																) ?? undefined
-															}
-														/>
-													</div>
-												</SwiperSlide>
-											))}
-										</Swiper>
-										<div className="pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
-										<div className="pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
-									</div>
-								</div>
-							);
-						})}
-					</div>
-				)}
-				</>
+													{calendars.map((cal) => (
+														<SwiperSlide
+															key={cal.id}
+															className="!w-auto !h-auto max-w-[320px]"
+														>
+															<div className="px-2 h-full">
+																<Calendar
+																	round={
+																		cal.round ||
+																		""
+																	}
+																	sprint={
+																		cal.sprint ||
+																		false
+																	}
+																	track={
+																		cal
+																			.track
+																			?.name ||
+																		cal.round ||
+																		""
+																	}
+																	location={
+																		cal
+																			.track
+																			?.location ||
+																		""
+																	}
+																	date={
+																		cal.date ||
+																		""
+																	}
+																	grid={
+																		cal.grid
+																	}
+																	winnerA={getWinner(
+																		cal.id,
+																		cal.grid,
+																		cal.winnerA,
+																	)}
+																	winnerB={
+																		null
+																	}
+																	preventScrollOnClick={
+																		preventScrollOnClick
+																	}
+																	externalLink={
+																		!raceResultsMap[
+																			cal
+																				.id
+																		] &&
+																		cal.link
+																			? cal.link
+																			: undefined
+																	}
+																	map={
+																		cal
+																			.track
+																			?.map || {
+																			url: tenant
+																				.logo
+																				.url,
+																		}
+																	}
+																	flag={
+																		cal
+																			.track
+																			?.flag || {
+																			url: tenant
+																				.logo
+																				.url,
+																		}
+																	}
+																	seasonId={
+																		getSeasonForCalendar(
+																			cal.id,
+																		) ??
+																		undefined
+																	}
+																/>
+															</div>
+														</SwiperSlide>
+													))}
+												</Swiper>
+												<div className="tenant-section-fade pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
+												<div className="tenant-section-fade pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-f1-bg-silver/88 z-10" />
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						)}
+					</>
 				)}
 			</div>
 		</aside>

@@ -1,5 +1,4 @@
 import { useTab } from "../../contexts/TabContext";
-import Watch from "/src/assets/img/casio.png";
 import { getGridConfig } from "../../shared/config/grids";
 import { GridId } from "../../shared/config/grids";
 
@@ -12,90 +11,79 @@ interface CountdownRendererProps {
 	link?: string;
 }
 
+const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+
 export function CountdownRenderer(props: CountdownRendererProps) {
 	const { activeTab } = useTab();
 	const gridConfig = getGridConfig(activeTab.id as GridId);
-	const bgClass = gridConfig?.countdownBgClass ?? "bg-f1-silver";
 	const gridLabel = gridConfig?.label ?? activeTab.id;
 
 	if (props.completed) {
 		return (
-			<a href={props.link} target="_blank" className="hover:opacity-90">
-				<div
-					className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${bgClass}`}
-				>
-					<div className="flex flex-col w-full">
-						<span className="font-bold uppercase text-center">
-							{gridLabel}
-						</span>
-						<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
-						<div className="flex flex-col w-full justify-center mt-1">
-							<span className="font-bold text-2xl">
-								Corrida ao vivo!
-							</span>
-							<p className="text-sm">Clique para assistir</p>
-						</div>
-					</div>
-					<div className="w-[90px] h-auto mr-1">
-						<img src={Watch} alt="Relógio" aria-hidden="true" />
-					</div>
-				</div>
+			<a
+				href={props.link}
+				target="_blank"
+				className="flex flex-col items-end leading-tight hover:opacity-90"
+			>
+				<span className="text-[10px] md:text-xs uppercase tracking-wider text-white/70">
+					Grid {gridLabel} · ao vivo
+				</span>
+				<span className="font-bold text-sm uppercase">
+					Clique para assistir
+				</span>
 			</a>
 		);
 	}
 
 	return (
-		<div
-			className={`rounded-lg p-2 text-center mt-3 md:mt-0 md:w-[325px] flex justify-between items-center ${bgClass}`}
-		>
-			<div className="flex flex-col w-full">
-				<span className="font-bold uppercase text-center">
-					{gridLabel}
-				</span>
-				<hr className="my-1 border-t border-white/50 ml-2 mr-4" />
-				<div className="flex w-full justify-center mt-1">
-					<div className="flex flex-col items-center px-3">
-						<span className="font-bold text-4xl">
-							{props.days < 10 ? "0" + props.days : props.days}
-						</span>
-						<p className="text-sm tracking-tight -mt-1">
-							{props.days === 1 ? "DIA" : "DIAS"}
-						</p>
-					</div>
-
-					<div className="self-center h-11 w-[1px] bg-white/50" />
-
-					<div className="flex flex-col items-center px-3">
-						<span className="font-bold text-4xl">
-							{props.hours < 10 ? "0" + props.hours : props.hours}
-						</span>
-						<p className="text-sm tracking-tight -mt-1">
-							{props.hours === 1 ? "HR" : "HRS"}
-						</p>
-					</div>
-
-					<div className="self-center h-11 w-[1px] bg-white/50" />
-
-					<div className="flex flex-col items-center px-3">
-						<span className="font-bold text-4xl flex">
-							{props.minutes < 10
-								? "0" + props.minutes
-								: props.minutes}
-							<span className="font-bold text-xs mt-1 ml-1">
-								{props.seconds < 10
-									? "0" + props.seconds
-									: props.seconds}
-							</span>
-						</span>
-						<p className="text-sm tracking-tight -mt-1 -ml-4">
-							{props.minutes === 1 ? "MIN" : "MINS"}
-						</p>
-					</div>
-				</div>
+		<div className="flex flex-col items-end leading-tight gap-1">
+			<span className="text-[10px] md:text-xs uppercase tracking-wider text-white/70">
+				Próxima corrida · {gridLabel}
+			</span>
+			<div className="flex items-baseline gap-3">
+				<Unit
+					value={pad(props.days)}
+					shortLabel="D"
+					label={props.days === 1 ? "DIA" : "DIAS"}
+				/>
+				<Unit
+					value={pad(props.hours)}
+					shortLabel="H"
+					label={props.hours === 1 ? "HR" : "HRS"}
+				/>
+				<Unit
+					value={pad(props.minutes)}
+					shortLabel="M"
+					label="MIN"
+				/>
+				<Unit
+					value={pad(props.seconds)}
+					shortLabel="S"
+					label="SEG"
+				/>
 			</div>
-			<div className="w-[90px] h-auto mr-1">
-				<img src={Watch} alt="Relógio" aria-hidden="true" />
-			</div>
+		</div>
+	);
+}
+
+function Unit({
+	value,
+	label,
+	shortLabel,
+}: {
+	value: string;
+	label: string;
+	shortLabel: string;
+}) {
+	return (
+		<div className="flex items-baseline gap-1">
+			<span className="font-bold text-sm md:text-base leading-none tabular-nums">
+				{value}
+			</span>
+			<span className="text-[9px] md:text-[10px] text-white/70 tracking-tight">
+				<span className="md:hidden">{shortLabel}</span>
+				<span className="hidden md:inline">{label}</span>
+			</span>
 		</div>
 	);
 }

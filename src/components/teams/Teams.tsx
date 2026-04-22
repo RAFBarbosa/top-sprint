@@ -96,7 +96,7 @@ export function Teams() {
 	));
 
 	return (
-		<aside className="py-10 overflow-hidden bg-white">
+		<aside className="tenant-section tenant-section-teams py-10 overflow-hidden bg-white">
 			<div className="max-w-screen-xl mx-auto">
 				<div className="w-full mx-auto max-w-screen-xl px-3">
 					<div
@@ -110,7 +110,7 @@ export function Teams() {
 						}}
 						className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center"
 					>
-						<h2 className="font-bold text-3xl md:text-4xl">
+						<h2 className="tenant-section-title font-bold text-3xl md:text-4xl">
 							Equipes e Pilotos
 						</h2>
 					</div>
@@ -161,8 +161,8 @@ export function Teams() {
 								</SwiperSlide>
 							))}
 						</Swiper>
-						<div className="pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-white/88 z-10" />
-						<div className="pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-white/88 z-10" />
+						<div className="tenant-section-fade pointer-events-none absolute -inset-y-2 left-0 -translate-x-full w-screen bg-white/88 z-10" />
+						<div className="tenant-section-fade pointer-events-none absolute -inset-y-2 right-0 translate-x-full w-screen bg-white/88 z-10" />
 					</div>
 				)}
 			</div>

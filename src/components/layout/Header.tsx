@@ -24,7 +24,7 @@ export function Header() {
 
 			{!isAdminPage && (
 				<div
-					className={`bg-f1-black mt-[56px] ${hasGridBar ? "md:mt-[114px]" : "md:mt-[74px]"}`}
+					className={`bg-f1-black mt-[56px] ${hasGridBar ? "md:mt-[118px]" : "md:mt-[74px]"}`}
 				>
 					<NextRaces />
 				</div>
@@ -32,4 +32,3 @@ export function Header() {
 		</header>
 	);
 }
-

@@ -1,0 +1,101 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Per-tenant structural overrides.
+ *
+ * For design tokens (colors, fonts, sizes that vary by value), prefer CSS
+ * vars in src/shared/config/tenants.ts. Use this file for structural
+ * differences — text transforms, hiding/showing elements, repositioning,
+ * font-size tweaks that don't warrant a token.
+ *
+ * Scope every rule under [data-tenant="..."] so it only applies to that
+ * tenant. Components tag themselves with a .tenant-<thing> class so we
+ * can target them without bumping selector specificity via Tailwind.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* ── topSprint ───────────────────────────────────────────────────────────── */
+
+[data-tenant="topSprint"] .tenant-standings-title {
+	font-weight: 500;
+	font-size: 1.85rem;
+}
+
+[data-tenant="topSprint"] .tenant-standings-tabs button {
+	font-size: 1rem;
+}
+
+[data-tenant="topSprint"] .tenant-countdown-bar {
+	/* border-bottom: 2px solid var(--color-brand-nav); */
+	border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+	position: relative;
+	z-index: 1;
+}
+
+[data-tenant="topSprint"] .tenant-menu-item {
+	text-transform: uppercase;
+	font-size: 0.95rem;
+	font-weight: 500;
+	letter-spacing: 0.03em;
+}
+
+[data-tenant="topSprint"] .tenant-news-body {
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-news-body-primary {
+	text-transform: uppercase;
+}
+
+[data-tenant="topSprint"] .tenant-news-secondary {
+	background-color: var(--color-grid-menu-bg);
+	border-color: transparent;
+}
+
+[data-tenant="topSprint"] .tenant-section {
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-section-calendars {
+	background-color: var(--color-calendars-bg);
+}
+
+[data-tenant="topSprint"] .tenant-section-standings {
+	background-color: var(--color-standings-bg);
+}
+
+[data-tenant="topSprint"] .tenant-section-teams {
+	background-color: var(--color-teams-bg);
+}
+
+[data-tenant="topSprint"] .tenant-section-title {
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-section-calendars .tenant-section-fade {
+	background-color: color-mix(in srgb, var(--color-calendars-bg) 88%, transparent);
+}
+
+[data-tenant="topSprint"] .tenant-section-teams .tenant-section-fade {
+	background-color: color-mix(in srgb, var(--color-teams-bg) 88%, transparent);
+}
+
+[data-tenant="topSprint"] .tenant-calendar-round-mask {
+	background-color: var(--color-calendars-bg);
+}
+
+[data-tenant="topSprint"] .tenant-calendar-text {
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-calendar-flag {
+	border-color: rgba(255, 255, 255, 0.4);
+}
+
+[data-tenant="topSprint"] .tenant-news-fallback {
+	color: #ffffff;
+}
+
+/* [data-tenant="topSprint"] .tenant-menu-item-label {
+	display: inline-block;
+	transform: scaleY(0.89);
+	transform-origin: center;
+} */

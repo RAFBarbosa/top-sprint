@@ -263,7 +263,7 @@ export function StandingsList(props: StandingsListProps) {
 
 		return (
 			<>
-				<h2 className="font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center my-10">
+				<h2 className="tenant-standings-title font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center my-10">
 					Classificação {props.title}
 				</h2>
 				<div className="w-full">

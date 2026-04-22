@@ -20,8 +20,8 @@ export function Banner(props: BannerProps) {
 			>
 				{props.title}
 			</div>
-			<div className="group-hover:underline">
-				<div className="text-2xl/6 md:text-3xl/8 font-semibold mb-4">
+			<div>
+				<div className="tenant-news-body tenant-news-body-primary text-2xl/6 md:text-3xl/8 font-semibold mb-4 group-hover:underline">
 					{props.content}
 				</div>
 				<div className="overflow-hidden">
@@ -44,14 +44,23 @@ export function Banner(props: BannerProps) {
 
 	if (isInternal) {
 		return (
-			<Link to={props.link} state={{ fromNews: true }} className={className}>
+			<Link
+				to={props.link}
+				state={{ fromNews: true }}
+				className={className}
+			>
 				{inner}
 			</Link>
 		);
 	}
 
 	return (
-		<a href={props.link} target="_blank" rel="noopener noreferrer" className={className}>
+		<a
+			href={props.link}
+			target="_blank"
+			rel="noopener noreferrer"
+			className={className}
+		>
 			{inner}
 		</a>
 	);

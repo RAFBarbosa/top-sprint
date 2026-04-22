@@ -52,7 +52,11 @@ function App() {
 	) as React.CSSProperties;
 
 	return (
-		<div style={style} className="font-f1 flex flex-col min-h-screen">
+		<div
+			data-tenant={tenant.id}
+			style={style}
+			className="font-f1 flex flex-col min-h-screen"
+		>
 			<ApolloProvider client={client}>
 				<BrowserRouter>
 					<ScrollToTop />

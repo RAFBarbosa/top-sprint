@@ -107,11 +107,11 @@ export function Banners() {
 		: "";
 
 	return (
-		<div className="flex flex-col md:flex-row gap-4 items-stretch">
+		<div className="flex flex-col md:flex-row gap-2 md:gap-8 items-stretch">
 			{/* Primary Banner */}
 			<aside
 				style={{ borderColor: "var(--color-brand-primary)" }}
-				className="md:w-4/7 mb-4 md:mb-0 border-t-8 border-r-8 rounded-tr-3xl relative flex flex-col"
+				className="md:w-4/7 mb-4 md:mb-0 border-t-8 relative flex flex-col"
 			>
 				<div className="pr-2 md:sticky top-16 z-10">
 					{latestFeaturedBanner ? (
@@ -128,7 +128,9 @@ export function Banners() {
 							}
 						/>
 					) : (
-						<p>Nenhum banner em destaque encontrado</p>
+						<p className="tenant-news-fallback">
+							Nenhum banner em destaque encontrado
+						</p>
 					)}
 				</div>
 				<div className="md:h-full h-2 bg-map-bg bg-cover opacity-20 mr-2 md:mr-5 mt-4"></div>

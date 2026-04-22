@@ -183,10 +183,12 @@ export function Menu() {
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label={`${item.label} (abre em nova janela)`}
-										className="text-lg w-full flex justify-between items-center py-2 px-2"
+										className="tenant-menu-item text-lg w-full flex justify-between items-center py-2 px-2"
 										onClick={handleLinkClick}
 									>
-										<span>{item.label}</span>
+										<span className="tenant-menu-item-label">
+											{item.label}
+										</span>
 										<OpenInNew
 											fontSize="small"
 											aria-hidden="true"
@@ -195,10 +197,12 @@ export function Menu() {
 								) : (
 									<Link
 										to={item.id}
-										className="text-lg w-full flex justify-between items-center py-2 px-2"
+										className="tenant-menu-item text-lg w-full flex justify-between items-center py-2 px-2"
 										onClick={handleLinkClick}
 									>
-										<span>{item.label}</span>
+										<span className="tenant-menu-item-label">
+											{item.label}
+										</span>
 										<ArrowForwardIos
 											fontSize="small"
 											aria-hidden="true"
@@ -220,9 +224,11 @@ export function Menu() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label={`${item.label} (abre em nova janela)`}
-									className={`text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300`}
+									className="tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300"
 								>
-									{item.label}
+									<span className="tenant-menu-item-label">
+										{item.label}
+									</span>
 								</a>
 							) : item.isDropdown ? (
 								<div
@@ -234,9 +240,11 @@ export function Menu() {
 								>
 									<button
 										onClick={handleAllDriversClick}
-										className="text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 cursor-pointer"
+										className="tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 cursor-pointer"
 									>
-										<span>{item.label}</span>
+										<span className="tenant-menu-item-label">
+											{item.label}
+										</span>
 										<ArrowForwardIos
 											className="ml-2 rotate-90"
 											fontSize="small"
@@ -283,13 +291,15 @@ export function Menu() {
 								<Link
 									to={item.id}
 									onClick={handleLinkClick}
-									className={`text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 ${
+									className={`tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 ${
 										isActive(item.id)
 											? "nav-link-active"
 											: ""
 									}`}
 								>
-									{item.label}
+									<span className="tenant-menu-item-label">
+										{item.label}
+									</span>
 								</Link>
 							)}
 						</React.Fragment>

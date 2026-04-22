@@ -19,7 +19,9 @@ export function SecondaryBanners({ banners }: SecondaryBannersProps) {
 	if (!banners || banners.length === 0) {
 		return (
 			<div className="h-full flex flex-col justify-center items-center text-gray-500">
-				<p>Nenhum banner secundário encontrado</p>
+				<p className="tenant-news-fallback">
+					Nenhum banner secundário encontrado
+				</p>
 			</div>
 		);
 	}
