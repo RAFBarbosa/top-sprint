@@ -75,7 +75,7 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				primaryColor: "#cd0a2a",
 				accentColor: "bg-crt-secondary",
 				hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
-				hoverAccentColor: "hover:bg-crt-primary hover:text-white",
+				hoverAccentColor: "group-hover:bg-white group-hover:text-black",
 				standingsBgClass:
 					"bg-radial-[at_50%_150%] from-crt-primary to-crt-dark-bg to-65%",
 				standingsTitle: "",
@@ -99,9 +99,9 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				id: "gridB",
 				label: "C2",
 				primaryColor: "#11bf5b",
-				accentColor: "bg-f1-academy-blue",
+				accentColor: "bg-crt-blue",
 				hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
-				hoverAccentColor: "hover:bg-f1-academy-dark hover:text-white",
+				hoverAccentColor: "group-hover:bg-white group-hover:text-black",
 				// standingsBgClass:
 				// 	"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsBgClass:
@@ -178,7 +178,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				primaryColor: "#f50404",
 				accentColor: "bg-f1-lightCarbon",
 				hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
-				hoverAccentColor: "hover:bg-f1-red hover:text-white",
+				hoverAccentColor:
+					"group-hover:bg-f1-red group-hover:text-white",
 				standingsBgClass:
 					"bg-radial-[at_50%_100%] from-f1-silver to-f1-text to-70%",
 				standingsTitle: "",
@@ -243,7 +244,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				primaryColor: "#38383f",
 				accentColor: "bg-f1-carbon",
 				hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
-				hoverAccentColor: "hover:bg-f1-lightCarbon hover:text-white",
+				hoverAccentColor:
+					"group-hover:bg-f1-lightCarbon group-hover:text-white",
 				standingsBgClass:
 					"bg-radial-[at_50%_150%] from-f1-red to-f1-carbon to-65%",
 				standingsTitle: "Alpha",
@@ -277,7 +279,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				primaryColor: "#eb1c24",
 				accentColor: "bg-f1-lightCarbon",
 				hoverPrimaryColor: "hover:bg-f1-darkerRed hover:text-white",
-				hoverAccentColor: "hover:bg-f1-red hover:text-white",
+				hoverAccentColor:
+					"group-hover:bg-f1-red group-hover:text-white",
 				standingsBgClass:
 					"bg-radial-[at_50%_150%] from-f1-darkerRed to-f1-lightSilver to-225%",
 				standingsTitle: "Bravo",
@@ -311,7 +314,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				primaryColor: "#00335e",
 				accentColor: "bg-f1-academy-blue",
 				hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
-				hoverAccentColor: "hover:bg-f1-academy-dark hover:text-white",
+				hoverAccentColor:
+					"group-hover:bg-f1-academy-dark group-hover:text-white",
 				standingsBgClass:
 					"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-darkerBlue to-150%",
 				standingsTitle: "Charlie",

@@ -104,6 +104,10 @@ export function StandingCard(props: StandingCardProps) {
 	};
 
 	const { colorClass, hoverClass } = getColorClasses();
+	const gridPrimaryColor =
+		getGridConfig(props.activeTab)?.primaryColor ?? "";
+	const pointsHoverClass =
+		getGridConfig(props.activeTab)?.hoverAccentColor ?? "";
 
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
@@ -157,11 +161,18 @@ export function StandingCard(props: StandingCardProps) {
 			}`}
 		>
 			<div
-				className={`flex px-2 md:p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
+				className={`tenant-standing-card ${
+					isDrivers ? "tenant-standing-card-clickable" : ""
+				} flex px-2 md:p-4 items-center relative rounded-md md:bg-white md:text-f1-text transition-colors duration-200 ${
 					props.isActive
 						? "bg-f1-silver text-white h-32 md:h-15 py-4"
 						: "bg-white py-2"
 				} ${isDrivers ? hoverClass : ""}`}
+				style={
+					{
+						"--row-hover-bg": gridPrimaryColor,
+					} as Record<string, string>
+				}
 			>
 				<div className="flex items-center flex-grow z-30 h-full md:h-4">
 					<span
@@ -237,8 +248,9 @@ export function StandingCard(props: StandingCardProps) {
 					<div className="pl-2">{renderPositionDifference()}</div>
 					<div
 						className={`font-light rounded-xl px-2 min-w-[70px] ${colorClass} ${
-							isDrivers &&
-							"group-hover:bg-f1-bg-silver group-hover:text-f1-text transition-colors duration-200"
+							isDrivers
+								? `${pointsHoverClass} transition-colors duration-200`
+								: ""
 						}`}
 					>
 						<span className="font-bold">{props.valueKey}</span>{" "}
