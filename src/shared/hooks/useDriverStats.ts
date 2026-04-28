@@ -5,6 +5,7 @@ import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generate
 import { getGridConfig, getPointSystem } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
+import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 
 export interface DriverStatsShape {
 	participations: number;
@@ -66,6 +67,7 @@ function calcSeasonStandings(
 	allAdjustments: Record<string, any[]>,
 	gridId: string,
 	driverTeamMap: Record<string, string>, // driverId → teamName
+	reserveSet: Set<string>,
 ): { driverPts: Record<string, number>; teamPts: Record<string, number> } {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -74,6 +76,9 @@ function calcSeasonStandings(
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+	const isReserve = (id: string) =>
+		!reservesEarnPoints && reserveSet.has(id);
 
 	const driverPts: Record<string, number> = {};
 	const teamPts: Record<string, number> = {};
@@ -89,36 +94,47 @@ function calcSeasonStandings(
 		const ncSet = new Set<string>(result.ncDriverIds ?? []);
 		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
 
-		raceOrder.forEach((driverId, i) => {
+		let titularRacePos = 0;
+		raceOrder.forEach((driverId) => {
+			if (isReserve(driverId)) return;
+			titularRacePos += 1;
 			ensure(driverId);
 			const team = driverTeamMap[driverId] ?? "";
 			ensureTeam(team);
 			if (!ncSet.has(driverId)) {
-				const pos = i + 1;
-				const pts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
+				const pts =
+					titularRacePos <= racePointsArr.length
+						? racePointsArr[titularRacePos - 1]
+						: 0;
 				driverPts[driverId] += pts;
 				if (team) teamPts[team] += pts;
 			}
-			raceAwards.forEach((award: any) => {
-				if (result[award.id] === driverId) {
-					driverPts[driverId] += award.points;
-					if (team) teamPts[team] += award.points;
-				}
-			});
+		});
+		raceAwards.forEach((award: any) => {
+			const recipientId = result[award.id];
+			if (!recipientId || isReserve(recipientId)) return;
+			ensure(recipientId);
+			driverPts[recipientId] += award.points;
+			const team = driverTeamMap[recipientId] ?? "";
+			ensureTeam(team);
+			if (team) teamPts[team] += award.points;
 		});
 
 		if (poleBonus > 0 && qualyOrder[0]) {
 			const poleId = qualyOrder[0];
-			ensure(poleId);
-			driverPts[poleId] += poleBonus;
-			const team = driverTeamMap[poleId] ?? "";
-			ensureTeam(team);
-			if (team) teamPts[team] += poleBonus;
+			if (!isReserve(poleId)) {
+				ensure(poleId);
+				driverPts[poleId] += poleBonus;
+				const team = driverTeamMap[poleId] ?? "";
+				ensureTeam(team);
+				if (team) teamPts[team] += poleBonus;
+			}
 		}
 
 		if (presenceBonus > 0) {
 			const participants = new Set([...raceOrder, ...qualyOrder, ...sprintOrder]);
 			participants.forEach((driverId) => {
+				if (isReserve(driverId)) return;
 				ensure(driverId);
 				driverPts[driverId] += presenceBonus;
 				const team = driverTeamMap[driverId] ?? "";
@@ -127,11 +143,16 @@ function calcSeasonStandings(
 			});
 		}
 
-		sprintOrder.forEach((driverId, i) => {
+		let titularSprintPos = 0;
+		sprintOrder.forEach((driverId) => {
+			if (isReserve(driverId)) return;
+			titularSprintPos += 1;
 			ensure(driverId);
 			if (!sprintNcSet.has(driverId)) {
-				const pos = i + 1;
-				const pts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
+				const pts =
+					titularSprintPos <= sprintPointsArr.length
+						? sprintPointsArr[titularSprintPos - 1]
+						: 0;
 				driverPts[driverId] += pts;
 				const team = driverTeamMap[driverId] ?? "";
 				ensureTeam(team);
@@ -158,6 +179,7 @@ function calcStatsForCalendars(
 	allAdjustments: Record<string, any[]>,
 	driverId: string,
 	gridId: string,
+	reserveSet: Set<string>,
 ): DriverStatsShape {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -166,8 +188,15 @@ function calcStatsForCalendars(
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 
 	let stats = { ...EMPTY_STATS };
+
+	if (driverIsReserve) return stats;
+
+	const isReserve = (id: string) =>
+		!reservesEarnPoints && reserveSet.has(id);
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
@@ -192,8 +221,9 @@ function calcStatsForCalendars(
 
 		stats.participations += 1;
 
-		// Race stats
-		const racePos = raceOrder.indexOf(driverId);
+		// Effective race position skips reserves ahead
+		const titularRaceOrder = raceOrder.filter((id) => !isReserve(id));
+		const racePos = titularRaceOrder.indexOf(driverId);
 		const isNC = ncSet.has(driverId);
 		if (racePos !== -1 && !isNC) {
 			const pos = racePos + 1;
@@ -224,9 +254,10 @@ function calcStatsForCalendars(
 			stats.points += presenceBonus;
 		}
 
-		// Sprint stats
+		// Sprint stats — same cascade rule
 		if (result.sprint) {
-			const sprintPos = sprintOrder.indexOf(driverId);
+			const titularSprintOrder = sprintOrder.filter((id) => !isReserve(id));
+			const sprintPos = titularSprintOrder.indexOf(driverId);
 			const isSprintNC = sprintNcSet.has(driverId);
 			if (sprintPos !== -1 && !isSprintNC) {
 				const pos = sprintPos + 1;
@@ -266,6 +297,7 @@ export function useDriverStats(
 	const { data: driversData } = useGetDriversQuery();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
+	const { profiles } = useDriverProfiles();
 
 	useEffect(() => {
 		const load = async () => {
@@ -306,6 +338,12 @@ export function useDriverStats(
 		if (!driverId || !calendarsData || loading) {
 			return { season: EMPTY_STATS, career: EMPTY_STATS };
 		}
+
+		// Build the set of driver IDs flagged as reserve in this grid
+		const reserveSet = new Set<string>();
+		Object.entries(profiles).forEach(([dId, byGrid]) => {
+			if (byGrid?.[gridId]?.reserve === true) reserveSet.add(dId);
+		});
 
 		const allCalendars = calendarsData.calendars ?? [];
 
@@ -361,6 +399,7 @@ export function useDriverStats(
 			allAdjustments,
 			driverId,
 			gridId,
+			reserveSet,
 		);
 
 		const careerFromWebsite = calcStatsForCalendars(
@@ -369,6 +408,7 @@ export function useDriverStats(
 			allAdjustments,
 			driverId,
 			gridId,
+			reserveSet,
 		);
 
 		// Build driverId → teamName map using Firebase profiles (via applyProfile not available here,
@@ -394,7 +434,7 @@ export function useDriverStats(
 			if (seasonCalIds.length === 0) continue;
 
 			const { driverPts, teamPts } = calcSeasonStandings(
-				seasonCalIds, allResults, allAdjustments, gridId, driverTeamMap,
+				seasonCalIds, allResults, allAdjustments, gridId, driverTeamMap, reserveSet,
 			);
 
 			// Did this driver participate?
@@ -437,6 +477,7 @@ export function useDriverStats(
 		driversData,
 		seasons,
 		mappings,
+		profiles,
 	]);
 
 	return { season, career, loading };

@@ -6,7 +6,11 @@ import {
 	useGetDriversQuery,
 	type GetDriversQuery,
 } from "../../graphql/generated";
-import { getGridConfig, getPointSystem, type RaceAward } from "../../shared/config/grids";
+import {
+	getGridConfig,
+	getPointSystem,
+	type RaceAward,
+} from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -129,6 +133,21 @@ function buildRows(
 		gridSubgroups[calGrid].push({ id });
 	});
 
+	const reservesEarnPoints =
+		getGridConfig(calGrid)?.reservesEarnPoints ?? false;
+	const isReserve = (id: string) =>
+		!reservesEarnPoints && (reserveSet?.has(id) ?? false);
+	// Effective rank lookup that skips reserves ahead of each titular
+	const titularRankByDriver: Record<string, number> = {};
+	{
+		let pos = 0;
+		raceOrder.filter(Boolean).forEach((id) => {
+			if (isReserve(id)) return;
+			pos += 1;
+			titularRankByDriver[id] = pos;
+		});
+	}
+
 	return raceOrder
 		.filter(Boolean)
 		.map((driverId, i) => {
@@ -164,19 +183,24 @@ function buildRows(
 			const pointsArr =
 				sessionType === "sprint" ? sprintPointsArr : racePointsArr;
 			const isNC = ncDriverIds?.includes(driverId) ?? false;
+			const driverIsReserve = isReserve(driverId);
+			// Use effective titular rank for the points lookup; reserves get 0 when toggle is off
+			const pointsRank = driverIsReserve
+				? 0
+				: (titularRankByDriver[driverId] ?? gridRank);
 			let points = 0;
-			// Presence bonus — always, regardless of NC
-			if (countPresence) points += presenceBonus;
-			// Race position points — 0 if NC
-			if (!isNC) {
+			// Presence bonus — only for titulares when toggle is off
+			if (countPresence && !driverIsReserve) points += presenceBonus;
+			// Race position points — 0 if NC, 0 if reserve (toggle off)
+			if (!isNC && !driverIsReserve) {
 				if (sessionType === "quali") {
 					if (gridRank === 1) points += poleBonus;
-				} else if (gridRank > 0 && gridRank <= pointsArr.length) {
-					points += pointsArr[gridRank - 1];
+				} else if (pointsRank > 0 && pointsRank <= pointsArr.length) {
+					points += pointsArr[pointsRank - 1];
 				}
 			}
-			// Pole bonus + race awards — regardless of NC
-			if (countPresence && sessionType !== "quali") {
+			// Pole bonus + race awards — skip reserves when toggle off
+			if (countPresence && sessionType !== "quali" && !driverIsReserve) {
 				if (
 					poleBonus > 0 &&
 					qualyOrder.length > 0 &&
@@ -235,6 +259,7 @@ function WinnerCard({
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
 	const poleBonus = gridConfig?.pointSystem?.poleBonus ?? 0;
 	const presenceBonus = gridConfig?.pointSystem?.presenceBonus ?? 0;
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 	const title = row.sex === "F" ? "Vencedora" : "Vencedor";
 
 	return (
@@ -304,7 +329,9 @@ function WinnerCard({
 					>
 						{tenant.defaultPhotoStyle === "round" ? (
 							<HygraphImg
-								src={poleRow.photo || tenant.fallbackDriverPhoto}
+								src={
+									poleRow.photo || tenant.fallbackDriverPhoto
+								}
 								alt={poleRow.name}
 								imgWidth={48}
 								imgHeight={48}
@@ -312,7 +339,9 @@ function WinnerCard({
 							/>
 						) : tenant.defaultPhotoStyle === "bust" ? (
 							<HygraphImg
-								src={poleRow.photo || tenant.fallbackDriverPhoto}
+								src={
+									poleRow.photo || tenant.fallbackDriverPhoto
+								}
 								alt={poleRow.name}
 								imgWidth={48}
 								imgHeight={48}
@@ -320,7 +349,9 @@ function WinnerCard({
 							/>
 						) : (
 							<HygraphImg
-								src={poleRow.photo || tenant.fallbackDriverPhoto}
+								src={
+									poleRow.photo || tenant.fallbackDriverPhoto
+								}
 								alt={poleRow.name}
 								imgWidth={48}
 								imgHeight={48}
@@ -336,11 +367,12 @@ function WinnerCard({
 							{poleRow.name}
 						</p>
 					</div>
-					{poleBonus > 0 && (
-						<p className="text-xs text-f1-lighterCarbon font-bold ml-auto shrink-0">
-							+{poleBonus} {poleBonus === 1 ? "pt" : "pts"}
-						</p>
-					)}
+					{poleBonus > 0 &&
+						!(poleRow.isReserve && !reservesEarnPoints) && (
+							<p className="text-xs text-f1-lighterCarbon font-bold ml-auto shrink-0">
+								+{poleBonus} {poleBonus === 1 ? "pt" : "pts"}
+							</p>
+						)}
 				</div>
 			)}
 
@@ -359,7 +391,10 @@ function WinnerCard({
 						>
 							{tenant.defaultPhotoStyle === "round" ? (
 								<HygraphImg
-									src={driver.photo || tenant.fallbackDriverPhoto}
+									src={
+										driver.photo ||
+										tenant.fallbackDriverPhoto
+									}
 									alt={driver.name}
 									imgWidth={48}
 									imgHeight={48}
@@ -367,7 +402,10 @@ function WinnerCard({
 								/>
 							) : tenant.defaultPhotoStyle === "bust" ? (
 								<HygraphImg
-									src={driver.photo || tenant.fallbackDriverPhoto}
+									src={
+										driver.photo ||
+										tenant.fallbackDriverPhoto
+									}
 									alt={driver.name}
 									imgWidth={48}
 									imgHeight={48}
@@ -375,7 +413,10 @@ function WinnerCard({
 								/>
 							) : (
 								<HygraphImg
-									src={driver.photo || tenant.fallbackDriverPhoto}
+									src={
+										driver.photo ||
+										tenant.fallbackDriverPhoto
+									}
 									alt={driver.name}
 									imgWidth={48}
 									imgHeight={48}
@@ -393,12 +434,13 @@ function WinnerCard({
 								{driver.name}
 							</p>
 						</div>
-						{award.points > 0 && (
-							<p className="text-xs text-f1-lighterCarbon font-bold ml-auto shrink-0">
-								+{award.points}{" "}
-								{award.points === 1 ? "pt" : "pts"}
-							</p>
-						)}
+						{award.points > 0 &&
+							!(driver.isReserve && !reservesEarnPoints) && (
+								<p className="text-xs text-f1-lighterCarbon font-bold ml-auto shrink-0">
+									+{award.points}{" "}
+									{award.points === 1 ? "pt" : "pts"}
+								</p>
+							)}
 					</div>
 				))}
 
@@ -719,7 +761,18 @@ function ResultsSection({
 										? ["Participação"]
 										: []),
 								];
-								return `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
+								const reservesSkipped =
+									gridsPresent.some(
+										(gId) =>
+											!(
+												getGridConfig(gId)
+													?.reservesEarnPoints ?? false
+											),
+									) && rows.some((r) => r.isReserve);
+								const base = `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
+								return reservesSkipped
+									? `${base} Reservas não pontuam — pontos passam ao próximo titular.`
+									: base;
 							})()}
 						</p>
 					</div>
@@ -795,7 +848,18 @@ function ResultsSection({
 								? ["Participação"]
 								: []),
 						];
-						return `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
+						const reservesSkipped =
+							gridsPresent.some(
+								(gId) =>
+									!(
+										getGridConfig(gId)
+											?.reservesEarnPoints ?? false
+									),
+							) && rows.some((r) => r.isReserve);
+						const base = `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
+						return reservesSkipped
+							? `${base} Reservas não pontuam — pontos passam ao próximo titular.`
+							: base;
 					})()}
 				</p>
 			</div>

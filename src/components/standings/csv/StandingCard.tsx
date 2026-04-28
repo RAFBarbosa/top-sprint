@@ -20,7 +20,7 @@ interface StandingCardProps {
 	teamName?: string;
 	teamColor?: string;
 	teamLogo?: string;
-	teamDrivers?: string[];
+	teamDrivers?: Array<string | { name: string; photo?: string }>;
 	badge: Array<{ url: string }>;
 	badgeTitle: string;
 	reserve?: boolean;
@@ -51,9 +51,12 @@ export function StandingCard(props: StandingCardProps) {
 
 	const isDrivers = props.activeGrid === "drivers";
 
+	const teamDriverNames = (props.teamDrivers ?? []).map((d) =>
+		typeof d === "string" ? d : d.name,
+	);
 	const cleanedTeamDrivers = !isDrivers
-		? props.teamDrivers?.map((driver) => driver.replace(/-[BC]$/, "")) || []
-		: props.teamDrivers || [];
+		? teamDriverNames.map((driver) => driver.replace(/-[BC]$/, ""))
+		: teamDriverNames;
 
 	const navigateToDriver = useNavigateToDriver();
 

@@ -155,7 +155,7 @@ export function StandingsList(props: StandingsListProps) {
 					teamName={item.teamName || ""}
 					teamLogo={item.teamLogo || ""}
 					teamColor={item.teamColor || ""}
-					teamDrivers={item.drivers || ""}
+					teamDrivers={item.drivers || []}
 					reserve={item.reserve}
 					activeTab={props.activeTab}
 					activeGrid={activeGrid}
@@ -263,7 +263,7 @@ export function StandingsList(props: StandingsListProps) {
 
 		return (
 			<>
-				<h2 className="tenant-standings-title font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center my-10">
+				<h2 className="tenant-standings-title font-f1Title uppercase tracking-widest text-white text-lg md:text-xl text-center mt-10 mb-8">
 					Classificação {props.title}
 				</h2>
 				<div className="w-full">
@@ -272,7 +272,7 @@ export function StandingsList(props: StandingsListProps) {
 						setActiveGrid={setActiveGrid}
 					/>
 				</div>
-				<div className="w-full mx-auto max-w-2xl pt-8">
+				<div className="w-full mx-auto max-w-2xl mt-8 md:mt-0">
 					{/* Show Podium only on desktop */}
 					{!isMobile && <div>{renderPodium(currentData)}</div>}
 

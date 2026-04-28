@@ -309,11 +309,11 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						<div className="relative flex items-center justify-center mt-1">
 							<div className="relative">
 								{/* Invisible placeholder to maintain width */}
-								<span className="invisible text-[clamp(22px,9vw,34px)] font-f1Title font-bold leading-none tracking-widest">
+								<span className="invisible text-[clamp(22px,9vw,34px)] font-f1Title leading-none tracking-widest">
 									99
 								</span>
 								{/* Actual rating number centered */}
-								<span className="absolute inset-0 flex items-center justify-center text-[clamp(22px,9vw,34px)] font-f1Title font-bold leading-none tracking-widest drop-shadow-lg text-f1-bg-silver">
+								<span className="absolute inset-0 flex items-center justify-center text-[clamp(22px,9vw,34px)] font-f1Title leading-none tracking-widest drop-shadow-lg text-f1-bg-silver">
 									{data.rating || "—"}
 								</span>
 							</div>

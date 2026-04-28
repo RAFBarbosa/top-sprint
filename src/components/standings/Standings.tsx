@@ -39,8 +39,11 @@ export function Standings() {
 
 	const gridConfig = getGridConfig(activeTab.id);
 	const activeSeason = useActiveSeason(activeTab.id);
-	const { standings, previousStandings, loading: standingsLoading } =
-		useFirebaseStandings(activeTab.id);
+	const {
+		standings,
+		previousStandings,
+		loading: standingsLoading,
+	} = useFirebaseStandings(activeTab.id);
 
 	if (loading && !previousData) return loadingSkeleton();
 	if (error)
@@ -56,10 +59,17 @@ export function Standings() {
 	return (
 		<aside className="tenant-section tenant-section-standings pb-10 flex flex-col relative bg-f1-lightSilver overflow-hidden">
 			<div
-				className={`md:h-[396px] h-[280px] w-full absolute left-0 ${
+				className={`md:h-[356px] h-[280px] w-full absolute left-0 ${
 					gridConfig?.standingsBgClass ?? ""
 				}`}
-				style={!gridConfig?.standingsBgClass ? { backgroundColor: gridConfig?.primaryColor ?? "#000000" } : undefined}
+				style={
+					!gridConfig?.standingsBgClass
+						? {
+								backgroundColor:
+									gridConfig?.primaryColor ?? "#000000",
+							}
+						: undefined
+				}
 			>
 				<div
 					className="absolute inset-0 rounded-lg z-0 pointer-events-none"

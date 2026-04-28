@@ -20,7 +20,7 @@ interface PodiumCardProps {
 	teamName?: string;
 	teamColor?: string;
 	teamLogo?: string;
-	teamDrivers?: string[];
+	teamDrivers?: Array<string | { name: string; photo?: string }>;
 	activeTab: "drivers" | "teams";
 	newData: { name: string }[];
 	photoStyle?: "portrait" | "round" | "bust";
@@ -35,10 +35,16 @@ export function PodiumCard(props: PodiumCardProps) {
 		nameParts.length > 1 ? cleanName(nameParts.slice(1).join(" ")) : "";
 
 	const isDrivers = props.activeTab === "drivers";
+	const isTopSprint = tenant.id === "topSprint";
 
+	const teamDriverList = (props.teamDrivers ?? []).map((d) =>
+		typeof d === "string"
+			? { name: d, photo: undefined as string | undefined }
+			: d,
+	);
 	const cleanedTeamDrivers = isDrivers
-		? props.teamDrivers || []
-		: props.teamDrivers?.map((d) => cleanName(d)) || [];
+		? teamDriverList
+		: teamDriverList.map((d) => ({ ...d, name: cleanName(d.name) }));
 
 	const navigateToDriver = useNavigateToDriver();
 
@@ -112,31 +118,76 @@ export function PodiumCard(props: PodiumCardProps) {
 			aria-label={isDrivers ? `Ver perfil de ${props.name}` : undefined}
 			className={`relative hidden md:flex flex-col justify-end overflow-hidden rounded-2xl ${
 				isDrivers
-					? "hover:-translate-y-1 cursor-pointer h-[280px] transition-translate duration-200"
-					: "h-[264px] mt-4"
+					? "hover:-translate-y-1 cursor-pointer h-[300px] transition-translate duration-200"
+					: "h-[284px] mt-4"
 			}`}
 		>
+			{isTopSprint && (
+				<div
+					className={`absolute bottom-0 w-full overflow-hidden rounded-2xl pointer-events-none ${
+						props.position === 1
+							? isDrivers
+								? "h-[calc(67%+15px)]"
+								: "h-full"
+							: "h-[67%]"
+					}`}
+				>
+					<div
+						className="absolute inset-0"
+						style={{
+							backgroundImage: `linear-gradient(135deg, ${props.teamColor} 0%, ${props.teamColor} 45%, transparent 45%)`,
+						}}
+					/>
+				</div>
+			)}
 			<div
-				className={`text-6xl font-f1Podium font-thin hidden md:block ${
-					props.position === 1
+				className={`z-10 ${isTopSprint ? "font-f1Title text-5xl" : "text-6xl font-f1Podium"} font-thin hidden md:block ${
+					isTopSprint
 						? isDrivers
-							? "mb-3 ml-7"
-							: "mb-6 ml-15 text-3xl"
-						: "-mb-1 ml-4"
+							? `absolute ${props.position === 1 ? "left-5 top-23.5" : "left-4 top-26.5"}`
+							: `mb-8 ml-15 text-6xl`
+						: `relative ${
+								props.position === 1
+									? isDrivers
+										? "mb-3 ml-7"
+										: "mb-6 ml-15 text-3xl"
+									: "-mb-1 ml-4"
+							}`
 				}`}
-				style={{
-					color:
-						props.position <= 3
-							? props.position === 1
-								? "#FFD700"
-								: props.position === 2
-									? "#C0C0C0"
-									: "#CD7F32"
-							: props.teamColor,
-				}}
+				style={
+					isTopSprint
+						? undefined
+						: {
+								color:
+									props.position <= 3
+										? props.position === 1
+											? "#FFD700"
+											: props.position === 2
+												? "#C0C0C0"
+												: "#CD7F32"
+										: props.teamColor,
+							}
+				}
 			>
 				{props.position}
 			</div>
+			{isTopSprint && isDrivers && props.teamLogo && (
+				<div
+					className={`absolute z-10 hidden md:block ${
+						props.position === 1
+							? "left-3.5 top-35"
+							: "left-5 top-37"
+					}`}
+				>
+					<HygraphImg
+						src={props.teamLogo}
+						alt={`${props.teamName} logo`}
+						imgWidth={56}
+						imgHeight={56}
+						className="w-7 h-7 object-contain"
+					/>
+				</div>
+			)}
 
 			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-4 mb-2 gap-2 text-white">
 				<div>{renderPositionDifference()}</div>
@@ -144,14 +195,35 @@ export function PodiumCard(props: PodiumCardProps) {
 					className={`rounded-xl px-2 pointer-events-none ${colorClass}`}
 				>
 					<span className="font-bold">{props.points}</span>{" "}
-					{props.points === "1" ? "PT" : "PTS"}
+					<span className="text-[9px]">
+						{props.points === "1" ? "PT" : "PTS"}
+					</span>
 				</div>
 			</div>
 
-			<div
-				className="w-full h-2 hidden md:block"
-				style={{ backgroundColor: props.teamColor }}
-			/>
+			{isTopSprint ? (
+				<div
+					className={`absolute bottom-0 w-full overflow-hidden rounded-2xl hidden md:block pointer-events-none ${
+						props.position === 1
+							? isDrivers
+								? "h-[calc(67%+15px)]"
+								: "h-full"
+							: "h-[67%]"
+					}`}
+				>
+					<div
+						className="absolute left-0 right-0 bottom-[90px] h-30 opacity-50"
+						style={{
+							backgroundImage: `linear-gradient(to top, ${props.teamColor}, transparent)`,
+						}}
+					/>
+				</div>
+			) : (
+				<div
+					className="w-full h-2 hidden md:block"
+					style={{ backgroundColor: props.teamColor }}
+				/>
+			)}
 
 			{/* <img
 				src={props.photo || tenant.fallbackDriverPhoto}
@@ -209,17 +281,17 @@ export function PodiumCard(props: PodiumCardProps) {
 				</div>
 			) : isDrivers ? (
 				<div
-					className={`absolute overflow-hidden bottom-0 right-0 ${
+					className={`absolute overflow-hidden bottom-0 -right-5 ${
 						props.position === 1
-							? "w-[200px] h-[260px]"
-							: "w-[180px] h-[230px]"
+							? "w-[230px] h-[300px]"
+							: "w-[210px] h-[268px]"
 					}`}
 				>
 					<HygraphImg
 						src={props.photo || tenant.fallbackDriverPhoto}
 						alt={`${props.name}`}
-						imgWidth={props.position === 1 ? 200 : 180}
-						imgHeight={props.position === 1 ? 260 : 230}
+						imgWidth={props.position === 1 ? 230 : 210}
+						imgHeight={props.position === 1 ? 300 : 268}
 						className="w-full h-full object-cover object-top"
 					/>
 				</div>
@@ -237,7 +309,9 @@ export function PodiumCard(props: PodiumCardProps) {
 			)}
 
 			<div
-				className={`absolute bottom-0 w-full -z-10 rounded-2xl bg-white ${
+				className={`absolute bottom-0 w-full -z-10 rounded-2xl ${
+					isTopSprint ? "bg-black" : "bg-white"
+				} ${
 					props.position === 1
 						? isDrivers
 							? "h-[calc(67%+15px)]"
@@ -247,36 +321,145 @@ export function PodiumCard(props: PodiumCardProps) {
 			/>
 
 			<div
-				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none ${colorClass}`}
+				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none overflow-hidden ${colorClass}`}
 			>
+				{isTopSprint && (
+					<div
+						className="absolute inset-0 pointer-events-none"
+						style={{
+							backgroundImage:
+								"linear-gradient(to top, transparent 60%, rgba(255, 255, 255, 0.2) 100%)",
+						}}
+					/>
+				)}
 				{isDrivers ? (
 					<>
 						<span
 							className={
-								lastName
-									? "font-semibold"
-									: "font-bold uppercase text-2xl"
+								isTopSprint
+									? "font-f1Title uppercase"
+									: lastName
+										? "font-semibold"
+										: "font-bold uppercase text-2xl"
 							}
 						>
 							{firstName}
 						</span>
 						{lastName && (
 							<span
-								className={`font-bold uppercase leading-6 truncate ${lastName.length > 9 ? "text-xl" : "text-2xl"}`}
+								className={`uppercase leading-5.5 truncate font-bold ${
+									isTopSprint ? "font-f1Title italic" : ""
+								} ${
+									isTopSprint
+										? lastName.length > 9
+											? "text-lg"
+											: "text-xl"
+										: lastName.length > 9
+											? "text-xl"
+											: "text-2xl"
+								}`}
 							>
 								{lastName}
 							</span>
 						)}
-						<span className="font-light text-sm leading-3 mt-auto">
+						{isTopSprint && (
+							<div className="mt-auto h-0.5 w-full bg-white/50 mb-1" />
+						)}
+						<span
+							className={`leading-3 ${
+								isTopSprint
+									? "text-[10px] uppercase tracking-wider font-bold"
+									: "text-sm mt-auto font-light"
+							}`}
+						>
 							{props.teamName}
 						</span>
 					</>
 				) : (
 					<>
-						<span className="font-bold uppercase text-2xl text-center">
-							{cleanedTeamDrivers.join(" / ") || "Sem Pilotos"}
-						</span>
-						<span className="font-light text-base leading-3 mt-auto text-center">
+						{isTopSprint ? (
+							<div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+								{cleanedTeamDrivers.length === 0 ? (
+									<span className="font-f1Title uppercase text-sm text-center">
+										Sem Pilotos
+									</span>
+								) : (
+									cleanedTeamDrivers.map((d, i) => {
+										const parts = d.name.split(" ");
+										const first = parts[0];
+										const last =
+											parts.length > 1
+												? parts.slice(1).join(" ")
+												: "";
+										return (
+											<div
+												key={i}
+												className="flex items-center gap-1.5"
+											>
+												<div
+													className="w-7 h-7 rounded-full overflow-hidden shrink-0"
+													style={{
+														backgroundColor:
+															props.teamColor,
+													}}
+												>
+													<HygraphImg
+														src={
+															d.photo ||
+															tenant.fallbackDriverPhoto
+														}
+														alt={d.name}
+														imgWidth={56}
+														imgHeight={56}
+														className={`w-full h-full object-cover ${
+															tenant.defaultPhotoStyle ===
+															"round"
+																? "scale-125 translate-y-[3px]"
+																: tenant.defaultPhotoStyle ===
+																	  "bust"
+																	? "translate-y-[2px]"
+																	: "scale-200 translate-y-3"
+														}`}
+													/>
+												</div>
+												<span className="font-f1Title uppercase text-xs leading-tight">
+													{last ? (
+														<>
+															<span>
+																{first}{" "}
+															</span>
+															<span className="font-bold italic">
+																{last}
+															</span>
+														</>
+													) : (
+														<span className="font-bold italic">
+															{first}
+														</span>
+													)}
+												</span>
+											</div>
+										);
+									})
+								)}
+							</div>
+						) : (
+							<span className="font-bold uppercase text-2xl text-center">
+								{cleanedTeamDrivers
+									.map((d) => d.name)
+									.join(" / ") || "Sem Pilotos"}
+							</span>
+						)}
+						{isTopSprint && (
+							<div className="my-auto h-0.5 w-full bg-white/50" />
+						)}
+						<span
+							className={`leading-3 text-center ${
+								isTopSprint
+									? "text-sm uppercase tracking-wider font-bold"
+									: "font-light text-base mt-auto"
+							}`}
+						>
 							{props.name}
 						</span>
 					</>
