@@ -44,6 +44,7 @@ function calcStatsForCalendars(
 	allAdjustments: Record<string, any[]>,
 	driverId: string,
 	gridId: string,
+	reserveSet: Set<string>,
 ): DriverStatsShape {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -52,8 +53,15 @@ function calcStatsForCalendars(
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 
 	let stats = { ...EMPTY_STATS };
+
+	// When toggle is off and this driver is a reserve, they don't count for stats at all
+	if (driverIsReserve) return stats;
+
+	const isReserve = (id: string) => !reservesEarnPoints && reserveSet.has(id);
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
@@ -74,8 +82,9 @@ function calcStatsForCalendars(
 
 		stats.participations += 1;
 
-		// Race stats
-		const racePos = raceOrder.indexOf(driverId);
+		// Effective race position skips reserves ahead of this driver
+		const titularRaceOrder = raceOrder.filter((id) => !isReserve(id));
+		const racePos = titularRaceOrder.indexOf(driverId);
 		const isNC = ncSet.has(driverId);
 		if (racePos !== -1 && !isNC) {
 			const pos = racePos + 1;
@@ -87,7 +96,7 @@ function calcStatsForCalendars(
 		}
 		if (isNC) stats.ncs += 1;
 
-		// Qualy / pole
+		// Qualy / pole — always tracked from the actual qualy order
 		if (qualyOrder[0] === driverId) {
 			stats.poles += 1;
 			stats.points += poleBonus;
@@ -106,9 +115,10 @@ function calcStatsForCalendars(
 			stats.points += presenceBonus;
 		}
 
-		// Sprint stats
+		// Sprint stats — same cascade rule
 		if (result.sprint) {
-			const sprintPos = sprintOrder.indexOf(driverId);
+			const titularSprintOrder = sprintOrder.filter((id) => !isReserve(id));
+			const sprintPos = titularSprintOrder.indexOf(driverId);
 			const isSprintNC = sprintNcSet.has(driverId);
 			if (sprintPos !== -1 && !isSprintNC) {
 				const pos = sprintPos + 1;
@@ -139,11 +149,12 @@ export async function calculateAndSaveDriverStats(
 	careerCalendarIds: string[],
 	driverIds: string[],
 ): Promise<void> {
-	const [resultsSnap, adjSnap, driversSnap, offsetsSnap] = await Promise.all([
+	const [resultsSnap, adjSnap, driversSnap, offsetsSnap, profilesSnap] = await Promise.all([
 		getDocs(collection(db, "race_results")),
 		getDocs(collection(db, "point_adjustments")),
 		getDocs(collection(db, "drivers")),
 		getDocs(collection(db, "driver_stats_offsets")),
+		getDocs(collection(db, "driver_profiles")),
 	]);
 
 	const allResults: Record<string, any> = {};
@@ -154,6 +165,13 @@ export async function calculateAndSaveDriverStats(
 	const allAdjustments: Record<string, any[]> = {};
 	adjSnap.forEach((d) => {
 		allAdjustments[d.id] = d.data().adjustments ?? [];
+	});
+
+	// Build a set of driver IDs flagged as reserve in this grid
+	const reserveSet = new Set<string>();
+	profilesSnap.forEach((d) => {
+		const profile = (d.data() as Record<string, any>)?.[gridId];
+		if (profile?.reserve === true) reserveSet.add(d.id);
 	});
 
 	const offsetsMap: DriverStatsOffsets = {};
@@ -178,6 +196,7 @@ export async function calculateAndSaveDriverStats(
 			allAdjustments,
 			driverId,
 			gridId,
+			reserveSet,
 		);
 
 		const careerFromWebsite = calcStatsForCalendars(
@@ -186,6 +205,7 @@ export async function calculateAndSaveDriverStats(
 			allAdjustments,
 			driverId,
 			gridId,
+			reserveSet,
 		);
 
 		const historicOffset = (offsetsMap[driverId] as any)?.[gridId] ?? {};

@@ -1,11 +1,38 @@
 @import "tailwindcss";
-@import url("https://fonts.cdnfonts.com/css/vipnagorgialla");
 @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "./tenants.css";
 
 @font-face {
 	font-family: "Formula1-Regular";
 	src: url("/src/assets/font/formula1wide.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Vipnagorgialla";
+	src: url("/src/assets/font/Vipnagorgialla-Rg.otf") format("opentype");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Vipnagorgialla";
+	src: url("/src/assets/font/Vipnagorgialla-Rg-It.otf") format("opentype");
+	font-weight: 400;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Vipnagorgialla";
+	src: url("/src/assets/font/Vipnagorgialla-Bd.otf") format("opentype");
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Vipnagorgialla";
+	src: url("/src/assets/font/Vipnagorgialla-Bd-It.otf") format("opentype");
+	font-weight: 700;
+	font-style: italic;
 }
 
 @font-face {
@@ -240,6 +267,7 @@ body {
 	--color-f1-academy-darkerBlue: #00335e;
 
 	--color-crt-primary: #cd0a2a;
+	--color-crt-secondary: #0c0c0c;
 	--color-crt-dark-bg: #111214;
 	--color-crt-blue: #0073ed;
 

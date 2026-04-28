@@ -35,6 +35,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 			primaryColor: fbGrid.primaryColor ?? "#eb1c24",
 			...(fbGrid.pointSystem !== undefined ? { pointSystem: fbGrid.pointSystem } : {}),
 			raceAwards: fbGrid.raceAwards ?? [],
+			reservesEarnPoints: fbGrid.reservesEarnPoints ?? false,
 		})) as GridConfig[];
 	}
 
@@ -50,6 +51,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 		primaryColor: fbGrid.primaryColor ?? "#eb1c24",
 		...(fbGrid.pointSystem !== undefined ? { pointSystem: fbGrid.pointSystem } : {}),
 		raceAwards: fbGrid.raceAwards ?? [],
+		reservesEarnPoints: fbGrid.reservesEarnPoints ?? false,
 	})) as GridConfig[];
 }
 
@@ -89,6 +91,7 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 				primaryColor: g.primaryColor,
 				pointSystem: g.pointSystem,
 				raceAwards: g.raceAwards ?? [],
+				reservesEarnPoints: g.reservesEarnPoints ?? false,
 			})),
 		};
 		await setDoc(doc(db, FIRESTORE_DOC), payload);

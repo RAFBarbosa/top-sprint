@@ -8,7 +8,8 @@ interface PodiumProps {
 		name: string;
 		photo: string;
 		teamColor: string;
-		teamDrivers: string;
+		teamDrivers?: any;
+		drivers?: any;
 		teamLogo: string;
 		points: string;
 		teamName: string;
@@ -95,7 +96,7 @@ export function Podium(props: PodiumProps) {
 							position={1}
 							class={props.class}
 							grid={props.grid}
-							teamDrivers={props.topThree[0].drivers || ""}
+							teamDrivers={props.topThree[0].drivers || []}
 							activeTab={props.activeTab}
 							newData={props.newData}
 							oldData={props.oldData || []}

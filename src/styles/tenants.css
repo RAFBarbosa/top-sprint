@@ -15,8 +15,15 @@
 
 [data-tenant="topSprint"] .tenant-standings-title {
 	font-weight: 500;
-	font-size: 1.85rem;
+	font-size: 1.5rem;
 }
+
+@media (min-width: 768px) {
+	[data-tenant="topSprint"] .tenant-standings-title {
+		font-size: 2.5rem;
+	}
+}
+
 
 [data-tenant="topSprint"] .tenant-standings-tabs button {
 	font-size: 1rem;

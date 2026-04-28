@@ -117,6 +117,7 @@ function calcFirebaseStats(
 	allAdjustments: Record<string, any[]>,
 	driverId: string,
 	gridId: string,
+	reserveSet: Set<string>,
 ): DriverStatsShape {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -125,6 +126,8 @@ function calcFirebaseStats(
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 
 	let s: DriverStatsShape = {
 		participations: 0,
@@ -140,6 +143,11 @@ function calcFirebaseStats(
 		championships: 0,
 		teamChampionships: 0,
 	};
+
+	if (driverIsReserve) return s;
+
+	const isReserve = (id: string) =>
+		!reservesEarnPoints && reserveSet.has(id);
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
@@ -162,7 +170,8 @@ function calcFirebaseStats(
 
 		s.participations += 1;
 
-		const racePos = raceOrder.indexOf(driverId);
+		const titularRaceOrder = raceOrder.filter((id) => !isReserve(id));
+		const racePos = titularRaceOrder.indexOf(driverId);
 		const isNC = ncSet.has(driverId);
 		if (racePos !== -1 && !isNC) {
 			const pos = racePos + 1;
@@ -188,7 +197,8 @@ function calcFirebaseStats(
 		if (presenceBonus > 0) s.points += presenceBonus;
 
 		if (result.sprint) {
-			const sprintPos = sprintOrder.indexOf(driverId);
+			const titularSprintOrder = sprintOrder.filter((id) => !isReserve(id));
+			const sprintPos = titularSprintOrder.indexOf(driverId);
 			if (sprintPos !== -1 && !sprintNcSet.has(driverId)) {
 				const pos = sprintPos + 1;
 				s.points +=
@@ -228,9 +238,10 @@ export function ImportDriverStatsOffsets() {
 
 		try {
 			appendLog("Carregando dados do Firebase...");
-			const [resultsSnap, adjSnap] = await Promise.all([
+			const [resultsSnap, adjSnap, profilesSnap] = await Promise.all([
 				getDocs(collection(db, "race_results")),
 				getDocs(collection(db, "point_adjustments")),
+				getDocs(collection(db, "driver_profiles")),
 			]);
 
 			const allResults: Record<string, any> = {};
@@ -241,6 +252,18 @@ export function ImportDriverStatsOffsets() {
 			const allAdjustments: Record<string, any[]> = {};
 			adjSnap.forEach((d) => {
 				allAdjustments[d.id] = d.data().adjustments ?? [];
+			});
+
+			const reserveSetByGrid: Record<string, Set<string>> = {};
+			const ensureGrid = (g: string) => {
+				if (!reserveSetByGrid[g]) reserveSetByGrid[g] = new Set();
+				return reserveSetByGrid[g];
+			};
+			profilesSnap.forEach((d) => {
+				const byGrid = d.data() as Record<string, any>;
+				Object.entries(byGrid).forEach(([g, profile]: [string, any]) => {
+					if (profile?.reserve === true) ensureGrid(g).add(d.id);
+				});
 			});
 
 			// Build calendar → grid map from Hygraph calendars (loaded via hook)
@@ -290,6 +313,7 @@ export function ImportDriverStatsOffsets() {
 						allAdjustments,
 						csv.id,
 						gridId,
+						reserveSetByGrid[gridId] ?? new Set<string>(),
 					);
 					const offset: Partial<DriverStatsShape> = {
 						participations: clampPositive(

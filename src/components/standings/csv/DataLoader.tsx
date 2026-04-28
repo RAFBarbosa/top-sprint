@@ -20,7 +20,16 @@ export function DataLoader(props: DataLoaderProps) {
 	const { standings, previousStandings } = props;
 
 	const buildTeamStandings = (driverRows: typeof standings) => {
-		const map: Record<string, { name: string; pts: number; teamColor: string; teamLogo: string; drivers: string[] }> = {};
+		const map: Record<
+			string,
+			{
+				name: string;
+				pts: number;
+				teamColor: string;
+				teamLogo: string;
+				drivers: { name: string; photo?: string }[];
+			}
+		> = {};
 		driverRows.forEach((driver) => {
 			const key = driver.teamName;
 			if (!key) return;
@@ -29,7 +38,7 @@ export function DataLoader(props: DataLoaderProps) {
 			map[key].pts += driver.pts;
 			// Only titular drivers show in the team card list
 			if (!driver.reserve && !driver.exDriver) {
-				map[key].drivers.push(driver.name);
+				map[key].drivers.push({ name: driver.name, photo: driver.photo });
 			}
 		});
 		return Object.values(map).sort((a, b) => b.pts - a.pts);

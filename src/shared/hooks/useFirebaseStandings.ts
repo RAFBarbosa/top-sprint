@@ -34,6 +34,15 @@ function calcStandings(
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+
+	const isReserve = (driverId: string): boolean => {
+		if (reservesEarnPoints) return false;
+		const driver = driverLookup[driverId];
+		if (!driver) return false;
+		const profiled = applyProfile(driver, gridId);
+		return profiled.reserve === true;
+	};
 
 	const driverPts: Record<string, { pts: number; bestRaceFinishes: number[] }> = {};
 	const ensure = (id: string) => {
@@ -50,46 +59,65 @@ function calcStandings(
 		const ncSet = new Set<string>(result.ncDriverIds ?? []);
 		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
 
-		// Race points
-		raceOrder.forEach((driverId, i) => {
+		// Race points — when reserves don't earn, points cascade past them to next titular
+		let titularRacePos = 0;
+		raceOrder.forEach((driverId) => {
+			if (isReserve(driverId)) return;
+			titularRacePos += 1;
 			ensure(driverId);
 			if (!ncSet.has(driverId)) {
-				const pos = i + 1;
-				const pts = pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
+				const pts =
+					titularRacePos <= racePointsArr.length
+						? racePointsArr[titularRacePos - 1]
+						: 0;
 				driverPts[driverId].pts += pts;
-				driverPts[driverId].bestRaceFinishes.push(pos);
+				driverPts[driverId].bestRaceFinishes.push(titularRacePos);
 			}
-			// Race awards apply regardless of NC
-			raceAwards.forEach((award) => {
-				if (result[award.id] === driverId && award.points > 0) {
-					driverPts[driverId].pts += award.points;
-				}
-			});
+		});
+		// Race awards — only paid out to titulares when reserves don't earn
+		raceAwards.forEach((award) => {
+			const recipientId = result[award.id];
+			if (!recipientId || award.points <= 0) return;
+			if (isReserve(recipientId)) return;
+			ensure(recipientId);
+			driverPts[recipientId].pts += award.points;
 		});
 
-		// Pole bonus — applies regardless of NC
+		// Pole bonus — skip if pole-sitter is a reserve (toggle off)
 		if (poleBonus > 0 && qualyOrder.length > 0) {
 			const poleId = qualyOrder[0];
-			ensure(poleId);
-			driverPts[poleId].pts += poleBonus;
+			if (!isReserve(poleId)) {
+				ensure(poleId);
+				driverPts[poleId].pts += poleBonus;
+			}
 		}
 
-		// Sprint points — no pole bonus, no race awards
+		// Sprint points — same cascade rule as race
 		if (cal.sprint && sprintOrder.length > 0) {
-			sprintOrder.forEach((driverId, i) => {
+			let titularSprintPos = 0;
+			sprintOrder.forEach((driverId) => {
+				if (isReserve(driverId)) return;
+				titularSprintPos += 1;
 				ensure(driverId);
 				if (!sprintNcSet.has(driverId)) {
-					const pos = i + 1;
-					const pts = pos <= sprintPointsArr.length ? sprintPointsArr[pos - 1] : 0;
+					const pts =
+						titularSprintPos <= sprintPointsArr.length
+							? sprintPointsArr[titularSprintPos - 1]
+							: 0;
 					driverPts[driverId].pts += pts;
 				}
 			});
 		}
 
-		// Presence bonus — awarded once per driver per event, to any who participated in any session
+		// Presence bonus — awarded once per titular driver per event
 		if (presenceBonus > 0) {
-			const participants = new Set([...raceOrder, ...(cal.sprint ? sprintOrder : []), ...qualyOrder]);
+			const participants = new Set([
+				...raceOrder,
+				...(cal.sprint ? sprintOrder : []),
+				...qualyOrder,
+			]);
 			participants.forEach((driverId) => {
+				if (isReserve(driverId)) return;
 				ensure(driverId);
 				driverPts[driverId].pts += presenceBonus;
 			});

@@ -120,6 +120,7 @@ function computeSeasonData(
 	allAdj: Record<string, any[]>,
 	driverId: string,
 	gridId: string,
+	reserveSet: Set<string>,
 ): DriverSeasonData {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -128,6 +129,8 @@ function computeSeasonData(
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
+	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 
 	let participations = 0;
 	let totalPoints = 0;
@@ -137,6 +140,23 @@ function computeSeasonData(
 	let cleanRaces = 0;
 	let totalPosDiff = 0;
 	let posDiffRaces = 0;
+
+	// Reserves don't contribute to card stats when the toggle is off
+	if (driverIsReserve) {
+		return {
+			participations,
+			totalPoints,
+			totalQualyPos,
+			qualyCount,
+			seasonWins,
+			cleanRaces,
+			totalPosDiff,
+			posDiffRaces,
+		};
+	}
+
+	const isReserve = (id: string) =>
+		!reservesEarnPoints && reserveSet.has(id);
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
@@ -160,7 +180,10 @@ function computeSeasonData(
 
 		participations += 1;
 
-		const racePos = raceOrder.indexOf(driverId);
+		// Effective race position — reserves ahead don't count
+		const titularRaceOrder = raceOrder.filter((id) => !isReserve(id));
+		const racePos = titularRaceOrder.indexOf(driverId);
+		const rawRacePos = raceOrder.indexOf(driverId);
 		const isNC = ncSet.has(driverId);
 		if (racePos !== -1 && !isNC) {
 			const pos = racePos + 1;
@@ -177,8 +200,9 @@ function computeSeasonData(
 			qualyCount += 1;
 		}
 
-		if (qualyPos !== -1 && racePos !== -1 && !isNC) {
-			totalPosDiff += Math.abs(qualyPos + 1 - (racePos + 1));
+		// Position diff uses raw on-track positions (consistency reflects actual driving)
+		if (qualyPos !== -1 && rawRacePos !== -1 && !isNC) {
+			totalPosDiff += Math.abs(qualyPos + 1 - (rawRacePos + 1));
 			posDiffRaces += 1;
 		}
 
@@ -189,7 +213,8 @@ function computeSeasonData(
 		if (presenceBonus > 0) totalPoints += presenceBonus;
 
 		if (result.sprint) {
-			const sprintPos = sprintOrder.indexOf(driverId);
+			const titularSprintOrder = sprintOrder.filter((id) => !isReserve(id));
+			const sprintPos = titularSprintOrder.indexOf(driverId);
 			if (sprintPos !== -1 && !sprintNcSet.has(driverId)) {
 				const pos = sprintPos + 1;
 				totalPoints +=
@@ -238,10 +263,11 @@ export async function calculateAndSaveCards(
 	_prevSeasonCalendarIds: string[],
 	driverIds: string[],
 ): Promise<void> {
-	const [resultsSnap, adjSnap, cardsSnap] = await Promise.all([
+	const [resultsSnap, adjSnap, cardsSnap, profilesSnap] = await Promise.all([
 		getDocs(collection(db, "race_results")),
 		getDocs(collection(db, "point_adjustments")),
 		getDoc(doc(db, "driver_cards", gridId)),
+		getDocs(collection(db, "driver_profiles")),
 	]);
 
 	const allResults: Record<string, any> = {};
@@ -252,6 +278,12 @@ export async function calculateAndSaveCards(
 	const allAdj: Record<string, any[]> = {};
 	adjSnap.forEach((d) => {
 		allAdj[d.id] = d.data().adjustments ?? [];
+	});
+
+	const reserveSet = new Set<string>();
+	profilesSnap.forEach((d) => {
+		const profile = (d.data() as Record<string, any>)?.[gridId];
+		if (profile?.reserve === true) reserveSet.add(d.id);
 	});
 
 	const { min: gridMin, range: gridRange } = getGridRange(gridId);
@@ -290,6 +322,7 @@ export async function calculateAndSaveCards(
 			allAdj,
 			driverId,
 			gridId,
+			reserveSet,
 		);
 		prevDataMap[driverId] = computeSeasonData(
 			prevOnly,
@@ -297,6 +330,7 @@ export async function calculateAndSaveCards(
 			allAdj,
 			driverId,
 			gridId,
+			reserveSet,
 		);
 	}
 

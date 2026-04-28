@@ -177,7 +177,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 											teamName={item.teamName || ""}
 											teamLogo={item.teamLogo || ""}
 											teamColor={item.teamColor || ""}
-											teamDrivers={item.drivers || ""}
+											teamDrivers={item.drivers || []}
 											activeTab={props.activeTab}
 											activeGrid={activeGrid}
 											isActive={activeCard === index + 4}
@@ -206,7 +206,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 											teamName={item.teamName || ""}
 											teamLogo={item.teamLogo || ""}
 											teamColor={item.teamColor || ""}
-											teamDrivers={item.drivers || ""}
+											teamDrivers={item.drivers || []}
 											activeTab={props.activeTab}
 											activeGrid={activeGrid}
 											isActive={activeCard === index + 2}
@@ -369,7 +369,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 																	}
 																	teamDrivers={
 																		item.drivers ||
-																		""
+																		[]
 																	}
 																	activeTab={
 																		props.activeTab
@@ -451,7 +451,7 @@ export function AdminStandings(props: AdminStandingsProps) {
 																	}
 																	teamDrivers={
 																		item.drivers ||
-																		""
+																		[]
 																	}
 																	activeTab={
 																		props.activeTab

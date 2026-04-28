@@ -58,6 +58,7 @@ export interface GridConfig {
 	cardBackground?: string;
 	pointSystem?: PointSystem;
 	raceAwards?: RaceAward[];
+	reservesEarnPoints?: boolean;
 }
 
 // Mutable runtime array — starts with tenant defaults, updated by GridsContext when Firebase loads
