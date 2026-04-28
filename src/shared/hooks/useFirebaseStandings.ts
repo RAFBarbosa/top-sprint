@@ -26,6 +26,7 @@ function calcStandings(
 	driverLookup: Record<string, any>,
 	applyProfile: (driver: any, gridId: string) => any,
 	teamLogoByName: Record<string, string> = {},
+	gridDriverIds: string[] = [],
 ) {
 	const gridConfig = getGridConfig(gridId);
 	const ps = getPointSystem(gridId);
@@ -123,6 +124,13 @@ function calcStandings(
 			});
 		}
 	}
+
+	// Ensure every driver who belongs to this grid gets a row (0 pts if they
+	// haven't raced yet). Reserves are still skipped when the toggle is off.
+	gridDriverIds.forEach((driverId) => {
+		if (isReserve(driverId)) return;
+		ensure(driverId);
+	});
 
 	const rows = Object.entries(driverPts).map(([driverId, data]) => {
 		const driver = driverLookup[driverId];
@@ -269,8 +277,12 @@ export function useFirebaseStandings(gridId: GridId) {
 			});
 
 		const allCalendarIds = new Set(relevantCalendars.map((c) => c.id));
+		// Drivers who belong to this grid (have a profile entry for it)
+		const gridDriverIds = Object.entries(profiles)
+			.filter(([, byGrid]) => !!byGrid?.[gridId])
+			.map(([driverId]) => driverId);
 		const standings = applyAdj(
-			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile, teamLogoByName),
+			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile, teamLogoByName, gridDriverIds),
 			allCalendarIds,
 		);
 		// Find the most recently raced calendar (by date) that has results
@@ -286,10 +298,24 @@ export function useFirebaseStandings(gridId: GridId) {
 			: relevantCalendars;
 		const previousCalendarIds = new Set(previousCalendars.map((c) => c.id));
 
-		const previousStandings = applyAdj(
-			calcStandings(previousCalendars, allResults, gridId, driverLookup, applyProfile, teamLogoByName),
-			previousCalendarIds,
-		);
+		// If there's no prior race, return an empty previous so position arrows
+		// don't fire on the first race (every driver would appear to have moved
+		// from a 0-pt baseline).
+		const previousStandings =
+			previousCalendars.length === 0
+				? []
+				: applyAdj(
+						calcStandings(
+							previousCalendars,
+							allResults,
+							gridId,
+							driverLookup,
+							applyProfile,
+							teamLogoByName,
+							gridDriverIds,
+						),
+						previousCalendarIds,
+					);
 
 		return { standings, previousStandings };
 	}, [allResults, allAdjustments, calendarsData, driversData, teamsData, seasons, mappings, profiles, gridId]);

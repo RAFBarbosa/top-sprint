@@ -25,7 +25,7 @@ export function Podium(props: PodiumProps) {
 	if (props.topThree.length < 3) return null;
 
 	return (
-		<div className="mb-1">
+		<div className="mb-1" key={props.activeTab}>
 			{props.activeTab === "drivers" ? (
 				<div className="md:flex md:gap-x-2">
 					{/* Position 2 - Show on ALL screens */}
