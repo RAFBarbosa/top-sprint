@@ -73,6 +73,9 @@ export function PodiumCard(props: PodiumCardProps) {
 	};
 
 	const colorClass = getColorClass();
+	const gridConfig = props.grid ? getGridConfig(props.grid) : undefined;
+	const podiumNameBgClass = gridConfig?.podiumNameBgClass || colorClass;
+	const podiumPointsBgClass = gridConfig?.podiumPointsBgClass || colorClass;
 
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
@@ -192,7 +195,7 @@ export function PodiumCard(props: PodiumCardProps) {
 			<div className="bg-f1-bg-silver rounded-xl pl-2 text-sm flex self-end z-30 mr-4 mb-2 gap-2 text-white">
 				<div>{renderPositionDifference()}</div>
 				<div
-					className={`rounded-xl px-2 pointer-events-none ${colorClass}`}
+					className={`rounded-xl px-2 pointer-events-none ${podiumPointsBgClass}`}
 				>
 					<span className="font-bold">{props.points}</span>{" "}
 					<span className="text-[9px]">
@@ -321,7 +324,7 @@ export function PodiumCard(props: PodiumCardProps) {
 			/>
 
 			<div
-				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none overflow-hidden ${colorClass}`}
+				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none overflow-hidden ${podiumNameBgClass}`}
 			>
 				{isTopSprint && (
 					<div

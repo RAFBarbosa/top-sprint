@@ -68,7 +68,7 @@ export function TopSprintRules() {
 						target="_blank"
 						className="text-f1-red font-bold underline"
 					>
-						manual oficial Top Sprint
+						manual oficial CRT Cup
 					</a>
 					.
 				</div>
@@ -79,7 +79,7 @@ export function TopSprintRules() {
 						O campeonato utilizará F1 25.
 					</p>
 					<p>
-						A <strong>Top Sprint</strong> inclui
+						A <strong>CRT Cup</strong> inclui
 						<strong> corridas Sprint</strong> com o objetivo de
 						criar oportunidades para quem está atrás no campeonato,
 						oferecendo mais emoção nas disputas por posições e
@@ -92,7 +92,7 @@ export function TopSprintRules() {
 
 						<ul className="ml-5 list-disc space-y-1">
 							<li>
-								<i>Grid Top Sprint:</i> Quintas-feiras às 22h.
+								<i>Grid CRT Cup:</i> Quintas-feiras às 22h.
 							</li>
 							<li>
 								<i>Grid Academy:</i> Segundas-feiras às 22h.
@@ -254,7 +254,7 @@ export function TopSprintRules() {
 						<div className="space-y-2 mb-3 md:w-1/2 pr-4">
 							<p>
 								Em caso de ausência de um piloto, a direção pode
-								convidar ex-pilotos <strong>Top Sprint</strong>{" "}
+								convidar ex-pilotos <strong>CRT Cup</strong>{" "}
 								para completar o grid e pontuar para a equipe do
 								piloto ausente.
 							</p>
@@ -273,7 +273,7 @@ export function TopSprintRules() {
 
 								<li>
 									De forma geral,{" "}
-									<strong>Pilotos Reserva Top Sprint</strong>{" "}
+									<strong>Pilotos Reserva CRT Cup</strong>{" "}
 									que já fizeram parte do grid em questão,
 									deverão ter prioridade como piloto reserva.
 								</li>
@@ -315,7 +315,7 @@ export function TopSprintRules() {
 								</li>
 								<li>
 									De forma geral,{" "}
-									<strong>Pilotos Reserva Top Sprint</strong>{" "}
+									<strong>Pilotos Reserva CRT Cup</strong>{" "}
 									deverão ter prioridade como terceiro piloto
 								</li>
 								<li>
@@ -457,7 +457,7 @@ export function TopSprintRules() {
 					<div className="w-full md:w-1/2 space-y-2">
 						<p>
 							É esperado que todos os pilotos da{" "}
-							<strong>Top Sprint</strong> corram de forma justa,
+							<strong>CRT Cup</strong> corram de forma justa,
 							deixando espaço para dividir curvas e atendo-se às
 							regras. Porém, haverá incidentes, e mesmo que não
 							haja a intenção, estes incidentes podem prejudicar a
@@ -593,7 +593,7 @@ export function TopSprintRules() {
 									target="_blank"
 									className="text-f1-red font-bold underline"
 								>
-									manual oficial Top Sprint
+									manual oficial CRT Cup
 								</a>
 								.
 							</p>

@@ -62,7 +62,7 @@ export interface TenantConfig {
 export const TENANTS: Record<TenantId, TenantConfig> = {
 	topSprint: {
 		id: "topSprint",
-		name: "Top Sprint",
+		name: "CRT Cup",
 		defaultPhotoStyle: "portrait",
 		logo: {
 			url: "/logos/crt.png",
@@ -72,10 +72,12 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			{
 				id: "gridA",
 				label: "C1",
-				primaryColor: "#cd0a2a",
-				accentColor: "bg-crt-secondary",
+				primaryColor: "bg-crt-primary",
+				accentColor: "bg-crt-primary",
 				hoverPrimaryColor: "hover:bg-f1-lightCarbon hover:text-white",
 				hoverAccentColor: "group-hover:bg-white group-hover:text-black",
+				podiumNameBgClass: "bg-crt-secondary",
+				podiumPointsBgClass: "bg-crt-secondary",
 				standingsBgClass:
 					"bg-radial-[at_50%_150%] from-crt-primary to-crt-dark-bg to-65%",
 				standingsTitle: "",
@@ -102,6 +104,8 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 				accentColor: "bg-crt-blue",
 				hoverPrimaryColor: "hover:bg-f1-academy-blue hover:text-white",
 				hoverAccentColor: "group-hover:bg-white group-hover:text-black",
+				podiumNameBgClass: "bg-crt-blue",
+				podiumPointsBgClass: "bg-crt-blue",
 				// standingsBgClass:
 				// 	"bg-radial-[at_50%_100%] from-f1-academy-blue to-f1-academy to-100%",
 				standingsBgClass:
