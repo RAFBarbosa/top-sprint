@@ -13,6 +13,7 @@ import bgRatingNameplate from "/src/assets/img/card-v2/bg-ratingnameplate.png";
 import bgRatingNameplateTeam from "/src/assets/img/card-v2/bg-ratingnameplateteam.png";
 import bgRatingNumberplate from "/src/assets/img/card-v2/bg-ratingnumberplate.png";
 import bgStatsDivider from "/src/assets/img/card-v2/bg-statsdivider.png";
+import bgStatsTeamDivider from "/src/assets/img/card-v2/bg-statsteamdivider.png";
 import { useTab } from "../../contexts/TabContext";
 
 interface PlayerCardProps {
@@ -472,9 +473,18 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						</div>
 					</div>
 
-					<div className="absolute inset-0 w-full h-full z-[50] pointer-events-none opacity-60">
+					<div className="absolute inset-0 w-full h-full z-[50] pointer-events-none opacity-80">
 						<img
 							src={bgStatsDivider}
+							alt=""
+							aria-hidden="true"
+							className="w-full h-full object-fill"
+						/>
+					</div>
+
+					<div className="absolute inset-0 w-full h-full z-[10] pointer-events-none opacity-60">
+						<img
+							src={bgStatsTeamDivider}
 							alt=""
 							aria-hidden="true"
 							className="w-full h-full object-fill"

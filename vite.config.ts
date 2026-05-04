@@ -18,13 +18,13 @@ const tenantMeta: Record<
 	}
 > = {
 	topSprint: {
-		name: "Liga Top Sprint",
-		title: "Liga Top Sprint",
-		ogTitle: "Liga Top Sprint - Fórmula 1 Virtual",
+		name: "CRT Cup",
+		title: "CRT Cup",
+		ogTitle: "CRT Cup - Fórmula 1 Virtual",
 		description:
-			"Liga Top Sprint: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
+			"CRT Cup: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
 		keywords:
-			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Liga Top Sprint, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
+			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, CRT Cup, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
 		themeColor: "#eb1c24",
 		url: "https://www.ligatopsprint.com",
 		gtagId: "G-N82GC0X63T",
