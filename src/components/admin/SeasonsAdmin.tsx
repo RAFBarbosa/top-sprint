@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { Season } from "../../contexts/SeasonsContext";
-import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
+import {
+	Dialog,
+	DialogPanel,
+	DialogTitle,
+	Description,
+} from "@headlessui/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 export function SeasonsAdmin() {
@@ -136,7 +141,7 @@ export function SeasonsAdmin() {
 								>
 									<div className="flex items-center gap-2">
 										<div className="flex flex-col items-start">
-											<span className="truncate max-w-36">
+											<span className="max-w-36">
 												{season.name}
 											</span>
 											{!season.active && (
@@ -182,7 +187,9 @@ export function SeasonsAdmin() {
 									: "Cadastrar Nova Temporada"}
 							</h2>
 							<div className="flex items-center justify-start gap-2 mt-4">
-								<span className="text-sm font-medium">Ativo</span>
+								<span className="text-sm font-medium">
+									Ativo
+								</span>
 								<label className="relative inline-flex items-center cursor-pointer">
 									<input
 										type="checkbox"
@@ -258,7 +265,8 @@ export function SeasonsAdmin() {
 						</DialogTitle>
 						<Description className="mt-1">
 							Tem certeza que deseja excluir a temporada{" "}
-							<strong>{seasonToDelete?.name}</strong>? Esta ação não pode ser desfeita.
+							<strong>{seasonToDelete?.name}</strong>? Esta ação
+							não pode ser desfeita.
 						</Description>
 						<div className="mt-6 flex justify-end gap-2">
 							<button

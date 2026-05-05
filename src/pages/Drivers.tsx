@@ -6,6 +6,7 @@ import { tenant } from "../shared/config/tenants";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { useGetDriversQuery } from "../graphql/generated";
 import { useActiveSeason } from "../shared/hooks/useActiveSeason";
+import { getGridConfig } from "../shared/config/grids";
 
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
@@ -27,7 +28,8 @@ const Drivers: React.FC = () => {
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
 			const applied = applyProfile(driver, activeTab.id);
-			const resolvedTeamName = applied.team?.name ?? applied.teamName ?? "";
+			const resolvedTeamName =
+				applied.team?.name ?? applied.teamName ?? "";
 			return {
 				...applied,
 				photo: applied.photo?.url ?? applied.photo ?? "",
@@ -41,21 +43,38 @@ const Drivers: React.FC = () => {
 		.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
 	return (
-		<div id="pilotos" className="bg-f1-lightSilver w-full pb-8">
+		<div
+			id="pilotos"
+			className="tenant-section tenant-section-drivers bg-f1-lightSilver w-full pb-8"
+		>
 			<Divider className="max-w-screen-xl mx-auto" />
-			<div className="max-w-screen-xl mx-auto bg-white rounded-t p-6 pb-0 px-3">
-				<div className="border-t-8 border-r-8 rounded-tr-3xl pt-3 relative mb-8 border-f1-text">
-					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide">
+			<div className="tenant-drivers-inner max-w-screen-xl mx-auto bg-white rounded-t p-6 pb-0 px-3">
+				<div
+					className="border-t-8 border-r-8 rounded-tr-3xl pt-3 relative mb-8"
+					style={{
+						borderColor:
+							tenant.grids.length > 1
+								? (getGridConfig(activeTab.id)?.primaryColor ?? "var(--color-brand-primary)")
+								: "var(--color-brand-primary)",
+					}}
+				>
+					<h1
+						className={
+							tenant.id === "topSprint"
+								? "font-f1Title uppercase tracking-widest text-4xl"
+								: "font-extrabold tracking-wide text-4xl md:text-6xl"
+						}
+					>
 						Pilotos
 					</h1>
 				</div>
-				<div className="p-3 w-full h-auto bg-f1-bg-silver bg-cover bg-opacity-5 rounded-xl tracking-normal">
+				<div className={`tenant-drivers-desc p-3 w-full h-auto rounded-xl tracking-normal ${tenant.id === "topSprint" ? "bg-white/10" : "bg-f1-bg-silver bg-cover bg-opacity-5"}`}>
 					Confira o line-up oficial da temporada. Cards e detalhes
 					completos de todos os pilotos {tenant.name}, com pontuação e
 					resultados atualizados.
 				</div>
 			</div>
-			<div className="max-w-screen-xl mx-auto bg-white rounded-b p-6 space-y-6">
+			<div className="tenant-drivers-inner max-w-screen-xl mx-auto bg-white rounded-b p-6 space-y-6">
 				{activeSeason ? (
 					<DriverList
 						gridName={activeTab.label}

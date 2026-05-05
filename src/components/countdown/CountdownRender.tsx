@@ -40,7 +40,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 			<span className="text-[10px] md:text-xs uppercase tracking-wider text-white/70">
 				Próxima corrida · {gridLabel}
 			</span>
-			<div className="flex items-baseline gap-3">
+			<div className="flex items-baseline gap-2">
 				<Unit
 					value={pad(props.days)}
 					shortLabel="D"
@@ -51,16 +51,8 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 					shortLabel="H"
 					label={props.hours === 1 ? "HR" : "HRS"}
 				/>
-				<Unit
-					value={pad(props.minutes)}
-					shortLabel="M"
-					label="MIN"
-				/>
-				<Unit
-					value={pad(props.seconds)}
-					shortLabel="S"
-					label="SEG"
-				/>
+				<Unit value={pad(props.minutes)} shortLabel="M" label="MIN" />
+				<Unit value={pad(props.seconds)} shortLabel="S" label="SEG" />
 			</div>
 		</div>
 	);
@@ -76,7 +68,7 @@ function Unit({
 	shortLabel: string;
 }) {
 	return (
-		<div className="flex items-baseline gap-1">
+		<div className="flex items-baseline gap-0.5">
 			<span className="font-bold text-sm md:text-base leading-none tabular-nums">
 				{value}
 			</span>

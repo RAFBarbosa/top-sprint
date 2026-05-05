@@ -596,7 +596,7 @@ function ResultsSection({
 													}}
 												/>
 												<div className="min-w-0">
-													<p className="text-xs font-semibold uppercase truncate">
+													<p className="text-xs font-semibold uppercase">
 														{driver.name}
 													</p>
 													{p.reason && (
@@ -766,7 +766,8 @@ function ResultsSection({
 										(gId) =>
 											!(
 												getGridConfig(gId)
-													?.reservesEarnPoints ?? false
+													?.reservesEarnPoints ??
+												false
 											),
 									) && rows.some((r) => r.isReserve);
 								const base = `* Apenas pontos da ${sessionType === "race" ? "corrida" : sessionType === "sprint" ? "sprint" : "sessão"}. Bônus (${bonuses.join(", ")}) e penalidades não estão inclusos.`;
@@ -806,7 +807,7 @@ function ResultsSection({
 											}}
 										/>
 										<div className="min-w-0">
-											<p className="text-xs font-semibold uppercase truncate">
+											<p className="text-xs font-semibold uppercase">
 												{driver.name}
 											</p>
 											{p.reason && (

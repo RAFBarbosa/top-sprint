@@ -24,9 +24,20 @@
 	}
 }
 
-
 [data-tenant="topSprint"] .tenant-standings-tabs button {
 	font-size: 1rem;
+}
+
+[data-tenant="topSprint"] .tenant-nextrace-track {
+	position: relative;
+	top: 2px;
+}
+
+@media (min-width: 768px) {
+	[data-tenant="topSprint"] .tenant-nextrace-flag {
+		position: relative;
+		top: 1px;
+	}
 }
 
 [data-tenant="topSprint"] .tenant-countdown-bar {
@@ -73,16 +84,59 @@
 	background-color: var(--color-teams-bg);
 }
 
+[data-tenant="topSprint"] .tenant-section-drivers {
+	background-color: var(--color-drivers-bg);
+}
+
+[data-tenant="topSprint"] .tenant-section-drivers .tenant-drivers-inner {
+	background-color: var(--color-crt-secondary);
+}
+
+[data-tenant="topSprint"] .tenant-driver-team-name {
+	color: inherit;
+}
+
+[data-tenant="topSprint"] .tenant-section-results {
+	background-color: var(--color-results-bg);
+}
+
+[data-tenant="topSprint"] .tenant-section-champions {
+	background-color: var(--color-champions-bg);
+}
+
+[data-tenant="topSprint"] .tenant-section-profile {
+	background-color: var(--color-profile-bg);
+}
+
 [data-tenant="topSprint"] .tenant-section-title {
 	color: #ffffff;
+	font-family: var(--font-f1Title);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	font-weight: 500;
+	font-size: 1.875rem;
+}
+
+@media (min-width: 768px) {
+	[data-tenant="topSprint"] .tenant-section-title {
+		font-size: 2.25rem;
+	}
 }
 
 [data-tenant="topSprint"] .tenant-section-calendars .tenant-section-fade {
-	background-color: color-mix(in srgb, var(--color-calendars-bg) 88%, transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--color-calendars-bg) 88%,
+		transparent
+	);
 }
 
 [data-tenant="topSprint"] .tenant-section-teams .tenant-section-fade {
-	background-color: color-mix(in srgb, var(--color-teams-bg) 88%, transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--color-teams-bg) 88%,
+		transparent
+	);
 }
 
 [data-tenant="topSprint"] .tenant-calendar-round-mask {
@@ -109,11 +163,12 @@
 	}
 }
 
-[data-tenant="topSprint"] .group:hover .tenant-standing-card-clickable {
-	background-color: var(--row-hover-bg, var(--color-crt-primary));
-	color: #ffffff;
+@media (hover: hover) {
+	[data-tenant="topSprint"] .group:hover .tenant-standing-card-clickable {
+		background-color: var(--row-hover-bg, var(--color-crt-primary));
+		color: #ffffff;
+	}
 }
-
 
 [data-tenant="topSprint"] .tenant-news-fallback {
 	color: #ffffff;

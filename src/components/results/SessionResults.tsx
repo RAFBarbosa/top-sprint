@@ -51,9 +51,9 @@ export function SessionResults() {
 	}, [activeTab.id, matched?.id]);
 
 	return (
-		<aside className="bg-f1-bg-silver">
+		<aside className="tenant-section tenant-section-results bg-f1-bg-silver">
 			<div className="w-full mx-auto max-w-screen-xl px-3 pt-8">
-				<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
+				<h1 className="tenant-section-title font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
 					Resultados
 				</h1>
 				<Divider />
