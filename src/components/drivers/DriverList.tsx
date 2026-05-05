@@ -105,27 +105,33 @@ export const DriverList: React.FC<DriverListProps> = ({
 										"min-h-16"
 									}`}
 								>
-									<p className="text-2xl font-regular leading-5">
+									<p className={tenant.id === "topSprint" ? "text-base font-regular leading-5" : "text-2xl font-regular leading-5"}>
 										<span
-											className={`${
-												secondName
-													? ""
-													: "font-semibold uppercase"
-											}`}
+											className={
+												tenant.id === "topSprint"
+													? secondName
+														? "font-f1Title uppercase"
+														: "font-f1Title uppercase font-bold italic"
+													: secondName
+														? ""
+														: "font-semibold uppercase"
+											}
 										>
 											{firstName}
 										</span>
 										{secondName && (
 											<span
-												className={`font-semibold ml-1 ${
-													secondName && "uppercase"
+												className={`ml-1 ${
+													tenant.id === "topSprint"
+														? "font-f1Title uppercase italic font-bold"
+														: "font-semibold uppercase"
 												}`}
 											>
 												{secondName}
 											</span>
 										)}
 									</p>
-									<p className="text-sm text-gray-600 mt-auto leading-3">
+									<p className={`tenant-driver-team-name mt-auto leading-3 ${tenant.id === "topSprint" ? "font-f1Title uppercase text-xs tracking-wider" : "text-sm text-gray-600"}`}>
 										{driver.teamName}
 									</p>
 								</div>

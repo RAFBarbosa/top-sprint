@@ -4221,6 +4221,7 @@ export type HallOfFame = Entity & Node & {
   history: Array<Version>;
   /** The unique identifier */
   id: Scalars['ID'];
+  legacy: Scalars['Boolean'];
   photo: Array<Asset>;
   /** The time the document was published. Null on documents in draft stage. */
   publishedAt?: Maybe<Scalars['DateTime']>;
@@ -12983,12 +12984,12 @@ export type GetTracksQuery = { __typename?: 'Query', tracks: Array<{ __typename?
 export type GetHallsOfFameQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', id: string, url: string }> }> };
+export type GetHallsOfFameQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, legacy: boolean, photo: Array<{ __typename?: 'Asset', id: string, url: string }> }> };
 
 export type GetHallsOfFameRegistrationQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetHallsOfFameRegistrationQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, photo: Array<{ __typename?: 'Asset', id: string, url: string }> }> };
+export type GetHallsOfFameRegistrationQuery = { __typename?: 'Query', hallsOfFame: Array<{ __typename?: 'HallOfFame', id: string, season: string, deleted: boolean, legacy: boolean, photo: Array<{ __typename?: 'Asset', id: string, url: string }> }> };
 
 export type GetPartnersQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -14163,6 +14164,7 @@ export const GetHallsOfFameDocument = gql`
     id
     season
     deleted
+    legacy
     photo {
       id
       url

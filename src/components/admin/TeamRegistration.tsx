@@ -106,14 +106,23 @@ export function TeamRegistration() {
 	});
 
 	// Firebase driver profiles (teamName per grid)
-	const [allProfiles, setAllProfiles] = useState<Record<string, Record<string, { teamName?: string; reserve?: boolean }>>>({});
+	const [allProfiles, setAllProfiles] = useState<
+		Record<string, Record<string, { teamName?: string; reserve?: boolean }>>
+	>({});
 
 	useEffect(() => {
-		getDocs(collection(db, "driver_profiles")).then((snap) => {
-			const map: Record<string, Record<string, { teamName?: string }>> = {};
-			snap.forEach((d) => { map[d.id] = d.data() as any; });
-			setAllProfiles(map);
-		}).catch(() => {});
+		getDocs(collection(db, "driver_profiles"))
+			.then((snap) => {
+				const map: Record<
+					string,
+					Record<string, { teamName?: string }>
+				> = {};
+				snap.forEach((d) => {
+					map[d.id] = d.data() as any;
+				});
+				setAllProfiles(map);
+			})
+			.catch(() => {});
 	}, []);
 
 	// Queries
@@ -275,7 +284,10 @@ export function TeamRegistration() {
 		}
 		// Also disconnect Hygraph team relation
 		updateDriver({
-			variables: { where: { id: driverId }, data: { team: { disconnect: true } } },
+			variables: {
+				where: { id: driverId },
+				data: { team: { disconnect: true } },
+			},
 		});
 	};
 
@@ -299,18 +311,19 @@ export function TeamRegistration() {
 		}) || [];
 
 	// Compute team drivers for the form — merge Hygraph team relation + Firebase grid profiles
-	const teamDrivers = isEditing && selectedTeam
-		? (teamsData?.drivers ?? []).filter((d) => {
-				// Match via Hygraph team relation
-				if (d.team?.id === selectedTeam.id) return true;
-				// Match via any Firebase grid profile
-				const profiles = allProfiles[d.id];
-				if (!profiles) return false;
-				return Object.values(profiles).some(
-					(p) => p?.teamName === selectedTeam.name,
-				);
-			})
-		: [];
+	const teamDrivers =
+		isEditing && selectedTeam
+			? (teamsData?.drivers ?? []).filter((d) => {
+					// Match via Hygraph team relation
+					if (d.team?.id === selectedTeam.id) return true;
+					// Match via any Firebase grid profile
+					const profiles = allProfiles[d.id];
+					if (!profiles) return false;
+					return Object.values(profiles).some(
+						(p) => p?.teamName === selectedTeam.name,
+					);
+				})
+			: [];
 
 	// Build grid grouping — prefer Firebase profile grid, fall back to Hygraph grid field
 	const byGrid = teamDrivers.reduce<Record<string, typeof teamDrivers>>(
@@ -321,9 +334,10 @@ export function TeamRegistration() {
 						.filter(([, p]) => p?.teamName === selectedTeam?.name)
 						.map(([gridId]) => gridId)
 				: [];
-			const keys = gridsFromProfiles.length > 0
-				? gridsFromProfiles
-				: [d.grid ?? "Sem grid"];
+			const keys =
+				gridsFromProfiles.length > 0
+					? gridsFromProfiles
+					: [d.grid ?? "Sem grid"];
 			keys.forEach((key) => {
 				if (!acc[key]) acc[key] = [];
 				if (!acc[key].find((x) => x.id === d.id)) acc[key].push(d);
@@ -406,7 +420,7 @@ export function TeamRegistration() {
 											)}
 										</div>
 										<div className="flex flex-col items-start">
-											<span className="truncate max-w-40">
+											<span className="max-w-40">
 												{team.name}
 											</span>
 										</div>
@@ -632,7 +646,10 @@ export function TeamRegistration() {
 																	#{d.number}
 																</span>
 															)}
-															{allProfiles[d.id]?.[grid]?.reserve && (
+															{allProfiles[
+																d.id
+															]?.[grid]
+																?.reserve && (
 																<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
 																	Res
 																</span>
@@ -641,7 +658,12 @@ export function TeamRegistration() {
 													</div>
 													<button
 														type="button"
-														onClick={() => handleRemoveDriver(d.id, grid)}
+														onClick={() =>
+															handleRemoveDriver(
+																d.id,
+																grid,
+															)
+														}
 														className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 														title="Remover da equipe"
 													>

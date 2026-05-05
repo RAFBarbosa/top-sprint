@@ -228,7 +228,7 @@ export function Calendar(props: CalendarProps) {
 							>
 								Vencedor
 							</span>
-							<span className="font-bold uppercase tracking-wide leading-5 truncate">
+							<span className="font-bold uppercase tracking-wide leading-5">
 								{getFilteredWinnerName(props.winnerA)}
 							</span>
 							<div className="flex items-center gap-1 mt-1.5 transition-colors duration-150 group-hover:opacity-70">

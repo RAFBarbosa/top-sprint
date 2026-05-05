@@ -59,6 +59,18 @@ export function StandingCard(props: StandingCardProps) {
 		? teamDriverNames.map((driver) => driver.replace(/-[BC]$/, ""))
 		: teamDriverNames;
 
+	const teamDriverList = (props.teamDrivers ?? []).map((d) =>
+		typeof d === "string"
+			? { name: d, photo: undefined as string | undefined }
+			: { name: d.name, photo: d.photo },
+	);
+	const cleanedTeamDriverList = !isDrivers
+		? teamDriverList.map((d) => ({
+				...d,
+				name: d.name.replace(/-[BC]$/, ""),
+			}))
+		: teamDriverList;
+
 	const navigateToDriver = useNavigateToDriver();
 
 	const positionDifference = usePositionDifference(
@@ -117,7 +129,7 @@ export function StandingCard(props: StandingCardProps) {
 						fontSize="small"
 						className="rotate-270 text-green-500 scale-90 translate-y-[1px]"
 					/>
-					{positionDifference}
+					<span className="inline-block translate-y-[1.5px] md:translate-y-0">{positionDifference}</span>
 				</span>
 			);
 		} else if (positionDifference < 0) {
@@ -127,11 +139,11 @@ export function StandingCard(props: StandingCardProps) {
 						fontSize="small"
 						className="rotate-90 text-f1-red scale-90"
 					/>
-					{Math.abs(positionDifference)}
+					<span className="inline-block translate-y-[1.5px] md:translate-y-0">{Math.abs(positionDifference)}</span>
 				</span>
 			);
 		}
-		return <span className="text-f1-lighterCarbon font-bold">–</span>;
+		return <span className="text-f1-lighterCarbon font-bold inline-block translate-y-[1.5px] md:translate-y-0">–</span>;
 	};
 
 	const getDisplayInfo = () => {
@@ -192,7 +204,7 @@ export function StandingCard(props: StandingCardProps) {
 						{props.position}
 					</span>
 					<span
-						className={`mx-2 w-1 ${
+						className={`mx-2 w-1 my-[2px] ${
 							isTopSprint
 								? `self-stretch md:self-stretch md:h-4`
 								: `self-center md:self-stretch ${
@@ -213,7 +225,7 @@ export function StandingCard(props: StandingCardProps) {
 						<div
 							className={`${
 								isTopSprint
-									? "flex flex-col md:flex-row md:items-baseline items-start leading-tight"
+									? "flex flex-col md:flex-row md:items-baseline items-start leading-none"
 									: isDrivers && props.isActive
 										? "flex flex-col md:flex-row items-start"
 										: "-translate-y-[3px] md:translate-y-0"
@@ -222,7 +234,7 @@ export function StandingCard(props: StandingCardProps) {
 							<span
 								className={`leading-tight ${
 									isTopSprint
-										? `text-xs md:text-sm ${
+										? `${props.isActive ? "text-xl md:text-2xl" : "text-xs md:text-sm"} ${
 												displayInfo.secondaryName
 													? "font-f1Title uppercase"
 													: "font-f1Title uppercase font-bold italic"
@@ -240,7 +252,7 @@ export function StandingCard(props: StandingCardProps) {
 								<span
 									className={`font-bold md:ml-1 ${
 										isTopSprint
-											? "text-xs md:text-sm font-f1Title uppercase italic leading-tight"
+											? `${props.isActive ? "text-xl md:text-2xl" : "text-xs md:text-sm"} font-f1Title uppercase italic leading-tight`
 											: `${isDrivers ? "uppercase" : "ml-1"} ${!props.isActive && "ml-1"}`
 									}`}
 								>
@@ -249,31 +261,68 @@ export function StandingCard(props: StandingCardProps) {
 							)}
 						</div>
 
-						<span
+						<div
 							className={`md:ml-2 flex text-start ${
 								isTopSprint
-									? "text-xs font-bold uppercase tracking-wider flex-col md:flex-row leading-tight"
+									? `text-xs font-bold uppercase tracking-wider flex-col md:flex-row leading-tight gap-1 md:gap-x-3 ${!props.isActive ? "mt-1" : ""}`
 									: "text-sm font-light"
-							} 
-							${props.isActive && "rounded-lg pr-1 md:bg-transparent"}`}
+							}
+							${props.isActive && `rounded-lg pr-1 md:bg-transparent ${isTopSprint ? "" : "bg-f1-silver"}`}`}
 						>
 							{isDrivers && props.reserve ? (
 								`Reserva`
 							) : isTopSprint && !isDrivers ? (
-								<>
-									<span className="md:hidden flex flex-col">
-										{cleanedTeamDrivers.map((d, i) => (
-											<span key={i}>{d}</span>
-										))}
-									</span>
-									<span className="hidden md:inline">
-										{cleanedTeamDrivers.join(" / ")}
-									</span>
-								</>
+								props.isActive ? (
+									cleanedTeamDriverList.map((d, i) => (
+										<div
+											key={i}
+											className="flex items-center gap-1.5"
+										>
+											<div
+												className="w-5 h-5 rounded-full overflow-hidden shrink-0"
+												style={{
+													backgroundColor:
+														props.teamColor,
+												}}
+											>
+												<HygraphImg
+													src={
+														d.photo ||
+														tenant.fallbackDriverPhoto
+													}
+													alt={d.name}
+													imgWidth={40}
+													imgHeight={40}
+													className={`w-full h-full object-cover ${
+														tenant.defaultPhotoStyle ===
+														"round"
+															? "scale-125 translate-y-[3px]"
+															: tenant.defaultPhotoStyle ===
+																  "bust"
+																? "translate-y-[2px]"
+																: "scale-200 translate-y-3"
+													}`}
+												/>
+											</div>
+											<span>{d.name}</span>
+										</div>
+									))
+								) : (
+									<>
+										<span className="md:hidden flex flex-col">
+											{cleanedTeamDrivers.map((d, i) => (
+												<span key={i}>{d}</span>
+											))}
+										</span>
+										<span className="hidden md:inline">
+											{cleanedTeamDrivers.join(" / ")}
+										</span>
+									</>
+								)
 							) : (
 								displayInfo.detail
 							)}
-						</span>
+						</div>
 					</div>
 				</div>
 
@@ -282,7 +331,7 @@ export function StandingCard(props: StandingCardProps) {
 						props.isActive ? "self-end" : "self-center"
 					} ${
 						isDrivers &&
-						"group-hover:bg-white transition-colors duration-200"
+						"md:group-hover:bg-white transition-colors duration-200"
 					}`}
 				>
 					<div className="pl-2">{renderPositionDifference()}</div>
@@ -293,8 +342,8 @@ export function StandingCard(props: StandingCardProps) {
 								: ""
 						}`}
 					>
-						<span className="font-bold">{props.valueKey}</span>{" "}
-						<span className={isTopSprint ? "text-[9px]" : ""}>
+						<span className="font-bold inline-block translate-y-[1.5px] md:translate-y-0">{props.valueKey}</span>{" "}
+						<span className={`inline-block translate-y-[1.5px] md:translate-y-0 ${isTopSprint ? "text-[9px]" : ""}`}>
 							{props.valueKey === "1" ? "PT" : props.valueLabel}
 						</span>
 					</div>

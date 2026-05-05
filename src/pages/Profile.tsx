@@ -6,6 +6,7 @@ import { normalizeString } from "../shared/utils/normalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
+import { getGridConfig } from "../shared/config/grids";
 import { tenant } from "../shared/config/tenants";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { HygraphImg } from "../components/utils/HygraphImg";
@@ -232,12 +233,20 @@ export function Profile() {
 		filteredDrivers.length > 0 && (
 			<aside
 				id="perfil"
-				className="bg-f1-bg-silver flex flex-col grow pb-6"
+				className="tenant-section tenant-section-profile bg-f1-bg-silver flex flex-col grow pb-6"
 			>
 				<div className="max-w-screen-xl w-full mx-auto md:px-3">
 					<Divider className="px-3 md:px-0" />
 					<div className="mb-8 flex flex-col sm:flex-row justify-between px-3 md:px-0">
-						<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full">
+						<h1
+							className="tenant-section-title font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full"
+							style={{
+								borderColor:
+									tenant.grids.length > 1
+										? (getGridConfig(activeTab.id)?.primaryColor ?? "var(--color-brand-primary)")
+										: "var(--color-brand-primary)",
+							}}
+						>
 							Perfil do Piloto
 						</h1>
 						<div className="flex justify-between gap-1 h-25 mt-2 md:mt-0 sm:ml-2">

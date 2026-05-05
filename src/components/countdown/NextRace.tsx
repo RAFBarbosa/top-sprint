@@ -32,13 +32,17 @@ export function NextRace(props: NextRaceProps) {
 			<div className="max-w-screen-xl mx-auto px-3 py-2 flex items-center justify-between gap-3 tracking-wide">
 				<div className="flex flex-col min-w-0 leading-tight">
 					<div className="flex items-center gap-2 text-[10px] md:text-xs text-white/70 uppercase tracking-wider">
-						{props.round && <span>{props.round}</span>}
 						{props.round && (
-							<span className="h-3 w-px bg-white/30" />
+							<span>
+								{props.round} · {formattedDateCapitalized}
+							</span>
 						)}
-						<span className="whitespace-nowrap">
-							{formattedDateCapitalized}
-						</span>
+						{/* {props.round && (
+							<span className="h-3 w-px bg-white/30" />
+						)} */}
+						{/* <span className="whitespace-nowrap">
+							· {formattedDateCapitalized}
+						</span> */}
 					</div>
 					<div className="flex items-center gap-2 min-w-0">
 						<HygraphImg
@@ -46,9 +50,9 @@ export function NextRace(props: NextRaceProps) {
 							alt={`Bandeira ${props.track}`}
 							imgWidth={72}
 							imgHeight={40}
-							className="rounded-xs w-[28px] h-[16px] border border-white/50 flex-shrink-0"
+							className="tenant-nextrace-flag rounded-xs w-[28px] h-[16px] border border-white/50 flex-shrink-0"
 						/>
-						<p className="font-bold uppercase tracking-wider text-sm md:text-base truncate">
+						<p className="tenant-nextrace-track font-bold uppercase tracking-wider text-sm md:text-base">
 							{props.track}
 						</p>
 					</div>

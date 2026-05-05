@@ -23,6 +23,10 @@ export interface CssVars {
 	"--color-calendars-bg": string;
 	"--color-standings-bg": string;
 	"--color-teams-bg": string;
+	"--color-drivers-bg": string;
+	"--color-results-bg": string;
+	"--color-champions-bg": string;
+	"--color-profile-bg": string;
 	"--font-f1"?: string;
 	"--font-f1Title"?: string;
 	"--font-f1Podium"?: string;
@@ -156,6 +160,10 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-calendars-bg": "#27292c",
 			"--color-standings-bg": "#111214",
 			"--color-teams-bg": "#27292c",
+			"--color-drivers-bg": "#111214",
+			"--color-results-bg": "#111214",
+			"--color-champions-bg": "#111214",
+			"--color-profile-bg": "#111214",
 			"--font-f1": "'FutoSans', sans-serif",
 			"--font-f1Title": "'Vipnagorgialla', sans-serif",
 			"--font-f1Podium": "'Chakra Petch', sans-serif",
@@ -230,6 +238,10 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-calendars-bg": "transparent",
 			"--color-standings-bg": "transparent",
 			"--color-teams-bg": "transparent",
+			"--color-drivers-bg": "transparent",
+			"--color-results-bg": "transparent",
+			"--color-champions-bg": "transparent",
+			"--color-profile-bg": "transparent",
 		},
 		socials: { youtube: "https://www.youtube.com/@feliplay_TV" },
 		fallbackDriverPhoto:
@@ -371,6 +383,10 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-calendars-bg": "transparent",
 			"--color-standings-bg": "transparent",
 			"--color-teams-bg": "transparent",
+			"--color-drivers-bg": "transparent",
+			"--color-results-bg": "transparent",
+			"--color-champions-bg": "transparent",
+			"--color-profile-bg": "transparent",
 		},
 		socials: {
 			instagram: "https://www.instagram.com/brazukaracingleague/",

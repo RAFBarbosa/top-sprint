@@ -350,7 +350,7 @@ export function PodiumCard(props: PodiumCardProps) {
 						</span>
 						{lastName && (
 							<span
-								className={`uppercase leading-5.5 truncate font-bold ${
+								className={`uppercase leading-5.5 font-bold ${
 									isTopSprint ? "font-f1Title italic" : ""
 								} ${
 									isTopSprint

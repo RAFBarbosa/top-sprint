@@ -1,9 +1,12 @@
+import { useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Skeleton } from "@mui/material";
 import Carousel from "../utils/Carousel";
 import { HallOfFame } from "./HallOfFame";
 import { useGetHallsOfFameQuery } from "../../graphql/generated";
 import { Divider } from "../layout/Divider";
-import { tenant } from "../../shared/config/tenants";
+
+type Season = { id: string; season: string; photo: { id: string; url: string }[] };
 
 const loadingSkeleton = () => {
 	return (
@@ -20,59 +23,127 @@ const loadingSkeleton = () => {
 	);
 };
 
+const navBtnStyle: React.CSSProperties = {
+	background: "var(--color-brand-primary)",
+	border: "1px solid var(--color-brand-primary)",
+	borderRadius: "4%",
+	width: 100,
+	height: 50,
+	color: "white",
+	cursor: "pointer",
+	display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+	transition: "all 0.15s ease",
+};
+
+const navBtnDisabledStyle: React.CSSProperties = {
+	...navBtnStyle,
+	opacity: 0.3,
+	cursor: "default",
+};
+
+function SeasonSwitcher({ seasons }: { seasons: Season[] }) {
+	const [index, setIndex] = useState(0);
+	const season = seasons[index];
+
+	return (
+		<div>
+			<div className="flex items-center justify-between mb-4">
+				<h2 className="font-semibold text-2xl md:text-3xl tracking-wide">
+					{season.season}
+				</h2>
+				{seasons.length > 1 && (
+					<div className="flex items-center gap-2">
+						<button
+							onClick={() => setIndex((i) => i - 1)}
+							disabled={index === 0}
+							style={index === 0 ? navBtnDisabledStyle : navBtnStyle}
+						>
+							<ChevronLeftIcon className="w-6 h-6" />
+						</button>
+						<button
+							onClick={() => setIndex((i) => i + 1)}
+							disabled={index === seasons.length - 1}
+							style={index === seasons.length - 1 ? navBtnDisabledStyle : navBtnStyle}
+						>
+							<ChevronRightIcon className="w-6 h-6" />
+						</button>
+					</div>
+				)}
+			</div>
+			<div
+				className="w-full h-3 mb-4"
+				style={{ backgroundColor: "var(--color-brand-primary)" }}
+			/>
+			<Carousel>
+				{season.photo.map((photo, idx) => (
+					<HallOfFame
+						key={`${season.id}-${idx}`}
+						season={season.season}
+						photo={photo}
+					/>
+				))}
+			</Carousel>
+		</div>
+	);
+}
+
 export function HallsOfFame() {
 	const { data, error, loading } = useGetHallsOfFameQuery();
+	const [legacyOpen, setLegacyOpen] = useState(false);
 
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
 
+	const current = (data?.hallsOfFame ?? []).filter((h) => !h.legacy);
+	const legacy = (data?.hallsOfFame ?? []).filter((h) => h.legacy);
+
 	return (
-		<aside className="mt-8">
+		<aside className="tenant-section tenant-section-champions pt-8">
 			<div className="w-full max-w-screen-xl mx-auto px-3">
 				<div className="mb-8">
-					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
+					<h1 className="tenant-section-title font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
 						Mural dos Campeões
 					</h1>
 					<Divider className="max-w-screen-xl mx-auto" />
 
-					{/* Loop through hallsOfFame and generate a carousel for each item */}
-					{data?.hallsOfFame && data.hallsOfFame.length > 0 ? (
-						data.hallsOfFame.map((data, index) => {
-							const numOfPhotos = data.photo.length;
-
-							// Logic to determine slidesToShow and autoplay
-							const slidesToShow =
-								numOfPhotos >= 3 ? 3 : numOfPhotos;
-							const autoplay = numOfPhotos > 1; // Enable autoplay if more than 1 image
-
-							return (
-								<div key={data.id} className="mb-8">
-									{/* Only show the divider if it's not the first item */}
-									{index > 0 && (
-										<div className="h-16 bg-divider bg-cover my-4 opacity-5" />
-									)}
-
-									<h2 className="font-semibold text-2xl md:text-3xl tracking-wide mb-4">
-										{data.season}
-									</h2>
-
-									<div className="w-full h-3 bg-f1-text my-4" />
-
-									{/* Carousel */}
-									<Carousel>
-										{data.photo.map((photo, idx) => (
-											<HallOfFame
-												key={`${data.id}-${idx}`}
-												season={data.season || ""}
-												photo={photo}
-											/>
-										))}
-									</Carousel>
-								</div>
-							);
-						})
+					{current.length > 0 ? (
+						<SeasonSwitcher seasons={current} />
 					) : (
 						<p>No champions available</p>
+					)}
+
+					{legacy.length > 0 && (
+						<div className="mt-4 mb-12">
+							<Divider />
+							<button
+								onClick={() => setLegacyOpen((o) => !o)}
+								className="flex items-center justify-between w-full text-left group cursor-pointer"
+							>
+								<h2 className="font-semibold text-2xl md:text-3xl tracking-wide">
+									Legado Top Sprint
+								</h2>
+								<span className="text-xl opacity-50 group-hover:opacity-100 transition-opacity">
+									{legacyOpen ? "▲" : "▼"}
+								</span>
+							</button>
+
+							{legacyOpen && (
+								<div className="mt-6">
+									<div className="bg-white/10 rounded-xl px-4 py-3 mb-6 text-sm leading-relaxed">
+										Em 2026, a CRT passou a gerir o
+										campeonato, abrindo uma nova fase na
+										competição. Os títulos abaixo pertencem
+										à história original do Top Sprint,
+										conquistas que ajudaram a construir a
+										comunidade que temos hoje, preservadas
+										aqui com muito orgulho.
+									</div>
+									<SeasonSwitcher seasons={legacy} />
+								</div>
+							)}
+						</div>
 					)}
 				</div>
 			</div>
@@ -103,24 +174,9 @@ export function HallsOfFame() {
 								início de cada temporada.
 							</li>
 						</ul>
-						{/* <p className="mb-2">
-							Os ganhadores do campeonato serão recompensados com:
-						</p>
-						<ul className="list-disc ml-5 mb-2">
-							<li>
-								Troféus para Primeiro, Segundo e Terceiro lugar
-								do Grid A e Primeiro do Grid B.
-							</li>
-							<li>
-								Medalhas para ambos os campeões de contrutores.
-							</li>
-						</ul> */}
-
-						{/* <p>O envio deverá ser pago pelos donos dos prêmios.</p> */}
 					</div>
 				</div>
 			</div>
 		</aside>
 	);
 }
-
