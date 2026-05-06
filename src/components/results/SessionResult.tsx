@@ -923,13 +923,13 @@ function RaceHeader({
 											</span>
 										</>
 									)}
-									<span className="text-black/20">·</span>
+									<span className="tenant-results-dot text-black/20">·</span>
 									<span className="text-xs font-bold uppercase tracking-wider text-f1-lighterCarbon leading-3">
 										{calendarData.round}
 									</span>
 									{calendarData.sprint && (
 										<>
-											<span className="text-black/20">
+											<span className="tenant-results-dot text-black/20">
 												·
 											</span>
 											<span className="text-xs font-bold uppercase tracking-wider text-f1-red leading-3">
