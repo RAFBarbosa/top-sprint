@@ -124,26 +124,34 @@ export function StandingCard(props: StandingCardProps) {
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
 			return (
-				<span className="font-bold text-sm flex items-center text-f1-text">
+				<span className="tenant-position-difference font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
 						className="rotate-270 text-green-500 scale-90 translate-y-[1px]"
 					/>
-					<span className="inline-block translate-y-[1.5px] md:translate-y-0">{positionDifference}</span>
+					<span className="tenant-position-number inline-block translate-y-[1.5px] md:translate-y-0">
+						{positionDifference}
+					</span>
 				</span>
 			);
 		} else if (positionDifference < 0) {
 			return (
-				<span className="font-bold text-sm flex items-center text-f1-text">
+				<span className="tenant-position-difference font-bold text-sm flex items-center text-f1-text">
 					<PlayArrowRoundedIcon
 						fontSize="small"
 						className="rotate-90 text-f1-red scale-90"
 					/>
-					<span className="inline-block translate-y-[1.5px] md:translate-y-0">{Math.abs(positionDifference)}</span>
+					<span className="tenant-position-number inline-block translate-y-[1.5px] md:translate-y-0">
+						{Math.abs(positionDifference)}
+					</span>
 				</span>
 			);
 		}
-		return <span className="text-f1-lighterCarbon font-bold inline-block translate-y-[1.5px] md:translate-y-0">–</span>;
+		return (
+			<span className="tenant-position-difference text-f1-lighterCarbon font-bold inline-block translate-y-[1.5px] md:translate-y-0">
+				–
+			</span>
+		);
 	};
 
 	const getDisplayInfo = () => {
@@ -204,7 +212,7 @@ export function StandingCard(props: StandingCardProps) {
 						{props.position}
 					</span>
 					<span
-						className={`mx-2 w-1 my-[2px] ${
+						className={`tenant-standing-color-bar mx-2 w-1 my-[2px] ${
 							isTopSprint
 								? `self-stretch md:self-stretch md:h-4`
 								: `self-center md:self-stretch ${
@@ -320,7 +328,9 @@ export function StandingCard(props: StandingCardProps) {
 									</>
 								)
 							) : (
-								displayInfo.detail
+								<span className="tenant-standing-team-detail">
+									{displayInfo.detail}
+								</span>
 							)}
 						</div>
 					</div>
@@ -342,8 +352,12 @@ export function StandingCard(props: StandingCardProps) {
 								: ""
 						}`}
 					>
-						<span className="font-bold inline-block translate-y-[1.5px] md:translate-y-0">{props.valueKey}</span>{" "}
-						<span className={`inline-block translate-y-[1.5px] md:translate-y-0 ${isTopSprint ? "text-[9px]" : ""}`}>
+						<span className="font-bold inline-block translate-y-[1.5px] md:translate-y-0">
+							{props.valueKey}
+						</span>{" "}
+						<span
+							className={`inline-block translate-y-[1.5px] md:translate-y-0 ${isTopSprint ? "text-[9px]" : ""}`}
+						>
 							{props.valueKey === "1" ? "PT" : props.valueLabel}
 						</span>
 					</div>

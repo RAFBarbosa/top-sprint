@@ -494,3 +494,12 @@ export async function calculateAndSaveCards(
 
 	await setDoc(doc(db, "driver_cards", gridId), cards);
 }
+
+export async function saveSeasonCardSnapshot(gridId: string, seasonId: string): Promise<void> {
+	const snap = await getDoc(doc(db, "driver_cards", gridId));
+	if (!snap.exists()) return;
+	await setDoc(
+		doc(db, "season_card_snapshots", gridId, "seasons", seasonId),
+		snap.data(),
+	);
+}
