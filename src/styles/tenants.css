@@ -224,7 +224,7 @@
 }
 
 [data-tenant="topSprint"] .tenant-card-rating-arrow {
-	translate: 20px -8px;
+	translate: 18px -8px;
 }
 [data-tenant="topSprint"] .tenant-card-team-name {
 	font-size: 8px;
