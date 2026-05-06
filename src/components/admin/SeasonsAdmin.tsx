@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { Season } from "../../contexts/SeasonsContext";
+import { saveSeasonCardSnapshot } from "../../shared/utils/calculateDriverCards";
+import { tenant } from "../../shared/config/tenants";
 import {
 	Dialog,
 	DialogPanel,
@@ -21,6 +23,21 @@ export function SeasonsAdmin() {
 	const [seasonToDelete, setSeasonToDelete] = useState<Season | null>(null);
 
 	const [formData, setFormData] = useState({ name: "", active: true });
+	const [snapshotting, setSnapshotting] = useState(false);
+
+	const handleSaveSnapshot = async () => {
+		if (!editingSeason) return;
+		setSnapshotting(true);
+		try {
+			await Promise.all(
+				tenant.grids.map((g: { id: string }) =>
+					saveSeasonCardSnapshot(g.id, editingSeason.id),
+				),
+			);
+		} finally {
+			setSnapshotting(false);
+		}
+	};
 
 	const resetForm = () => {
 		setFormData({ name: "", active: true });
@@ -249,6 +266,17 @@ export function SeasonsAdmin() {
 								? "Atualizar"
 								: "Cadastrar"}
 					</button>
+
+					{editingSeason && (
+						<button
+							type="button"
+							onClick={handleSaveSnapshot}
+							disabled={snapshotting}
+							className="border w-full border-f1-purple text-f1-purple px-6 py-2 rounded cursor-pointer duration-120 mt-2 disabled:opacity-50 hover:bg-f1-purple hover:text-white"
+						>
+							{snapshotting ? "Salvando..." : "Salvar Snapshot de Cartas"}
+						</button>
+					)}
 				</form>
 			</div>
 

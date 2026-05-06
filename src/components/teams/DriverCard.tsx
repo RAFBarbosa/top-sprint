@@ -61,7 +61,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 			return (
 				<>
 					<div className="h-6"></div>
-					<p className="text-xl uppercase font-semibold leading-5 md:drop-shadow-lg">
+					<p className="tenant-drivercard-lastname text-xl uppercase font-semibold leading-5 md:drop-shadow-lg">
 						{nameParts[0]}
 					</p>
 				</>
@@ -73,10 +73,10 @@ export function DriverCard({ driver }: DriverCardProps) {
 
 		return (
 			<>
-				<p className="uppercase font-semibold leading-4 opacity-90 md:drop-shadow-lg">
+				<p className="tenant-drivercard-firstname uppercase font-semibold leading-4 opacity-90 md:drop-shadow-lg">
 					{firstName}
 				</p>
-				<p className="text-xl uppercase font-bold leading-5 md:drop-shadow-lg">
+				<p className="tenant-drivercard-lastname text-xl uppercase font-bold leading-5 md:drop-shadow-lg">
 					{lastName}
 				</p>
 			</>

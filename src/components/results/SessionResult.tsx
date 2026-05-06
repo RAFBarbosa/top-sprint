@@ -263,7 +263,7 @@ function WinnerCard({
 	const title = row.sex === "F" ? "Vencedora" : "Vencedor";
 
 	return (
-		<div className="flex-1 rounded-sm overflow-hidden border border-black/10 flex flex-col min-w-0">
+		<div className="tenant-results-winner-card flex-1 rounded-sm overflow-hidden border border-black/10 flex flex-col min-w-0">
 			{/* Grid-colored header */}
 			<div
 				className="px-4 py-2 text-white uppercase text-center"
@@ -320,7 +320,7 @@ function WinnerCard({
 
 			{/* Pole position — race only */}
 			{sessionType === "race" && poleRow && (
-				<div className="bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-b border-black/10">
+				<div className="tenant-results-subrow bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-b border-black/10">
 					<div
 						className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2 border-f1-carbon/20"
 						style={{
@@ -381,7 +381,7 @@ function WinnerCard({
 				awardRows?.map(({ award, driver }) => (
 					<div
 						key={award.id}
-						className="bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-t border-black/10"
+						className="tenant-results-subrow bg-f1-bg-silver px-4 py-2 flex items-center gap-2 border-t border-black/10"
 					>
 						<div
 							className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-2 border-f1-carbon/20"
@@ -446,7 +446,7 @@ function WinnerCard({
 
 			{/* Participation bonus — race only, shown only when configured */}
 			{sessionType === "race" && presenceBonus > 0 && (
-				<div className="bg-f1-bg-silver px-4 py-2 flex items-center justify-between border-t border-black/10">
+				<div className="tenant-results-subrow bg-f1-bg-silver px-4 py-2 flex items-center justify-between border-t border-black/10">
 					<p className="text-xs uppercase tracking-wide text-f1-lighterCarbon font-bold">
 						Participação
 					</p>
@@ -553,7 +553,7 @@ function ResultsSection({
 				</div>
 			)} */}
 
-			<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-6">
+			<div className="tenant-results-card mx-auto max-w-[1256px] bg-white rounded-b px-3 py-6">
 				{/* Side-by-side on desktop: winner cards fixed sidebar + table */}
 				<div className="flex flex-col md:flex-row gap-4 items-start">
 					{/* Winner cards sidebar + adjustments (desktop) */}
@@ -571,7 +571,7 @@ function ResultsSection({
 						{/* Point adjustments — desktop only, under bonus card */}
 						{pointAdjustments.length > 0 && (
 							<div className="hidden md:block border border-black/10 rounded-sm overflow-hidden">
-								<div className="bg-f1-bg-silver px-4 py-2 border-b border-black/10">
+								<div className="tenant-results-subrow bg-f1-bg-silver px-4 py-2 border-b border-black/10">
 									<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">
 										Penalidades
 									</p>
@@ -584,7 +584,7 @@ function ResultsSection({
 									return (
 										<div
 											key={p.driverId}
-											className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white"
+											className="tenant-results-row-even flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white"
 										>
 											<div className="flex items-center gap-2 min-w-0">
 												<span
@@ -645,8 +645,8 @@ function ResultsSection({
 											key={row.id}
 											className={
 												index % 2 === 0
-													? "bg-white"
-													: "bg-f1-bg-silver"
+													? "tenant-results-row-even bg-white"
+													: "tenant-results-row-odd bg-f1-bg-silver"
 											}
 										>
 											<td className="py-3 px-4">
@@ -664,18 +664,12 @@ function ResultsSection({
 															</span>
 														) : row.positionChange >
 														  0 ? (
-															<span className="text-green-600 text-xs font-bold w-6 flex justify-center">
-																▲
-																{
-																	row.positionChange
-																}
+															<span className="text-green-600 text-xs font-bold w-6 flex justify-center items-center gap-[3px]">
+																<span>▲</span><span>{row.positionChange}</span>
 															</span>
 														) : (
-															<span className="text-f1-red text-xs font-bold w-6 flex justify-center">
-																▼
-																{Math.abs(
-																	row.positionChange,
-																)}
+															<span className="text-f1-red text-xs font-bold w-6 flex justify-center items-center gap-[3px]">
+																<span>▼</span><span>{Math.abs(row.positionChange)}</span>
 															</span>
 														))}
 												</div>
@@ -684,42 +678,43 @@ function ResultsSection({
 											<td className="py-3 px-4">
 												<div className="flex items-center gap-1">
 													<span
-														className="mx-1 w-1 self-center h-8 md:h-3.5 shrink-0"
+														className={`mx-1 w-1 shrink-0 md:h-3.5 md:self-center ${row.isNC || row.isReserve || (row.isFastestLap && sessionType === "race") ? "h-13 self-center" : "h-8 self-center"}`}
 														style={{
 															backgroundColor:
 																row.teamColor ??
 																row.gridColor,
 														}}
 													/>
-													<div>
-														<div className="flex items-center gap-2 flex-wrap">
-															{/* {row.number && (
-															<span className="text-xs font-bold text-f1-lighterCarbon w-5 text-right shrink-0">
-																{row.number}
-															</span>
-														)} */}
-															<span className="text-sm font-semibold uppercase">
-																{row.name}
-															</span>
-															{row.isNC && (
-																<span className="bg-gray-400 text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																	NC
-																</span>
-															)}
-															{row.isReserve && (
-																<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																	Res
-																</span>
-															)}
-															{row.isFastestLap &&
+													<div className="flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-2">
+														<span className="text-sm font-semibold uppercase leading-tight md:inline-block md:translate-y-px">
+															{row.name}
+														</span>
+														{(row.isNC ||
+															row.isReserve ||
+															(row.isFastestLap &&
 																sessionType ===
-																	"race" && (
-																	<span className="bg-f1-purple text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																		VR
+																	"race")) && (
+															<div className="flex items-center gap-1 mt-0.5 md:mt-0">
+																{row.isNC && (
+																	<span className="bg-gray-400 text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																		<span className="inline-block max-md:translate-x-px max-md:translate-y-px">NC</span>
 																	</span>
 																)}
-														</div>
-														<p className="text-xs text-f1-lighterCarbon mt-0.5 md:hidden">
+																{row.isReserve && (
+																	<span className="bg-f1-lighterCarbon text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																		<span className="inline-block max-md:translate-x-px max-md:translate-y-px">Res</span>
+																	</span>
+																)}
+																{row.isFastestLap &&
+																	sessionType ===
+																		"race" && (
+																		<span className="bg-f1-purple text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
+																			<span className="inline-block max-md:translate-x-px max-md:translate-y-px">VR</span>
+																		</span>
+																	)}
+															</div>
+														)}
+														<p className="text-xs text-f1-lighterCarbon mt-0.5 translate-y-[3px] md:hidden">
 															{row.teamName}
 														</p>
 													</div>
@@ -731,7 +726,7 @@ function ResultsSection({
 											</td>
 
 											<td className="py-3 px-4 font-bold text-sm text-right">
-												{row.points}
+												<span className="md:inline-block md:translate-y-px">{row.points}</span>
 											</td>
 										</tr>
 									))}
@@ -782,7 +777,7 @@ function ResultsSection({
 				{/* Point adjustments — mobile only */}
 				{pointAdjustments.length > 0 && (
 					<div className="mt-4 md:hidden border border-black/10 rounded-sm overflow-hidden">
-						<div className="bg-f1-bg-silver px-4 py-2 border-b border-black/10">
+						<div className="tenant-results-subrow bg-f1-bg-silver px-4 py-2 border-b border-black/10">
 							<p className="text-xs font-bold uppercase tracking-wide text-f1-lighterCarbon">
 								Penalidades
 							</p>
@@ -795,7 +790,7 @@ function ResultsSection({
 							return (
 								<div
 									key={p.driverId}
-									className="flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white"
+									className="tenant-results-row-even flex items-center justify-between px-4 py-2 border-b border-black/10 last:border-b-0 bg-white"
 								>
 									<div className="flex items-center gap-2 min-w-0">
 										<span
@@ -902,8 +897,8 @@ function RaceHeader({
 		: null;
 
 	return (
-		<div className="bg-f1-bg-silver">
-			<div className="mx-auto max-w-[1256px] px-3 bg-white rounded-t p-4">
+		<div className="tenant-results-bg bg-f1-bg-silver">
+			<div className="tenant-results-card mx-auto max-w-[1256px] px-3 bg-white rounded-t p-4">
 				<div
 					className="border-t-8 border-r-8 rounded-tr-3xl pt-3"
 					style={{ borderColor: gridColor }}
@@ -969,7 +964,7 @@ function RaceHeader({
 											color: "white",
 										}}
 									>
-										▶ Assistir corrida
+										▶︎ Assistir corrida
 									</a>
 								)}
 							</div>
@@ -999,7 +994,7 @@ function RaceHeader({
 									el.style.color = "white";
 								}}
 							>
-								▶ Assistir corrida
+								▶︎ Assistir corrida
 							</a>
 						)}
 					</div>
@@ -1168,10 +1163,10 @@ export function SessionResult({
 				link={firebaseData.link}
 			/>
 
-			<div className="bg-f1-bg-silver pb-10">
+			<div className="tenant-results-bg bg-f1-bg-silver pb-10">
 				{hasSprint && (
 					<div className="mx-auto max-w-screen-xl px-0 md:px-3">
-						<div className="bg-white border-b border-black/10">
+						<div className="tenant-results-tab-bar bg-white border-b border-black/10">
 							<div className="flex gap-0">
 								<button
 									onClick={() => setActiveTab("race")}
@@ -1227,7 +1222,7 @@ export function SessionResult({
 							driverSexMap={driverSexMap}
 						/>
 					) : (
-						<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
+						<div className="tenant-results-card mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
 							<p className="text-f1-lighterCarbon text-sm">
 								Resultado da Sprint não disponível para esta
 								etapa.
@@ -1250,7 +1245,7 @@ export function SessionResult({
 						driverSexMap={driverSexMap}
 					/>
 				) : (
-					<div className="mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
+					<div className="tenant-results-card mx-auto max-w-[1256px] bg-white rounded-b px-3 py-16 text-center">
 						<p className="text-f1-lighterCarbon text-sm">
 							Resultado da Corrida não disponível para esta etapa.
 						</p>
@@ -1304,7 +1299,7 @@ export function SessionResult({
 														color: "var(--color-brand-primary)",
 													}}
 												>
-													↗ Ver mais
+													↗︎ Ver mais
 												</a>
 											)}
 										</div>

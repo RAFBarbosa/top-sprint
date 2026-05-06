@@ -15,6 +15,7 @@ import { useDriverStats } from "../shared/hooks/useDriverStats";
 import type { DriverStatsShape } from "../shared/hooks/useDriverStats";
 import { useGetDriversQuery, useGetTeamsQuery } from "../graphql/generated";
 import { useDriverCards } from "../shared/hooks/useDriverCards";
+import { useBestSeasonCard } from "../shared/hooks/useBestSeasonCard";
 import { useRealLifeTeamLogos } from "../shared/hooks/useRealLifeTeamLogos";
 
 function StatsBlock({
@@ -139,6 +140,7 @@ export function Profile() {
 	const { data: teamsData } = useGetTeamsQuery();
 	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+	const [cardView, setCardView] = useState<"current" | "best">("current");
 	const cardRef = useRef<HTMLDivElement>(null);
 
 	// Build a name→logo map from the teams collection directly (more reliable than
@@ -226,6 +228,7 @@ export function Profile() {
 
 	const driverCards = useDriverCards(activeTab.id);
 	const cardStats = driverData?.id ? driverCards[driverData.id] : null;
+	const bestSeasonCard = useBestSeasonCard(driverData?.id, activeTab.id);
 
 	return (
 		currentIndex !== null &&
@@ -448,8 +451,29 @@ export function Profile() {
 											"repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.5) 20px, rgba(255,255,255,0.5) 21px)",
 									}}
 								/>
+								<div className="flex flex-col items-center gap-6 relative z-10 w-full">
+									{bestSeasonCard && (
+										<div className="flex font-f1Title">
+											{(["current", "best"] as const).map((view, i) => (
+												<>
+													{i > 0 && <div key="sep" className="w-px bg-white/50 self-stretch mx-1" />}
+													<button
+														key={view}
+														onClick={() => setCardView(view)}
+														className={`px-5 py-3 uppercase text-xs tracking-widest transition-all duration-200 hover:cursor-pointer border-b-2 ${
+															cardView === view
+																? "text-white border-white"
+																: "text-gray-400 border-transparent hover:text-white/70"
+														}`}
+													>
+														{view === "current" ? "Carta Atual" : "Melhor Carta"}
+													</button>
+												</>
+											))}
+										</div>
+									)}
 								<div
-									className="flex flex-col relative z-10"
+									className="flex flex-col"
 									style={{
 										filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
 									}}
@@ -459,29 +483,35 @@ export function Profile() {
 											ref={cardRef}
 											data={{
 												...driverData,
-												rating:
-													cardStats?.rating?.toString() ??
-													"",
-												prevRating:
-													cardStats?.prevRating?.toString() ??
-													"",
-												racecraft:
-													cardStats?.racecraft?.toString() ??
-													"",
-												awareness:
-													cardStats?.awareness?.toString() ??
-													"",
-												pace:
-													cardStats?.pace?.toString() ??
-													"",
-												consistency:
-													cardStats?.consistency?.toString() ??
-													"",
+												rating: (cardView === "best"
+													? bestSeasonCard?.rating
+													: cardStats?.rating
+												)?.toString() ?? "",
+												prevRating: cardView === "best"
+													? ""
+													: cardStats?.prevRating?.toString() ?? "",
+												racecraft: (cardView === "best"
+													? bestSeasonCard?.racecraft
+													: cardStats?.racecraft
+												)?.toString() ?? "",
+												awareness: (cardView === "best"
+													? bestSeasonCard?.awareness
+													: cardStats?.awareness
+												)?.toString() ?? "",
+												pace: (cardView === "best"
+													? bestSeasonCard?.pace
+													: cardStats?.pace
+												)?.toString() ?? "",
+												consistency: (cardView === "best"
+													? bestSeasonCard?.consistency
+													: cardStats?.consistency
+												)?.toString() ?? "",
 											}}
 										/>
 									) : (
 										<p>Driver not found</p>
 									)}
+								</div>
 								</div>
 							</div>
 

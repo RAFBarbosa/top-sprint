@@ -205,6 +205,32 @@
 	color: #ffffff;
 }
 
+[data-tenant="topSprint"] .tenant-standing-color-bar {
+	translate: 0 -2px; /* adjust vertical offset here */
+}
+
+[data-tenant="topSprint"] .tenant-standing-team-detail {
+	opacity: 0.8;
+}
+
+[data-tenant="topSprint"] .tenant-position-difference {
+	font-size: 0.8rem;
+}
+
+@media (min-width: 768px) {
+	[data-tenant="topSprint"] .tenant-position-difference {
+		translate: 0 1px;
+	}
+}
+
+[data-tenant="topSprint"] .tenant-position-difference svg {
+	font-size: 0.9rem; /* adjust arrow size here */
+}
+
+[data-tenant="topSprint"] .tenant-position-number {
+	translate: 0 1px; /* adjust vertical offset here */
+}
+
 /* ── PlayerCard text tweaks ──────────────────────────────────────────────── */
 
 [data-tenant="topSprint"] .tenant-card-name {
@@ -239,3 +265,62 @@
 	transform: scaleY(0.89);
 	transform-origin: center;
 } */
+
+/* ── Results dark theme ──────────────────────────────────────────────────── */
+
+[data-tenant="topSprint"] .tenant-results-bg {
+	background-color: var(--color-results-bg);
+}
+
+[data-tenant="topSprint"] .tenant-results-card {
+	background-color: var(--color-crt-secondary);
+}
+
+[data-tenant="topSprint"] .tenant-results-tab-bar {
+	background-color: var(--color-crt-secondary);
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-tenant="topSprint"] .tenant-results-winner-card {
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-tenant="topSprint"] .tenant-results-subrow {
+	background-color: var(--color-f1-lightCarbon);
+}
+
+[data-tenant="topSprint"] .tenant-results-row-even {
+	background-color: var(--color-crt-secondary);
+}
+
+[data-tenant="topSprint"] .tenant-results-row-odd {
+	background-color: #1a1a22;
+}
+
+[data-tenant="topSprint"] .tenant-section-results .text-f1-lighterCarbon {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+[data-tenant="topSprint"] .tenant-section-results .text-f1-text {
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-section-results .border-black\/10 {
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Teams DriverCard name ───────────────────────────────────────────────── */
+
+[data-tenant="topSprint"] .tenant-drivercard-firstname {
+	font-family: var(--font-f1Title);
+	font-size: 1rem; /* adjust here */
+	font-weight: normal;
+	opacity: 1;
+}
+
+[data-tenant="topSprint"] .tenant-drivercard-lastname {
+	font-family: var(--font-f1Title);
+	font-size: 1rem; /* adjust here */
+	font-weight: bold;
+	font-style: italic;
+}
