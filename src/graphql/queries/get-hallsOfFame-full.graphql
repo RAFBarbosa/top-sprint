@@ -1,0 +1,16 @@
+query GetHallsOfFameFull {
+	hallsOfFame(
+		stage: DRAFT
+		orderBy: updatedAt_DESC
+		where: { deleted: false }
+	) {
+		id
+		season
+		deleted
+		legacy
+		photo {
+			id
+			url
+		}
+	}
+}

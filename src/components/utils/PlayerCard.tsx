@@ -304,7 +304,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									: "11%",
 						}}
 					>
-						<span className="text-xs font-semibold uppercase tracking-wider text-f1-bg-silver">
+						<span className="tenant-card-rating-label text-xs uppercase tracking-widest text-f1-bg-silver">
 							Nota Geral
 						</span>
 						<div className="relative flex items-center justify-center mt-1">
@@ -314,14 +314,14 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									99
 								</span>
 								{/* Actual rating number centered */}
-								<span className="absolute inset-0 flex items-center justify-center text-[clamp(22px,9vw,34px)] font-f1Title leading-none tracking-widest drop-shadow-lg text-f1-bg-silver">
+								<span className="tenant-card-rating-value absolute inset-0 flex items-center justify-center text-[clamp(22px,9vw,34px)] font-f1Title leading-none tracking-widest drop-shadow-lg text-f1-bg-silver">
 									{data.rating || "—"}
 								</span>
 							</div>
 
 							{ratingUp && (
 								<span
-									className="absolute text-green-500 text-sm md:text-lg leading-none -right-4 md:-right-5 top-1/2 -translate-y-1/2"
+									className="tenant-card-rating-arrow absolute text-green-500 text-sm md:text-lg leading-none -right-4 md:-right-5 top-1/2 -translate-y-1/2"
 									style={{
 										WebkitTextStroke: "1px white",
 									}}
@@ -331,7 +331,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							)}
 							{ratingDown && (
 								<span
-									className="absolute text-f1-red text-sm md:text-lg leading-none -right-4 md:-right-5 top-1/2 -translate-y-1/2"
+									className="tenant-card-rating-arrow absolute text-f1-red text-sm md:text-lg leading-none -right-4 md:-right-5 top-1/2 -translate-y-1/2"
 									style={{
 										WebkitTextStroke: "1px white",
 									}}
@@ -431,13 +431,13 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 								<div className="flex flex-col leading-none gap-1">
 									<span
-										className={`text-f1-bg-silver font-f1Title uppercase tracking-wider leading-none ${nameSizeClass}`}
+										className={`tenant-card-name text-f1-bg-silver font-f1Title uppercase tracking-wider leading-none ${nameSizeClass}`}
 									>
 										{firstName}
 									</span>
 									{secondName && (
 										<span
-											className={`text-f1-bg-silver font-f1Title uppercase tracking-wider leading-none ${nameSizeClass}`}
+											className={`tenant-card-name text-f1-bg-silver font-f1Title uppercase tracking-wider leading-none ${nameSizeClass}`}
 										>
 											{secondName}
 										</span>
@@ -491,6 +491,14 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						/>
 					</div>
 
+					{data.teamName && tenant.defaultPhotoStyle !== "round" && (
+						<div className="tenant-card-team-name text-[6px] absolute z-[20] pointer-events-none right-1 top-32 w-6 overflow-visible">
+							<span className="text-white/85  uppercase tracking-widest font-f1Title -rotate-90 block origin-center whitespace-nowrap">
+								{data.teamName}
+							</span>
+						</div>
+					)}
+
 					{/* ── Layer 4: Stats bar (stats + team logo) ── */}
 					<div className="absolute inset-0 z-[40]">
 						<div
@@ -518,13 +526,13 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 										data-tooltip-content={tooltip}
 									>
 										<span
-											className="text-xs uppercase tracking-widest mb-0.5"
+											className="tenant-card-stat-label text-xs uppercase tracking-widest mb-0.5"
 											style={{ color: statsTextColor }}
 										>
 											{label}
 										</span>
 										<span
-											className="text-[clamp(19px,5.6vw,22px)] font-f1Title"
+											className="tenant-card-stat-value text-[clamp(19px,5.6vw,22px)] font-f1Title"
 											style={{ color: statsTextColor }}
 										>
 											{value || "—"}
