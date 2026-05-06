@@ -16,7 +16,7 @@ export function HallOfFame(props: HallOfFameProps) {
 
 	return (
 		<div
-			className={`relative mt-2 ${
+			className={`relative mt-2 min-h-[480px] ${
 				loading && "bg-f1-lightSilver"
 			} flex justify-center items-center`}
 		>

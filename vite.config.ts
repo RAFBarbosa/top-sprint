@@ -15,6 +15,7 @@ const tenantMeta: Record<
 		themeColor: string;
 		url: string;
 		gtagId: string;
+		hasExtendedFavicons: boolean;
 	}
 > = {
 	topSprint: {
@@ -28,6 +29,7 @@ const tenantMeta: Record<
 		themeColor: "#eb1c24",
 		url: "https://www.ligatopsprint.com",
 		gtagId: "G-N82GC0X63T",
+		hasExtendedFavicons: true,
 	},
 	feliplay: {
 		name: "Feliplay Cup",
@@ -40,6 +42,7 @@ const tenantMeta: Record<
 		themeColor: "#f50404",
 		url: "https://www.feliplay.com.br",
 		gtagId: "G-P3CV4WHXE7",
+		hasExtendedFavicons: false,
 	},
 	brazuka: {
 		name: "F1 Brazuka",
@@ -52,6 +55,7 @@ const tenantMeta: Record<
 		themeColor: "#064c24",
 		url: "https://www.f1brazuka.com.br",
 		gtagId: "G-N82GC0X63T",
+		hasExtendedFavicons: false,
 	},
 };
 

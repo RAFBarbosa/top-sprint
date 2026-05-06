@@ -1,12 +1,19 @@
 import { useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Skeleton } from "@mui/material";
 import Carousel from "../utils/Carousel";
 import { HallOfFame } from "./HallOfFame";
-import { useGetHallsOfFameQuery } from "../../graphql/generated";
+import {
+	useGetHallsOfFameFullQuery,
+	useGetHallsOfFameQuery,
+} from "../../graphql/generated";
 import { Divider } from "../layout/Divider";
+import { tenant } from "../../shared/config/tenants";
 
-type Season = { id: string; season: string; photo: { id: string; url: string }[] };
+type Season = {
+	id: string;
+	season: string;
+	photo: { id: string; url: string }[];
+};
 
 const loadingSkeleton = () => {
 	return (
@@ -23,52 +30,38 @@ const loadingSkeleton = () => {
 	);
 };
 
-const navBtnStyle: React.CSSProperties = {
-	background: "var(--color-brand-primary)",
-	border: "1px solid var(--color-brand-primary)",
-	borderRadius: "4%",
-	width: 100,
-	height: 50,
-	color: "white",
-	cursor: "pointer",
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	transition: "all 0.15s ease",
-};
-
-const navBtnDisabledStyle: React.CSSProperties = {
-	...navBtnStyle,
-	opacity: 0.3,
-	cursor: "default",
-};
-
 function SeasonSwitcher({ seasons }: { seasons: Season[] }) {
 	const [index, setIndex] = useState(0);
+	const [visible, setVisible] = useState(true);
 	const season = seasons[index];
+	const hasNav = seasons.length > 1;
+
+	const goTo = (next: number) => {
+		setVisible(false);
+		setTimeout(() => {
+			setIndex(next);
+			setVisible(true);
+		}, 200);
+	};
 
 	return (
 		<div>
-			<div className="flex items-center justify-between mb-4">
+			<div className="flex flex-col min-[950px]:flex-row min-[950px]:items-center min-[950px]:justify-between mb-4 gap-3">
 				<h2 className="font-semibold text-2xl md:text-3xl tracking-wide">
 					{season.season}
 				</h2>
-				{seasons.length > 1 && (
-					<div className="flex items-center gap-2">
+				{hasNav && (
+					<div className="flex items-center justify-center min-[950px]:justify-start gap-2">
 						<button
-							onClick={() => setIndex((i) => i - 1)}
+							onClick={() => goTo(index - 1)}
 							disabled={index === 0}
-							style={index === 0 ? navBtnDisabledStyle : navBtnStyle}
-						>
-							<ChevronLeftIcon className="w-6 h-6" />
-						</button>
+							className="swiper-button-prev swiper-btn-inline"
+						/>
 						<button
-							onClick={() => setIndex((i) => i + 1)}
+							onClick={() => goTo(index + 1)}
 							disabled={index === seasons.length - 1}
-							style={index === seasons.length - 1 ? navBtnDisabledStyle : navBtnStyle}
-						>
-							<ChevronRightIcon className="w-6 h-6" />
-						</button>
+							className="swiper-button-next swiper-btn-inline"
+						/>
 					</div>
 				)}
 			</div>
@@ -76,28 +69,40 @@ function SeasonSwitcher({ seasons }: { seasons: Season[] }) {
 				className="w-full h-3 mb-4"
 				style={{ backgroundColor: "var(--color-brand-primary)" }}
 			/>
-			<Carousel>
-				{season.photo.map((photo, idx) => (
-					<HallOfFame
-						key={`${season.id}-${idx}`}
-						season={season.season}
-						photo={photo}
-					/>
-				))}
-			</Carousel>
+			<div
+				className="transition-opacity duration-200 min-h-[350px]"
+				style={{ opacity: visible ? 1 : 0 }}
+			>
+				<Carousel>
+					{season.photo.map((photo, idx) => (
+						<HallOfFame
+							key={`${season.id}-${idx}`}
+							season={season.season}
+							photo={photo}
+						/>
+					))}
+				</Carousel>
+			</div>
 		</div>
 	);
 }
 
 export function HallsOfFame() {
-	const { data, error, loading } = useGetHallsOfFameQuery();
+	const isTopSprint = tenant.id === "topSprint";
+	const full = useGetHallsOfFameFullQuery({ skip: !isTopSprint });
+	const basic = useGetHallsOfFameQuery({ skip: isTopSprint });
+	const { data, error, loading } = isTopSprint ? full : basic;
 	const [legacyOpen, setLegacyOpen] = useState(false);
 
 	if (loading) return loadingSkeleton();
 	if (error) return <div>Erro: {error.message}</div>;
 
-	const current = (data?.hallsOfFame ?? []).filter((h) => !h.legacy);
-	const legacy = (data?.hallsOfFame ?? []).filter((h) => h.legacy);
+	const current = (data?.hallsOfFame ?? []).filter(
+		(h) => !("legacy" in h) || !h.legacy,
+	);
+	const legacy = (data?.hallsOfFame ?? []).filter(
+		(h) => "legacy" in h && h.legacy,
+	);
 
 	return (
 		<aside className="tenant-section tenant-section-champions pt-8">

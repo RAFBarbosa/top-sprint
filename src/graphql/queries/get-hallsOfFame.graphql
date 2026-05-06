@@ -7,7 +7,6 @@ query GetHallsOfFame {
 		id
 		season
 		deleted
-		legacy
 		photo {
 			id
 			url
@@ -24,7 +23,6 @@ query GetHallsOfFameRegistration {
 		id
 		season
 		deleted
-		legacy
 		photo {
 			id
 			url

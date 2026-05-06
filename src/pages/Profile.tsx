@@ -36,7 +36,6 @@ function StatsBlock({
 		{ label: "Pód. Sprint", value: stats.sprintPodiums },
 		{ label: "Poles", value: stats.poles },
 		{ label: "Volt. Rápidas", value: stats.fastestLaps },
-		{ label: "NCs", value: stats.ncs },
 		{ label: "Campeonatos", value: stats.championships },
 		{ label: "Camp. Equipe", value: stats.teamChampionships },
 	].filter((item) => item.value > 0);
@@ -90,7 +89,7 @@ function DriverInfoItem({
 	if (link) {
 		return (
 			<div className="flex flex-col gap-1">
-				<span className="text-[10px] uppercase tracking-wider text-f1-text font-bold">
+				<span className="tenant-profile-info-label text-[10px] uppercase tracking-wider text-f1-text font-bold">
 					{label}
 				</span>
 				<a
@@ -104,7 +103,7 @@ function DriverInfoItem({
 					<LiveTvIcon
 						fontSize="small"
 						aria-hidden="true"
-						className="mb-0.5"
+						className="mb-0.5 max-md:-translate-y-0.5"
 					/>
 				</a>
 			</div>
@@ -113,7 +112,7 @@ function DriverInfoItem({
 
 	return (
 		<div className="flex flex-col gap-1">
-			<span className="text-[10px] uppercase tracking-wider text-f1-text font-bold">
+			<span className="tenant-profile-info-label text-[10px] uppercase tracking-wider text-f1-text font-bold">
 				{label}
 			</span>
 			<span className="text-sm font-medium">{value}</span>
@@ -243,7 +242,9 @@ export function Profile() {
 							style={{
 								borderColor:
 									tenant.grids.length > 1
-										? (getGridConfig(activeTab.id)?.primaryColor ?? "var(--color-brand-primary)")
+										? (getGridConfig(activeTab.id)
+												?.primaryColor ??
+											"var(--color-brand-primary)")
 										: "var(--color-brand-primary)",
 							}}
 						>
@@ -260,7 +261,7 @@ export function Profile() {
 										? `Piloto anterior: ${filteredDrivers[currentIndex - 1].name}`
 										: "Piloto anterior"
 								}
-								className={`bg-f1-lightSilver text-f1-text font-bold px-2 rounded-l border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
+								className={`tenant-profile-nav bg-f1-lightSilver text-f1-text font-bold px-2 rounded-l border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
 									currentIndex === null || currentIndex === 0
 										? "opacity-50 cursor-not-allowed"
 										: "hover:opacity-80 cursor-pointer"
@@ -354,7 +355,7 @@ export function Profile() {
 										? `Próximo piloto: ${filteredDrivers[currentIndex + 1].name}`
 										: "Próximo piloto"
 								}
-								className={`bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
+								className={`tenant-profile-nav bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
 									currentIndex === null ||
 									currentIndex === filteredDrivers.length - 1
 										? "opacity-50 cursor-not-allowed"
@@ -447,7 +448,12 @@ export function Profile() {
 											"repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.5) 20px, rgba(255,255,255,0.5) 21px)",
 									}}
 								/>
-								<div className="flex flex-col relative z-10" style={{ filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))" }}>
+								<div
+									className="flex flex-col relative z-10"
+									style={{
+										filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
+									}}
+								>
 									{driverData ? (
 										<PlayerCard
 											ref={cardRef}
@@ -480,12 +486,12 @@ export function Profile() {
 							</div>
 
 							{/* Right Half - Stats */}
-							<div className="md:w-1/2 flex flex-col gap-4 bg-white py-8 px-6">
+							<div className="tenant-profile-stats md:w-1/2 flex flex-col gap-4 bg-white py-8 px-6">
 								{/* Driver info */}
 								{(driverData?.city ||
 									driverData?.equipment ||
 									driverData?.stream) && (
-									<div className="bg-f1-bg-silver rounded-lg p-4">
+									<div className="tenant-profile-card bg-f1-bg-silver rounded-lg p-4">
 										<StatsHeader title="Informações do Piloto" />
 										<div className="grid grid-cols-2 gap-4">
 											<DriverInfoItem
@@ -516,7 +522,7 @@ export function Profile() {
 									Object.values(seasonStats).some(
 										(v) => v > 0,
 									) && (
-										<div className="bg-f1-bg-silver rounded-lg p-4">
+										<div className="tenant-profile-card bg-f1-bg-silver rounded-lg p-4">
 											<StatsBlock
 												label="Temporada Atual"
 												stats={seasonStats}
@@ -529,7 +535,7 @@ export function Profile() {
 									Object.values(careerStats).some(
 										(v) => v > 0,
 									) && (
-										<div className="bg-f1-bg-silver rounded-lg p-4">
+										<div className="tenant-profile-card bg-f1-bg-silver rounded-lg p-4">
 											<StatsBlock
 												label="Carreira"
 												stats={careerStats}

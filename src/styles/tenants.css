@@ -108,6 +108,37 @@
 	background-color: var(--color-profile-bg);
 }
 
+[data-tenant="topSprint"] .tenant-profile-stats {
+	background-color: var(--color-crt-secondary);
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-profile-card {
+	background-color: var(--color-f1-lightCarbon);
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-profile-stats .text-f1-text {
+	color: #ffffff;
+}
+
+[data-tenant="topSprint"] .tenant-profile-stats .tenant-profile-info-label {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+[data-tenant="topSprint"] .tenant-profile-stats .text-f1-lighterCarbon {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+[data-tenant="topSprint"] .tenant-profile-stats .border-black\/10 {
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-tenant="topSprint"] .tenant-profile-nav {
+	background-color: var(--color-crt-secondary);
+	color: #ffffff;
+}
+
 [data-tenant="topSprint"] .tenant-section-title {
 	color: #ffffff;
 	font-family: var(--font-f1Title);
@@ -172,6 +203,35 @@
 
 [data-tenant="topSprint"] .tenant-news-fallback {
 	color: #ffffff;
+}
+
+/* ── PlayerCard text tweaks ──────────────────────────────────────────────── */
+
+[data-tenant="topSprint"] .tenant-card-name {
+	font-size: 34px;
+	/* font-weight: bold; */
+	line-height: 26px;
+}
+
+[data-tenant="topSprint"] .tenant-card-rating-label {
+	margin-left: 12px;
+}
+[data-tenant="topSprint"] .tenant-card-rating-value {
+	margin-left: 12px;
+	font-size: 50px;
+	margin-top: 2px;
+	/* font-weight: bold; */
+}
+
+[data-tenant="topSprint"] .tenant-card-rating-arrow {
+	translate: 20px -8px;
+}
+[data-tenant="topSprint"] .tenant-card-team-name {
+	font-size: 8px;
+}
+/* [data-tenant="topSprint"] .tenant-card-stat-label   { } */
+[data-tenant="topSprint"] .tenant-card-stat-value {
+	font-size: 28px;
 }
 
 /* [data-tenant="topSprint"] .tenant-menu-item-label {

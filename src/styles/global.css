@@ -238,6 +238,24 @@ body {
 	}
 }
 
+.swiper-button-prev.swiper-btn-inline,
+.swiper-button-next.swiper-btn-inline {
+	position: static !important;
+	transform: none !important;
+	top: auto !important;
+	bottom: auto !important;
+	left: auto !important;
+	right: auto !important;
+	margin-top: 0 !important;
+}
+
+.swiper-button-prev.swiper-btn-inline:disabled,
+.swiper-button-next.swiper-btn-inline:disabled {
+	opacity: 0.3;
+	cursor: default;
+	pointer-events: none;
+}
+
 @theme {
 	--breakpoint-md: 950px;
 
