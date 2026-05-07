@@ -213,25 +213,22 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					<div className="absolute inset-0">
 						<div
 							className="w-full h-full relative"
-							style={{ background: teamColor }}
+							style={{ background: "#000" }}
 						>
-							{/* Dark overlay for bright colors */}
 							<div
 								className="absolute inset-0"
 								style={{
-									background:
-										"radial-gradient(circle at 30% 20%, rgba(0,0,0,0.2), rgba(0,0,0,0.3))",
-									mixBlendMode: "multiply",
+									backgroundColor: teamColor,
+									opacity: 0.45,
 								}}
 							/>
 							<img
 								src={bgRatingBgShape}
-								alt=""
-								aria-hidden="true"
 								className="absolute inset-0 w-full h-full"
 								style={{
 									mixBlendMode: "overlay",
-									opacity: 0.4,
+									opacity: 1,
+									objectFit: "fill",
 								}}
 							/>
 						</div>

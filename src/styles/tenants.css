@@ -59,6 +59,14 @@
 	color: #ffffff;
 }
 
+[data-tenant="topSprint"] .tenant-news-title {
+	font-family: "Chakra Petch", sans-serif;
+}
+
+[data-tenant="topSprint"] .tenant-news-content {
+	font-family: "FutoSans", sans-serif;
+}
+
 [data-tenant="topSprint"] .tenant-news-body-primary {
 	text-transform: uppercase;
 }
@@ -229,12 +237,17 @@
 	color: #ffffff;
 }
 
+[data-tenant="topSprint"] .tenant-standing-position {
+	font-family: "Chakra Petch", sans-serif;
+}
+
 [data-tenant="topSprint"] .tenant-standing-color-bar {
 	translate: 0 -2px; /* adjust vertical offset here */
 }
 
 [data-tenant="topSprint"] .tenant-standing-team-detail {
 	opacity: 0.8;
+	font-family: "Chakra Petch", sans-serif;
 }
 
 [data-tenant="topSprint"] .tenant-position-difference {

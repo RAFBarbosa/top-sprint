@@ -27,7 +27,7 @@ export function SecondaryBanners({ banners }: SecondaryBannersProps) {
 	}
 
 	return (
-		<div className="h-full grid grid-cols-1 md:grid-cols-2 gap-3 items-start md:items-stretch">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
 			{banners.map((banner) => (
 				<SecondaryBanner
 					key={banner.id}

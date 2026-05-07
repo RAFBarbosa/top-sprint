@@ -107,13 +107,13 @@ export function Banners() {
 		: "";
 
 	return (
-		<div className="flex flex-col md:flex-row gap-2 md:gap-8 items-stretch">
+		<div className="flex flex-col md:flex-row gap-2 md:gap-8 md:items-start">
 			{/* Primary Banner */}
 			<aside
 				style={{ borderColor: "var(--color-brand-primary)" }}
 				className="md:w-4/7 mb-4 md:mb-0 border-t-8 relative flex flex-col"
 			>
-				<div className="pr-2 md:sticky top-16 z-10">
+				<div className="pr-2">
 					{latestFeaturedBanner ? (
 						<Banner
 							key={latestFeaturedBanner.id}

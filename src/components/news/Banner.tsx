@@ -16,20 +16,20 @@ export function Banner(props: BannerProps) {
 		<>
 			<div
 				style={{ color: "var(--color-brand-primary)" }}
-				className="text-sm font-semibold mt-2 uppercase"
+				className="tenant-news-title text-sm font-semibold mt-2 uppercase"
 			>
 				{props.title}
 			</div>
 			<div>
-				<div className="tenant-news-body tenant-news-body-primary text-2xl/6 md:text-3xl/8 font-semibold mb-4 group-hover:underline">
+				<div className="tenant-news-body tenant-news-body-primary tenant-news-content text-2xl/6 md:text-3xl/8 font-semibold mb-4 group-hover:underline">
 					{props.content}
 				</div>
-				<div className="overflow-hidden">
+				<div className="overflow-hidden relative md:max-h-[560px]">
 					<HygraphImg
 						src={props.photo?.url}
 						alt={props.content}
 						imgWidth={600}
-						className="shadow-lg w-full transform transition-transform duration-150 group-hover:scale-110"
+						className="shadow-lg w-full object-top transform transition-transform duration-150 group-hover:scale-110"
 					/>
 				</div>
 			</div>

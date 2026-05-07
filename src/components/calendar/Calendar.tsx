@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { LiveTv, ArrowForwardIos as MenuArrow } from "@mui/icons-material";
-import { addHours } from "date-fns";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
 import { HygraphImg } from "../utils/HygraphImg";
@@ -25,30 +23,6 @@ interface CalendarProps {
 }
 
 export function Calendar(props: CalendarProps) {
-	const [isWithinTwoHours, setIsWithinTwoHours] = useState(false);
-	const [isFutureDate, setIsFutureDate] = useState(true);
-
-	useEffect(() => {
-		const eventStartTime = new Date(props.date);
-		const eventEndTime = addHours(eventStartTime, 2);
-		const currentTime = new Date();
-
-		if (currentTime >= eventStartTime && currentTime <= eventEndTime) {
-			setIsWithinTwoHours(true);
-			setIsFutureDate(false);
-
-			const timeUntilEnd = eventEndTime.getTime() - currentTime.getTime();
-			const timeoutId = setTimeout(() => {
-				setIsWithinTwoHours(false);
-				setIsFutureDate(currentTime > eventEndTime);
-			}, timeUntilEnd);
-
-			return () => clearTimeout(timeoutId);
-		} else {
-			setIsWithinTwoHours(false);
-			setIsFutureDate(currentTime < eventStartTime);
-		}
-	}, [props.date]);
 
 	const formattedDate = format(new Date(props.date), "dd '-' MMM", {
 		locale: ptBR,
@@ -258,13 +232,13 @@ export function Calendar(props: CalendarProps) {
 		</>
 	);
 
-	return (
-		<div
-			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
-				hasResults ? "calendar-card-hover" : ""
-			} cursor-pointer`}
-		>
-			{props.externalLink && !isFutureDate ? (
+	const cardClass = `relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
+		hasResults ? "calendar-card-hover cursor-pointer" : "cursor-default"
+	}`;
+
+	if (props.externalLink) {
+		return (
+			<div className={cardClass}>
 				<a
 					href={props.externalLink}
 					target="_blank"
@@ -273,22 +247,34 @@ export function Calendar(props: CalendarProps) {
 				>
 					{cardInner}
 				</a>
-			) : (
+			</div>
+		);
+	}
+
+	if (hasResults) {
+		return (
+			<div className={cardClass}>
 				<Link
-					to={isFutureDate ? "#" : resultsSlug}
-					onClick={(e) => {
-						if (isFutureDate) {
-							e.preventDefault();
-						} else if (props.preventScrollOnClick) {
-							const scrollPos = window.scrollY;
-							setTimeout(() => window.scrollTo(0, scrollPos), 0);
-						}
-					}}
+					to={resultsSlug}
+					onClick={
+						props.preventScrollOnClick
+							? () => {
+									const scrollPos = window.scrollY;
+									setTimeout(() => window.scrollTo(0, scrollPos), 0);
+								}
+							: undefined
+					}
 					className="h-full flex flex-col group"
 				>
 					{cardInner}
 				</Link>
-			)}
+			</div>
+		);
+	}
+
+	return (
+		<div className={cardClass}>
+			<div className="h-full flex flex-col">{cardInner}</div>
 		</div>
 	);
 }
