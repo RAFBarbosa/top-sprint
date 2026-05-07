@@ -138,9 +138,10 @@ export function HallsOfFame() {
 								<div className="mt-6">
 									<div className="bg-white/10 rounded-xl px-4 py-3 mb-6 text-sm leading-relaxed">
 										Em 2026, a CRT passou a gerir o
-										campeonato, abrindo uma nova fase na
-										competição. Os títulos abaixo pertencem
-										à história original do Top Sprint,
+										campeonato, elevando o nível da
+										competição e dando início a uma nova
+										fase. Os títulos abaixo pertencem à
+										história original da Top Sprint,
 										conquistas que ajudaram a construir a
 										comunidade que temos hoje, preservadas
 										aqui com muito orgulho.
