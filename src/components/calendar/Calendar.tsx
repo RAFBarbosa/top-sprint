@@ -60,14 +60,13 @@ export function Calendar(props: CalendarProps) {
 
 	const formattedDateCapitalized = `${dayPart} ${capitalizedMonth}`;
 
-	const isPastDate = new Date(props.date) < new Date();
-	const isPastTwoHours = isPastDate && !isWithinTwoHours;
+	const hasResults = !!props.winnerA || !!props.externalLink;
 
 	const slugify = (str: string) =>
 		str
 			.toLowerCase()
 			.normalize("NFD")
-			.replace(/[\u0300-\u036f]/g, "")
+			.replace(/[̀-ͯ]/g, "")
 			.replace(/[^a-z0-9]+/g, "-")
 			.replace(/^-|-$/g, "");
 
@@ -104,9 +103,9 @@ export function Calendar(props: CalendarProps) {
 		<>
 			<div
 				style={{ color: "var(--color-brand-primary)" }}
-				className="tenant-calendar-round-mask font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
+				className="tenant-calendar-round-mask tenant-calendar-round font-bold text-sm pr-2 absolute bg-f1-bg-silver -top-[12px] uppercase"
 			>
-				{isPastTwoHours ? (
+				{hasResults ? (
 					<span className="tenant-calendar-text text-f1-text">
 						{props.round} Finalizada
 					</span>
@@ -116,14 +115,14 @@ export function Calendar(props: CalendarProps) {
 			</div>
 			<div className="flex pb-3 mb-0 border-b border-f1-black/20 items-start flex-grow">
 				<div className="w-full mr-3 flex flex-col justify-between h-full">
-					<span className="tenant-calendar-text text-sm font-semibold text-f1-text uppercase tracking-wide">
+					<span className="tenant-calendar-text tenant-calendar-date text-sm font-semibold text-f1-text uppercase tracking-wide">
 						{formattedDateCapitalized}
 					</span>
 					<div className="flex items-center gap-1 mt-0.5">
-						<span className="tenant-calendar-text text-lg font-bold uppercase leading-5 tracking-wide">
+						<span className="tenant-calendar-text tenant-calendar-track text-lg font-bold uppercase leading-5 tracking-wide">
 							{props.track}
 						</span>
-						{!isFutureDate && (
+						{hasResults && (
 							<span className="transition-transform duration-200 group-hover:translate-x-1 inline-flex">
 								<MenuArrow
 									style={{
@@ -135,7 +134,7 @@ export function Calendar(props: CalendarProps) {
 						)}
 					</div>
 					{props.location && (
-						<span className="tenant-calendar-text text-f1-text mt-2 leading-4">
+						<span className="tenant-calendar-text tenant-calendar-location text-f1-text mt-2 leading-4">
 							{props.location}
 						</span>
 					)}
@@ -159,11 +158,11 @@ export function Calendar(props: CalendarProps) {
 
 			<div
 				className={`bg-map-bg h-29 w-60 absolute bottom-2 -z-10 ${
-					!isFutureDate && props.winnerA
+					props.winnerA
 						? "opacity-5"
-						: isFutureDate
-							? "opacity-35"
-							: "opacity-20"
+						: hasResults
+							? "opacity-20"
+							: "opacity-35"
 				}`}
 			/>
 
@@ -173,16 +172,16 @@ export function Calendar(props: CalendarProps) {
 						src={props.map.url}
 						alt=""
 						className={`absolute inset-0 w-full h-full object-contain p-3 pointer-events-none transition-opacity duration-300 ${
-							!isFutureDate && props.winnerA
+							props.winnerA
 								? "opacity-3"
-								: isFutureDate
-									? "opacity-85"
-									: "opacity-3"
+								: hasResults
+									? "opacity-3"
+									: "opacity-85"
 						}`}
 					/>
 				)}
 
-				{!isFutureDate && props.winnerA ? (
+				{props.winnerA ? (
 					<div className="relative z-10 h-full flex items-center gap-3 px-1">
 						<div
 							className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden border-1"
@@ -242,7 +241,7 @@ export function Calendar(props: CalendarProps) {
 							</div>
 						</div>
 					</div>
-				) : !isFutureDate ? (
+				) : hasResults ? (
 					<div className="relative z-10 h-full flex items-center justify-center px-1">
 						<div className="flex items-center gap-1 transition-colors duration-150 group-hover:opacity-70">
 							<LiveTv
@@ -262,7 +261,7 @@ export function Calendar(props: CalendarProps) {
 	return (
 		<div
 			className={`relative border-r-2 border-t-2 rounded-lg pr-2 pt-3 rounded-br-none rounded-tl-none hover:opacity-100 transition-all duration-200 min-h-[180px] h-full w-[250px] ${
-				isPastTwoHours ? "calendar-card-hover" : ""
+				hasResults ? "calendar-card-hover" : ""
 			} cursor-pointer`}
 		>
 			{props.externalLink && !isFutureDate ? (

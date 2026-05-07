@@ -231,7 +231,11 @@ function buildRows(
 				gridColor,
 				points,
 				positionChange,
-				isFastestLap: awardWinners.fastestLap === driverId,
+				isFastestLap: gridRaceAwards.some(
+						(award) =>
+							award.label.trim().toLowerCase() === "volta rápida" &&
+							awardWinners[award.id] === driverId,
+					),
 				penaltySeconds: penalty?.seconds ?? 0,
 				isNC: ncDriverIds?.includes(driverId) ?? false,
 				isReserve: reserveSet?.has(driverId) ?? false,
@@ -426,7 +430,7 @@ function WinnerCard({
 						</div>
 						<div className="min-w-0">
 							<p
-								className={`text-xs uppercase tracking-wide font-bold ${award.id === "fastestLap" ? "text-f1-purple" : "text-f1-text"}`}
+								className={`text-xs uppercase tracking-wide font-bold ${award.label.trim().toLowerCase() === "volta rápida" ? "text-f1-purple" : "text-f1-text"}`}
 							>
 								{award.label}
 							</p>
