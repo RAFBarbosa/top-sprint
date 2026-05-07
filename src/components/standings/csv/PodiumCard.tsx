@@ -369,7 +369,7 @@ export function PodiumCard(props: PodiumCardProps) {
 							<div className="mt-auto h-0.5 w-full bg-white/50 mb-1" />
 						)}
 						<span
-							className={`leading-3 ${
+							className={`tenant-standing-team-detail leading-3 ${
 								isTopSprint
 									? "text-[10px] uppercase tracking-wider font-bold"
 									: "text-sm mt-auto font-light"

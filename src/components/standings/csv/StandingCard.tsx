@@ -205,7 +205,7 @@ export function StandingCard(props: StandingCardProps) {
 			>
 				<div className="flex items-center flex-grow z-30 h-full md:h-4">
 					<span
-						className={`font-bold w-5 flex justify-center ${
+						className={`tenant-standing-position font-bold w-5 flex justify-center ${
 							props.isActive ? "text-2xl" : "md:text-lg"
 						}`}
 					>

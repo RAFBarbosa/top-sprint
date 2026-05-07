@@ -26,17 +26,17 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 				/>
 			</div>
 			{/* Text */}
-			<div className="flex-1 flex flex-col py-2 px-2 overflow-hidden md:h-[80px] md:flex-none">
+			<div className="flex-1 flex flex-col py-2 px-2 overflow-hidden md:h-[100px] md:flex-none">
 				{props.title && (
 					<p
 						style={{ color: "var(--color-brand-primary)" }}
-						className="text-xs font-bold uppercase tracking-wider leading-none mb-1 line-clamp-2"
+						className="tenant-news-title text-xs font-bold uppercase tracking-wider leading-none mb-1 line-clamp-2"
 					>
 						{props.title}
 					</p>
 				)}
 				<div className="flex-1 flex items-center">
-					<p className="tenant-news-body text-sm font-semibold leading-none text-f1-text line-clamp-2 group-hover:underline">
+					<p className="tenant-news-body tenant-news-content text-sm font-semibold leading-none text-f1-text line-clamp-3 group-hover:underline">
 						{props.content}
 					</p>
 				</div>
