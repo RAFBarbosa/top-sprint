@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, query, where, orderBy } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import {
-	useGetBannersQuery,
-	useGetCalendarsQuery,
-} from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { Banner } from "./Banner";
 import { SecondaryBanners } from "./SecondaryBanners";
 import { Skeleton } from "@mui/material";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
+import { useTracks } from "../../contexts/TracksContext";
 
 const slugify = (str: string) =>
 	str
@@ -39,13 +37,44 @@ const loadingSkeleton = () => {
 };
 
 export function Banners() {
-	const { data, error, loading } = useGetBannersQuery();
-	const { data: calendarsData } = useGetCalendarsQuery();
+	const [bannersData, setBannersData] = useState<any[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const { calendars: calendarsList } = useCalendars();
 	const { mappings } = useCalendarSeasons();
+	const { getTrack } = useTracks();
 
 	const [bannerCalendarMap, setBannerCalendarMap] = useState<
 		Record<string, string>
 	>({});
+
+	useEffect(() => {
+		const q = query(
+			collection(db, "banners"),
+			where("deleted", "==", false),
+			orderBy("createdAt", "desc"),
+		);
+		getDocs(q)
+			.then((snap) => {
+				setBannersData(
+					snap.docs.map((d) => ({
+						id: d.id,
+						...d.data(),
+						photo: d.data().photoUrl
+							? { url: d.data().photoUrl }
+							: null,
+						createdAt:
+							d.data().createdAt?.toDate?.()?.toISOString() ??
+							new Date().toISOString(),
+					})),
+				);
+				setLoading(false);
+			})
+			.catch((err) => {
+				setError(err.message);
+				setLoading(false);
+			});
+	}, []);
 
 	useEffect(() => {
 		getDocs(collection(db, "banner_calendar"))
@@ -62,35 +91,34 @@ export function Banners() {
 	const getResultsLink = (bannerId: string): string | null => {
 		const calendarId = bannerCalendarMap[bannerId];
 		if (!calendarId) return null;
-		const cal = calendarsData?.calendars?.find((c) => c.id === calendarId);
+		const cal = calendarsList.find((c) => c.id === calendarId);
 		if (!cal) return null;
 		const seasonId =
 			mappings.find((m) => m.calendarId === calendarId)?.seasonId ?? "";
 		const gridLabel = getGridConfig(cal.grid)?.label ?? cal.grid;
 		const seasonPart = seasonId ? `${slugify(seasonId)}-` : "";
-		return `/resultados/${seasonPart}${slugify(gridLabel)}-${slugify(cal.round ?? "")}-${slugify(cal.track?.name ?? "")}`;
+		return `/resultados/${seasonPart}${slugify(gridLabel)}-${slugify(cal.round ?? "")}-${slugify(getTrack(cal.trackId)?.name ?? "")}`;
 	};
 
 	if (loading) return loadingSkeleton();
-	if (error) return <div>Erro: {error.message}</div>;
+	if (error) return <div>Erro: {error}</div>;
 
-	const featuredBanners = data?.banners
-		?.filter((banner) => banner.category === "destaque")
-		?.sort(
+	const featuredBanners = bannersData
+		.filter((banner) => banner.category === "destaque")
+		.sort(
 			(a, b) =>
 				new Date(b.createdAt).getTime() -
 				new Date(a.createdAt).getTime(),
 		);
 
-	const secondaryBanners =
-		data?.banners
-			?.filter((banner) => banner.category === "secundario")
-			?.sort(
-				(a, b) =>
-					new Date(b.createdAt).getTime() -
-					new Date(a.createdAt).getTime(),
-			)
-			?.slice(0, 4) || [];
+	const secondaryBanners = bannersData
+		.filter((banner) => banner.category === "secundario")
+		.sort(
+			(a, b) =>
+				new Date(b.createdAt).getTime() -
+				new Date(a.createdAt).getTime(),
+		)
+		.slice(0, 4);
 
 	const latestFeaturedBanner = featuredBanners?.[0];
 

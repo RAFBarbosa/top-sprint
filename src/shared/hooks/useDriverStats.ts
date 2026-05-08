@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetCalendarsQuery, useGetDriversQuery } from "../../graphql/generated";
+import { useGetDriversQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { getGridConfig, getPointSystem } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
@@ -293,7 +294,7 @@ export function useDriverStats(
 	const [offsets, setOffsets] = useState<DriverStatsOffsets>({});
 	const [loading, setLoading] = useState(true);
 
-	const { data: calendarsData } = useGetCalendarsQuery();
+	const { allCalendars } = useCalendars();
 	const { data: driversData } = useGetDriversQuery();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
@@ -335,7 +336,7 @@ export function useDriverStats(
 	}, []);
 
 	const { season, career } = useMemo(() => {
-		if (!driverId || !calendarsData || loading) {
+		if (!driverId || loading) {
 			return { season: EMPTY_STATS, career: EMPTY_STATS };
 		}
 
@@ -345,7 +346,7 @@ export function useDriverStats(
 			if (byGrid?.[gridId]?.reserve === true) reserveSet.add(dId);
 		});
 
-		const allCalendars = calendarsData.calendars ?? [];
+
 
 		// Calendars for this grid
 		const gridCalendarIds = new Set(
@@ -473,7 +474,7 @@ export function useDriverStats(
 		allResults,
 		allAdjustments,
 		offsets,
-		calendarsData,
+		allCalendars,
 		driversData,
 		seasons,
 		mappings,

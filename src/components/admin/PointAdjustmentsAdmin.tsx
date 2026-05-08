@@ -4,13 +4,15 @@ import { setDoc, getDocs, getDoc, collection, doc } from "firebase/firestore";
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { db } from "../../lib/adminClient";
-import { useGetDriversQuery, useGetCalendarsRegistrationQuery } from "../../graphql/generated";
+import { useGetDriversQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useCalculateDriverStats } from "../../shared/hooks/useCalculateDriverStats";
 import { useToast } from "../../contexts/ToastContext";
+import { useTracks } from "../../contexts/TracksContext";
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
@@ -24,8 +26,9 @@ export interface PointAdjustment {
 export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
+	const { getTrack } = useTracks();
 	const { data: driversData } = useGetDriversQuery();
-	const { data: calendarsData } = useGetCalendarsRegistrationQuery({ fetchPolicy: "network-only" });
+	const { allCalendars } = useCalendars();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { profiles, isInGrid } = useDriverProfiles();
@@ -35,7 +38,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 
 	// Derive seasons available for this grid from its calendars
 	const gridCalendarIds = new Set(
-		(calendarsData?.calendars ?? [])
+		(allCalendars ?? [])
 			.filter((c) => c.grid === gridId)
 			.map((c) => c.id),
 	);
@@ -136,7 +139,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	const seasonCalendarIds = new Set(
 		mappings.filter((m) => m.seasonId === selectedSeason?.id).map((m) => m.calendarId),
 	);
-	const gridCalendars = (calendarsData?.calendars ?? [])
+	const gridCalendars = (allCalendars ?? [])
 		.filter((c) => c.grid === gridId && seasonCalendarIds.has(c.id))
 		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -270,7 +273,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 													: "border-black/20 hover:bg-f1-red/10"
 											}`}
 										>
-											{cal.track?.name ?? cal.round}
+											{getTrack(cal.trackId)?.name ?? cal.round}
 											{cal.date && <span className="ml-1 opacity-70">({formatDate(cal.date)})</span>}
 											{adjCount > 0 && (
 											<span className={`ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold leading-none tabular-nums ${selectedCalendarId === cal.id ? "bg-white text-f1-red" : "bg-f1-red text-white"}`}>

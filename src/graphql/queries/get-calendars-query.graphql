@@ -5,19 +5,7 @@ query GetCalendars {
 		stage: DRAFT
 	) {
 		id
-		track {
-			id
-			location
-			map {
-				id
-				url
-			}
-			flag {
-				id
-				url
-			}
-			name
-		}
+		trackId
 		sprint
 		round
 		link
@@ -62,19 +50,7 @@ query GetCalendars {
 query GetCalendarsRegistration {
 	calendars(orderBy: date_ASC, stage: DRAFT, where: { deleted: false }) {
 		id
-		track {
-			id
-			location
-			map {
-				id
-				url
-			}
-			flag {
-				id
-				url
-			}
-			name
-		}
+		trackId
 		sprint
 		round
 		link
@@ -113,18 +89,6 @@ query GetCalendarsRegistration {
 			}
 			grid
 			class
-		}
-	}
-}
-
-query GetTracks {
-	tracks(orderBy: name_ASC, stage: DRAFT, where: { deleted: false }) {
-		id
-		name
-		location
-		flag {
-			id
-			url
 		}
 	}
 }

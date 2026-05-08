@@ -2,11 +2,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { Calendars } from "../calendar/Calendars";
 import { SessionResult } from "./SessionResult";
-import { useGetCalendarsQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { Divider } from "../layout/Divider";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useTab } from "../../contexts/TabContext";
+import { useTracks } from "../../contexts/TracksContext";
 
 const slugify = (str: string) =>
 	str
@@ -18,18 +19,19 @@ const slugify = (str: string) =>
 
 export function SessionResults() {
 	const { slug } = useParams();
-	const { data } = useGetCalendarsQuery();
+	const { calendars } = useCalendars();
 	const { getSeasonForCalendar } = useCalendarSeasons();
 	const { activeTab, setActiveTab } = useTab();
+	const { getTrack } = useTracks();
 	const navigate = useNavigate();
 	const prevTabRef = useRef(activeTab.id);
 
 	const matched = slug
-		? data?.calendars.find((c) => {
+		? calendars.find((c) => {
 				const gridLabel = getGridConfig(c.grid)?.label ?? c.grid;
 				const seasonId = getSeasonForCalendar(c.id);
 				const seasonPart = seasonId ? `${slugify(seasonId)}-` : "";
-				const calSlug = `${seasonPart}${slugify(gridLabel)}-${slugify(c.round ?? "")}-${slugify(c.track?.name ?? "")}`;
+				const calSlug = `${seasonPart}${slugify(gridLabel)}-${slugify(c.round ?? "")}-${slugify(getTrack(c.trackId)?.name ?? "")}`;
 				return calSlug === slug;
 			})
 		: null;

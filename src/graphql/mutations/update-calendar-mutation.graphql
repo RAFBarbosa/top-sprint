@@ -4,14 +4,7 @@ mutation UpdateCalendar(
 ) {
 	updateCalendar(where: $where, data: $data) {
 		id
-		track {
-			id
-			name
-			flag {
-				id
-				url
-			}
-		}
+		trackId
 		round
 		sprint
 		grid

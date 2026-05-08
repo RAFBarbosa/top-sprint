@@ -159,7 +159,7 @@ export function Profile() {
 	}, [teamsData, data]);
 
 	// Get real life team logos and nationalities for drivers in current grid
-	const { logos: realLifeTeamLogos, nationalities } = useRealLifeTeamLogos(
+	const { logos: realLifeTeamLogos, nationalities, nationalityCodes } = useRealLifeTeamLogos(
 		activeTab.id,
 	);
 
@@ -181,6 +181,7 @@ export function Profile() {
 					"",
 				realLifeTeamLogoUrl: realLifeTeamLogos[driver.id] ?? "",
 				nationality: nationalities[driver.id] ?? "",
+				nationalityCode: nationalityCodes[driver.id] ?? "",
 				num: applied.number ?? "",
 				stats: applied.stats ?? {},
 			};

@@ -51,6 +51,7 @@ export function DriverRegistration() {
 		birthDate: "",
 		sex: "",
 		nationality: "",
+		nationalityCode: "",
 		realLifeTeamId: "",
 	});
 
@@ -156,6 +157,7 @@ export function DriverRegistration() {
 			birthDate: "",
 			sex: "",
 			nationality: "",
+			nationalityCode: "",
 			realLifeTeamId: "",
 		};
 
@@ -167,6 +169,7 @@ export function DriverRegistration() {
 					birthDate: data.birthDate || "",
 					sex: data.sex || "",
 					nationality: data.nationality || "",
+					nationalityCode: data.nationalityCode || "",
 					realLifeTeamId: data.realLifeTeamId || "",
 				};
 			}
@@ -204,6 +207,7 @@ export function DriverRegistration() {
 			birthDate: "",
 			sex: "",
 			nationality: "",
+			nationalityCode: "",
 			realLifeTeamId: "",
 		});
 		setTeamId("");
@@ -340,6 +344,7 @@ export function DriverRegistration() {
 						birthDate: formData.birthDate || null,
 						sex: formData.sex || null,
 						nationality: formData.nationality || null,
+						nationalityCode: formData.nationalityCode || null,
 						realLifeTeamId: formData.realLifeTeamId || null,
 					},
 					{ merge: true }
@@ -380,6 +385,7 @@ export function DriverRegistration() {
 						birthDate: formData.birthDate || null,
 						sex: formData.sex || null,
 						nationality: formData.nationality || null,
+						nationalityCode: formData.nationalityCode || null,
 						realLifeTeamId: formData.realLifeTeamId || null,
 					}
 				);
@@ -778,12 +784,14 @@ export function DriverRegistration() {
 							<label className="block mb-1">Nacionalidade</label>
 							<Listbox
 								value={formData.nationality}
-								onChange={(value) =>
+								onChange={(value: string) => {
+									const option = NATIONALITY_OPTIONS.find((o) => o.label === value);
 									setFormData((prev) => ({
 										...prev,
 										nationality: value,
-									}))
-								}
+										nationalityCode: option?.code || "",
+									}));
+								}}
 							>
 								<div className="relative">
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
@@ -811,10 +819,10 @@ export function DriverRegistration() {
 											Selecione
 										</ListboxOption>
 										{NATIONALITY_OPTIONS.map(
-											(country) => (
+											(option) => (
 												<ListboxOption
-													key={country}
-													value={country}
+													key={option.label}
+													value={option.label}
 													className={({
 														active,
 													}) =>
@@ -825,7 +833,7 @@ export function DriverRegistration() {
 														}`
 													}
 												>
-													{country}
+													{option.label}
 												</ListboxOption>
 											)
 										)}

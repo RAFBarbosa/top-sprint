@@ -1,14 +1,7 @@
 mutation CreateCalendar($data: CalendarCreateInput!) {
 	createCalendar(data: $data) {
 		id
-		track {
-			id
-			name
-			flag {
-				id
-				url
-			}
-		}
+		trackId
 		round
 		sprint
 		grid

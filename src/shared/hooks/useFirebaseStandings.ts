@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "../../components/admin/PointAdjustmentsAdmin";
-import { useGetCalendarsQuery, useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
+import { useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { getGridConfig, getPointSystem, type GridId } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
@@ -186,7 +187,7 @@ export function useFirebaseStandings(gridId: GridId) {
 	const [allAdjustments, setAllAdjustments] = useState<Record<string, PointAdjustment[]>>({});
 	const [loadingResults, setLoadingResults] = useState(true);
 
-	const { data: calendarsData } = useGetCalendarsQuery();
+	const { allCalendars, loading: calendarsLoading } = useCalendars();
 	const { data: driversData } = useGetDriversQuery();
 	const { data: teamsData } = useGetTeamsQuery();
 	const { seasons } = useSeasons();
@@ -217,13 +218,13 @@ export function useFirebaseStandings(gridId: GridId) {
 	}, []);
 
 	const { standings, previousStandings } = useMemo(() => {
-		if (!calendarsData || !driversData || loadingResults) {
+		if (calendarsLoading || !driversData || loadingResults) {
 			return { standings: [], previousStandings: [] };
 		}
 
 		// Prefer globally-active season; fall back to most recent season linked to this grid's calendars
 		const gridCalendarIds = new Set(
-			(calendarsData.calendars ?? []).filter((c) => c.grid === gridId).map((c) => c.id),
+			allCalendars.filter((c) => c.grid === gridId).map((c) => c.id),
 		);
 		const gridSeasonIds = new Set(
 			mappings.filter((m) => gridCalendarIds.has(m.calendarId)).map((m) => m.seasonId),
@@ -241,7 +242,7 @@ export function useFirebaseStandings(gridId: GridId) {
 		);
 
 		// All calendars for this grid + season that have actual race results
-		const relevantCalendars = (calendarsData.calendars ?? []).filter(
+		const relevantCalendars = allCalendars.filter(
 			(cal) => cal.grid === gridId && seasonCalendarIds.has(cal.id) && !!allResults[cal.id],
 		) as CalendarEntry[];
 
@@ -318,7 +319,7 @@ export function useFirebaseStandings(gridId: GridId) {
 					);
 
 		return { standings, previousStandings };
-	}, [allResults, allAdjustments, calendarsData, driversData, teamsData, seasons, mappings, profiles, gridId]);
+	}, [allResults, allAdjustments, allCalendars, calendarsLoading, driversData, teamsData, seasons, mappings, profiles, gridId]);
 
 	return {
 		standings,
