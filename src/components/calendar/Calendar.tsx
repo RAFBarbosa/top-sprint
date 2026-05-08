@@ -3,7 +3,7 @@ import { ptBR } from "date-fns/locale";
 import { LiveTv, ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
-import { HygraphImg } from "../utils/HygraphImg";
+import { CountryFlag } from "../utils/CountryFlag";
 import { Link } from "react-router-dom";
 
 interface CalendarProps {
@@ -11,7 +11,7 @@ interface CalendarProps {
 	sprint: boolean;
 	track: string;
 	location: string;
-	flag: { url: string };
+	countryCode?: string;
 	grid: string;
 	winnerA: any;
 	winnerB: any;
@@ -115,11 +115,8 @@ export function Calendar(props: CalendarProps) {
 				</div>
 
 				<div className="flex flex-col items-center flex-shrink-0 mt-1">
-					<HygraphImg
-						src={props.flag?.url}
-						alt={`Bandeira ${props.track}`}
-						imgWidth={180}
-						imgHeight={100}
+					<CountryFlag
+						code={props.countryCode}
 						className="tenant-calendar-flag rounded w-[45px] h-[25px] border border-black/20 self-start"
 					/>
 					{props.sprint && (

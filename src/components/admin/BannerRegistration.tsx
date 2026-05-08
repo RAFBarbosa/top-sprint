@@ -1,19 +1,12 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useCallback } from "react";
 import {
 	Listbox,
 	ListboxButton,
 	ListboxOption,
 	ListboxOptions,
 } from "@headlessui/react";
-import {
-	useCreateBannerMutation,
-	useGetBannersRegistrationQuery,
-	useGetBannersCategoriesQuery,
-	useUpdateBannerMutation,
-	useCreateAssetMutation,
-	useGetCalendarsRegistrationQuery,
-	GetBannersRegistrationDocument,
-} from "../../graphql/generated";
+import { useCreateAssetMutation } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
@@ -24,10 +17,44 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
-import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import {
+	collection,
+	addDoc,
+	updateDoc,
+	doc,
+	getDoc,
+	setDoc,
+	deleteDoc,
+	getDocs,
+	query,
+	orderBy,
+	where,
+	serverTimestamp,
+} from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { getGridConfig } from "../../shared/config/grids";
 import { useToast } from "../../contexts/ToastContext";
+import { useTracks } from "../../contexts/TracksContext";
+
+const CATEGORIES = [
+	{ value: "destaque", label: "Destaque" },
+	{ value: "secundario", label: "Secundário" },
+];
+
+const getCategoryLabel = (value: string) =>
+	CATEGORIES.find((c) => c.value === value)?.label ?? value;
+
+const normalizeBanner = (id: string, data: any) => ({
+	id,
+	title: data.title as string,
+	content: data.content as string,
+	link: (data.link as string) ?? null,
+	category: data.category as string,
+	photo: data.photoUrl ? { url: data.photoUrl as string } : null,
+	deleted: data.deleted as boolean,
+	createdAt:
+		data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
+});
 
 function LimitedTextarea({
 	value,
@@ -61,17 +88,11 @@ function LimitedTextarea({
 			>
 				{value.length}/{maxLength}
 			</div>
-			<noscript>
-				<div className="text-xs text-gray-500 mt-1">
-					Máximo de {maxLength} caracteres permitidos
-				</div>
-			</noscript>
 		</div>
 	);
 }
 
 export function BannerRegistration() {
-	// State management
 	const [formData, setFormData] = useState({
 		title: "",
 		content: "",
@@ -79,6 +100,9 @@ export function BannerRegistration() {
 		category: "",
 	});
 
+	const [banners, setBanners] = useState<any[]>([]);
+	const [bannersLoading, setBannersLoading] = useState(true);
+	const [saving, setSaving] = useState(false);
 	const [photoFile, setPhotoFile] = useState<File | null>(null);
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const { showToast } = useToast();
@@ -93,6 +117,30 @@ export function BannerRegistration() {
 		id: string;
 		deleted: boolean;
 	} | null>(null);
+
+const { getTrack } = useTracks();
+	const { allCalendars } = useCalendars();
+	const [createAsset] = useCreateAssetMutation();
+
+
+	const loadBanners = useCallback(async () => {
+		setBannersLoading(true);
+		try {
+			const q = query(
+				collection(db, "banners"),
+				where("deleted", "==", false),
+				orderBy("createdAt", "desc"),
+			);
+			const snap = await getDocs(q);
+			setBanners(snap.docs.map((d) => normalizeBanner(d.id, d.data())));
+		} finally {
+			setBannersLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		loadBanners();
+	}, [loadBanners]);
 
 	const handleDeleteClick = (id: string, deleted: boolean) => {
 		setItemToDelete({ id, deleted });
@@ -114,54 +162,47 @@ export function BannerRegistration() {
 
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
-			await updateBanner({
-				variables: {
-					where: { id },
-					data: { deleted: !currentDeleted },
-				},
+			await updateDoc(doc(db, "banners", id), {
+				deleted: !currentDeleted,
+				updatedAt: serverTimestamp(),
 			});
+			await loadBanners();
 		} catch (error) {
 			console.error("Error toggling delete:", error);
 		}
 	};
 
-	const { data: calendarsData } = useGetCalendarsRegistrationQuery({
-		fetchPolicy: "cache-first",
-	});
+	const uploadImage = async (file: File): Promise<string> => {
+		const assetResult = await createAsset({ variables: { data: {} } });
+		const asset = assetResult.data?.createAsset;
+		const uploadData = asset?.upload?.requestPostData;
+		if (!asset?.id || !uploadData?.url) throw new Error("Falha ao criar asset");
 
-	// GraphQL operations
-	const [createBanner, { loading: createBannerLoading }] =
-		useCreateBannerMutation({
-			refetchQueries: [{ query: GetBannersRegistrationDocument }],
-			awaitRefetchQueries: true,
+		const form = new FormData();
+		const finalKey = uploadData.key.replace(
+			"${filename}",
+			encodeURIComponent(file.name),
+		);
+		form.append("key", finalKey);
+		form.append("policy", uploadData.policy);
+		form.append("x-amz-algorithm", uploadData.algorithm);
+		form.append("x-amz-credential", uploadData.credential);
+		form.append("x-amz-date", uploadData.date);
+		form.append("x-amz-signature", uploadData.signature);
+		if (uploadData.securityToken)
+			form.append("x-amz-security-token", uploadData.securityToken);
+		form.append("file", file);
+
+		setUploadProgress(50);
+		const uploadResponse = await fetch(uploadData.url, {
+			method: "POST",
+			body: form,
 		});
+		if (!uploadResponse.ok) throw new Error("Falha no upload da imagem");
+		setUploadProgress(100);
 
-	const [updateBanner, { loading: updateBannerLoading }] =
-		useUpdateBannerMutation({
-			refetchQueries: [{ query: GetBannersRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
-	const [createAsset] = useCreateAssetMutation();
-
-	// Queries
-	const {
-		data: bannersData,
-		loading: bannersLoading,
-		error: bannersError,
-	} = useGetBannersRegistrationQuery({
-		fetchPolicy: "network-only",
-	});
-	const {
-		data: categoriesData,
-		loading: categoriesLoading,
-		error: categoriesError,
-	} = useGetBannersCategoriesQuery();
-
-	// Helper functions
-	const formatEnum = (text: string) =>
-		text
-			.replace(/([A-Z])/g, " $1")
-			.replace(/^./, (str) => str.toUpperCase());
+		return asset.url;
+	};
 
 	const handleSelectBanner = async (banner: any) => {
 		setSelectedBanner(banner);
@@ -185,159 +226,83 @@ export function BannerRegistration() {
 	const resetForm = () => {
 		setSelectedBanner(null);
 		setIsEditing(false);
-		setFormData({
-			title: "",
-			content: "",
-			link: "",
-			category: "",
-		});
+		setFormData({ title: "", content: "", link: "", category: "" });
 		setPhotoFile(null);
 		setLinkedCalendarId("");
 	};
 
 	const handleBanner = async (event: FormEvent) => {
 		event.preventDefault();
-
+		setSaving(true);
 		try {
-			// Validate required fields
 			if (!formData.title) throw new Error("Título é obrigatório");
 			if (!formData.content) throw new Error("Conteúdo é obrigatório");
 			if (!formData.category) throw new Error("Categoria é obrigatória");
-
-			let photoId = null;
-			if (photoFile) {
-				try {
-					const assetResult = await createAsset({
-						variables: { data: {} },
-					});
-
-					const asset = assetResult.data?.createAsset;
-					const uploadData = asset?.upload?.requestPostData;
-					if (!asset?.id || !uploadData?.url) {
-						throw new Error("Failed to get upload data");
-					}
-
-					const formData = new FormData();
-					const finalKey = uploadData.key.replace(
-						"${filename}",
-						encodeURIComponent(photoFile.name),
-					);
-					formData.append("key", finalKey);
-					formData.append("policy", uploadData.policy);
-					formData.append("x-amz-algorithm", uploadData.algorithm);
-					formData.append("x-amz-credential", uploadData.credential);
-					formData.append("x-amz-date", uploadData.date);
-					formData.append("x-amz-signature", uploadData.signature);
-					if (uploadData.securityToken) {
-						formData.append(
-							"x-amz-security-token",
-							uploadData.securityToken,
-						);
-					}
-					formData.append("file", photoFile);
-
-					const uploadResponse = await fetch(uploadData.url, {
-						method: "POST",
-						body: formData,
-					});
-
-					if (!uploadResponse.ok) throw new Error("Upload failed");
-
-					photoId = asset.id;
-					setUploadProgress(100);
-				} catch (uploadError) {
-					throw new Error(
-						`Falha no upload da foto: ${uploadError.message}`,
-					);
-				}
-			}
-
-			// Validate category
-			const validCategories =
-				categoriesData?.__type?.enumValues?.map((v) => v.name) || [];
-			if (!validCategories.includes(formData.category)) {
-				throw new Error(`Categoria inválida: ${formData.category}`);
-			}
-
-			if (formData.link && !formData.link.startsWith("http")) {
+			if (formData.link && !formData.link.startsWith("http"))
 				throw new Error("URL da notícia deve começar com http/https");
+
+			let photoUrl: string | null = isEditing
+				? (selectedBanner?.photo?.url ?? null)
+				: null;
+
+			if (photoFile) {
+				photoUrl = await uploadImage(photoFile);
 			}
 
 			if (isEditing && selectedBanner) {
-				// Update existing banner
-				const result = await updateBanner({
-					variables: {
-						where: { id: selectedBanner.id },
-						data: {
-							title: formData.title,
-							content: formData.content,
-							link: formData.link || null,
-							category: formData.category,
-							photo: photoId
-								? { connect: { id: photoId } }
-								: undefined,
-						},
-					},
+				await updateDoc(doc(db, "banners", selectedBanner.id), {
+					title: formData.title,
+					content: formData.content,
+					link: formData.link || null,
+					category: formData.category,
+					...(photoFile ? { photoUrl } : {}),
+					updatedAt: serverTimestamp(),
 				});
 
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				// Save/clear race link
 				const bannerCalRef = doc(
 					db,
 					"banner_calendar",
 					selectedBanner.id,
 				);
 				if (linkedCalendarId) {
-					await setDoc(bannerCalRef, {
-						calendarId: linkedCalendarId,
-					});
+					await setDoc(bannerCalRef, { calendarId: linkedCalendarId });
 				} else {
 					await deleteDoc(bannerCalRef).catch(() => {});
 				}
 
 				showToast("success", "Notícia atualizada com sucesso!");
 			} else {
-				// Create new banner
-				const result = await createBanner({
-					variables: {
-						data: {
-							deleted: false,
-							title: formData.title,
-							content: formData.content,
-							link: formData.link || null,
-							category: formData.category,
-							photo: photoId
-								? { connect: { id: photoId } }
-								: null,
-						},
-					},
+				const docRef = await addDoc(collection(db, "banners"), {
+					title: formData.title,
+					content: formData.content,
+					link: formData.link || null,
+					category: formData.category,
+					photoUrl: photoUrl || null,
+					deleted: false,
+					createdAt: serverTimestamp(),
 				});
 
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				// Save race link for newly created banner
-				const newBannerId = result.data?.createBanner?.id;
-				if (newBannerId && linkedCalendarId) {
-					await setDoc(doc(db, "banner_calendar", newBannerId), {
+				if (linkedCalendarId) {
+					await setDoc(doc(db, "banner_calendar", docRef.id), {
 						calendarId: linkedCalendarId,
 					});
 				}
 
 				showToast("success", "Notícia cadastrada com sucesso!");
-			}
-
-			// Reset form after success
-			if (isEditing) {
-				setPhotoFile(null);
-			} else {
 				resetForm();
 			}
+
+			await loadBanners();
 			setUploadProgress(null);
 		} catch (error: any) {
 			console.error("Registration error:", error);
-			showToast("error", error.message || "Erro desconhecido ao cadastrar notícia");
+			showToast(
+				"error",
+				error.message || "Erro desconhecido ao cadastrar notícia",
+			);
 			setUploadProgress(null);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -348,61 +313,37 @@ export function BannerRegistration() {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	// Filter banners based on search term and category filter
-	const filteredBanners =
-		bannersData?.banners?.filter((banner) => {
-			// Search across multiple fields
-			const matchesSearch = searchTerm
-				? Object.entries({
-						title: banner.title,
-						content: banner.content,
-						link: banner.link,
-						category: banner.category,
-						date: banner.createdAt,
-					}).some(([_, value]) =>
-						value
-							?.toString()
-							.toLowerCase()
-							.includes(searchTerm.toLowerCase()),
+	const filteredBanners = banners.filter((banner) => {
+		const matchesSearch = searchTerm
+			? [banner.title, banner.content, banner.link, banner.category]
+					.filter(Boolean)
+					.some((v) =>
+						v.toLowerCase().includes(searchTerm.toLowerCase()),
 					)
-				: true;
-
-			// Filter by category
-			const matchesCategory = categoryFilter
-				? banner.category === categoryFilter
-				: true;
-
-			return matchesSearch && matchesCategory;
-		}) || [];
-
-	if (bannersLoading || categoriesLoading) {
-		return (
-			<div className="bg-f1-lightSilver py-10 flex justify-center">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
-			</div>
-		);
-	}
-
-	if (bannersError || categoriesError) {
-		return (
-			<div className="bg-f1-lightSilver py-10">
-				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-					Erro ao carregar opções:{" "}
-					{bannersError?.message || categoriesError?.message}
-				</div>
-			</div>
-		);
-	}
+			: true;
+		const matchesCategory = categoryFilter
+			? banner.category === categoryFilter
+			: true;
+		return matchesSearch && matchesCategory;
+	});
 
 	const formatDateWithCapitalizedMonth = (dateString: string) => {
 		const date = new Date(dateString);
 		const day = format(date, "dd", { locale: ptBR });
 		const month = format(date, "MMMM", { locale: ptBR });
 		const year = format(date, "yyyy", { locale: ptBR });
-
-		const capitalizedMonth = month.charAt(0).toUpperCase() + month.slice(1);
+		const capitalizedMonth =
+			month.charAt(0).toUpperCase() + month.slice(1);
 		return `${day} de ${capitalizedMonth} de ${year}`;
 	};
+
+	if (bannersLoading) {
+		return (
+			<div className="bg-f1-lightSilver py-10 flex justify-center">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red"></div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col md:flex-row w-full">
@@ -425,7 +366,7 @@ export function BannerRegistration() {
 							<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 								<span className="block truncate">
 									{categoryFilter
-										? formatEnum(categoryFilter)
+										? getCategoryLabel(categoryFilter)
 										: "Todas as categorias"}
 								</span>
 								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -440,37 +381,30 @@ export function BannerRegistration() {
 								<ListboxOption
 									value=""
 									className={({ active }) =>
-										`flex items-center gap-2 p-2 cursor-pointer ${
-											active ? "bg-f1-red/20" : ""
-										}`
+										`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
 									}
 								>
 									Todas as categorias
 								</ListboxOption>
-
-								{categoriesData?.__type?.enumValues?.map(
-									(option) => (
-										<ListboxOption
-											key={option.name}
-											value={option.name}
-											className={({ active }) =>
-												`flex items-center gap-2 p-2 cursor-pointer ${
-													active ? "bg-f1-red/20" : ""
-												}`
-											}
-										>
-											<span className="block truncate">
-												{formatEnum(option.name)}
-											</span>
-										</ListboxOption>
-									),
-								)}
+								{CATEGORIES.map((cat) => (
+									<ListboxOption
+										key={cat.value}
+										value={cat.value}
+										className={({ active }) =>
+											`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+										}
+									>
+										<span className="block truncate">
+											{cat.label}
+										</span>
+									</ListboxOption>
+								))}
 							</ListboxOptions>
 						</div>
 					</Listbox>
 				</div>
 
-				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-w-70 min-h-60 md:min-h-110 overflow-y-auto pr-2">
+	<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-w-70 min-h-60 md:min-h-110 overflow-y-auto pr-2">
 					{filteredBanners.length > 0 ? (
 						filteredBanners.map((banner) => (
 							<li key={banner.id}>
@@ -490,7 +424,7 @@ export function BannerRegistration() {
 											{banner.category && (
 												<span className="text-xs text-gray-500">
 													•{" "}
-													{formatEnum(
+													{getCategoryLabel(
 														banner.category,
 													)}
 												</span>
@@ -517,13 +451,14 @@ export function BannerRegistration() {
 											)}
 										</div>
 										<button
-											onClick={() =>
+											onClick={(e) => {
+												e.stopPropagation();
 												handleDeleteClick(
 													banner.id,
 													banner.deleted,
-												)
-											}
-											className=" text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
+												);
+											}}
+											className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
 											title={
 												banner.deleted
 													? "Restaurar"
@@ -549,10 +484,7 @@ export function BannerRegistration() {
 				onClose={cancelDelete}
 				className="relative z-10"
 			>
-				{/* Backdrop */}
 				<div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-
-				{/* Modal container */}
 				<div className="fixed inset-0 flex items-center justify-center p-4">
 					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
 						<DialogTitle className="text-lg font-bold">
@@ -565,7 +497,6 @@ export function BannerRegistration() {
 								? "Deseja restaurar esta notícia?"
 								: "Tem certeza que deseja excluir esta notícia?"}
 						</Description>
-
 						<div className="mt-6 flex justify-end gap-2">
 							<button
 								onClick={cancelDelete}
@@ -625,11 +556,16 @@ export function BannerRegistration() {
 							/>
 						</div>
 						<div className="md:col-span-2">
-							<label className="block mb-1">Conteúdo *</label>{" "}
+							<label className="block mb-1">Conteúdo *</label>
 							<LimitedTextarea
 								name="content"
 								value={formData.content}
-								onChange={handleChange}
+								onChange={(e) =>
+									setFormData((prev) => ({
+										...prev,
+										content: e.target.value,
+									}))
+								}
 								required
 							/>
 						</div>
@@ -664,7 +600,7 @@ export function BannerRegistration() {
 																	linkedCalendarId,
 															);
 														return cal
-															? `${getGridConfig(cal.grid)?.label ?? cal.grid} - ${cal.track?.name ?? cal.round} - ${format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}`
+															? `${getGridConfig(cal.grid)?.label ?? cal.grid} - ${getTrack(cal.trackId)?.name ?? cal.round} - ${format(new Date(cal.date), "dd MMM yyyy", { locale: ptBR })}`
 															: linkedCalendarId;
 													})()
 												: "Nenhuma etapa"}
@@ -685,7 +621,7 @@ export function BannerRegistration() {
 										>
 											Nenhuma etapa
 										</ListboxOption>
-										{[...(calendarsData?.calendars ?? [])]
+										{[...allCalendars]
 											.sort(
 												(a, b) =>
 													new Date(b.date).getTime() -
@@ -704,7 +640,7 @@ export function BannerRegistration() {
 															?.label ??
 															cal.grid}{" "}
 														-{" "}
-														{cal.track?.name ??
+														{getTrack(cal.trackId)?.name ??
 															cal.round}{" "}
 														-{" "}
 														{format(
@@ -725,16 +661,19 @@ export function BannerRegistration() {
 							<Listbox
 								value={formData.category}
 								onChange={(value) =>
-									handleChange({
-										target: { name: "category", value },
-									} as React.ChangeEvent<HTMLSelectElement>)
+									setFormData((prev) => ({
+										...prev,
+										category: value,
+									}))
 								}
 							>
 								<div className="relative">
 									<ListboxButton className="w-full p-2 border rounded flex items-center justify-between cursor-pointer h-11">
 										<span className="block truncate">
 											{formData.category
-												? formatEnum(formData.category)
+												? getCategoryLabel(
+														formData.category,
+													)
 												: "Selecione"}
 										</span>
 										<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -744,40 +683,28 @@ export function BannerRegistration() {
 											/>
 										</span>
 									</ListboxButton>
-
 									<ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-f1-bg-silver py-1 shadow-lg">
 										<ListboxOption
 											value=""
 											className={({ active }) =>
-												`flex items-center gap-2 p-2 cursor-pointer ${
-													active ? "bg-f1-red/20" : ""
-												}`
+												`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
 											}
 										>
 											Selecione
 										</ListboxOption>
-
-										{categoriesData?.__type?.enumValues?.map(
-											(option) => (
-												<ListboxOption
-													key={option.name}
-													value={option.name}
-													className={({ active }) =>
-														`flex items-center gap-2 p-2 cursor-pointer ${
-															active
-																? "bg-f1-red/20"
-																: ""
-														}`
-													}
-												>
-													<span className="block truncate">
-														{formatEnum(
-															option.name,
-														)}
-													</span>
-												</ListboxOption>
-											),
-										)}
+										{CATEGORIES.map((cat) => (
+											<ListboxOption
+												key={cat.value}
+												value={cat.value}
+												className={({ active }) =>
+													`flex items-center gap-2 p-2 cursor-pointer ${active ? "bg-f1-red/20" : ""}`
+												}
+											>
+												<span className="block truncate">
+													{cat.label}
+												</span>
+											</ListboxOption>
+										))}
 									</ListboxOptions>
 								</div>
 							</Listbox>
@@ -819,19 +746,19 @@ export function BannerRegistration() {
 						{uploadProgress !== null && (
 							<div className="md:col-span-2 w-full bg-gray-200 rounded-full h-2.5">
 								<div
-									className="bg-f1-red h-2.5 rounded-full"
+									className="bg-f1-red h-2.5 rounded-full transition-all"
 									style={{ width: `${uploadProgress}%` }}
-								></div>
+								/>
 							</div>
 						)}
 					</div>
 
 					<button
 						type="submit"
-						disabled={createBannerLoading || updateBannerLoading}
+						disabled={saving}
 						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 					>
-						{createBannerLoading || updateBannerLoading
+						{saving
 							? isEditing
 								? "Atualizando..."
 								: "Cadastrando..."

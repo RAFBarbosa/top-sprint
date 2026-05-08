@@ -1,6 +1,7 @@
 import { useTab } from "../../contexts/TabContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { GridId } from "../../shared/config/grids";
+import { tenant } from "../../shared/config/tenants";
 
 interface CountdownRendererProps {
 	days: number;
@@ -19,10 +20,12 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 	const gridLabel = gridConfig?.label ?? activeTab.id;
 
 	if (props.completed) {
+		const liveUrl = props.link || tenant.socials?.youtube;
 		return (
 			<a
-				href={props.link}
+				href={liveUrl}
 				target="_blank"
+				rel="noopener noreferrer"
 				className="flex flex-col items-end leading-tight hover:opacity-90"
 			>
 				<span className="text-[10px] md:text-xs uppercase tracking-wider text-white/70">

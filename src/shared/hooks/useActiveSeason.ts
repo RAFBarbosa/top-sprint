@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
-import { useGetCalendarsQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 
 export function useActiveSeason(gridId: string) {
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
-	const { data: calendarsData } = useGetCalendarsQuery();
+	const { allCalendars } = useCalendars();
 
 	return useMemo(() => {
 		const gridCalendarIds = new Set(
-			(calendarsData?.calendars ?? [])
+			allCalendars
 				.filter((c) => c.grid === gridId)
 				.map((c) => c.id),
 		);
@@ -22,5 +22,5 @@ export function useActiveSeason(gridId: string) {
 		return (
 			seasons.find((s) => s.active && gridSeasonIds.has(s.id)) ?? null
 		);
-	}, [seasons, mappings, calendarsData, gridId]);
+	}, [seasons, mappings, allCalendars, gridId]);
 }

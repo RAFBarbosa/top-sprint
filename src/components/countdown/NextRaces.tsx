@@ -1,24 +1,10 @@
 import { useEffect, useState } from "react";
-import { useGetCalendarsQuery } from "../../graphql/generated";
-import GenericLogo from "/src/assets/img/white-logo.png";
+import { useCalendars, FirestoreCalendar } from "../../contexts/CalendarsContext";
+import { useTracks } from "../../contexts/TracksContext";
 import { NextRace } from "./NextRace";
 import { Skeleton } from "@mui/material";
 import { parseISO, addHours, isAfter } from "date-fns";
 import { useTab } from "../../contexts/TabContext";
-
-interface Calendar {
-	id: string;
-	track?: {
-		name?: string | null;
-		location?: string | null;
-		flag?: { url: string } | null;
-	} | null;
-	round?: string | null;
-	sprint?: boolean | null;
-	grid?: string | null;
-	date?: string | null;
-	link?: string | null;
-}
 
 const loadingSkeleton = () => {
 	return (
@@ -48,64 +34,62 @@ const loadingSkeleton = () => {
 };
 
 export function NextRaces() {
-	const { data, error, loading, refetch } = useGetCalendarsQuery();
-	const [nextRace, setNextRace] = useState<Calendar | null>(null);
+	const { calendars, loading, refetch } = useCalendars();
+	const { getTrack } = useTracks();
+	const [nextRace, setNextRace] = useState<FirestoreCalendar | null>(null);
 	const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 	const { activeTab } = useTab();
 
 	useEffect(() => {
-		if (data) {
-			const calendars = data?.calendars || [];
-			const currentDate = new Date();
+		const currentDate = new Date();
 
-			// ✅ only races from the selected grid
-			const filteredCalendars = calendars.filter(
-				(race) => race.grid === activeTab.id,
-			);
+		// ✅ only races from the selected grid
+		const filteredCalendars = calendars.filter(
+			(race) => race.grid === activeTab.id,
+		);
 
-			const sortedCalendars = [...filteredCalendars].sort(
-				(a, b) =>
-					parseISO(a.date).getTime() - parseISO(b.date).getTime(),
-			);
+		const sortedCalendars = [...filteredCalendars].sort(
+			(a, b) =>
+				parseISO(a.date).getTime() - parseISO(b.date).getTime(),
+		);
 
-			let activeRace = null;
-			let nextUpcomingRace = null;
+		let activeRace = null;
+		let nextUpcomingRace = null;
 
-			for (const race of sortedCalendars) {
-				const raceStartTime = parseISO(race.date);
-				const raceEndTime = addHours(raceStartTime, 2);
+		for (const race of sortedCalendars) {
+			const raceStartTime = parseISO(race.date);
+			const raceEndTime = addHours(raceStartTime, 2);
 
-				if (
-					currentDate >= raceStartTime &&
-					currentDate <= raceEndTime
-				) {
-					activeRace = race;
-					break;
-				}
-
-				if (isAfter(raceStartTime, currentDate)) {
-					nextUpcomingRace = race;
-					break;
-				}
+			if (
+				currentDate >= raceStartTime &&
+				currentDate <= raceEndTime
+			) {
+				activeRace = race;
+				break;
 			}
 
-			const raceToDisplay = activeRace || nextUpcomingRace;
-			setNextRace(raceToDisplay);
-
-			if (activeRace) {
-				const raceEndTime = addHours(parseISO(activeRace.date), 2);
-				const timeUntilEnd =
-					raceEndTime.getTime() - currentDate.getTime();
-
-				if (timeUntilEnd > 0) {
-					const timeoutId = setTimeout(() => {
-						refetch();
-					}, timeUntilEnd);
-					setTimeoutId(timeoutId);
-				}
+			if (isAfter(raceStartTime, currentDate)) {
+				nextUpcomingRace = race;
+				break;
 			}
 		}
-	}, [data, refetch, activeTab.id]);
+
+		const raceToDisplay = activeRace || nextUpcomingRace;
+		setNextRace(raceToDisplay);
+
+		if (activeRace) {
+			const raceEndTime = addHours(parseISO(activeRace.date), 2);
+			const timeUntilEnd =
+				raceEndTime.getTime() - currentDate.getTime();
+
+			if (timeUntilEnd > 0) {
+				const timeoutId = setTimeout(() => {
+					refetch();
+				}, timeUntilEnd);
+				setTimeoutId(timeoutId);
+			}
+		}
+	}, [calendars, refetch, activeTab.id]);
 
 	useEffect(() => {
 		return () => {
@@ -116,12 +100,6 @@ export function NextRaces() {
 	}, [timeoutId]);
 
 	if (loading) return loadingSkeleton();
-	if (error)
-		return (
-			<div className="text-red-500 text-center py-6">
-				Erro: {error.message}
-			</div>
-		);
 
 	return (
 		<div className="text-white">
@@ -129,14 +107,14 @@ export function NextRaces() {
 				nextRace && nextRace.date ? (
 					<NextRace
 						key={nextRace.id}
-						track={nextRace.track?.name || nextRace.round || ""}
+						track={getTrack(nextRace.trackId)?.name || nextRace.round || ""}
 						round={nextRace.round || ""}
-						location={nextRace.track?.location || ""}
+						location={getTrack(nextRace.trackId)?.location || ""}
+						countryCode={getTrack(nextRace.trackId)?.countryCode}
 						date={parseISO(nextRace.date)}
 						link={nextRace.link || ""}
 						grid={nextRace.grid || ""}
 						sprint={nextRace.sprint || false}
-						flag={nextRace.track?.flag || { url: GenericLogo }}
 					/>
 				) : (
 					""

@@ -1,18 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
 import Carousel from "../utils/Carousel";
 import { HallOfFame } from "./HallOfFame";
-import {
-	useGetHallsOfFameFullQuery,
-	useGetHallsOfFameQuery,
-} from "../../graphql/generated";
+import { getDocs, collection, query, where } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
 import { Divider } from "../layout/Divider";
-import { tenant } from "../../shared/config/tenants";
 
 type Season = {
 	id: string;
 	season: string;
 	photo: { id: string; url: string }[];
+	legacy?: boolean;
 };
 
 const loadingSkeleton = () => {
@@ -88,21 +86,41 @@ function SeasonSwitcher({ seasons }: { seasons: Season[] }) {
 }
 
 export function HallsOfFame() {
-	const isTopSprint = tenant.id === "topSprint";
-	const full = useGetHallsOfFameFullQuery({ skip: !isTopSprint });
-	const basic = useGetHallsOfFameQuery({ skip: isTopSprint });
-	const { data, error, loading } = isTopSprint ? full : basic;
+	const [seasons, setSeasons] = useState<Season[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 	const [legacyOpen, setLegacyOpen] = useState(false);
 
-	if (loading) return loadingSkeleton();
-	if (error) return <div>Erro: {error.message}</div>;
+	useEffect(() => {
+		getDocs(query(collection(db, "hallsOfFame"), where("deleted", "==", false)))
+			.then((snap) => {
+				const items: Season[] = snap.docs
+					.map((d) => {
+						const data = d.data();
+						return {
+							id: d.id,
+							season: data.season as string,
+							legacy: data.legacy ?? false,
+							photo: ((data.photoUrls ?? []) as string[]).map(
+								(url) => ({ id: url, url }),
+							),
+						};
+					})
+					.sort((a, b) => b.season.localeCompare(a.season));
+				setSeasons(items);
+				setLoading(false);
+			})
+			.catch((err) => {
+				setError(err.message);
+				setLoading(false);
+			});
+	}, []);
 
-	const current = (data?.hallsOfFame ?? []).filter(
-		(h) => !("legacy" in h) || !h.legacy,
-	);
-	const legacy = (data?.hallsOfFame ?? []).filter(
-		(h) => "legacy" in h && h.legacy,
-	);
+	if (loading) return loadingSkeleton();
+	if (error) return <div>Erro: {error}</div>;
+
+	const current = seasons.filter((h) => !h.legacy);
+	const legacy = seasons.filter((h) => h.legacy);
 
 	return (
 		<aside className="tenant-section tenant-section-champions pt-8">
@@ -137,14 +155,13 @@ export function HallsOfFame() {
 							{legacyOpen && (
 								<div className="mt-6">
 									<div className="bg-white/10 rounded-xl px-4 py-3 mb-6 text-sm leading-relaxed">
-										Em 2026, a CRT passou a gerir o
-										campeonato, elevando o nível da
-										competição e dando início a uma nova
-										fase. Os títulos abaixo pertencem à
-										história original da Top Sprint,
-										conquistas que ajudaram a construir a
-										comunidade que temos hoje, preservadas
-										aqui com muito orgulho.
+										Em 2026, a CRT passou a gerir o campeonato,
+										elevando o nível da competição e dando início
+										a uma nova fase. Os títulos abaixo pertencem
+										à história original da Top Sprint, conquistas
+										que ajudaram a construir a comunidade que
+										temos hoje, preservadas aqui com muito
+										orgulho.
 									</div>
 									<SeasonSwitcher seasons={legacy} />
 								</div>
@@ -159,25 +176,22 @@ export function HallsOfFame() {
 						style={{ borderColor: "var(--color-brand-primary)" }}
 						className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6"
 					>
-						<h2 className="font-bold text-3xl md:text-4xl">
-							Prêmios
-						</h2>
+						<h2 className="font-bold text-3xl md:text-4xl">Prêmios</h2>
 					</div>
 					<div className="pr-3">
 						<ul className="list-disc ml-5 mb-2">
 							<li>
-								A premiação varia a cada temporada e pode
-								incluir troféus, medalhas, premiações em
-								dinheiro e outros reconhecimentos
-								especiais.{" "}
+								A premiação varia a cada temporada e pode incluir
+								troféus, medalhas, premiações em dinheiro e outros
+								reconhecimentos especiais.
 							</li>
 							<li>
-								A cada edição buscamos elevar o nível e
-								valorizar ainda mais os campeões.
+								A cada edição buscamos elevar o nível e valorizar
+								ainda mais os campeões.
 							</li>
 							<li>
-								Os detalhes completos são divulgados antes do
-								início de cada temporada.
+								Os detalhes completos são divulgados antes do início
+								de cada temporada.
 							</li>
 						</ul>
 					</div>

@@ -1,11 +1,19 @@
 // src/components/admin/Sidebar.tsx
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { useUserRole } from "../../contexts/UserRoleContext";
 
 const navLink = ({ isActive }: { isActive: boolean }) =>
 	`block p-2 rounded hover:bg-f1-red/20 ${isActive ? "bg-f1-red/20 font-bold" : ""}`;
 
+const subNavLink = ({ isActive }: { isActive: boolean }) =>
+	`block px-3 py-1.5 rounded text-sm hover:bg-f1-red/20 ${isActive ? "bg-f1-red/20 font-bold" : ""}`;
 
 export default function Sidebar() {
+	const { isOwner, role } = useUserRole();
+	const hasElevatedAccess = role === "owner" || role === "admin";
+	const [advancedOpen, setAdvancedOpen] = useState(false);
 
 	return (
 		<div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -22,11 +30,6 @@ export default function Sidebar() {
 					<li>
 						<NavLink to="/admin/painel/pilotos" className={navLink}>
 							Pilotos
-						</NavLink>
-					</li>
-					<li>
-						<NavLink to="/admin/painel/historico-pilotos" className={navLink}>
-							Histórico Pilotos
 						</NavLink>
 					</li>
 					<li>
@@ -66,6 +69,49 @@ export default function Sidebar() {
 							Grids
 						</NavLink>
 					</li>
+
+					{hasElevatedAccess && (
+						<li>
+							<button
+								type="button"
+								onClick={() => setAdvancedOpen((o) => !o)}
+								className="w-full flex items-center justify-between p-2 rounded hover:bg-f1-red/20 cursor-pointer duration-120"
+							>
+								<span>Avançado</span>
+								<ChevronDownIcon
+									className={`h-4 w-4 transition-transform duration-150 ${advancedOpen ? "rotate-180" : ""}`}
+								/>
+							</button>
+							{advancedOpen && (
+								<ul className="mt-1 ml-2 space-y-1 border-l-2 border-f1-red/30 pl-2">
+									<li>
+										<NavLink
+											to="/admin/painel/historico-pilotos"
+											className={subNavLink}
+										>
+											Histórico Pilotos
+										</NavLink>
+									</li>
+									<li>
+										<NavLink
+											to="/admin/painel/pistas"
+											className={subNavLink}
+										>
+											Pistas
+										</NavLink>
+									</li>
+									<li>
+										<NavLink
+											to="/admin/painel/usuarios"
+											className={subNavLink}
+										>
+											Usuários
+										</NavLink>
+									</li>
+								</ul>
+							)}
+						</li>
+					)}
 				</ul>
 			</nav>
 

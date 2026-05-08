@@ -21,6 +21,7 @@ import { Archive } from "./pages/Archive";
 import { tenant } from "./shared/config/tenants";
 import { ManualResultsRegistration } from "./components/admin/ManualResultsRegistration";
 import { GridsAdmin } from "./components/admin/GridsAdmin";
+import TracksAdmin from "./pages/admin/TracksAdmin";
 import { GridConfigAdmin } from "./components/admin/GridConfigAdmin";
 import { GridDriversAdmin } from "./components/admin/GridDriversAdmin";
 import { GridStandings } from "./components/admin/GridStandings";
@@ -28,6 +29,9 @@ import { GridManualResults } from "./components/admin/GridManualResults";
 import { SeasonsAdmin } from "./components/admin/SeasonsAdmin";
 import { PointAdjustmentsAdmin } from "./components/admin/PointAdjustmentsAdmin";
 import { DriverStatsOffsetsAdmin } from "./components/admin/DriverStatsOffsetsAdmin";
+import { UsersAdmin } from "./pages/admin/UsersAdmin";
+import { OwnerOnly } from "./components/auth/OwnerOnly";
+import { ElevatedOnly } from "./components/auth/ElevatedOnly";
 
 export function Router() {
 	const RulesPage = {
@@ -56,6 +60,7 @@ export function Router() {
 					<Route path="noticias" element={<NewsAdmin />} />
 					<Route path="campeoes" element={<HallOfFameAdmin />} />
 					<Route path="temporadas" element={<SeasonsAdmin />} />
+					<Route path="pistas" element={<ElevatedOnly><TracksAdmin /></ElevatedOnly>} />
 					<Route path="grids" element={<GridsAdmin />} />
 					<Route path="grids/:gridId" element={<GridConfigAdmin />} />
 					<Route
@@ -78,7 +83,8 @@ export function Router() {
 						path="grids/:gridId/ajustes"
 						element={<PointAdjustmentsAdmin />}
 					/>
-					<Route path="historico-pilotos" element={<DriverStatsOffsetsAdmin />} />
+					<Route path="historico-pilotos" element={<ElevatedOnly><DriverStatsOffsetsAdmin /></ElevatedOnly>} />
+					<Route path="usuarios" element={<ElevatedOnly><UsersAdmin /></ElevatedOnly>} />
 				</Route>
 			</Route>
 		</Routes>

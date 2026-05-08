@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, getDocs, collection } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetBannersQuery } from "../../graphql/generated";
 import {
 	useGetDriversQuery,
 	type GetDriversQuery,
@@ -13,9 +12,11 @@ import {
 } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 import { HygraphImg } from "../utils/HygraphImg";
+import { CountryFlag } from "../utils/CountryFlag";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
+import { useTracks } from "../../contexts/TracksContext";
 
 // Resolve raceAwards for any grid, falling back to the first tenant grid
 // that has awards if the specific grid isn't found (cross-tenant admin usage).
@@ -37,12 +38,7 @@ interface SessionResultProps {
 		date?: any;
 		grid: string;
 		sprint: boolean;
-		track?: {
-			name?: string | null;
-			location?: string | null;
-			flag?: { url: string } | null;
-			map?: { url: string } | null;
-		} | null;
+		trackId?: string | null;
 	} | null;
 }
 
@@ -878,6 +874,7 @@ function RaceHeader({
 }) {
 	const { seasons } = useSeasons();
 	const { getSeasonForCalendar } = useCalendarSeasons();
+	const { getTrack } = useTracks();
 	if (!calendarData) return null;
 	const gridLabel =
 		getGridConfig(calendarData.grid)?.label ?? calendarData.grid;
@@ -909,13 +906,10 @@ function RaceHeader({
 				>
 					<div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
 						<div className="flex gap-3">
-							{calendarData.track?.flag?.url && (
-								<HygraphImg
-									src={calendarData.track.flag.url}
-									alt={calendarData.track?.name ?? ""}
-									imgWidth={180}
-									imgHeight={100}
-									className="rounded w-[86px] h-[48px] object-cover border border-black/20 shrink-0"
+							{calendarData.trackId && (
+								<CountryFlag
+									code={getTrack(calendarData.trackId)?.countryCode}
+									className="rounded w-[86px] h-[48px] border border-black/20 shrink-0"
 								/>
 							)}
 							<div className="flex flex-col gap-2">
@@ -943,11 +937,11 @@ function RaceHeader({
 									)}
 								</div>
 								<h1 className="font-extrabold text-3xl md:text-4xl uppercase tracking-wider leading-7 -ml-[2px]">
-									{calendarData.track?.name}
+									{getTrack(calendarData.trackId)?.name}
 								</h1>
-								{calendarData.track?.location && (
+								{getTrack(calendarData.trackId)?.location && (
 									<p className="text-f1-lighterCarbon text-sm leading-3">
-										{calendarData.track.location}
+										{getTrack(calendarData.trackId)?.location}
 									</p>
 								)}
 								{formattedDate && (
@@ -1026,7 +1020,6 @@ export function SessionResult({
 	);
 
 	const { data: driversData } = useGetDriversQuery();
-	const { data: bannersData } = useGetBannersQuery();
 	const { seasons } = useSeasons();
 	const { getSeasonForCalendar } = useCalendarSeasons();
 
@@ -1034,6 +1027,7 @@ export function SessionResult({
 	const [bannerCalendarMap, setBannerCalendarMap] = useState<
 		Record<string, string>
 	>({});
+	const [firestoreBanners, setFirestoreBanners] = useState<any[]>([]);
 
 	useEffect(() => {
 		getDocs(collection(db, "banner_calendar"))
@@ -1043,6 +1037,20 @@ export function SessionResult({
 					map[d.id] = d.data().calendarId;
 				});
 				setBannerCalendarMap(map);
+			})
+			.catch(() => {});
+	}, []);
+
+	useEffect(() => {
+		getDocs(query(collection(db, "banners"), where("deleted", "==", false)))
+			.then((snap) => {
+				setFirestoreBanners(
+					snap.docs.map((d) => ({
+						id: d.id,
+						...d.data(),
+						photo: d.data().photoUrl ? { url: d.data().photoUrl } : null,
+					})),
+				);
 			})
 			.catch(() => {});
 	}, []);
@@ -1085,7 +1093,7 @@ export function SessionResult({
 	}, [calendarId]);
 
 	// Banners linked to this calendar
-	const linkedBanners = (bannersData?.banners ?? []).filter(
+	const linkedBanners = firestoreBanners.filter(
 		(b) => bannerCalendarMap[b.id] === calendarId,
 	);
 

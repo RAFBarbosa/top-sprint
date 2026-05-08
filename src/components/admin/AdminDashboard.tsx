@@ -10,19 +10,18 @@ export function AdminDashboard() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		// Firebase way to check auth state
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			if (!user) {
 				navigate("/admin");
 			}
 		});
 
-		return () => unsubscribe(); // Cleanup subscription
+		return () => unsubscribe();
 	}, [navigate]);
 
 	const handleLogout = async () => {
 		try {
-			await auth.signOut(); // Proper Firebase logout
+			await auth.signOut();
 			navigate("/admin");
 		} catch (error) {
 			console.error("Logout error:", error);
@@ -63,4 +62,3 @@ export function AdminDashboard() {
 		</div>
 	);
 }
-

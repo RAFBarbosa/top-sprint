@@ -3,7 +3,6 @@ import { HygraphImg } from "./HygraphImg";
 import { Tooltip } from "react-tooltip";
 import { tenant } from "../../shared/config/tenants";
 import Flag from "react-world-flags";
-import { COUNTRY_CODE_MAP } from "../../shared/constants/countryCodeMap";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 import { getGridConfig } from "../../shared/config/grids";
 
@@ -32,6 +31,7 @@ interface PlayerCardProps {
 		teamLogo: string;
 		realLifeTeamLogoUrl?: string;
 		nationality?: string;
+		nationalityCode?: string;
 		grid: string;
 		class: string;
 		badge: Array<{ url: string }>;
@@ -392,11 +392,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									>
 										<Flag
 											code={
-												data.nationality
-													? COUNTRY_CODE_MAP[
-															data.nationality
-														] || "BR"
-													: "BR"
+												data.nationalityCode || "BR"
 											}
 											style={{
 												height: "100%",

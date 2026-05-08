@@ -13,17 +13,13 @@ import {
 	DialogPanel,
 	DialogTitle,
 } from "@headlessui/react";
-import {
-	useGetCalendarsRegistrationQuery,
-	useUpdateCalendarMutation,
-	GetCalendarsRegistrationDocument,
-	useGetDriversQuery,
-	useGridOptionsQuery,
-} from "../../graphql/generated";
+import { useGetDriversQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { ChevronUpDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { getGridLabel, getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
+
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
@@ -32,7 +28,11 @@ import { doc, getDoc, setDoc, getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "./PointAdjustmentsAdmin";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
+import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
+import { saveSeasonCardSnapshot } from "../../shared/utils/calculateDriverCards";
 import { useToast } from "../../contexts/ToastContext";
+import { useTracks } from "../../contexts/TracksContext";
+import { CountryFlag } from "../utils/CountryFlag";
 
 interface GridProfile {
 	number: string;
@@ -59,7 +59,9 @@ export function ManualResultsRegistration({
 	gridId,
 }: ManualResultsRegistrationProps) {
 	const { triggerForGrid } = useCalculateCards();
+	const { mappings, getSeasonForCalendar } = useCalendarSeasons();
 	const { showToast } = useToast();
+	const { getTrack } = useTracks();
 
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
@@ -155,11 +157,8 @@ export function ManualResultsRegistration({
 	>("all");
 	const [gridFilter, setGridFilter] = useState(gridId || "");
 
-	const { data: calendarsData } = useGetCalendarsRegistrationQuery({
-		fetchPolicy: "network-only",
-	});
+	const { allCalendars } = useCalendars();
 	const { data: driversData } = useGetDriversQuery();
-	const { data: gridData } = useGridOptionsQuery();
 
 	useEffect(() => {
 		const loadProfiles = async () => {
@@ -462,7 +461,20 @@ export function ManualResultsRegistration({
 			);
 
 			if (selectedCalendar.grid) {
-				triggerForGrid(selectedCalendar.grid).catch(console.error);
+				triggerForGrid(selectedCalendar.grid).then(async () => {
+					const seasonId = getSeasonForCalendar(selectedCalendar.id);
+					if (!seasonId) return;
+					const seasonCalendarIds = mappings
+						.filter((m) => m.seasonId === seasonId)
+						.map((m) => m.calendarId);
+					const seasonCalendars = allCalendars
+						.filter((c) => c.grid === selectedCalendar.grid && seasonCalendarIds.includes(c.id))
+						.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+					const lastCalendar = seasonCalendars[seasonCalendars.length - 1];
+					if (lastCalendar?.id === selectedCalendar.id) {
+						await saveSeasonCardSnapshot(selectedCalendar.grid, seasonId);
+					}
+				}).catch(console.error);
 			}
 		} catch (error: any) {
 			showToast("error", "Erro: " + error.message);
@@ -511,8 +523,7 @@ export function ManualResultsRegistration({
 			.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
 	};
 
-	const gridOptions: string[] =
-		gridData?.__type?.enumValues?.map((v: any) => v.name) ?? [];
+	const gridOptions: string[] = (tenant.grids as any[]).map((g: any) => g.id);
 
 	// Resolve raceAwards for a calendar: try the calendar's specific grid first,
 	// fall back to the first tenant grid that has raceAwards configured.
@@ -534,9 +545,7 @@ export function ManualResultsRegistration({
 		return `${day} ${capitalizedMonth} ${year}`;
 	};
 
-	const filteredCalendars = (
-		calendarsData?.calendars ? [...calendarsData.calendars] : []
-	)
+	const filteredCalendars = [...allCalendars]
 		.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 		.filter((c) => {
 			const matchesActive =
@@ -546,7 +555,7 @@ export function ManualResultsRegistration({
 						? c.active
 						: !c.active;
 			const matchesSearch = searchTerm
-				? (c.track?.name || "")
+				? (getTrack(c.trackId)?.name || "")
 						.toLowerCase()
 						.includes(searchTerm.toLowerCase())
 				: true;
@@ -634,16 +643,13 @@ export function ManualResultsRegistration({
 							onClick={() => handleSelectCalendar(calendar)}
 							className={`w-full px-3 py-2 hover:bg-f1-red/10 flex items-center gap-3 cursor-pointer justify-between ${selectedCalendar?.id === calendar.id ? "bg-f1-red/10" : ""}`}
 						>
-							{calendar.track?.flag?.url && (
-								<img
-									src={calendar.track.flag.url}
-									alt=""
-									className="w-[36px] h-[20px] object-cover rounded border border-black/20 shrink-0"
-								/>
-							)}
+							<CountryFlag
+								code={getTrack(calendar.trackId)?.countryCode}
+								className="w-[36px] h-[20px] rounded border border-black/10 shrink-0"
+							/>
 							<div className="flex flex-col flex-1 min-w-0">
 								<span className={`text-sm truncate ${selectedCalendar?.id === calendar.id ? "font-bold" : "font-medium"}`}>
-									{calendar.track?.name ?? calendar.round}
+									{getTrack(calendar.trackId)?.name ?? calendar.round}
 								</span>
 								<span className={`text-xs text-gray-500 ${selectedCalendar?.id === calendar.id ? "font-bold" : ""}`}>
 									{calendar.round} · {formatDateWithCapitalizedMonth(calendar.date)}
@@ -668,7 +674,7 @@ export function ManualResultsRegistration({
 								</h2>
 								{selectedCalendar && (
 									<p className="text-sm mt-1 text-gray-600">
-										{selectedCalendar.track?.name} —{" "}
+										{getTrack(selectedCalendar.trackId)?.name} —{" "}
 										{selectedCalendar.round}
 									</p>
 								)}

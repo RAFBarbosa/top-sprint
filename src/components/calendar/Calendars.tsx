@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import {
-	useGetCalendarsQuery,
-	useGetDriversQuery,
-} from "../../graphql/generated";
+import { useGetDriversQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
+import { useTracks } from "../../contexts/TracksContext";
 import { Calendar } from "./Calendar";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
@@ -39,12 +38,13 @@ export function Calendars({
 	noPadding?: boolean;
 	preventScrollOnClick?: boolean;
 } = {}) {
-	const { data, error, loading } = useGetCalendarsQuery();
+	const { calendars, loading } = useCalendars();
 	const { data: driversData } = useGetDriversQuery();
 	const { activeTab } = useTab();
 	const { applyProfile } = useDriverProfiles();
 	const { seasons } = useSeasons();
 	const { getSeasonForCalendar } = useCalendarSeasons();
+	const { getTrack } = useTracks();
 
 	const [raceResultsMap, setRaceResultsMap] = useState<Record<string, any>>(
 		{},
@@ -100,10 +100,9 @@ export function Calendars({
 	};
 
 	if (loading) return loadingSkeleton();
-	if (error) return <div>Erro: {error.message}</div>;
 
 	const gridCalendarIds = new Set(
-		(data?.calendars ?? [])
+		calendars
 			.filter((c) => c.grid === activeTab.id)
 			.map((c) => c.id),
 	);
@@ -117,7 +116,7 @@ export function Calendars({
 
 	// Filter calendars by grid and active season only
 	const gridCalendars = activeSeason
-		? (data?.calendars ?? []).filter((calendar) => {
+		? calendars.filter((calendar) => {
 				if (calendar.grid !== activeTab.id) return false;
 				const sid = getSeasonForCalendar(calendar.id);
 				return sid === activeSeason.id;
@@ -313,17 +312,16 @@ export function Calendars({
 																		false
 																	}
 																	track={
-																		cal
-																			.track
-																			?.name ||
+																		getTrack(cal.trackId)?.name ||
 																		cal.round ||
 																		""
 																	}
 																	location={
-																		cal
-																			.track
-																			?.location ||
+																		getTrack(cal.trackId)?.location ||
 																		""
+																	}
+																	countryCode={
+																		getTrack(cal.trackId)?.countryCode
 																	}
 																	date={
 																		cal.date ||
@@ -335,7 +333,7 @@ export function Calendars({
 																	winnerA={getWinner(
 																		cal.id,
 																		cal.grid,
-																		cal.winnerA,
+																		null,
 																	)}
 																	winnerB={
 																		null
@@ -353,22 +351,9 @@ export function Calendars({
 																			: undefined
 																	}
 																	map={
-																		cal
-																			.track
-																			?.map || {
-																			url: tenant
-																				.logo
-																				.url,
-																		}
-																	}
-																	flag={
-																		cal
-																			.track
-																			?.flag || {
-																			url: tenant
-																				.logo
-																				.url,
-																		}
+																		getTrack(cal.trackId)?.mapUrl
+																			? { url: getTrack(cal.trackId)!.mapUrl! }
+																			: undefined
 																	}
 																	seasonId={
 																		getSeasonForCalendar(

@@ -8,17 +8,7 @@ query GetSeasonRounds($slug: String!) {
 		name
 		link
 		date
-		track {
-			id
-			name
-			circuit
-			location
-			uniqueName
-			flag {
-				id
-				url
-			}
-		}
+
 	}
 }
 
@@ -115,15 +105,7 @@ query GetRoundResults($id: ID!) {
 		season {
 			name
 		}
-		track {
-			id
-			name
-			circuit
-			location
-			flag {
-				url
-			}
-		}
+
 		results
 	}
 }

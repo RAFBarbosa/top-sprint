@@ -10,7 +10,10 @@ import { GridsProvider } from "./contexts/GridsContext";
 import { DriverProfilesProvider } from "./contexts/DriverProfilesContext";
 import { SeasonsProvider } from "./contexts/SeasonsContext";
 import { CalendarSeasonsProvider } from "./contexts/CalendarSeasonsContext";
+import { TracksProvider } from "./contexts/TracksContext";
+import { CalendarsProvider } from "./contexts/CalendarsContext";
 import { ToastProvider } from "./contexts/ToastContext";
+import { UserRoleProvider } from "./contexts/UserRoleContext";
 import { tenant } from "./shared/config/tenants";
 import { useEffect } from "react";
 
@@ -27,10 +30,13 @@ function AppLayout() {
 	const isAdmin = pathname.startsWith("/admin");
 
 	return (
+		<UserRoleProvider>
 		<ToastProvider>
+			<TracksProvider>
 			<GridsProvider>
 				<SeasonsProvider>
 					<CalendarSeasonsProvider>
+						<CalendarsProvider>
 						<DriverProfilesProvider>
 							<TabProvider>
 								{!isAdmin && <Header />}
@@ -39,10 +45,13 @@ function AppLayout() {
 								{!isAdmin && <Footer />}
 							</TabProvider>
 						</DriverProfilesProvider>
+						</CalendarsProvider>
 					</CalendarSeasonsProvider>
 				</SeasonsProvider>
 			</GridsProvider>
+			</TracksProvider>
 		</ToastProvider>
+		</UserRoleProvider>
 	);
 }
 

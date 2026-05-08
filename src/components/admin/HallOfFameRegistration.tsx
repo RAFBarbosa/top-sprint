@@ -1,10 +1,7 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState, useCallback } from "react";
 import {
-	useCreateHallOfFameMutation,
-	useUpdateHallOfFameMutation,
-	useGetHallsOfFameRegistrationQuery,
 	useCreateAssetMutation,
-	GetHallsOfFameRegistrationDocument,
+	GetHallsOfFameFullDocument,
 } from "../../graphql/generated";
 import {
 	Dialog,
@@ -14,15 +11,26 @@ import {
 } from "@headlessui/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useToast } from "../../contexts/ToastContext";
+import {
+	collection,
+	addDoc,
+	updateDoc,
+	doc,
+	getDocs,
+	query,
+	where,
+	setDoc,
+	serverTimestamp,
+	Timestamp,
+} from "firebase/firestore";
+import { db } from "../../lib/adminClient";
+import { useApolloClient } from "@apollo/client";
 
-// Represents a photo already saved in Hygraph
 interface ExistingPhoto {
 	type: "existing";
-	id: string;
 	url: string;
 }
 
-// Represents a new photo picked locally, not yet uploaded
 interface NewPhoto {
 	type: "new";
 	file: File;
@@ -31,9 +39,16 @@ interface NewPhoto {
 
 type PhotoItem = ExistingPhoto | NewPhoto;
 
+const normalizeHof = (id: string, data: any) => ({
+	id,
+	season: data.season as string,
+	photoUrls: (data.photoUrls ?? []) as string[],
+	legacy: data.legacy ?? false,
+	deleted: data.deleted ?? false,
+});
+
 export function HallOfFameRegistration() {
 	const [season, setSeason] = useState("");
-	// Unified ordered list of photos (existing + new mixed together)
 	const [photos, setPhotos] = useState<PhotoItem[]>([]);
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const { showToast } = useToast();
@@ -41,6 +56,10 @@ export function HallOfFameRegistration() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [dragIndex, setDragIndex] = useState<number | null>(null);
+	const [hofs, setHofs] = useState<any[]>([]);
+	const [hofsLoading, setHofsLoading] = useState(true);
+	const [saving, setSaving] = useState(false);
+	const [migrating, setMigrating] = useState(false);
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -48,24 +67,30 @@ export function HallOfFameRegistration() {
 		deleted: boolean;
 	} | null>(null);
 
-	const [createHallOfFame, { loading: createLoading }] =
-		useCreateHallOfFameMutation({
-			refetchQueries: [{ query: GetHallsOfFameRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
-	const [updateHallOfFame, { loading: updateLoading }] =
-		useUpdateHallOfFameMutation({
-			refetchQueries: [{ query: GetHallsOfFameRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
 	const [createAsset] = useCreateAssetMutation();
+	const apolloClient = useApolloClient();
 
-	const { data: hofData, error: hofError } =
-		useGetHallsOfFameRegistrationQuery({
-			fetchPolicy: "network-only",
-		});
+	const loadHofs = useCallback(async () => {
+		setHofsLoading(true);
+		try {
+			const q = query(
+				collection(db, "hallsOfFame"),
+				where("deleted", "==", false),
+			);
+			const snap = await getDocs(q);
+			const items = snap.docs
+				.map((d) => normalizeHof(d.id, d.data()))
+				.sort((a, b) => b.season.localeCompare(a.season));
+			setHofs(items);
+		} finally {
+			setHofsLoading(false);
+		}
+	}, []);
 
-	// ── Delete modal ────────────────────────────────────────────────────────
+	useEffect(() => {
+		loadHofs();
+	}, [loadHofs]);
+
 	const handleDeleteClick = (id: string, deleted: boolean) => {
 		setItemToDelete({ id, deleted });
 		setIsDeleteModalOpen(true);
@@ -86,27 +111,23 @@ export function HallOfFameRegistration() {
 
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
-			await updateHallOfFame({
-				variables: {
-					where: { id },
-					data: { deleted: !currentDeleted },
-				},
+			await updateDoc(doc(db, "hallsOfFame", id), {
+				deleted: !currentDeleted,
 			});
+			await loadHofs();
 		} catch (error) {
 			console.error("Error toggling delete:", error);
 		}
 	};
 
-	// ── Sidebar selection ───────────────────────────────────────────────────
 	const handleSelectHof = (hof: any) => {
 		setSelectedHof(hof);
 		setIsEditing(true);
 		setSeason(hof.season || "");
 		setPhotos(
-			(hof.photo ?? []).map((p: any) => ({
+			(hof.photoUrls ?? []).map((url: string) => ({
 				type: "existing" as const,
-				id: p.id,
-				url: p.url,
+				url,
 			})),
 		);
 	};
@@ -118,7 +139,6 @@ export function HallOfFameRegistration() {
 		setPhotos([]);
 	};
 
-	// ── Photo management ────────────────────────────────────────────────────
 	const handleAddFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.files) return;
 		const newItems: NewPhoto[] = Array.from(e.target.files).map((file) => ({
@@ -134,18 +154,11 @@ export function HallOfFameRegistration() {
 		setPhotos((prev) => prev.filter((_, i) => i !== index));
 	};
 
-	// ── Drag and drop reorder ───────────────────────────────────────────────
-	const handleDragStart = (index: number) => {
-		setDragIndex(index);
-	};
+	const handleDragStart = (index: number) => setDragIndex(index);
 
-	const handleDragOver = (
-		e: React.DragEvent<HTMLDivElement>,
-		index: number,
-	) => {
+	const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
 		e.preventDefault();
 		if (dragIndex === null || dragIndex === index) return;
-
 		setPhotos((prev) => {
 			const updated = [...prev];
 			const [moved] = updated.splice(dragIndex, 1);
@@ -155,11 +168,8 @@ export function HallOfFameRegistration() {
 		setDragIndex(index);
 	};
 
-	const handleDragEnd = () => {
-		setDragIndex(null);
-	};
+	const handleDragEnd = () => setDragIndex(null);
 
-	// ── Upload helper ───────────────────────────────────────────────────────
 	const uploadFile = async (file: File): Promise<string> => {
 		const assetResult = await createAsset({ variables: { data: {} } });
 		const asset = assetResult.data?.createAsset;
@@ -167,128 +177,116 @@ export function HallOfFameRegistration() {
 		if (!asset?.id || !uploadData?.url)
 			throw new Error("Failed to get upload data");
 
-		const formData = new FormData();
+		const form = new FormData();
 		const finalKey = uploadData.key.replace(
 			"${filename}",
 			encodeURIComponent(file.name),
 		);
-		formData.append("key", finalKey);
-		formData.append("policy", uploadData.policy);
-		formData.append("x-amz-algorithm", uploadData.algorithm);
-		formData.append("x-amz-credential", uploadData.credential);
-		formData.append("x-amz-date", uploadData.date);
-		formData.append("x-amz-signature", uploadData.signature);
-		if (uploadData.securityToken) {
-			formData.append("x-amz-security-token", uploadData.securityToken);
-		}
-		formData.append("file", file);
+		form.append("key", finalKey);
+		form.append("policy", uploadData.policy);
+		form.append("x-amz-algorithm", uploadData.algorithm);
+		form.append("x-amz-credential", uploadData.credential);
+		form.append("x-amz-date", uploadData.date);
+		form.append("x-amz-signature", uploadData.signature);
+		if (uploadData.securityToken)
+			form.append("x-amz-security-token", uploadData.securityToken);
+		form.append("file", file);
 
 		const uploadResponse = await fetch(uploadData.url, {
 			method: "POST",
-			body: formData,
+			body: form,
 		});
-		if (!uploadResponse.ok)
-			throw new Error(`Upload failed for ${file.name}`);
+		if (!uploadResponse.ok) throw new Error(`Upload failed for ${file.name}`);
 
-		return asset.id;
+		return asset.url;
 	};
 
-	// ── Submit ──────────────────────────────────────────────────────────────
 	const handleSubmit = async (event: FormEvent) => {
 		event.preventDefault();
-
+		setSaving(true);
 		try {
 			if (!season) throw new Error("Temporada é obrigatória");
 			if (photos.length === 0)
 				throw new Error("Pelo menos uma foto é obrigatória");
 
-			// Upload any new photos first
-			const uploadedIdMap = new Map<NewPhoto, string>();
-			const newPhotos = photos.filter(
-				(p): p is NewPhoto => p.type === "new",
-			);
+			const uploadedUrlMap = new Map<NewPhoto, string>();
+			const newPhotos = photos.filter((p): p is NewPhoto => p.type === "new");
 			if (newPhotos.length > 0) {
-				const ids = await Promise.all(
-					newPhotos.map((p) => uploadFile(p.file)),
-				);
-				newPhotos.forEach((p, i) => uploadedIdMap.set(p, ids[i]));
+				const urls = await Promise.all(newPhotos.map((p) => uploadFile(p.file)));
+				newPhotos.forEach((p, i) => uploadedUrlMap.set(p, urls[i]));
 				setUploadProgress(100);
 			}
 
-			// Build the final ordered list of asset IDs
-			const orderedIds = photos.map((p) => {
-				if (p.type === "existing") return p.id;
-				return uploadedIdMap.get(p)!;
-			});
+			const orderedUrls = photos.map((p) =>
+				p.type === "existing" ? p.url : uploadedUrlMap.get(p)!,
+			);
 
 			if (isEditing && selectedHof) {
-				const result = await updateHallOfFame({
-					variables: {
-						where: { id: selectedHof.id },
-						data: {
-							season,
-							// `set` replaces the entire photo array in order
-							photo: {
-								set: orderedIds.map((id) => ({ id })),
-							},
-						},
-					},
+				await updateDoc(doc(db, "hallsOfFame", selectedHof.id), {
+					season,
+					photoUrls: orderedUrls,
 				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				// Refresh local photo state with resolved URLs
-				setPhotos(
-					orderedIds.map((id, i) => ({
-						type: "existing" as const,
-						id,
-						url:
-							photos[i].type === "existing"
-								? (photos[i] as ExistingPhoto).url
-								: (photos[i] as NewPhoto).previewUrl,
-					})),
-				);
-
+				setPhotos(orderedUrls.map((url) => ({ type: "existing" as const, url })));
 				showToast("success", "Mural dos Campeões atualizado com sucesso!");
 			} else {
-				const result = await createHallOfFame({
-					variables: {
-						data: {
-							season,
-							deleted: false,
-							photo: {
-								connect: orderedIds.map((id) => ({ id })),
-							},
-						},
-					},
+				await addDoc(collection(db, "hallsOfFame"), {
+					season,
+					photoUrls: orderedUrls,
+					legacy: false,
+					deleted: false,
+					createdAt: serverTimestamp(),
 				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
 				showToast("success", "Mural dos Campeões cadastrado com sucesso!");
 				resetForm();
 			}
 
+			await loadHofs();
 			setUploadProgress(null);
 		} catch (error: any) {
 			console.error("Error:", error);
 			showToast("error", error.message || "Erro desconhecido");
 			setUploadProgress(null);
+		} finally {
+			setSaving(false);
 		}
 	};
 
-	const filteredHofs = (hofData?.hallsOfFame ?? []).filter((hof) =>
+	const handleMigrateFromHygraph = async () => {
+		setMigrating(true);
+		try {
+			const result = await apolloClient.query({
+				query: GetHallsOfFameFullDocument,
+				fetchPolicy: "network-only",
+			});
+			const hygraphHofs: any[] = result.data?.hallsOfFame ?? [];
+			for (const hof of hygraphHofs) {
+				await setDoc(doc(db, "hallsOfFame", hof.id), {
+					season: hof.season ?? "",
+					photoUrls: (hof.photo ?? []).map((p: any) => p.url),
+					legacy: hof.legacy ?? false,
+					deleted: hof.deleted ?? false,
+					createdAt: serverTimestamp(),
+				});
+			}
+			showToast("success", `${hygraphHofs.length} itens migrados com sucesso!`);
+			await loadHofs();
+		} catch (e: any) {
+			showToast("error", `Erro na migração: ${e.message}`);
+		} finally {
+			setMigrating(false);
+		}
+	};
+
+	const filteredHofs = hofs.filter((hof) =>
 		searchTerm
 			? hof.season?.toLowerCase().includes(searchTerm.toLowerCase())
 			: true,
 	);
 
-	if (hofError) {
+	if (hofsLoading) {
 		return (
-			<div className="bg-f1-lightSilver py-10">
-				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-					Erro ao carregar Mural dos Campeões: {hofError.message}
-				</div>
+			<div className="bg-f1-lightSilver py-10 flex justify-center">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-f1-red" />
 			</div>
 		);
 	}
@@ -307,6 +305,16 @@ export function HallOfFameRegistration() {
 					/>
 				</div>
 
+				{hofs.length === 0 && !hofsLoading && (
+					<button
+						onClick={handleMigrateFromHygraph}
+						disabled={migrating}
+						className="w-full mb-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer text-sm"
+					>
+						{migrating ? "Migrando..." : "Importar do Hygraph"}
+					</button>
+				)}
+
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
 					{filteredHofs.length > 0 ? (
 						filteredHofs.map((hof) => (
@@ -324,25 +332,18 @@ export function HallOfFameRegistration() {
 											{hof.season}
 										</span>
 										<span className="text-xs text-gray-500">
-											{hof.photo.length} foto
-											{hof.photo.length !== 1 ? "s" : ""}
+											{hof.photoUrls.length} foto
+											{hof.photoUrls.length !== 1 ? "s" : ""}
 										</span>
 									</div>
 
 									<button
 										onClick={(e) => {
 											e.stopPropagation();
-											handleDeleteClick(
-												hof.id,
-												hof.deleted,
-											);
+											handleDeleteClick(hof.id, hof.deleted);
 										}}
 										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-										title={
-											hof.deleted
-												? "Restaurar"
-												: "Excluir"
-										}
+										title={hof.deleted ? "Restaurar" : "Excluir"}
 									>
 										<TrashIcon className="h-5 w-5" />
 									</button>
@@ -367,8 +368,8 @@ export function HallOfFameRegistration() {
 				<div className="fixed inset-0 flex items-center justify-center p-4">
 					<DialogPanel className="w-full max-w-md rounded bg-white p-6">
 						<DialogTitle className="text-lg font-bold">
-							{itemToDelete?.deleted ? "Restaurar" : "Excluir"}{" "}
-							Mural dos Campeões
+							{itemToDelete?.deleted ? "Restaurar" : "Excluir"} Mural
+							dos Campeões
 						</DialogTitle>
 						<Description className="mt-1">
 							{itemToDelete?.deleted
@@ -390,9 +391,7 @@ export function HallOfFameRegistration() {
 										: "bg-f1-red hover:bg-f1-red/90"
 								}`}
 							>
-								{itemToDelete?.deleted
-									? "Restaurar"
-									: "Excluir"}
+								{itemToDelete?.deleted ? "Restaurar" : "Excluir"}
 							</button>
 						</div>
 					</DialogPanel>
@@ -423,7 +422,6 @@ export function HallOfFameRegistration() {
 					</div>
 
 					<div className="grid grid-cols-1 gap-4">
-						{/* Season */}
 						<div>
 							<label className="block mb-1">Temporada *</label>
 							<input
@@ -435,7 +433,6 @@ export function HallOfFameRegistration() {
 							/>
 						</div>
 
-						{/* Unified photo grid — drag to reorder, × to remove */}
 						{photos.length > 0 && (
 							<div>
 								<label className="block mb-2">
@@ -449,12 +446,8 @@ export function HallOfFameRegistration() {
 										<div
 											key={idx}
 											draggable
-											onDragStart={() =>
-												handleDragStart(idx)
-											}
-											onDragOver={(e) =>
-												handleDragOver(e, idx)
-											}
+											onDragStart={() => handleDragStart(idx)}
+											onDragOver={(e) => handleDragOver(e, idx)}
 											onDragEnd={handleDragEnd}
 											className={`relative group cursor-grab active:cursor-grabbing rounded border-2 transition-all ${
 												dragIndex === idx
@@ -471,22 +464,17 @@ export function HallOfFameRegistration() {
 												alt={`Foto ${idx + 1}`}
 												className="w-full h-24 object-cover rounded"
 											/>
-											{/* Order badge */}
 											<span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1 rounded">
 												{idx + 1}
 											</span>
-											{/* New badge */}
 											{photo.type === "new" && (
 												<span className="absolute top-1 left-1 bg-f1-red text-white text-xs px-1 rounded">
 													novo
 												</span>
 											)}
-											{/* Remove button */}
 											<button
 												type="button"
-												onClick={() =>
-													handleRemovePhoto(idx)
-												}
+												onClick={() => handleRemovePhoto(idx)}
 												className="absolute top-1 right-1 bg-f1-red text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
 												title="Remover"
 											>
@@ -510,12 +498,9 @@ export function HallOfFameRegistration() {
 							</div>
 						)}
 
-						{/* Add photos */}
 						<div>
 							<label className="block mb-1">
-								{photos.length > 0
-									? "Adicionar mais fotos"
-									: "Fotos *"}
+								{photos.length > 0 ? "Adicionar mais fotos" : "Fotos *"}
 							</label>
 							<input
 								type="file"
@@ -529,19 +514,19 @@ export function HallOfFameRegistration() {
 						{uploadProgress !== null && (
 							<div className="w-full bg-gray-200 rounded-full h-2.5">
 								<div
-									className="bg-f1-red h-2.5 rounded-full"
+									className="bg-f1-red h-2.5 rounded-full transition-all"
 									style={{ width: `${uploadProgress}%` }}
-								></div>
+								/>
 							</div>
 						)}
 					</div>
 
 					<button
 						type="submit"
-						disabled={createLoading || updateLoading}
+						disabled={saving}
 						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 					>
-						{createLoading || updateLoading
+						{saving
 							? isEditing
 								? "Atualizando..."
 								: "Cadastrando..."

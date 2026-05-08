@@ -2,7 +2,7 @@ import { useState } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { getGridConfig, getPointSystem } from "../../shared/config/grids";
-import { useGetCalendarsQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import gridAcsv from "../../../public/top-sprint-stats.csv?raw";
 import gridBcsv from "../../../public/top-sprint-academy-stats.csv?raw";
@@ -227,7 +227,7 @@ export function ImportDriverStatsOffsets() {
 	const [log, setLog] = useState<string[]>([]);
 	const [running, setRunning] = useState(false);
 	const [done, setDone] = useState(false);
-	const { data: calendarsData } = useGetCalendarsQuery();
+	const { allCalendars } = useCalendars();
 
 	const appendLog = (msg: string) => setLog((prev) => [...prev, msg]);
 
@@ -268,7 +268,7 @@ export function ImportDriverStatsOffsets() {
 
 			// Build calendar → grid map from Hygraph calendars (loaded via hook)
 			const calendarGridMap: Record<string, string> = {};
-			(calendarsData?.calendars ?? []).forEach((c) => {
+			allCalendars.forEach((c) => {
 				if (c.grid) calendarGridMap[c.id] = c.grid;
 			});
 

@@ -1,20 +1,18 @@
 import { useCallback } from "react";
-import { useGetCalendarsRegistrationQuery } from "../../graphql/generated";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { calculateAndSaveCards } from "../utils/calculateDriverCards";
 
 export function useCalculateCards() {
-	const { data: calendarsData } = useGetCalendarsRegistrationQuery({ fetchPolicy: "cache-first" });
+	const { allCalendars } = useCalendars();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { profiles } = useDriverProfiles();
 
 	const triggerForGrid = useCallback(
 		async (gridId: string) => {
-			const allCalendars = calendarsData?.calendars ?? [];
-
 			const gridCalendarIds = new Set(
 				allCalendars.filter((c) => c.grid === gridId).map((c) => c.id),
 			);
@@ -51,7 +49,7 @@ export function useCalculateCards() {
 
 			await calculateAndSaveCards(gridId, seasonCalIds, prevCalIds, driverIds);
 		},
-		[calendarsData, seasons, mappings, profiles],
+		[allCalendars, seasons, mappings, profiles],
 	);
 
 	return { triggerForGrid };
