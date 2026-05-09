@@ -401,6 +401,8 @@ export function ManualResultsRegistration({
 					teamColor: string;
 					number: string;
 					photoUrl: string;
+					reserve: boolean;
+					exDriver: boolean;
 				}
 			> = {};
 			allIds.forEach((id) => {
@@ -414,6 +416,8 @@ export function ManualResultsRegistration({
 							profile?.teamColor ?? driver.team?.color?.hex ?? "",
 						number: profile?.number ?? driver.number ?? "",
 						photoUrl: profile?.photoUrl ?? driver.photo?.url ?? "",
+						reserve: profile?.reserve ?? false,
+						exDriver: profile?.exDriver ?? false,
 					};
 				}
 			});

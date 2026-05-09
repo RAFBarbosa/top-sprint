@@ -38,12 +38,14 @@ function calcStandings(
 	const raceAwards = gridConfig?.raceAwards ?? [];
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 
-	const isReserve = (driverId: string): boolean => {
+	const isReserveForRace = (driverId: string, result: RaceResultDoc): boolean => {
 		if (reservesEarnPoints) return false;
+		const snap = result.driverSnapshots?.[driverId];
+		if (snap && "reserve" in snap) return snap.reserve === true;
+		// fallback for old results without snapshot reserve field
 		const driver = driverLookup[driverId];
 		if (!driver) return false;
-		const profiled = applyProfile(driver, gridId);
-		return profiled.reserve === true;
+		return applyProfile(driver, gridId)?.reserve === true;
 	};
 
 	const driverPts: Record<string, { pts: number; bestRaceFinishes: number[] }> = {};
@@ -60,6 +62,8 @@ function calcStandings(
 		const sprintOrder = (result.sprintResults ?? []).filter(Boolean);
 		const ncSet = new Set<string>(result.ncDriverIds ?? []);
 		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
+
+		const isReserve = (driverId: string) => isReserveForRace(driverId, result);
 
 		// Race points — when reserves don't earn, points cascade past them to next titular
 		let titularRacePos = 0;
@@ -128,8 +132,16 @@ function calcStandings(
 
 	// Ensure every driver who belongs to this grid gets a row (0 pts if they
 	// haven't raced yet). Reserves are still skipped when the toggle is off.
+	const isCurrentlyReserveOrEx = (driverId: string): boolean => {
+		if (reservesEarnPoints) return false;
+		const driver = driverLookup[driverId];
+		if (!driver) return false;
+		const profiled = applyProfile(driver, gridId);
+		return profiled?.reserve === true || profiled?.exDriver === true;
+	};
+
 	gridDriverIds.forEach((driverId) => {
-		if (isReserve(driverId)) return;
+		if (isCurrentlyReserveOrEx(driverId)) return;
 		ensure(driverId);
 	});
 
@@ -168,7 +180,8 @@ function calcStandings(
 		};
 	}).filter(Boolean) as any[];
 
-	rows.sort((a, b) => {
+	const visibleRows = reservesEarnPoints ? rows : rows.filter((r) => !r.exDriver);
+	visibleRows.sort((a, b) => {
 		if (b.pts !== a.pts) return b.pts - a.pts;
 		const maxLen = Math.max(a._bestFinishes.length, b._bestFinishes.length);
 		for (let i = 0; i < maxLen; i++) {
@@ -179,7 +192,7 @@ function calcStandings(
 		return 0;
 	});
 
-	return rows;
+	return visibleRows;
 }
 
 export function useFirebaseStandings(gridId: GridId) {

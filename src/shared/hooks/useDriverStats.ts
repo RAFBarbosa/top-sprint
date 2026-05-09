@@ -78,8 +78,6 @@ function calcSeasonStandings(
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
-	const isReserve = (id: string) =>
-		!reservesEarnPoints && reserveSet.has(id);
 
 	const driverPts: Record<string, number> = {};
 	const teamPts: Record<string, number> = {};
@@ -89,6 +87,14 @@ function calcSeasonStandings(
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
 		if (!result) continue;
+
+		const isReserve = (id: string): boolean => {
+			if (reservesEarnPoints) return false;
+			const snap = result.driverSnapshots?.[id];
+			if (snap && "reserve" in snap) return snap.reserve === true;
+			return reserveSet.has(id);
+		};
+
 		const raceOrder: string[] = (result.results ?? []).filter(Boolean);
 		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(Boolean);
 		const sprintOrder: string[] = (result.sprintResults ?? []).filter(Boolean);
@@ -190,26 +196,25 @@ function calcStatsForCalendars(
 	const presenceBonus = ps.presenceBonus ?? 0;
 	const raceAwards = gridConfig?.raceAwards ?? [];
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
-	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 
 	let stats = { ...EMPTY_STATS };
-
-	if (driverIsReserve) return stats;
-
-	const isReserve = (id: string) =>
-		!reservesEarnPoints && reserveSet.has(id);
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
 		if (!result) continue;
 
+		const isReserve = (id: string): boolean => {
+			if (reservesEarnPoints) return false;
+			const snap = result.driverSnapshots?.[id];
+			if (snap && "reserve" in snap) return snap.reserve === true;
+			return reserveSet.has(id);
+		};
+
+		const driverWasReserve = isReserve(driverId);
+
 		const raceOrder: string[] = (result.results ?? []).filter(Boolean);
-		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(
-			Boolean,
-		);
-		const sprintOrder: string[] = (result.sprintResults ?? []).filter(
-			Boolean,
-		);
+		const qualyOrder: string[] = (result.resultsQualy ?? []).filter(Boolean);
+		const sprintOrder: string[] = (result.sprintResults ?? []).filter(Boolean);
 		const ncSet = new Set<string>(result.ncDriverIds ?? []);
 		const sprintNcSet = new Set<string>(result.sprintNcDriverIds ?? []);
 
@@ -220,7 +225,9 @@ function calcStatsForCalendars(
 
 		if (!participated) continue;
 
-		stats.participations += 1;
+		stats.participations += 1; // always count, even reserve races
+
+		if (driverWasReserve) continue; // skip all points for reserve races
 
 		// Effective race position skips reserves ahead
 		const titularRaceOrder = raceOrder.filter((id) => !isReserve(id));
