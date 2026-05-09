@@ -498,9 +498,11 @@ function ResultsSection({
 }) {
 	const { getProfile } = useDriverProfiles();
 	const reserveSet = new Set(
-		(raceOrder ?? []).filter(
-			(id) => getProfile(id, calGrid)?.reserve === true,
-		),
+		(raceOrder ?? []).filter((id) => {
+			const snap = driverSnapshots?.[id];
+			if (snap && "reserve" in snap) return snap.reserve === true;
+			return getProfile(id, calGrid)?.reserve === true;
+		}),
 	);
 
 	const rows = buildRows(

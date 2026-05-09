@@ -594,7 +594,7 @@ const { getTrack } = useTracks();
 											{linkedCalendarId
 												? (() => {
 														const cal =
-															calendarsData?.calendars?.find(
+															allCalendars.find(
 																(c) =>
 																	c.id ===
 																	linkedCalendarId,
