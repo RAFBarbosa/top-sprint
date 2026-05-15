@@ -4,7 +4,6 @@ import { db } from "../../lib/adminClient";
 import { useGetDriversRegistrationQuery } from "../../graphql/generated";
 import { tenant } from "../../shared/config/tenants";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
-import { ImportDriverStatsOffsets } from "./ImportDriverStatsOffsets";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useToast } from "../../contexts/ToastContext";
 
@@ -45,7 +44,6 @@ export function DriverStatsOffsetsAdmin() {
 	const [editOffsets, setEditOffsets] = useState<Record<string, Partial<DriverStatsShape> & { penaltyRate?: number }>>({});
 	const [searchTerm, setSearchTerm] = useState("");
 	const [saving, setSaving] = useState(false);
-	const [activeSection, setActiveSection] = useState<"edit" | "import">("edit");
 	const [calcStatus, setCalcStatus] = useState<Record<string, "idle" | "loading" | "done" | "error">>({});
 
 	const { triggerForGrid } = useCalculateCards();
@@ -98,9 +96,7 @@ export function DriverStatsOffsetsAdmin() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex gap-2 border-b border-black/10 pb-2">
-				<button onClick={() => setActiveSection("edit")} className={`text-sm font-bold px-4 py-1.5 rounded ${activeSection === "edit" ? "bg-f1-red text-white" : "hover:bg-f1-bg-silver"}`}>Editar Histórico</button>
-				<button onClick={() => setActiveSection("import")} className={`text-sm font-bold px-4 py-1.5 rounded ${activeSection === "import" ? "bg-f1-red text-white" : "hover:bg-f1-bg-silver"}`}>Importar CSV</button>
-				<div className="ml-auto flex items-center gap-2">
+	<div className="ml-auto flex items-center gap-2">
 					{grids.map((grid) => (
 						<button
 							key={grid.id}
@@ -122,8 +118,7 @@ export function DriverStatsOffsetsAdmin() {
 					))}
 				</div>
 			</div>
-			{activeSection === "import" ? <ImportDriverStatsOffsets /> : (
-		<div className="flex gap-4 h-full">
+			<div className="flex gap-4 h-full">
 			{/* Driver list */}
 			<div className="w-64 shrink-0 flex flex-col gap-2">
 				<input
@@ -214,7 +209,6 @@ export function DriverStatsOffsetsAdmin() {
 				</div>
 			)}
 		</div>
-			)}
 		</div>
 	);
 }
