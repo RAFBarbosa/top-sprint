@@ -1,5 +1,5 @@
 import { SecondaryBanner } from "./SecondaryBanner";
-import GenericLogo from "/src/assets/img/white-logo.png";
+import { tenant } from "../../shared/config/tenants";
 
 interface BannerData {
 	id: string;
@@ -35,7 +35,7 @@ export function SecondaryBanners({ banners }: SecondaryBannersProps) {
 					category={banner.category || ""}
 					title={banner.title || ""}
 					content={banner.content || ""}
-					photo={banner.photo || { url: GenericLogo }}
+					photo={banner.photo || { url: tenant.logo.url }}
 				/>
 			))}
 		</div>
