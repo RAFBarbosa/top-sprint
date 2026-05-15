@@ -14,6 +14,7 @@ const tenantMeta: Record<
 		keywords: string;
 		themeColor: string;
 		url: string;
+		logoUrl: string;
 		gtagId: string;
 		hasExtendedFavicons: boolean;
 	}
@@ -26,8 +27,9 @@ const tenantMeta: Record<
 			"CRT Cup: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
 		keywords:
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, CRT Cup, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
-		themeColor: "#eb1c24",
-		url: "https://www.ligatopsprint.com",
+		themeColor: "#cd0a2a",
+		url: "https://www.crtcup.com",
+		logoUrl: "https://www.crtcup.com/logos/crt.png",
 		gtagId: "G-N82GC0X63T",
 		hasExtendedFavicons: true,
 	},
@@ -41,6 +43,7 @@ const tenantMeta: Record<
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Feliplay Cup, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
 		themeColor: "#f50404",
 		url: "https://www.feliplay.com.br",
+		logoUrl: "https://www.feliplay.com.br/logos/feliplay.png",
 		gtagId: "G-P3CV4WHXE7",
 		hasExtendedFavicons: false,
 	},
@@ -54,6 +57,7 @@ const tenantMeta: Record<
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, F1 Brazuka, F1 eSports, corridas virtuais",
 		themeColor: "#064c24",
 		url: "https://www.f1brazuka.com.br",
+		logoUrl: "https://www.f1brazuka.com.br/logos/brazuka.png",
 		gtagId: "G-N82GC0X63T",
 		hasExtendedFavicons: false,
 	},

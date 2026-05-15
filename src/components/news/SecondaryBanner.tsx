@@ -1,5 +1,5 @@
-import GenericLogo from "/src/assets/img/white-logo.png";
 import { HygraphImg } from "../utils/HygraphImg";
+import { tenant } from "../../shared/config/tenants";
 import { Link } from "react-router-dom";
 
 interface SecondaryBannerProps {
@@ -18,7 +18,7 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 			{/* Image */}
 			<div className="relative w-24 shrink-0 md:w-full md:aspect-square overflow-hidden">
 				<HygraphImg
-					src={props.photo?.url || GenericLogo}
+					src={props.photo?.url || tenant.logo.url}
 					alt={props.content}
 					imgWidth={400}
 					imgHeight={533}
