@@ -1,4 +1,5 @@
-import { useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
+import { useFirebaseTeams } from "../../shared/hooks/useFirebaseTeams";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { DriverCard } from "./DriverCard";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
@@ -27,26 +28,20 @@ const loadingSkeleton = () => (
 );
 
 export function Teams() {
-	const { data: teamsData, error, loading } = useGetTeamsQuery();
-	const { data: driversData } = useGetDriversQuery();
+	const { teams: teamsData, loading } = useFirebaseTeams();
+	const { drivers: driversData } = useFirebaseDrivers();
 	const { activeTab } = useTab();
 	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
 	const gridId = activeTab.id;
 	const activeSeason = useActiveSeason(gridId);
 
-	if (loading || !driversData) return loadingSkeleton();
-	if (error)
-		return (
-			<div className="text-red-500 text-center py-6">
-				Erro: {error.message}
-			</div>
-		);
+	if (loading) return loadingSkeleton();
 
 	const hasProfiles = Object.keys(profiles).length > 0;
 
 	// Filter: prefer Firebase profile membership, fall back to Hygraph driver.grid
 	// If the driver has no profile document at all, fall back to Hygraph grid field
-	const filteredDrivers = driversData.drivers.filter((driver) => {
+	const filteredDrivers = driversData.filter((driver) => {
 		if (!driver.deleted) {
 			return isInGrid(driver.id, gridId) || (!profiles[driver.id] && driver.grid === gridId);
 		}
@@ -56,7 +51,7 @@ export function Teams() {
 	// Apply profile overrides (team, number, photo), exclude reserves, then sort by team name
 	const sortedDrivers = filteredDrivers
 		.map((driver) => {
-			const driverTeam = teamsData?.teams.find(
+			const driverTeam = teamsData?.find(
 				(team) => team.id === driver.team?.id,
 			);
 			const withTeam = {
@@ -70,7 +65,7 @@ export function Teams() {
 			};
 			const profiled = applyProfile(withTeam, gridId);
 			// If the profile changed the team name, look up the new team's logo
-			const resolvedTeam = teamsData?.teams.find((t) => t.name === profiled.team?.name);
+			const resolvedTeam = teamsData?.find((t) => t.name === profiled.team?.name);
 			return {
 				...profiled,
 				team: {

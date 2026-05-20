@@ -14,7 +14,7 @@ import {
 	GetDataDocument,
 } from "../../graphql/generated";
 import { ChevronUpDownIcon, PlusIcon } from "@heroicons/react/16/solid";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import {
 	Dialog,
 	DialogTitle,
@@ -189,8 +189,7 @@ export function ResultsRegistration() {
 		}
 	};
 
-	const handleDeleteClick = (e: React.MouseEvent, id: string, deleted: boolean) => {
-		e.stopPropagation();
+	const handleDeleteClick = (id: string, deleted: boolean) => {
 		setItemToDelete({ id, deleted });
 		setIsDeleteModalOpen(true);
 	};
@@ -431,13 +430,10 @@ export function ResultsRegistration() {
 										)}
 									</span>
 								</div>
-								<button
-									onClick={(e) => handleDeleteClick(e, dataItem.id, dataItem.deleted)}
-									className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120 shrink-0"
-									title={dataItem.deleted ? "Restaurar" : "Excluir"}
-								>
-									<TrashIcon className="h-4 w-4" />
-								</button>
+								<AdminDeleteButton
+									deleted={dataItem.deleted}
+									onClick={() => handleDeleteClick(dataItem.id, dataItem.deleted)}
+								/>
 							</div>
 
 							{expandedId === dataItem.id && renderForm(dataItem.id)}

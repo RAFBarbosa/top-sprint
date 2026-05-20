@@ -1,9 +1,9 @@
-import { useGetPartnersQuery } from "../../graphql/generated";
+import { useFirebasePartners } from "../../shared/hooks/useFirebasePartners";
 import { HygraphImg } from "../utils/HygraphImg";
 
 export function Partners() {
-	const { data } = useGetPartnersQuery();
-	const partners = data?.partners || [];
+	const { partners: allPartners } = useFirebasePartners();
+	const partners = allPartners.filter((p) => p.active);
 
 	if (partners.length === 0) return null;
 

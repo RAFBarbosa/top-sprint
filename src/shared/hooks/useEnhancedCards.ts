@@ -1,18 +1,18 @@
 import { useMemo } from "react";
 import useCsvLoader from "./useCsvLoader";
-import { useGetTeamsQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "./useFirebaseDrivers";
 import { GridId } from "../../shared/config/grids";
 import { normalizeString } from "../utils/normalizeString";
 
 export function useEnhancedCards(gridId: GridId) {
-	const { data } = useGetTeamsQuery();
+	const { drivers: driversList } = useFirebaseDrivers();
 
 	const { cards, stats, loading, error } = useCsvLoader({
 		gridId: gridId,
 	});
 
 	const enhancedCards = useMemo(() => {
-		if (!data || !cards || !stats) {
+		if (!driversList.length || !cards || !stats) {
 			return [];
 		}
 
@@ -21,7 +21,7 @@ export function useEnhancedCards(gridId: GridId) {
 				const cardNameNormalized = normalizeString(
 					card.name.replace(/-[BCbc]$/, ""),
 				);
-				const driverFromData = data?.drivers?.find((d: any) =>
+				const driverFromData = driversList.find((d: any) =>
 					card.id
 						? d.id === card.id
 						: normalizeString(d.name) === cardNameNormalized,

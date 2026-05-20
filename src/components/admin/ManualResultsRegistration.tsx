@@ -13,7 +13,7 @@ import {
 	DialogPanel,
 	DialogTitle,
 } from "@headlessui/react";
-import { useGetDriversQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { ChevronUpDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -31,6 +31,7 @@ import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { saveSeasonCardSnapshot } from "../../shared/utils/calculateDriverCards";
 import { useToast } from "../../contexts/ToastContext";
+import { useDriverGameIds } from "../../shared/hooks/useDriverGameIds";
 import { useTracks } from "../../contexts/TracksContext";
 import { CountryFlag } from "../utils/CountryFlag";
 
@@ -61,6 +62,7 @@ export function ManualResultsRegistration({
 	const { triggerForGrid } = useCalculateCards();
 	const { mappings, getSeasonForCalendar } = useCalendarSeasons();
 	const { showToast } = useToast();
+	const gameIdMap = useDriverGameIds();
 	const { getTrack } = useTracks();
 
 	// Aba Ativa
@@ -158,7 +160,7 @@ export function ManualResultsRegistration({
 	const [gridFilter, setGridFilter] = useState(gridId || "");
 
 	const { allCalendars } = useCalendars();
-	const { data: driversData } = useGetDriversQuery();
+	const { drivers: driversData } = useFirebaseDrivers();
 
 	useEffect(() => {
 		const loadProfiles = async () => {
@@ -179,7 +181,7 @@ export function ManualResultsRegistration({
 	// --- LEITURA DO FIREBASE ---
 	useEffect(() => {
 		const loadFromFirebase = async () => {
-			if (!selectedCalendar?.id || !driversData?.drivers) return;
+			if (!selectedCalendar?.id || !driversData) return;
 
 			try {
 				const docRef = doc(db, "race_results", selectedCalendar.id);
@@ -189,7 +191,7 @@ export function ManualResultsRegistration({
 					return Array.from({ length: 22 }, (_, i) => {
 						const id = driverIds?.[i];
 						const info = id
-							? driversData.drivers?.find((d) => d.id === id)
+							? driversData.find((d) => d.id === id)
 							: null;
 						return {
 							position: i + 1,
@@ -358,7 +360,7 @@ export function ManualResultsRegistration({
 
 	const handleEditAdjustment = (adj: PointAdjustment) => {
 		const driver = getFilteredDrivers("").find((d) => d.id === adj.driverId)
-			?? driversData?.drivers?.find((d) => d.id === adj.driverId);
+			?? driversData.find((d) => d.id === adj.driverId);
 		setAdjEditId(adj.id);
 		setAdjSelectedDriverId(adj.driverId);
 		setAdjDriverQuery(driver?.name ?? "");
@@ -383,7 +385,7 @@ export function ManualResultsRegistration({
 				return resList
 					.map((res, i) => ({
 						driverId: res.driverId,
-						seconds: penList[i],
+						seconds: isNaN(penList[i]) ? 0 : (penList[i] ?? 0),
 					}))
 					.filter((p) => p.driverId && p.seconds > 0);
 			};
@@ -406,7 +408,7 @@ export function ManualResultsRegistration({
 				}
 			> = {};
 			allIds.forEach((id) => {
-				const driver = driversData?.drivers?.find((d) => d.id === id);
+				const driver = driversData.find((d) => d.id === id);
 				if (driver) {
 					const profile =
 						allProfiles[id]?.[selectedCalendar.grid ?? ""];
@@ -510,10 +512,10 @@ export function ManualResultsRegistration({
 	};
 
 	const getFilteredDrivers = (query: string) => {
-		if (!driversData?.drivers || !selectedCalendar) return [];
+		if (!driversData || !selectedCalendar) return [];
 		const q = (query ?? "").toLowerCase();
 		const grid = selectedCalendar.grid;
-		return driversData.drivers
+		return driversData
 			.filter((d) => {
 				if (d.deleted) return false;
 				if (!grid) return true;
@@ -523,7 +525,7 @@ export function ManualResultsRegistration({
 					allProfiles[d.id]?.[grid] !== undefined || d.grid === grid
 				);
 			})
-			.filter((d) => q === "" || d.name?.toLowerCase().includes(q))
+			.filter((d) => q === "" || d.name?.toLowerCase().includes(q) || gameIdMap[d.id]?.toLowerCase().includes(q))
 			.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
 	};
 
@@ -814,7 +816,7 @@ export function ManualResultsRegistration({
 										<tbody>
 											{calendarAdjustments.map((adj, i) => {
 												const driver = getFilteredDrivers("").find((d) => d.id === adj.driverId)
-													?? driversData?.drivers?.find((d) => d.id === adj.driverId);
+													?? driversData.find((d) => d.id === adj.driverId);
 												return (
 													<tr
 														key={adj.id}
@@ -886,7 +888,7 @@ export function ManualResultsRegistration({
 										const driverId =
 											currentAwards[award.id] || "";
 										const driverName =
-											driversData?.drivers?.find(
+											driversData.find(
 												(d) => d.id === driverId,
 											)?.name || "";
 										return (
@@ -906,7 +908,7 @@ export function ManualResultsRegistration({
 													value={driverName}
 													onChange={(val) => {
 														const d =
-															driversData?.drivers?.find(
+															driversData.find(
 																(x) =>
 																	x.name ===
 																	val,
@@ -1133,6 +1135,8 @@ export function ManualResultsRegistration({
 															: item,
 													),
 												);
+												const penSetter = isRace ? setPenaltyValues : setSprintPenaltyValues;
+												penSetter((prev) => { const n = [...prev]; n[i] = 0; return n; });
 											}}
 										>
 											<div className="relative flex-1">
@@ -1160,6 +1164,8 @@ export function ManualResultsRegistration({
 														onClick={() => {
 															const setter = isRace ? setResults : setSprintResults;
 															setter(prev => prev.map((item, idx) => idx === i ? { ...item, driverId: "", driverName: "" } : item));
+															const penSetter = isRace ? setPenaltyValues : setSprintPenaltyValues;
+															penSetter((prev) => { const n = [...prev]; n[i] = 0; return n; });
 														}}
 														className="absolute inset-y-0 right-6 flex items-center px-1 text-gray-400 hover:text-f1-red z-10"
 													>

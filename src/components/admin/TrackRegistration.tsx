@@ -4,6 +4,7 @@ import { db } from "../../lib/adminClient";
 import { useCreateAssetMutation } from "../../graphql/generated";
 import { useToast } from "../../contexts/ToastContext";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import {
 	Dialog,
 	DialogTitle,
@@ -227,15 +228,10 @@ export function TrackRegistration() {
 											)}
 										</div>
 									</div>
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											handleDeleteClick(track.id, track.deleted);
-										}}
-										className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-									>
-										<TrashIcon className="h-5 w-5" />
-									</button>
+									<AdminDeleteButton
+										deleted={track.deleted}
+										onClick={() => handleDeleteClick(track.id, track.deleted)}
+									/>
 								</div>
 							</li>
 						))

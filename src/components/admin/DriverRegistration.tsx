@@ -6,18 +6,13 @@ import {
 	ListboxOptions,
 } from "@headlessui/react";
 import {
-	useCreateDriverMutation,
-	useGetTeamsQuery,
 	useGridOptionsQuery,
 	useCreateAssetMutation,
-	useUpdateDriverMutation,
-	useGetDriversRegistrationQuery,
-	GetDriversRegistrationDocument,
-	GetTeamsDocument,
 	useClassOptionsQuery,
 } from "../../graphql/generated";
+import { useFirebaseTeams } from "../../shared/hooks/useFirebaseTeams";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import {
 	hasGridClasses,
 	getGridClasses,
@@ -32,10 +27,11 @@ import {
 	Description,
 } from "@headlessui/react";
 import { tenant } from "../../shared/config/tenants";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { NATIONALITY_OPTIONS } from "../../shared/constants/nationalities";
 import { useToast } from "../../contexts/ToastContext";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
 export function DriverRegistration() {
 	// State management
@@ -53,6 +49,7 @@ export function DriverRegistration() {
 		nationality: "",
 		nationalityCode: "",
 		realLifeTeamId: "",
+		gameId: "",
 	});
 
 	const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -65,12 +62,8 @@ export function DriverRegistration() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [gridFilter, setGridFilter] = useState("");
 
-	const [updateDriver, { loading: updateDriverLoading }] =
-		useUpdateDriverMutation({
-			refetchQueries: [{ query: GetDriversRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
 	const [createAsset] = useCreateAssetMutation();
+	const { drivers: allDrivers, loading: driversLoading, refetch: refetchDrivers } = useFirebaseDrivers();
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -98,32 +91,15 @@ export function DriverRegistration() {
 
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
-			await updateDriver({
-				variables: {
-					where: { id },
-					data: { deleted: !currentDeleted },
-				},
-			});
+			await updateDoc(doc(db, "drivers", id), { deleted: !currentDeleted });
+			refetchDrivers();
 		} catch (error) {
 			console.error("Error toggling delete:", error);
 		}
 	};
 
-	const [createDriver, { loading: createDriverLoading }] =
-		useCreateDriverMutation({
-			refetchQueries: [
-				{ query: GetDriversRegistrationDocument },
-				{ query: GetTeamsDocument },
-			],
-			awaitRefetchQueries: true,
-		});
-
-	// Queries
-	const {
-		data: teamsData,
-		loading: teamsLoading,
-		error: teamsError,
-	} = useGetTeamsQuery();
+	// Queries (teams from Firebase, enum metadata from Hygraph)
+	const { teams: teamsData, loading: teamsLoading } = useFirebaseTeams();
 	const {
 		data: gridData,
 		loading: gridLoading,
@@ -134,13 +110,6 @@ export function DriverRegistration() {
 		loading: classLoading,
 		error: classError,
 	} = useClassOptionsQuery();
-	const {
-		data: driversData,
-		loading: driversLoading,
-		error: driversError,
-	} = useGetDriversRegistrationQuery({
-		fetchPolicy: "network-only",
-	});
 
 	// Helper functions
 	const formatEnum = (text: string) =>
@@ -148,48 +117,26 @@ export function DriverRegistration() {
 			.replace(/([A-Z])/g, " $1")
 			.replace(/^./, (str) => str.toUpperCase());
 
-	const handleSelectDriver = async (driver: any) => {
+	const handleSelectDriver = (driver: any) => {
 		setSelectedDriver(driver);
 		setIsEditing(true);
-
-		// Load Firebase driver data
-		let firebaseData = {
-			birthDate: "",
-			sex: "",
-			nationality: "",
-			nationalityCode: "",
-			realLifeTeamId: "",
-		};
-
-		try {
-			const docSnap = await getDoc(doc(db, "drivers", driver.id));
-			if (docSnap.exists()) {
-				const data = docSnap.data();
-				firebaseData = {
-					birthDate: data.birthDate || "",
-					sex: data.sex || "",
-					nationality: data.nationality || "",
-					nationalityCode: data.nationalityCode || "",
-					realLifeTeamId: data.realLifeTeamId || "",
-				};
-			}
-		} catch (error) {
-			console.error("Error loading driver Firebase data:", error);
-		}
-
 		setFormData({
-			name: driver.name,
-			number: driver.number || "",
-			grid: driver.grid,
-			class: driver.class,
-			stream: driver.stream || "",
-			city: driver.city || "",
-			equipment: driver.equipment || "",
-			phone: driver.phone,
-			...firebaseData,
+			name: driver.name ?? "",
+			number: driver.number ?? "",
+			grid: driver.grid ?? "",
+			class: driver.class ?? "",
+			stream: driver.stream ?? "",
+			city: driver.city ?? "",
+			equipment: driver.equipment ?? "",
+			phone: driver.phone ?? "",
+			birthDate: driver.birthDate ?? "",
+			sex: driver.sex ?? "",
+			nationality: driver.nationality ?? "",
+			nationalityCode: driver.nationalityCode ?? "",
+			realLifeTeamId: driver.realLifeTeamId ?? "",
+			gameId: driver.gameId ?? "",
 		});
-
-		setTeamId(driver.team?.id || "");
+		setTeamId(driver.teamHygraphId ?? "");
 	};
 
 	const resetForm = () => {
@@ -209,6 +156,7 @@ export function DriverRegistration() {
 			nationality: "",
 			nationalityCode: "",
 			realLifeTeamId: "",
+			gameId: "",
 		});
 		setTeamId("");
 		setPhotoFile(null);
@@ -226,174 +174,91 @@ export function DriverRegistration() {
 	// 	}
 	// }, [isEditing, selectedDriver, teamsData, teamId]);
 
-	if (teamsError) {
-		return (
-			<div className="bg-f1-lightSilver py-10">
-				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-					Erro ao carregar equipes: {teamsError.message}
-				</div>
-			</div>
-		);
-	}
-
-	if (isEditing && selectedDriver?.team && !teamId) {
-		console.warn(`Nao pode encontrar equipe: ${selectedDriver.team.name}`);
-	}
-
 	const handleDriver = async (event: FormEvent) => {
 		event.preventDefault();
 		setSaving(true);
 
 		try {
-			// Validate required fields
 			if (!formData.name) throw new Error("Nome é obrigatório");
 			if (!formData.phone) throw new Error("Telefone é obrigatório");
+			if (formData.stream && !formData.stream.startsWith("http"))
+				throw new Error("URL de stream deve começar com http/https");
 
-			let photoId = null;
+			// Photo upload (still via Hygraph asset storage)
+			let photoUrl: string | null = selectedDriver?.photoUrl ?? null;
 			if (photoFile) {
 				try {
-
-					const assetResult = await createAsset({
-						variables: { data: {} },
-					});
-
+					const assetResult = await createAsset({ variables: { data: {} } });
 					const asset = assetResult.data?.createAsset;
 					const uploadData = asset?.upload?.requestPostData;
-					if (!asset?.id || !uploadData?.url) {
+					if (!asset?.id || !uploadData?.url)
 						throw new Error("Failed to get upload data");
-					}
 
-					const formData = new FormData();
+					const fd = new FormData();
 					const finalKey = uploadData.key.replace(
 						"${filename}",
 						encodeURIComponent(photoFile.name),
 					);
-					formData.append("key", finalKey);
-					formData.append("policy", uploadData.policy);
-					formData.append("x-amz-algorithm", uploadData.algorithm);
-					formData.append("x-amz-credential", uploadData.credential);
-					formData.append("x-amz-date", uploadData.date);
-					formData.append("x-amz-signature", uploadData.signature);
-					if (uploadData.securityToken) {
-						formData.append(
-							"x-amz-security-token",
-							uploadData.securityToken,
-						);
-					}
-					formData.append("file", photoFile);
+					fd.append("key", finalKey);
+					fd.append("policy", uploadData.policy);
+					fd.append("x-amz-algorithm", uploadData.algorithm);
+					fd.append("x-amz-credential", uploadData.credential);
+					fd.append("x-amz-date", uploadData.date);
+					fd.append("x-amz-signature", uploadData.signature);
+					if (uploadData.securityToken)
+						fd.append("x-amz-security-token", uploadData.securityToken);
+					fd.append("file", photoFile);
 
 					const uploadResponse = await fetch(uploadData.url, {
 						method: "POST",
-						body: formData,
+						body: fd,
 					});
-
 					if (!uploadResponse.ok) throw new Error("Upload failed");
 
-					photoId = asset.id;
+					photoUrl = asset.url;
 					setUploadProgress(100);
 				} catch (uploadError) {
-					throw new Error(
-						`Falha no upload da foto: ${uploadError.message}`,
-					);
+					throw new Error(`Falha no upload da foto: ${uploadError.message}`);
 				}
 			}
 
-			if (formData.stream && !formData.stream.startsWith("http")) {
-				throw new Error("URL de stream deve começar com http/https");
-			}
+			// Resolve team details from teamsData
+			const selectedTeam = teamsData?.find((t) => t.id === teamId);
 
-			if (teamId) {
-				const validTeamIds = teamsData?.teams?.map((t) => t.id) || [];
-				if (!validTeamIds.includes(teamId)) {
-					throw new Error("Equipe selecionada é inválida");
-				}
-			}
+			const driverDoc = {
+				name: formData.name,
+				number: formData.number || null,
+				grid: formData.grid || null,
+				class: formData.class || null,
+				stream: formData.stream || null,
+				city: formData.city || null,
+				equipment: formData.equipment || null,
+				phone: formData.phone || null,
+				photoUrl,
+				teamHygraphId: selectedTeam?.id ?? null,
+				teamName: selectedTeam?.name ?? null,
+				teamColor: selectedTeam?.color?.hex ?? null,
+				teamLogoUrl: selectedTeam?.photo?.url ?? null,
+				birthDate: formData.birthDate || null,
+				sex: formData.sex || null,
+				nationality: formData.nationality || null,
+				nationalityCode: formData.nationalityCode || null,
+				realLifeTeamId: formData.realLifeTeamId || null,
+				gameId: formData.gameId || null,
+				deleted: false,
+			};
 
 			if (isEditing && selectedDriver) {
-				// Update existing driver in Hygraph
-				const result = await updateDriver({
-					variables: {
-						where: { id: selectedDriver.id },
-						data: {
-							name: formData.name,
-							number: formData.number || null,
-							grid: formData.grid || null,
-							class: formData.class || null,
-							stream: formData.stream || null,
-							city: formData.city || null,
-							equipment: formData.equipment || null,
-							phone: formData.phone || null,
-							photo: photoId
-								? { connect: { id: photoId } }
-								: undefined,
-							team: teamId
-								? { connect: { id: teamId } }
-								: selectedDriver?.team
-									? { disconnect: true }
-									: undefined,
-						},
-					},
+				await setDoc(doc(db, "drivers", selectedDriver.id), driverDoc, {
+					merge: true,
 				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				// Save additional fields to Firebase
-				await setDoc(
-					doc(db, "drivers", selectedDriver.id),
-					{
-						birthDate: formData.birthDate || null,
-						sex: formData.sex || null,
-						nationality: formData.nationality || null,
-						nationalityCode: formData.nationalityCode || null,
-						realLifeTeamId: formData.realLifeTeamId || null,
-					},
-					{ merge: true }
-				);
-
 				showToast("success", "Piloto atualizado com sucesso!");
 			} else {
-				// Create new driver in Hygraph
-				const result = await createDriver({
-					variables: {
-						data: {
-							name: formData.name,
-							deleted: false,
-							number: formData.number || null,
-							grid: formData.grid || null,
-							class: formData.class || null,
-							stream: formData.stream || null,
-							city: formData.city || null,
-							equipment: formData.equipment || null,
-							phone: formData.phone || null,
-							photo: photoId
-								? { connect: { id: photoId } }
-								: null,
-							team: teamId ? { connect: { id: teamId } } : null,
-						},
-					},
-				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
-				const newDriverId = result.data?.createDriver?.id;
-				if (!newDriverId) throw new Error("Failed to get new driver ID");
-
-				// Save additional fields to Firebase
-				await setDoc(
-					doc(db, "drivers", newDriverId),
-					{
-						birthDate: formData.birthDate || null,
-						sex: formData.sex || null,
-						nationality: formData.nationality || null,
-						nationalityCode: formData.nationalityCode || null,
-						realLifeTeamId: formData.realLifeTeamId || null,
-					}
-				);
-
+				await addDoc(collection(db, "drivers"), driverDoc);
 				showToast("success", "Piloto cadastrado com sucesso!");
 			}
 
-			// Reset form after success
+			refetchDrivers();
 			if (isEditing) {
 				setPhotoFile(null);
 			} else {
@@ -416,31 +281,23 @@ export function DriverRegistration() {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	// Filter drivers based on search term and grid filter
-	const filteredDrivers =
-		driversData?.drivers?.filter((driver) => {
-			// Search across multiple fields
-			const matchesSearch = searchTerm
-				? Object.entries({
-						name: driver.name,
-						number: driver.number,
-						city: driver.city,
-						equipment: driver.equipment,
-						phone: driver.phone,
-						team: driver.team?.name,
-					}).some(([_, value]) =>
-						value
-							?.toString()
-							.toLowerCase()
-							.includes(searchTerm.toLowerCase()),
-					)
-				: true;
-
-			// Filter by grid position
-			const matchesGrid = gridFilter ? driver.grid === gridFilter : true;
-
-			return matchesSearch && matchesGrid;
-		}) || [];
+	const filteredDrivers = allDrivers.filter((driver) => {
+		const matchesSearch = searchTerm
+			? Object.entries({
+					name: driver.name,
+					number: driver.number,
+					city: driver.city,
+					equipment: driver.equipment,
+					phone: driver.phone,
+					team: driver.teamName,
+					gameId: driver.gameId,
+				}).some(([_, value]) =>
+					value?.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+				)
+			: true;
+		const matchesGrid = gridFilter ? driver.grid === gridFilter : true;
+		return matchesSearch && matchesGrid;
+	});
 
 	if (teamsLoading || gridLoading || driversLoading || classLoading) {
 		return (
@@ -450,15 +307,12 @@ export function DriverRegistration() {
 		);
 	}
 
-	if (teamsError || gridError || driversError || classError) {
+	if (gridError || classError) {
 		return (
 			<div className="bg-f1-lightSilver py-10">
 				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
 					Erro ao carregar opções:{" "}
-					{teamsError?.message ||
-						gridError?.message ||
-						classError?.message ||
-						driversError?.message}
+					{gridError?.message || classError?.message}
 				</div>
 			</div>
 		);
@@ -541,15 +395,9 @@ export function DriverRegistration() {
 										<span className="truncate max-w-40">
 											{driver.name}
 										</span>
-										{/* <span className="text-xs text-gray-500">
-											{driver.number &&
-												`#${driver.number}`}{" "}
-											{driver.grid &&
-												`• ${getGridLabel(driver.grid)}`}
-										</span> */}
 									</div>
 
-									<div className="flex gap-4">
+									<div className="flex gap-4 items-center">
 										<div
 											className={`w-12 h-12 flex-shrink-0 ${
 												driver.grid &&
@@ -585,22 +433,10 @@ export function DriverRegistration() {
 											/>
 										</div>
 
-										<button
-											onClick={() =>
-												handleDeleteClick(
-													driver.id,
-													driver.deleted,
-												)
-											}
-											className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-											title={
-												driver.deleted
-													? "Restaurar"
-													: "Excluir"
-											}
-										>
-											<TrashIcon className="h-5 w-5" />
-										</button>
+										<AdminDeleteButton
+											deleted={driver.deleted}
+											onClick={() => handleDeleteClick(driver.id, driver.deleted)}
+										/>
 									</div>
 								</div>
 							</li>
@@ -700,6 +536,16 @@ export function DriverRegistration() {
 								name="number"
 								type="text"
 								value={formData.number}
+								onChange={handleChange}
+								className="w-full p-2 border rounded h-11"
+							/>
+						</div>
+
+						<div>
+							<label className="block mb-1">ID</label>
+							<input
+								name="gameId"
+								value={formData.gameId}
 								onChange={handleChange}
 								className="w-full p-2 border rounded h-11"
 							/>
@@ -859,7 +705,7 @@ export function DriverRegistration() {
 											<div className="flex items-center gap-2">
 												<img
 													src={
-														teamsData?.teams?.find(
+														teamsData?.find(
 															(t) =>
 																t.id ===
 																formData.realLifeTeamId
@@ -870,7 +716,7 @@ export function DriverRegistration() {
 												/>
 												<span>
 													{
-														teamsData?.teams?.find(
+														teamsData?.find(
 															(t) =>
 																t.id ===
 																formData.realLifeTeamId
@@ -899,7 +745,7 @@ export function DriverRegistration() {
 										>
 											Escolha equipe
 										</ListboxOption>
-										{teamsData?.teams?.map((team) => (
+										{teamsData?.map((team) => (
 											<ListboxOption
 												key={team.id}
 												value={team.id}
@@ -1089,7 +935,7 @@ export function DriverRegistration() {
 										<div className="flex items-center gap-2">
 											<img
 												src={
-													teamsData?.teams?.find(
+													teamsData?.find(
 														(t) => t.id === teamId,
 													)?.photo?.url
 												}
@@ -1098,7 +944,7 @@ export function DriverRegistration() {
 											/>
 											<span>
 												{
-													teamsData?.teams?.find(
+													teamsData?.find(
 														(t) => t.id === teamId,
 													)?.name
 												}
@@ -1121,7 +967,7 @@ export function DriverRegistration() {
 									>
 										Escolha equipe
 									</ListboxOption>
-									{teamsData?.teams?.map((team) => (
+									{teamsData?.map((team) => (
 										<ListboxOption
 											key={team.id}
 											value={team.id}
@@ -1229,10 +1075,10 @@ export function DriverRegistration() {
 
 					<button
 						type="submit"
-						disabled={createDriverLoading || updateDriverLoading}
+						disabled={saving}
 						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 					>
-						{createDriverLoading || updateDriverLoading
+						{saving
 							? isEditing
 								? "Atualizando..."
 								: "Cadastrando..."

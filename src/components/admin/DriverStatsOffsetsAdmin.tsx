@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetDriversRegistrationQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { tenant } from "../../shared/config/tenants";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useToast } from "../../contexts/ToastContext";
+import { useDriverGameIds } from "../../shared/hooks/useDriverGameIds";
 
 const STAT_FIELDS: { key: keyof DriverStatsShape; label: string }[] = [
 	{ key: "participations", label: "Participações" },
@@ -38,7 +39,7 @@ const EMPTY_OFFSET = (): Partial<DriverStatsShape> => ({
 });
 
 export function DriverStatsOffsetsAdmin() {
-	const { data: driversData } = useGetDriversRegistrationQuery();
+	const { drivers: driversData } = useFirebaseDrivers();
 	const [allOffsets, setAllOffsets] = useState<Record<string, any>>({});
 	const [selectedDriver, setSelectedDriver] = useState<any>(null);
 	const [editOffsets, setEditOffsets] = useState<Record<string, Partial<DriverStatsShape> & { penaltyRate?: number }>>({});
@@ -48,6 +49,7 @@ export function DriverStatsOffsetsAdmin() {
 
 	const { triggerForGrid } = useCalculateCards();
 	const { showToast } = useToast();
+	const gameIdMap = useDriverGameIds();
 	const grids = tenant.grids as any[];
 
 	useEffect(() => {
@@ -89,8 +91,10 @@ export function DriverStatsOffsetsAdmin() {
 		}
 	};
 
-	const filtered = (driversData?.drivers ?? []).filter((d) =>
-		d.name.toLowerCase().includes(searchTerm.toLowerCase()),
+	const filtered = driversData.filter(
+		(d) =>
+			d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			gameIdMap[d.id]?.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
 
 	return (
@@ -209,6 +213,6 @@ export function DriverStatsOffsetsAdmin() {
 				</div>
 			)}
 		</div>
-		</div>
+	</div>
 	);
 }

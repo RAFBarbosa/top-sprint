@@ -11,7 +11,7 @@ import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 import { tenant } from "../../shared/config/tenants";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
-import { useGetDriversQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,13 +67,13 @@ export function Menu() {
 	const navigateToDriver = useNavigateToDriver();
 	const { activeTab, tabs } = useTab();
 	const { isInGrid, applyProfile } = useDriverProfiles();
-	const { data, loading, error } = useGetDriversQuery();
+	const { drivers: data, loading } = useFirebaseDrivers();
 
 	const menuItems = buildMenuItems();
 
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
-		(data?.drivers ?? []).forEach((d) => {
+		(data).forEach((d) => {
 			if (d.team?.name && d.team?.photo?.url) {
 				map[d.team.name] = d.team.photo.url;
 			}
@@ -81,7 +81,7 @@ export function Menu() {
 		return map;
 	}, [data]);
 
-	const activeGridDrivers = (data?.drivers ?? [])
+	const activeGridDrivers = (data)
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
 			const applied = applyProfile(driver, activeTab.id);
@@ -259,10 +259,6 @@ export function Menu() {
 												{loading ? (
 													<div className="text-white p-4">
 														Carregando pilotos...
-													</div>
-												) : error ? (
-													<div className="text-red-300 p-4">
-														Erro ao carregar pilotos
 													</div>
 												) : activeGridDrivers.length ===
 												  0 ? (
