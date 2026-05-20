@@ -1,19 +1,86 @@
-import { FormEvent, useState } from "react";
-import {
-	useCreatePartnerMutation,
-	useUpdatePartnerMutation,
-	useGetPartnersRegistrationQuery,
-	useCreateAssetMutation,
-	GetPartnersRegistrationDocument,
-} from "../../graphql/generated";
+import { FormEvent, useState, useEffect, useRef } from "react";
+import { useCreateAssetMutation } from "../../graphql/generated";
+import { setDoc, doc, addDoc, collection } from "firebase/firestore";
+import { db } from "../../lib/adminClient";
 import {
 	Dialog,
 	DialogTitle,
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import { useToast } from "../../contexts/ToastContext";
+import { useFirebasePartners, type NormalizedPartner } from "../../shared/hooks/useFirebasePartners";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
+const ItemTypes = { PARTNER: "partner" };
+
+function DraggablePartnerItem({
+	partner,
+	index,
+	isSelected,
+	onMove,
+	onSelect,
+	onDelete,
+}: {
+	partner: NormalizedPartner;
+	index: number;
+	isSelected: boolean;
+	onMove: (from: number, to: number) => void;
+	onSelect: (p: NormalizedPartner) => void;
+	onDelete: (id: string, deleted: boolean) => void;
+}) {
+	const [{ isDragging }, drag] = useDrag({
+		type: ItemTypes.PARTNER,
+		item: { index },
+		collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+	});
+	const [, drop] = useDrop({
+		accept: ItemTypes.PARTNER,
+		hover: (item: { index: number }) => {
+			if (item.index !== index) {
+				onMove(item.index, index);
+				item.index = index;
+			}
+		},
+	});
+
+	return (
+		<li ref={(node) => drag(drop(node))} className={isDragging ? "opacity-50" : ""}>
+			<div
+				onClick={() => onSelect(partner)}
+				className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
+					isSelected ? "bg-f1-red/20 font-bold" : ""
+				}`}
+			>
+				<div className="flex items-center gap-2">
+					<div
+						className="cursor-move p-1 hover:bg-gray-100 rounded shrink-0"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<Bars3Icon className="w-4 h-4 text-gray-400" />
+					</div>
+					{partner.footerLogo?.url && (
+						<img
+							src={partner.footerLogo.url}
+							alt={partner.name}
+							className="w-8 h-8 object-contain"
+						/>
+					)}
+					<div className="flex flex-col items-start">
+						<span className="truncate max-w-36">{partner.name}</span>
+					</div>
+				</div>
+				<AdminDeleteButton
+					deleted={partner.deleted}
+					onClick={() => onDelete(partner.id, partner.deleted)}
+				/>
+			</div>
+		</li>
+	);
+}
 
 export function PartnerRegistration() {
 	const [formData, setFormData] = useState({
@@ -28,6 +95,7 @@ export function PartnerRegistration() {
 	const [selectedPartner, setSelectedPartner] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [saving, setSaving] = useState(false);
 	const [activeFilter, setActiveFilter] = useState<
 		"all" | "active" | "inactive"
 	>("all");
@@ -38,22 +106,29 @@ export function PartnerRegistration() {
 		deleted: boolean;
 	} | null>(null);
 
-	const [createPartner, { loading: createPartnerLoading }] =
-		useCreatePartnerMutation({
-			refetchQueries: [{ query: GetPartnersRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
-	const [updatePartner, { loading: updatePartnerLoading }] =
-		useUpdatePartnerMutation({
-			refetchQueries: [{ query: GetPartnersRegistrationDocument }],
-			awaitRefetchQueries: true,
-		});
 	const [createAsset] = useCreateAssetMutation();
+	const { partners: allPartners, refetch } = useFirebasePartners();
+	const [localPartners, setLocalPartners] = useState<NormalizedPartner[]>([]);
+	const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const { data: partnersData, error: partnersError } =
-		useGetPartnersRegistrationQuery({
-			fetchPolicy: "network-only",
+	useEffect(() => {
+		setLocalPartners(allPartners);
+	}, [allPartners]);
+
+	const saveOrder = async (ordered: NormalizedPartner[]) => {
+		await setDoc(doc(db, "config", "partners_order"), {
+			order: ordered.map((p) => p.id),
 		});
+	};
+
+	const handleMove = (fromIndex: number, toIndex: number) => {
+		const updated = [...localPartners];
+		const [moved] = updated.splice(fromIndex, 1);
+		updated.splice(toIndex, 0, moved);
+		setLocalPartners(updated);
+		if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+		saveTimeoutRef.current = setTimeout(() => saveOrder(updated), 1000);
+	};
 
 	const handleDeleteClick = (id: string, deleted: boolean) => {
 		setItemToDelete({ id, deleted });
@@ -75,12 +150,8 @@ export function PartnerRegistration() {
 
 	const handleToggleDelete = async (id: string, currentDeleted: boolean) => {
 		try {
-			await updatePartner({
-				variables: {
-					where: { id },
-					data: { deleted: !currentDeleted },
-				},
-			});
+			await setDoc(doc(db, "partners", id), { deleted: !currentDeleted }, { merge: true });
+			refetch();
 		} catch (error) {
 			console.error("Error toggling delete:", error);
 		}
@@ -109,6 +180,7 @@ export function PartnerRegistration() {
 
 	const handlePartner = async (event: FormEvent) => {
 		event.preventDefault();
+		setSaving(true);
 
 		try {
 			if (!formData.name) throw new Error("Nome é obrigatório");
@@ -116,7 +188,7 @@ export function PartnerRegistration() {
 				throw new Error("URL deve começar com http/https");
 			}
 
-			let logoId = null;
+			let logoUrl: string | null = null;
 			if (logoFile) {
 				const assetResult = await createAsset({
 					variables: { data: {} },
@@ -157,45 +229,29 @@ export function PartnerRegistration() {
 
 				if (!uploadResponse.ok) throw new Error("Upload failed");
 
-				logoId = asset.id;
+				logoUrl = asset.url ?? null;
 				setUploadProgress(100);
 			}
 
 			if (isEditing && selectedPartner) {
-				const result = await updatePartner({
-					variables: {
-						where: { id: selectedPartner.id },
-						data: {
-							name: formData.name,
-							link: formData.link || null,
-							active: formData.active,
-							footerLogo: logoId
-								? { connect: { id: logoId } }
-								: undefined,
-						},
-					},
-				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
+				const updateData: Record<string, any> = {
+					name: formData.name,
+					link: formData.link || null,
+					active: formData.active,
+				};
+				if (logoUrl) updateData.footerLogoUrl = logoUrl;
+				await setDoc(doc(db, "partners", selectedPartner.id), updateData, { merge: true });
+				refetch();
 				showToast("success", "Parceiro atualizado com sucesso!");
 			} else {
-				const result = await createPartner({
-					variables: {
-						data: {
-							name: formData.name,
-							link: formData.link || null,
-							active: formData.active,
-							deleted: false,
-							footerLogo: logoId
-								? { connect: { id: logoId } }
-								: undefined,
-						},
-					},
+				await addDoc(collection(db, "partners"), {
+					name: formData.name,
+					link: formData.link || null,
+					active: formData.active,
+					footerLogoUrl: logoUrl ?? null,
+					deleted: false,
 				});
-
-				if (result.errors) throw new Error(result.errors[0].message);
-
+				refetch();
 				showToast("success", "Parceiro cadastrado com sucesso!");
 			}
 
@@ -211,6 +267,8 @@ export function PartnerRegistration() {
 				error.message || "Erro desconhecido ao cadastrar parceiro",
 			);
 			setUploadProgress(null);
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -219,36 +277,25 @@ export function PartnerRegistration() {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
-	const filteredPartners = (partnersData?.partners ?? []).filter(
-		(partner) => {
-			const matchesActive =
-				activeFilter === "all"
-					? true
-					: activeFilter === "active"
-						? partner.active === true
-						: partner.active === false;
+	const filteredPartners = localPartners.filter((partner) => {
+		const matchesActive =
+			activeFilter === "all"
+				? true
+				: activeFilter === "active"
+					? partner.active === true
+					: partner.active === false;
 
-			const matchesSearch = searchTerm
-				? [partner.name, partner.link].some((val) =>
-						val?.toLowerCase().includes(searchTerm.toLowerCase()),
-					)
-				: true;
+		const matchesSearch = searchTerm
+			? [partner.name, partner.link].some((val) =>
+					val?.toLowerCase().includes(searchTerm.toLowerCase()),
+				)
+			: true;
 
-			return matchesActive && matchesSearch;
-		},
-	);
-
-	if (partnersError) {
-		return (
-			<div className="bg-f1-lightSilver py-10">
-				<div className="max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-					Erro ao carregar parceiros: {partnersError.message}
-				</div>
-			</div>
-		);
-	}
+		return matchesActive && matchesSearch;
+	});
 
 	return (
+		<DndProvider backend={HTML5Backend}>
 		<div className="flex flex-col md:flex-row w-full">
 			{/* Partners Sidebar */}
 			<div className="w-full md:w-80 bg-white md:p-4 rounded-lg md:shadow-md h-full">
@@ -290,55 +337,16 @@ export function PartnerRegistration() {
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
 					{filteredPartners.length > 0 ? (
-						filteredPartners.map((partner) => (
-							<li key={partner.id}>
-								<div
-									onClick={() => handleSelectPartner(partner)}
-									className={`w-full p-2 hover:bg-f1-red/20 rounded flex items-center gap-2 cursor-pointer justify-between overflow-hidden ${
-										selectedPartner?.id === partner.id
-											? "bg-f1-red/20 font-bold"
-											: ""
-									}`}
-								>
-									<div className="flex items-center gap-2">
-										{partner.footerLogo?.url && (
-											<img
-												src={partner.footerLogo.url}
-												alt={partner.name}
-												className="w-8 h-8 object-contain"
-											/>
-										)}
-										<div className="flex flex-col items-start">
-											<span className="truncate max-w-36">
-												{partner.name}
-											</span>
-											{/* {!partner.active && (
-												<span className="text-xs text-gray-400">
-													• Inativo
-												</span>
-											)} */}
-										</div>
-									</div>
-
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											handleDeleteClick(
-												partner.id,
-												partner.deleted,
-											);
-										}}
-										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-										title={
-											partner.deleted
-												? "Restaurar"
-												: "Excluir"
-										}
-									>
-										<TrashIcon className="h-5 w-5" />
-									</button>
-								</div>
-							</li>
+						filteredPartners.map((partner, index) => (
+							<DraggablePartnerItem
+								key={partner.id}
+								partner={partner}
+								index={index}
+								isSelected={selectedPartner?.id === partner.id}
+								onMove={handleMove}
+								onSelect={handleSelectPartner}
+								onDelete={handleDeleteClick}
+							/>
 						))
 					) : (
 						<li className="p-2 text-gray-500 text-center">
@@ -501,10 +509,10 @@ export function PartnerRegistration() {
 
 					<button
 						type="submit"
-						disabled={createPartnerLoading || updatePartnerLoading}
+						disabled={saving}
 						className="bg-f1-carbon border w-full border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 mt-4 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
 					>
-						{createPartnerLoading || updatePartnerLoading
+						{saving
 							? isEditing
 								? "Atualizando..."
 								: "Cadastrando..."
@@ -515,5 +523,6 @@ export function PartnerRegistration() {
 				</form>
 			</div>
 		</div>
+		</DndProvider>
 	);
 }

@@ -4,7 +4,8 @@ import { useGrids } from "../../contexts/GridsContext";
 import type { GridConfig } from "../../shared/config/grids";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Bars3Icon, TrashIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
 import { GridConfigAdmin } from "./GridConfigAdmin";
 import { GridDriversAdmin } from "./GridDriversAdmin";
@@ -77,16 +78,7 @@ function DraggableGridItem({
 					</div>
 				</div>
 
-				<button
-					onClick={(e) => {
-						e.stopPropagation();
-						onDelete(grid);
-					}}
-					className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-					title="Excluir"
-				>
-					<TrashIcon className="h-5 w-5" />
-				</button>
+				<AdminDeleteButton onClick={() => onDelete(grid)} />
 			</div>
 		</li>
 	);

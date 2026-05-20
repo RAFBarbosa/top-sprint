@@ -9,10 +9,8 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import {
-	useGetDriversRegistrationQuery,
-	useGetTeamsQuery,
-} from "../../graphql/generated";
+import { useFirebaseTeams } from "../../shared/hooks/useFirebaseTeams";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useGrids } from "../../contexts/GridsContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
@@ -24,6 +22,7 @@ import {
 } from "@headlessui/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useToast } from "../../contexts/ToastContext";
+import { useDriverGameIds } from "../../shared/hooks/useDriverGameIds";
 
 interface GridProfile {
 	number: string;
@@ -41,8 +40,8 @@ export function GridDriversAdmin({
 	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading: gridsLoading } = useGrids();
 
-	const { data: driversData } = useGetDriversRegistrationQuery();
-	const { data: teamsData } = useGetTeamsQuery();
+	const { drivers: driversData } = useFirebaseDrivers();
+	const { teams: teamsData } = useFirebaseTeams();
 
 	const [allProfiles, setAllProfiles] = useState<
 		Record<string, Record<string, GridProfile>>
@@ -59,6 +58,7 @@ export function GridDriversAdmin({
 
 	const [addSearch, setAddSearch] = useState("");
 	const { showToast } = useToast();
+	const gameIdMap = useDriverGameIds();
 
 	const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState<"name" | "team">("name");
@@ -102,9 +102,9 @@ export function GridDriversAdmin({
 				if (cmp !== 0) return cmp;
 			}
 			const nameA =
-				driversData?.drivers?.find((d) => d.id === a)?.name ?? a;
+				driversData.find((d) => d.id === a)?.name ?? a;
 			const nameB =
-				driversData?.drivers?.find((d) => d.id === b)?.name ?? b;
+				driversData.find((d) => d.id === b)?.name ?? b;
 			return nameA.localeCompare(nameB, "pt-BR");
 		});
 
@@ -125,14 +125,15 @@ export function GridDriversAdmin({
 		),
 	);
 
-	const unassignedDrivers = (driversData?.drivers ?? []).filter(
+	const unassignedDrivers = driversData.filter(
 		(d) => !d.deleted && !assignedDriverIds.includes(d.id),
 	);
 	const filteredUnassigned = unassignedDrivers
 		.filter(
 			(d) =>
 				addSearch === "" ||
-				d.name?.toLowerCase().includes(addSearch.toLowerCase()),
+				d.name?.toLowerCase().includes(addSearch.toLowerCase()) ||
+				gameIdMap[d.id]?.toLowerCase().includes(addSearch.toLowerCase()),
 		)
 		.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "", "pt-BR"));
 
@@ -148,7 +149,7 @@ export function GridDriversAdmin({
 	};
 
 	const handleTeamChange = (teamName: string) => {
-		const team = teamsData?.teams?.find((t) => t.name === teamName);
+		const team = teamsData?.find((t) => t.name === teamName);
 		setEditForm((prev) => ({
 			...prev,
 			teamName: team?.name ?? "",
@@ -158,7 +159,7 @@ export function GridDriversAdmin({
 
 	const handleSaveEdit = async (driverId: string) => {
 		try {
-			const driver = driversData?.drivers?.find((d) => d.id === driverId);
+			const driver = driversData.find((d) => d.id === driverId);
 			const profileToSave: GridProfile = {
 				...editForm,
 				photoUrl: driver?.photo?.url ?? editForm.photoUrl ?? "",
@@ -175,7 +176,7 @@ export function GridDriversAdmin({
 	};
 
 	const handleAssign = async (driverId: string, reserve = false, exDriver = false) => {
-		const driver = driversData?.drivers?.find((d) => d.id === driverId);
+		const driver = driversData.find((d) => d.id === driverId);
 		const profile: GridProfile = {
 			number: (driver as any)?.number ?? "",
 			teamName: driver?.team?.name ?? "",
@@ -226,7 +227,7 @@ export function GridDriversAdmin({
 	};
 
 	const DriverRow = ({ driverId }: { driverId: string }) => {
-		const driver = driversData?.drivers?.find((d) => d.id === driverId);
+		const driver = driversData.find((d) => d.id === driverId);
 		const profile = allProfiles[driverId]?.[gridId ?? ""];
 		const isEditing = editingId === driverId;
 
@@ -314,7 +315,7 @@ export function GridDriversAdmin({
 									className="w-full px-2 border rounded h-9 text-sm cursor-pointer"
 								>
 									<option value="">— Sem Equipe —</option>
-									{(teamsData?.teams ?? []).map((t) => (
+									{(teamsData ?? []).map((t) => (
 										<option key={t.id} value={t.name}>
 											{t.name}
 										</option>
@@ -378,7 +379,7 @@ export function GridDriversAdmin({
 		);
 	};
 
-	const confirmDriver = driversData?.drivers?.find(
+	const confirmDriver = driversData.find(
 		(d) => d.id === confirmRemoveId,
 	);
 

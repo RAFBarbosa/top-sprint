@@ -8,7 +8,7 @@ import {
 import { useCreateAssetMutation } from "../../graphql/generated";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { ChevronUpDownIcon } from "@heroicons/react/16/solid";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import {
@@ -450,23 +450,10 @@ const { getTrack } = useTracks();
 												/>
 											)}
 										</div>
-										<button
-											onClick={(e) => {
-												e.stopPropagation();
-												handleDeleteClick(
-													banner.id,
-													banner.deleted,
-												);
-											}}
-											className="text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-											title={
-												banner.deleted
-													? "Restaurar"
-													: "Excluir"
-											}
-										>
-											<TrashIcon className="h-5 w-5" />
-										</button>
+										<AdminDeleteButton
+											deleted={banner.deleted}
+											onClick={() => handleDeleteClick(banner.id, banner.deleted)}
+										/>
 									</div>
 								</div>
 							</li>

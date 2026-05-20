@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useRef, useMemo } from "react";
 import PlayerCard from "../components/utils/PlayerCard";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { normalizeString } from "../shared/utils/normalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
@@ -13,7 +13,9 @@ import { HygraphImg } from "../components/utils/HygraphImg";
 import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
 import { useDriverStats } from "../shared/hooks/useDriverStats";
 import type { DriverStatsShape } from "../shared/hooks/useDriverStats";
-import { useGetDriversQuery, useGetTeamsQuery } from "../graphql/generated";
+import type { RaceAward } from "../shared/config/grids";
+import { useFirebaseTeams } from "../shared/hooks/useFirebaseTeams";
+import { useFirebaseDrivers } from "../shared/hooks/useFirebaseDrivers";
 import { useDriverCards } from "../shared/hooks/useDriverCards";
 import { useBestSeasonCard } from "../shared/hooks/useBestSeasonCard";
 import { useRealLifeTeamLogos } from "../shared/hooks/useRealLifeTeamLogos";
@@ -21,9 +23,11 @@ import { useRealLifeTeamLogos } from "../shared/hooks/useRealLifeTeamLogos";
 function StatsBlock({
 	label,
 	stats,
+	raceAwards = [],
 }: {
 	label: string;
 	stats: DriverStatsShape;
+	raceAwards?: RaceAward[];
 }) {
 	const hasAny = Object.values(stats).some((v) => v > 0);
 	if (!hasAny) return null;
@@ -39,6 +43,9 @@ function StatsBlock({
 		{ label: "Volt. Rápidas", value: stats.fastestLaps },
 		{ label: "Campeonatos", value: stats.championships },
 		{ label: "Camp. Equipe", value: stats.teamChampionships },
+		...raceAwards
+			.filter((a) => a.id !== "fastestLap")
+			.map((a) => ({ label: a.label, value: stats.awards?.[a.id] ?? 0 })),
 	].filter((item) => item.value > 0);
 
 	// Group items into rows of 2
@@ -133,13 +140,12 @@ function StatsHeader({ title }: { title: string }) {
 
 export function Profile() {
 	const { driverName } = useParams<{ driverName: string }>();
-	const { activeTab, setActiveTab } = useTab();
+	const { activeTab } = useTab();
 
 	const { applyProfile, isInGrid } = useDriverProfiles();
-	const { data } = useGetDriversQuery();
-	const { data: teamsData } = useGetTeamsQuery();
+	const { drivers: driversList } = useFirebaseDrivers();
+	const { teams: teamsData } = useFirebaseTeams();
 	const navigate = useNavigate();
-	const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 	const [cardView, setCardView] = useState<"current" | "best">("current");
 	const cardRef = useRef<HTMLDivElement>(null);
 
@@ -147,55 +153,59 @@ export function Profile() {
 	// reading through driver.team.photo, which can be broken in cloned Hygraph projects)
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
-		(teamsData?.teams ?? []).forEach((t) => {
+		(teamsData ?? []).forEach((t) => {
 			if (t.name && t.photo?.url) map[t.name] = t.photo.url;
 		});
-		(data?.drivers ?? []).forEach((d) => {
+		driversList.forEach((d) => {
 			if (d.team?.name && d.team?.photo?.url && !map[d.team.name]) {
 				map[d.team.name] = d.team.photo.url;
 			}
 		});
 		return map;
-	}, [teamsData, data]);
+	}, [teamsData, driversList]);
 
 	// Get real life team logos and nationalities for drivers in current grid
 	const { logos: realLifeTeamLogos, nationalities, nationalityCodes } = useRealLifeTeamLogos(
 		activeTab.id,
 	);
 
-	const filteredDrivers = (data?.drivers ?? [])
-		.filter((driver) => isInGrid(driver.id, activeTab.id))
-		.map((driver) => {
-			const applied = applyProfile(driver, activeTab.id);
-			const resolvedTeamName =
-				applied.team?.name ?? applied.teamName ?? "";
-			return {
-				...applied,
-				photo: applied.photo?.url ?? applied.photo ?? "",
-				teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
-				teamName: resolvedTeamName,
-				teamLogo:
-					applied.team?.photo?.url ??
-					applied.teamLogo ??
-					teamLogoByName[resolvedTeamName] ??
-					"",
-				realLifeTeamLogoUrl: realLifeTeamLogos[driver.id] ?? "",
-				nationality: nationalities[driver.id] ?? "",
-				nationalityCode: nationalityCodes[driver.id] ?? "",
-				num: applied.number ?? "",
-				stats: applied.stats ?? {},
-			};
-		})
-		.filter((driver) => !driver.reserve && !driver.exDriver)
-		.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+	const filteredDrivers = useMemo(
+		() =>
+			driversList
+				.filter((driver) => isInGrid(driver.id, activeTab.id))
+				.map((driver) => {
+					const applied = applyProfile(driver, activeTab.id);
+					const resolvedTeamName =
+						applied.team?.name ?? applied.teamName ?? "";
+					return {
+						...applied,
+						photo: applied.photo?.url ?? applied.photo ?? "",
+						teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
+						teamName: resolvedTeamName,
+						teamLogo:
+							applied.team?.photo?.url ??
+							applied.teamLogo ??
+							teamLogoByName[resolvedTeamName] ??
+							"",
+						realLifeTeamLogoUrl: realLifeTeamLogos[driver.id] ?? "",
+						nationality: nationalities[driver.id] ?? "",
+						nationalityCode: nationalityCodes[driver.id] ?? "",
+						num: applied.number ?? "",
+						stats: applied.stats ?? {},
+					};
+				})
+				.filter((driver) => !driver.reserve && !driver.exDriver)
+				.sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
+		[driversList, activeTab.id, isInGrid, applyProfile, teamLogoByName, realLifeTeamLogos, nationalities, nationalityCodes],
+	);
 
-	useEffect(() => {
-		const index = filteredDrivers.findIndex(
+	const currentIndex = useMemo(() => {
+		if (!driverName || filteredDrivers.length === 0) return null;
+		return filteredDrivers.findIndex(
 			(driver) =>
 				normalizeString(driver.name.toLowerCase()) ===
-				normalizeString(driverName?.toLowerCase() ?? ""),
+				normalizeString(driverName.toLowerCase()),
 		);
-		setCurrentIndex(index >= 0 ? index : filteredDrivers.length - 1);
 	}, [driverName, filteredDrivers]);
 
 	const handlePrevClick = () => {
@@ -220,7 +230,7 @@ export function Profile() {
 	};
 
 	const driverData =
-		currentIndex !== null ? filteredDrivers[currentIndex] : null;
+		currentIndex !== null && currentIndex >= 0 ? filteredDrivers[currentIndex] : null;
 
 	const { season: seasonStats, career: careerStats } = useDriverStats(
 		driverData?.id,
@@ -231,8 +241,13 @@ export function Profile() {
 	const cardStats = driverData?.id ? driverCards[driverData.id] : null;
 	const bestSeasonCard = useBestSeasonCard(driverData?.id, activeTab.id);
 
+	if (driverName && filteredDrivers.length > 0 && currentIndex === -1) {
+		return <Navigate to={"/pilotos" + window.location.search} replace />;
+	}
+
 	return (
 		currentIndex !== null &&
+		currentIndex >= 0 &&
 		filteredDrivers.length > 0 && (
 			<aside
 				id="perfil"
@@ -262,7 +277,7 @@ export function Profile() {
 								}
 								aria-label={
 									currentIndex !== null && currentIndex > 0
-										? `Piloto anterior: ${filteredDrivers[currentIndex - 1].name}`
+										? `Piloto anterior: ${filteredDrivers[currentIndex - 1]?.name ?? ""}`
 										: "Piloto anterior"
 								}
 								className={`tenant-profile-nav bg-f1-lightSilver text-f1-text font-bold px-2 rounded-l border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
@@ -271,12 +286,10 @@ export function Profile() {
 										: "hover:opacity-80 cursor-pointer"
 								}`}
 								style={{
-									borderColor: `${
+									borderColor:
 										currentIndex > 0
-											? filteredDrivers[currentIndex - 1]
-													.teamColor
-											: ""
-									}`,
+											? filteredDrivers[currentIndex - 1]?.teamColor ?? ""
+											: "",
 								}}
 							>
 								<div className="pt-2 flex items-center justify-around">
@@ -292,20 +305,10 @@ export function Profile() {
 										"round" ? (
 											<HygraphImg
 												src={
-													currentIndex > 0
-														? filteredDrivers[
-																currentIndex - 1
-															].photo ||
-															tenant.fallbackDriverPhoto
-														: tenant.fallbackDriverPhoto
+													filteredDrivers[currentIndex - 1]?.photo ||
+													tenant.fallbackDriverPhoto
 												}
-												alt={
-													currentIndex > 0
-														? filteredDrivers[
-																currentIndex - 1
-															].name
-														: ""
-												}
+												alt={filteredDrivers[currentIndex - 1]?.name ?? ""}
 												imgWidth={80}
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
@@ -316,13 +319,8 @@ export function Profile() {
 												className="w-22 h-22 bg-cover translate-y-[8px]"
 												style={{
 													backgroundImage: `url(${resizeHygraphUrl(
-														currentIndex > 0
-															? filteredDrivers[
-																	currentIndex -
-																		1
-																].photo ||
-																	tenant.fallbackDriverPhoto
-															: tenant.fallbackDriverPhoto,
+														filteredDrivers[currentIndex - 1]?.photo ||
+														tenant.fallbackDriverPhoto,
 														550,
 													)})`,
 												}}
@@ -332,13 +330,8 @@ export function Profile() {
 												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
 												style={{
 													backgroundImage: `url(${resizeHygraphUrl(
-														currentIndex > 0
-															? filteredDrivers[
-																	currentIndex -
-																		1
-																].photo ||
-																	tenant.fallbackDriverPhoto
-															: tenant.fallbackDriverPhoto,
+														filteredDrivers[currentIndex - 1]?.photo ||
+														tenant.fallbackDriverPhoto,
 														550,
 													)})`,
 												}}
@@ -356,7 +349,7 @@ export function Profile() {
 								aria-label={
 									currentIndex !== null &&
 									currentIndex < filteredDrivers.length - 1
-										? `Próximo piloto: ${filteredDrivers[currentIndex + 1].name}`
+										? `Próximo piloto: ${filteredDrivers[currentIndex + 1]?.name ?? ""}`
 										: "Próximo piloto"
 								}
 								className={`tenant-profile-nav bg-f1-lightSilver text-f1-text font-bold pr-2 rounded-r border-b-4 md:w-[180px] overflow-hidden transition-all duration-200 w-full ${
@@ -366,13 +359,10 @@ export function Profile() {
 										: "hover:opacity-80 cursor-pointer"
 								}`}
 								style={{
-									borderColor: `${
-										currentIndex <
-										filteredDrivers.length - 1
-											? filteredDrivers[currentIndex + 1]
-													.teamColor
-											: ""
-									}`,
+									borderColor:
+										currentIndex < filteredDrivers.length - 1
+											? filteredDrivers[currentIndex + 1]?.teamColor ?? ""
+											: "",
 								}}
 							>
 								<div className="pt-2 flex items-center justify-around">
@@ -557,6 +547,7 @@ export function Profile() {
 											<StatsBlock
 												label="Temporada Atual"
 												stats={seasonStats}
+												raceAwards={getGridConfig(activeTab.id)?.raceAwards ?? []}
 											/>
 										</div>
 									)}
@@ -570,6 +561,7 @@ export function Profile() {
 											<StatsBlock
 												label="Carreira"
 												stats={careerStats}
+												raceAwards={getGridConfig(activeTab.id)?.raceAwards ?? []}
 											/>
 										</div>
 									)}

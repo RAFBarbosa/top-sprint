@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetDriversQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
@@ -39,7 +39,7 @@ export function Calendars({
 	preventScrollOnClick?: boolean;
 } = {}) {
 	const { calendars, loading } = useCalendars();
-	const { data: driversData } = useGetDriversQuery();
+	const { drivers: driversList } = useFirebaseDrivers();
 	const { activeTab } = useTab();
 	const { applyProfile } = useDriverProfiles();
 	const { seasons } = useSeasons();
@@ -67,7 +67,7 @@ export function Calendars({
 	}, []);
 
 	const driverLookup = Object.fromEntries(
-		(driversData?.drivers ?? []).map((d) => [d.id, d]),
+		driversList.map((d) => [d.id, d]),
 	);
 
 	const getWinner = (

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetDriversQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "./useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { getGridConfig, getPointSystem } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -21,6 +21,7 @@ export interface DriverStatsShape {
 	seasons: number;
 	championships: number;
 	teamChampionships: number;
+	awards: Record<string, number>;
 }
 
 export interface DriverStatsOffsets {
@@ -40,12 +41,17 @@ const EMPTY_STATS: DriverStatsShape = {
 	seasons: 0,
 	championships: 0,
 	teamChampionships: 0,
+	awards: {},
 };
 
 function addStats(
 	a: DriverStatsShape,
 	b: Partial<DriverStatsShape>,
 ): DriverStatsShape {
+	const mergedAwards: Record<string, number> = { ...(a.awards ?? {}) };
+	Object.entries(b.awards ?? {}).forEach(([k, v]) => {
+		mergedAwards[k] = (mergedAwards[k] ?? 0) + v;
+	});
 	return {
 		participations: a.participations + (b.participations ?? 0),
 		wins: a.wins + (b.wins ?? 0),
@@ -59,6 +65,7 @@ function addStats(
 		seasons: a.seasons + (b.seasons ?? 0),
 		championships: a.championships + (b.championships ?? 0),
 		teamChampionships: a.teamChampionships + (b.teamChampionships ?? 0),
+		awards: mergedAwards,
 	};
 }
 
@@ -197,7 +204,7 @@ function calcStatsForCalendars(
 	const raceAwards = gridConfig?.raceAwards ?? [];
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 
-	let stats = { ...EMPTY_STATS };
+	let stats = { ...EMPTY_STATS, awards: {} as Record<string, number> };
 
 	for (const calId of calendarIds) {
 		const result = allResults[calId];
@@ -254,6 +261,7 @@ function calcStatsForCalendars(
 			if ((result as any)[award.id] === driverId) {
 				if (award.id === "fastestLap") stats.fastestLaps += 1;
 				stats.points += award.points;
+				stats.awards[award.id] = (stats.awards[award.id] ?? 0) + 1;
 			}
 		});
 
@@ -302,7 +310,7 @@ export function useDriverStats(
 	const [loading, setLoading] = useState(true);
 
 	const { allCalendars } = useCalendars();
-	const { data: driversData } = useGetDriversQuery();
+	const { drivers: driversList } = useFirebaseDrivers();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { profiles } = useDriverProfiles();
@@ -422,8 +430,8 @@ export function useDriverStats(
 		// Build driverId → teamName map using Firebase profiles (via applyProfile not available here,
 		// so use raw Hygraph team as fallback — good enough for standings)
 		const driverTeamMap: Record<string, string> = {};
-		(driversData?.drivers ?? []).forEach((d) => {
-			if (d.team?.name) driverTeamMap[d.id] = d.team.name;
+		driversList.forEach((d) => {
+			if (d.teamName) driverTeamMap[d.id] = d.teamName;
 		});
 
 		// Completed seasons for this grid (inactive, with at least 1 result)
@@ -482,7 +490,7 @@ export function useDriverStats(
 		allAdjustments,
 		offsets,
 		allCalendars,
-		driversData,
+		driversList,
 		seasons,
 		mappings,
 		profiles,

@@ -4,7 +4,7 @@ import { setDoc, getDocs, getDoc, collection, doc } from "firebase/firestore";
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { db } from "../../lib/adminClient";
-import { useGetDriversQuery } from "../../graphql/generated";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
@@ -27,7 +27,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
 	const { getTrack } = useTracks();
-	const { data: driversData } = useGetDriversQuery();
+	const { drivers: driversData } = useFirebaseDrivers();
 	const { allCalendars } = useCalendars();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
@@ -123,7 +123,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 		load();
 	}, [selectedCalendarId]);
 
-	const gridDrivers = (driversData?.drivers ?? []).filter((d) => {
+	const gridDrivers = driversData.filter((d) => {
 		if (d.deleted) return false;
 		if (raceDriverIds && !raceDriverIds.has(d.id)) return false;
 		return isInGrid(d.id, gridId ?? "") || (!profiles[d.id] && d.grid === gridId);

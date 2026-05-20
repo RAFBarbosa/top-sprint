@@ -4,27 +4,27 @@ import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
-import { useGetDriversQuery } from "../graphql/generated";
+import { useFirebaseDrivers } from "../shared/hooks/useFirebaseDrivers";
 import { useActiveSeason } from "../shared/hooks/useActiveSeason";
 import { getGridConfig } from "../shared/config/grids";
 
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
 	const { isInGrid, applyProfile } = useDriverProfiles();
-	const { data } = useGetDriversQuery();
+	const { drivers } = useFirebaseDrivers();
 	const activeSeason = useActiveSeason(activeTab.id);
 
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
-		(data?.drivers ?? []).forEach((d) => {
-			if (d.team?.name && d.team?.photo?.url) {
-				map[d.team.name] = d.team.photo.url;
+		drivers.forEach((d) => {
+			if (d.teamName && d.teamLogoUrl) {
+				map[d.teamName] = d.teamLogoUrl;
 			}
 		});
 		return map;
-	}, [data]);
+	}, [drivers]);
 
-	const activeDrivers = (data?.drivers ?? [])
+	const activeDrivers = drivers
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
 			const applied = applyProfile(driver, activeTab.id);

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useGetTeamsQuery } from "../../graphql/generated";
+import { useFirebaseTeams } from "./useFirebaseTeams";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import type { GridId } from "../config/grids";
 import { NATIONALITY_OPTIONS } from "../constants/nationalities";
@@ -21,7 +21,7 @@ export function useRealLifeTeamLogos(gridId: GridId) {
 	>({});
 	const [loading, setLoading] = useState(true);
 
-	const { data: teamsData } = useGetTeamsQuery();
+	const { teams: teamsData } = useFirebaseTeams();
 	const { isInGrid } = useDriverProfiles();
 
 	// Fetch all drivers data from Firebase once
@@ -49,7 +49,7 @@ export function useRealLifeTeamLogos(gridId: GridId) {
 		const nationalityMap: Record<string, string> = {};
 		const nationalityCodeMap: Record<string, string> = {};
 
-		if (teamsData?.teams) {
+		if (teamsData?.length) {
 			Object.entries(allDriversData).forEach(([driverId, driverData]) => {
 				// Only process drivers in the current grid
 				if (!isInGrid(driverId, gridId)) return;
@@ -57,7 +57,7 @@ export function useRealLifeTeamLogos(gridId: GridId) {
 				// Get real life team logo
 				const realLifeTeamId = driverData.realLifeTeamId;
 				if (realLifeTeamId) {
-					const team = teamsData.teams.find(
+					const team = teamsData.find(
 						(t) => t.id === realLifeTeamId
 					);
 					if (team?.photo?.url) {

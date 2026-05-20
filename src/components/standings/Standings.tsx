@@ -1,7 +1,5 @@
 import { Skeleton } from "@mui/material";
-import { useGetTeamsQuery } from "../../graphql/generated";
 import DataLoader from "./csv/DataLoader";
-import { useState } from "react";
 import { useTab } from "../../contexts/TabContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
@@ -31,10 +29,6 @@ const loadingSkeleton = () => {
 };
 
 export function Standings() {
-	const { data, error, loading } = useGetTeamsQuery();
-	const [isTabLoading] = useState(false);
-	const [previousData] = useState(data);
-
 	const { activeTab } = useTab();
 
 	const gridConfig = getGridConfig(activeTab.id);
@@ -44,14 +38,6 @@ export function Standings() {
 		previousStandings,
 		loading: standingsLoading,
 	} = useFirebaseStandings(activeTab.id);
-
-	if (loading && !previousData) return loadingSkeleton();
-	if (error)
-		return (
-			<div className="text-red-500 text-center py-6">
-				{error?.message || "An error occurred"}
-			</div>
-		);
 
 	if (standingsLoading) return loadingSkeleton();
 	if (!activeSeason || standings.length === 0) return null;
@@ -85,10 +71,7 @@ export function Standings() {
 
 			<div className="px-3 w-full md:max-w-screen-xl mx-auto z-10">
 				<div
-					aria-busy={isTabLoading}
-					className={`transition-opacity duration-300 md:min-h-full min-h-full ${
-						isTabLoading ? "opacity-50" : "opacity-100"
-					}`}
+					className="transition-opacity duration-300 md:min-h-full min-h-full opacity-100"
 				>
 					<DataLoader
 						activeTab={activeTab.id}
@@ -96,7 +79,7 @@ export function Standings() {
 						previousStandings={previousStandings}
 					/>
 				</div>
-				{isTabLoading && (
+				{false && (
 					<div
 						className="absolute inset-0 flex items-center justify-center"
 						role="status"

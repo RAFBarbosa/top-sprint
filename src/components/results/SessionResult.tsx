@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import {
-	useGetDriversQuery,
-	type GetDriversQuery,
-} from "../../graphql/generated";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
+import type { NormalizedDriver } from "../../types/driver";
 import {
 	getGridConfig,
 	getPointSystem,
@@ -101,7 +99,7 @@ function buildRows(
 	qualyOrder: string[],
 	awardWinners: Record<string, string>,
 	penalties: Penalty[],
-	drivers: ReturnType<typeof useGetDriversQuery>["data"]["drivers"],
+	drivers: NormalizedDriver[],
 	sessionType: "race" | "sprint" | "quali",
 	calGrid: string,
 	driverSnapshots?: Record<
@@ -480,7 +478,7 @@ function ResultsSection({
 	awardWinners: Record<string, string>;
 	penalties: Penalty[];
 	pointAdjustments?: { driverId: string; points: number; reason: string }[];
-	drivers: GetDriversQuery["drivers"] | undefined;
+	drivers: NormalizedDriver[];
 	sessionType: "race" | "sprint" | "quali";
 	calGrid: string;
 	showLabel?: boolean;
@@ -1021,7 +1019,7 @@ export function SessionResult({
 		{},
 	);
 
-	const { data: driversData } = useGetDriversQuery();
+	const { drivers: driversData } = useFirebaseDrivers();
 	const { seasons } = useSeasons();
 	const { getSeasonForCalendar } = useCalendarSeasons();
 
@@ -1152,7 +1150,7 @@ export function SessionResult({
 	const hasSprint = !!calData?.sprint;
 	const hasSprintData = !!firebaseData.sprintResults?.some(Boolean);
 	const hasRaceData = !!firebaseData.results?.some(Boolean);
-	const drivers = driversData?.drivers;
+	const drivers = driversData;
 
 	const calGrid = calData?.grid ?? "";
 	const gridColor = getGridConfig(calGrid)?.primaryColor ?? "#eb1c24";

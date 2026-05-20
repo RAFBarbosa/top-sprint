@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import {
-	useGetDriversRegistrationQuery,
-	useGetTeamsQuery,
-} from "../../graphql/generated";
+import { useFirebaseTeams } from "../../shared/hooks/useFirebaseTeams";
 import { tenant } from "../../shared/config/tenants";
 import { getGridConfig } from "../../shared/config/grids";
 import { useToast } from "../../contexts/ToastContext";
+import { useDriverGameIds } from "../../shared/hooks/useDriverGameIds";
+import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
 interface GridProfile {
 	number: string;
@@ -19,8 +18,8 @@ interface GridProfile {
 type DriverProfiles = Record<string, GridProfile>;
 
 export function DriverGridProfilesAdmin() {
-	const { data: driversData } = useGetDriversRegistrationQuery();
-	const { data: teamsData } = useGetTeamsQuery();
+	const { drivers: driversData } = useFirebaseDrivers();
+	const { teams: teamsData } = useFirebaseTeams();
 
 	const [allProfiles, setAllProfiles] = useState<
 		Record<string, DriverProfiles>
@@ -30,6 +29,7 @@ export function DriverGridProfilesAdmin() {
 	const [saving, setSaving] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const { showToast } = useToast();
+	const gameIdMap = useDriverGameIds();
 
 	const grids = tenant.grids as any[];
 
@@ -96,7 +96,7 @@ export function DriverGridProfilesAdmin() {
 	};
 
 	const handleTeamChange = (gridId: string, teamName: string) => {
-		const team = teamsData?.teams?.find((t) => t.name === teamName);
+		const team = teamsData?.find((t) => t.name === teamName);
 		setEditProfiles((prev) => ({
 			...prev,
 			[gridId]: {
@@ -108,12 +108,13 @@ export function DriverGridProfilesAdmin() {
 		}));
 	};
 
-	const filteredDrivers = (driversData?.drivers ?? [])
+	const filteredDrivers = driversData
 		.filter(
 			(d) =>
 				!d.deleted &&
 				(searchTerm === "" ||
-					d.name?.toLowerCase().includes(searchTerm.toLowerCase())),
+					d.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					gameIdMap[d.id]?.toLowerCase().includes(searchTerm.toLowerCase())),
 		)
 		.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
 
@@ -246,7 +247,7 @@ export function DriverGridProfilesAdmin() {
 														— Sem equipe —
 													</option>
 													{(
-														teamsData?.teams ?? []
+														teamsData ?? []
 													).map((t) => (
 														<option
 															key={t.id}

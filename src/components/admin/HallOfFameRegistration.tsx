@@ -9,7 +9,7 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 import { useToast } from "../../contexts/ToastContext";
 import {
 	collection,
@@ -337,16 +337,10 @@ export function HallOfFameRegistration() {
 										</span>
 									</div>
 
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											handleDeleteClick(hof.id, hof.deleted);
-										}}
-										className="z-10 text-f1-red p-1 hover:bg-f1-red hover:text-white rounded cursor-pointer duration-120"
-										title={hof.deleted ? "Restaurar" : "Excluir"}
-									>
-										<TrashIcon className="h-5 w-5" />
-									</button>
+									<AdminDeleteButton
+										deleted={hof.deleted}
+										onClick={() => handleDeleteClick(hof.id, hof.deleted)}
+									/>
 								</div>
 							</li>
 						))

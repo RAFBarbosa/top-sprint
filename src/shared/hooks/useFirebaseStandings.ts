@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import type { PointAdjustment } from "../../components/admin/PointAdjustmentsAdmin";
-import { useGetDriversQuery, useGetTeamsQuery } from "../../graphql/generated";
+import { useFirebaseTeams } from "./useFirebaseTeams";
+import { useFirebaseDrivers } from "./useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { getGridConfig, getPointSystem, type GridId } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -201,8 +202,8 @@ export function useFirebaseStandings(gridId: GridId) {
 	const [loadingResults, setLoadingResults] = useState(true);
 
 	const { allCalendars, loading: calendarsLoading } = useCalendars();
-	const { data: driversData } = useGetDriversQuery();
-	const { data: teamsData } = useGetTeamsQuery();
+	const { drivers: driversList } = useFirebaseDrivers();
+	const { teams: teamsData } = useFirebaseTeams();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { profiles, applyProfile } = useDriverProfiles();
@@ -231,7 +232,7 @@ export function useFirebaseStandings(gridId: GridId) {
 	}, []);
 
 	const { standings, previousStandings } = useMemo(() => {
-		if (calendarsLoading || !driversData || loadingResults) {
+		if (calendarsLoading || !driversList.length || loadingResults) {
 			return { standings: [], previousStandings: [] };
 		}
 
@@ -260,13 +261,13 @@ export function useFirebaseStandings(gridId: GridId) {
 		) as CalendarEntry[];
 
 		const driverLookup = Object.fromEntries(
-			(driversData.drivers ?? []).map((d) => [d.id, d]),
+			driversList.map((d) => [d.id, d]),
 		);
 
 		// Build a name→logo map from the teams collection directly — more reliable
 		// than driver.team.photo, which can be broken in cloned Hygraph projects.
 		const teamLogoByName: Record<string, string> = {};
-		(teamsData?.teams ?? []).forEach((t) => {
+		(teamsData ?? []).forEach((t) => {
 			if (t.name && t.photo?.url) teamLogoByName[t.name] = t.photo.url;
 		});
 
@@ -332,7 +333,7 @@ export function useFirebaseStandings(gridId: GridId) {
 					);
 
 		return { standings, previousStandings };
-	}, [allResults, allAdjustments, allCalendars, calendarsLoading, driversData, teamsData, seasons, mappings, profiles, gridId]);
+	}, [allResults, allAdjustments, allCalendars, calendarsLoading, driversList, teamsData, seasons, mappings, profiles, gridId]);
 
 	return {
 		standings,
