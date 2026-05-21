@@ -9,7 +9,7 @@ import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
 import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
@@ -23,37 +23,7 @@ interface NavItem {
 	hidden?: boolean;
 }
 
-// ── Nav items — driven by tenant config ──────────────────────────────────────
-
-const buildMenuItems = (): NavItem[] =>
-	[
-		{ id: "/", label: "Início" },
-		{ id: "/resultados", label: "Resultados" },
-		{ id: "/pilotos", label: "Pilotos", isDropdown: true },
-		{
-			id: "/campeoes",
-			label: "Mural dos Campeões",
-			hidden: !tenant.features.hallOfFame,
-		},
-		{
-			id: "/historico",
-			label: "Histórico",
-			hidden: !tenant.features.archive,
-		},
-		// { id: "/regras", label: "Regras e Formato" },
-		{
-			id: tenant.nav.ticketUrl ?? "",
-			label: "Abrir Ticket",
-			external: true,
-			hidden: !tenant.features.tickets || !tenant.nav.ticketUrl,
-		},
-		{
-			id: tenant.nav.registrationUrl ?? "",
-			label: "Inscrições",
-			external: true,
-			hidden: !tenant.nav.registrationUrl,
-		},
-	].filter((item) => !item.hidden && item.id !== "");
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -62,6 +32,7 @@ const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function Menu() {
+	const { defaultPhotoStyle, features, nav } = useTenantConfig();
 	const [isOpen, setIsOpen] = useState(false);
 	const location = useLocation();
 	const navigateToDriver = useNavigateToDriver();
@@ -69,7 +40,15 @@ export function Menu() {
 	const { isInGrid, applyProfile } = useDriverProfiles();
 	const { drivers: data, loading } = useFirebaseDrivers();
 
-	const menuItems = buildMenuItems();
+	const menuItems = useMemo<NavItem[]>(() => [
+		{ id: "/", label: "Início" },
+		{ id: "/resultados", label: "Resultados" },
+		{ id: "/pilotos", label: "Pilotos", isDropdown: true },
+		{ id: "/campeoes", label: "Mural dos Campeões", hidden: !features.hallOfFame },
+		{ id: "/historico", label: "Histórico", hidden: !features.archive },
+		{ id: nav.ticketUrl ?? "", label: "Abrir Ticket", external: true, hidden: !nav.ticketUrl },
+		{ id: nav.registrationUrl ?? "", label: "Inscrições", external: true, hidden: !nav.registrationUrl },
+	].filter((item) => !item.hidden && item.id !== ""), [features, nav]);
 
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
@@ -275,7 +254,7 @@ export function Menu() {
 															handleDriverClick
 														}
 														photoStyle={
-															tenant.defaultPhotoStyle
+															defaultPhotoStyle
 														}
 													/>
 												)}

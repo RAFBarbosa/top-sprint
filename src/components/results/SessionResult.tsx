@@ -9,6 +9,7 @@ import {
 	type RaceAward,
 } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 import { CountryFlag } from "../utils/CountryFlag";
 import { useSeasons } from "../../contexts/SeasonsContext";
@@ -252,6 +253,7 @@ function WinnerCard({
 	poleRow?: DriverRow;
 	awardRows?: Array<{ award: RaceAward; driver: DriverRow }>;
 }) {
+	const { defaultPhotoStyle } = useTenantConfig();
 	if (!row) return null;
 	const gridConfig = getGridConfig(gridId);
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
@@ -277,7 +279,7 @@ function WinnerCard({
 			{/* Photo — fixed crop matching OG */}
 			{(row.photo || tenant.fallbackDriverPhoto) && (
 				<div className="flex items-center justify-center w-9/10 mx-auto overflow-hidden">
-					{tenant.defaultPhotoStyle === "round" ? (
+					{defaultPhotoStyle === "round" ? (
 						<HygraphImg
 							src={row.photo || tenant.fallbackDriverPhoto}
 							alt={row.name}
@@ -285,7 +287,7 @@ function WinnerCard({
 							imgHeight={120}
 							className="max-w-full mt-6 mb-11 w-38 h-38 scale-123 object-contain rounded-full border-2 border-f1-carbon"
 						/>
-					) : tenant.defaultPhotoStyle === "bust" ? (
+					) : defaultPhotoStyle === "bust" ? (
 						<HygraphImg
 							src={row.photo || tenant.fallbackDriverPhoto}
 							alt={row.name}
@@ -325,7 +327,7 @@ function WinnerCard({
 							backgroundColor: poleRow.teamColor ?? "#48176d",
 						}}
 					>
-						{tenant.defaultPhotoStyle === "round" ? (
+						{defaultPhotoStyle === "round" ? (
 							<HygraphImg
 								src={
 									poleRow.photo || tenant.fallbackDriverPhoto
@@ -335,7 +337,7 @@ function WinnerCard({
 								imgHeight={48}
 								className="w-full h-full object-cover scale-123 translate-y-[5px]"
 							/>
-						) : tenant.defaultPhotoStyle === "bust" ? (
+						) : defaultPhotoStyle === "bust" ? (
 							<HygraphImg
 								src={
 									poleRow.photo || tenant.fallbackDriverPhoto
@@ -387,7 +389,7 @@ function WinnerCard({
 								backgroundColor: driver.teamColor ?? "#48176d",
 							}}
 						>
-							{tenant.defaultPhotoStyle === "round" ? (
+							{defaultPhotoStyle === "round" ? (
 								<HygraphImg
 									src={
 										driver.photo ||
@@ -398,7 +400,7 @@ function WinnerCard({
 									imgHeight={48}
 									className="w-full h-full object-cover scale-123 translate-y-[5px]"
 								/>
-							) : tenant.defaultPhotoStyle === "bust" ? (
+							) : defaultPhotoStyle === "bust" ? (
 								<HygraphImg
 									src={
 										driver.photo ||

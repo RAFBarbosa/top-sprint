@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import IosShareIcon from "@mui/icons-material/IosShare";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 
 interface ShareButtonProps {
 	cardRef: React.RefObject<HTMLDivElement>;
@@ -12,6 +12,7 @@ interface ShareButtonProps {
 }
 
 const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
+	const { name: tenantName } = useTenantConfig();
 	const [fontsLoaded, setFontsLoaded] = useState(false);
 
 	// Wait for fonts to load
@@ -87,7 +88,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 				if (navigator.share) {
 					await navigator.share({
 						title: `${data.name} Card`,
-						text: `Confira o card do piloto ${data.name} da ${tenant.name}! ${currentPath}`,
+						text: `Confira o card do piloto ${data.name} da ${tenantName}! ${currentPath}`,
 						files: [file],
 					});
 				} else {

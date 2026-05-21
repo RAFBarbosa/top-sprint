@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../auth/firebase";
 import Sidebar from "./Sidebar";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 
 export function AdminDashboard() {
 	const navigate = useNavigate();
+	const { name } = useTenantConfig();
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -37,7 +38,7 @@ export function AdminDashboard() {
 						Painel Administrador
 					</h1>
 					<p>
-						Bem vindo ao painel {tenant.name}, {user?.email}
+						Bem vindo ao painel {name}, {user?.email}
 					</p>
 				</div>
 				<div className="flex gap-2">

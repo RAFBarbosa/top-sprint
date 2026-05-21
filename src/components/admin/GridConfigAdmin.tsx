@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useGrids } from "../../contexts/GridsContext";
 import { useToast } from "../../contexts/ToastContext";
 import { DEFAULT_POINT_SYSTEM, type GridConfig, type RaceAward } from "../../shared/config/grids";
+import { tenant } from "../../shared/config/tenants";
 
 export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
@@ -12,6 +13,8 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 
 	const [editGrid, setEditGrid] = useState<GridConfig | null>(null);
 	const [saving, setSaving] = useState(false);
+	const [raceText, setRaceText] = useState("");
+	const [sprintText, setSprintText] = useState("");
 
 	useEffect(() => {
 		if (!loading && gridId) {
@@ -29,6 +32,8 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 					presenceBonus: ps?.presenceBonus ?? DEFAULT_POINT_SYSTEM.presenceBonus ?? 0,
 				};
 				setEditGrid(clone);
+				setRaceText(clone.pointSystem.race.join(", "));
+				setSprintText((clone.pointSystem.sprint ?? []).join(", "));
 			}
 		}
 	}, [loading, grids, gridId]);
@@ -140,6 +145,18 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							className="w-full p-2 border rounded h-10 text-sm"
 						/>
 					</div>
+					<div>
+						<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-1">
+							Título Classificação
+						</label>
+						<input
+							type="text"
+							value={editGrid.standingsTitle ?? ""}
+							onChange={(e) => update("standingsTitle", e.target.value)}
+							className="w-full p-2 border rounded h-10 text-sm"
+							placeholder="ex: Alpha"
+						/>
+					</div>
 					<div className="flex items-center gap-3">
 						<span className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">Ativo</span>
 						<label className="relative inline-flex items-center cursor-pointer">
@@ -152,30 +169,89 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-red"></div>
 						</label>
 					</div>
-					<div>
-						<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-1">
-							Cor Principal
-						</label>
-						<div className="flex gap-2">
-							<input
-								type="color"
-								value={editGrid.primaryColor}
-								onChange={(e) =>
-									update("primaryColor", e.target.value)
-								}
-								className="h-10 w-12 border rounded cursor-pointer p-0.5"
-							/>
-							<input
-								type="text"
-								value={editGrid.primaryColor}
-								onChange={(e) =>
-									update("primaryColor", e.target.value)
-								}
-								className="flex-1 p-2 border rounded h-10 text-sm font-mono"
-								placeholder="#eb1c24"
-							/>
-						</div>
+				</div>
+			</div>
+
+			{/* Colors */}
+			<div className="border rounded-lg p-4 space-y-4">
+				<p className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
+					Cores
+				</p>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					{([
+						{ field: "primaryColor", label: "Primária" },
+						{ field: "secondaryColor", label: "Secundária (pontos)" },
+						{ field: "rowHoverColor", label: "Hover classificação" },
+						{ field: "accentHoverColor", label: "Hover pontos" },
+						...(tenant.id !== "topSprint" ? [{ field: "countdownBgColor" as const, label: "Countdown" }] : []),
+						{ field: "podiumBgColor", label: "Cor pódio" },
+					] as const).map(({ field, label }) => {
+						const val = editGrid[field] as string | undefined;
+						const pickerVal = val || editGrid.primaryColor || "#000000";
+						return (
+							<div key={field}>
+								<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-1">
+									{label}
+								</label>
+								<div className="flex gap-2">
+									<input
+										type="color"
+										value={pickerVal}
+										onChange={(e) => update(field, e.target.value)}
+										className="h-10 w-12 border rounded cursor-pointer p-0.5 shrink-0"
+									/>
+									<input
+										type="text"
+										value={val ?? ""}
+										onChange={(e) => update(field, e.target.value || undefined)}
+										className="flex-1 p-2 border rounded h-10 text-sm font-mono"
+										placeholder="padrão do tema"
+									/>
+								</div>
+							</div>
+						);
+					})}
+				</div>
+
+				<div>
+					<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-2">
+						Classificação — gradiente
+					</label>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						{([
+							{ field: "standingsBgColor" as const, label: "Cor início" },
+							{ field: "standingsBgEndColor" as const, label: "Cor fim" },
+						]).map(({ field, label }) => {
+							const val = editGrid[field] as string | undefined;
+							const pickerVal = val || editGrid.primaryColor || "#000000";
+							return (
+								<div key={field}>
+									<label className="text-xs text-f1-lighterCarbon block mb-1">{label}</label>
+									<div className="flex gap-2">
+										<input
+											type="color"
+											value={pickerVal}
+											onChange={(e) => update(field, e.target.value)}
+											className="h-10 w-12 border rounded cursor-pointer p-0.5 shrink-0"
+										/>
+										<input
+											type="text"
+											value={val ?? ""}
+											onChange={(e) => update(field, e.target.value || undefined)}
+											className="flex-1 p-2 border rounded h-10 text-sm font-mono"
+											placeholder="padrão do tema"
+										/>
+									</div>
+								</div>
+							);
+						})}
 					</div>
+					{editGrid.standingsBgColor && editGrid.standingsBgEndColor && (
+						<div
+							className="mt-2 h-6 rounded"
+							style={{ background: `radial-gradient(at 50% 150%, ${editGrid.standingsBgColor} 0%, ${editGrid.standingsBgEndColor} 65%)` }}
+						/>
+					)}
 				</div>
 			</div>
 
@@ -191,13 +267,8 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 						</label>
 						<input
 							type="text"
-							value={(editGrid.pointSystem?.race ?? []).join(", ")}
-							onChange={(e) =>
-								updatePointSystem(
-									"race",
-									parsePointsArray(e.target.value),
-								)
-							}
+							value={raceText}
+							onChange={(e) => { setRaceText(e.target.value); updatePointSystem("race", parsePointsArray(e.target.value)); }}
 							className="w-full p-2 border rounded h-10 text-sm font-mono"
 							placeholder="25, 22, 20..."
 						/>
@@ -208,13 +279,8 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 						</label>
 						<input
 							type="text"
-							value={(editGrid.pointSystem?.sprint ?? []).join(", ")}
-							onChange={(e) =>
-								updatePointSystem(
-									"sprint",
-									parsePointsArray(e.target.value),
-								)
-							}
+							value={sprintText}
+							onChange={(e) => { setSprintText(e.target.value); updatePointSystem("sprint", parsePointsArray(e.target.value)); }}
 							className="w-full p-2 border rounded h-10 text-sm font-mono"
 							placeholder="16, 15, 14..."
 						/>

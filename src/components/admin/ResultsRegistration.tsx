@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import { getGridLabel } from "../../shared/config/grids";
 import { useCalculateDriverStats } from "../../shared/hooks/useCalculateDriverStats";
+import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useToast } from "../../contexts/ToastContext";
 
 const NEW_ID = "__new__";
@@ -62,6 +63,7 @@ export function ResultsRegistration() {
 		error: gridError,
 	} = useGridOptionsQuery();
 	const { triggerForGrid } = useCalculateDriverStats();
+	const { triggerForGrid: triggerCardsForGrid } = useCalculateCards();
 
 	const formatDateShort = (dateString: string) => {
 		const date = new Date(dateString);
@@ -180,7 +182,10 @@ export function ResultsRegistration() {
 				setUploadProgress(null);
 			}
 
-			if (grid) triggerForGrid(grid).catch(console.error);
+			if (grid) {
+				triggerForGrid(grid).catch(console.error);
+				triggerCardsForGrid(grid).catch(console.error);
+			}
 		} catch (error: any) {
 			showToast("error", error.message || "Erro ao processar dados");
 			setUploadProgress(null);

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 import { CountdownRenderer } from "./CountdownRender";
 import { CountryFlag } from "../utils/CountryFlag";
+import { getGridConfig } from "../../shared/config/grids";
 
 interface NextRaceProps {
 	track: string;
@@ -16,6 +17,7 @@ interface NextRaceProps {
 }
 
 export function NextRace(props: NextRaceProps) {
+	const countdownBg = getGridConfig(props.grid)?.countdownBgColor ?? "var(--color-countdown-bg)";
 	const formattedDate = format(new Date(props.date), "dd 'de' MMMM", {
 		locale: ptBR,
 	});
@@ -26,7 +28,7 @@ export function NextRace(props: NextRaceProps) {
 
 	return (
 		<div
-			style={{ backgroundColor: "var(--color-countdown-bg)" }}
+			style={{ backgroundColor: countdownBg }}
 			className="tenant-countdown-bar text-white"
 		>
 			<div className="max-w-screen-xl mx-auto px-3 py-2 flex items-center justify-between gap-3 tracking-wide">

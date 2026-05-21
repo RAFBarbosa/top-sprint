@@ -8,6 +8,7 @@ import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { getGridConfig } from "../shared/config/grids";
 import { tenant } from "../shared/config/tenants";
+import { useTenantConfig } from "../contexts/TenantConfigContext";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { HygraphImg } from "../components/utils/HygraphImg";
 import { resizeHygraphUrl } from "../shared/utils/hygraphImage";
@@ -139,6 +140,7 @@ function StatsHeader({ title }: { title: string }) {
 }
 
 export function Profile() {
+	const { defaultPhotoStyle } = useTenantConfig();
 	const { driverName } = useParams<{ driverName: string }>();
 	const { activeTab } = useTab();
 
@@ -301,7 +303,7 @@ export function Profile() {
 										/>
 									</p>
 									<div className="flex items-center">
-										{tenant.defaultPhotoStyle ===
+										{defaultPhotoStyle ===
 										"round" ? (
 											<HygraphImg
 												src={
@@ -313,7 +315,7 @@ export function Profile() {
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
-										) : tenant.defaultPhotoStyle ===
+										) : defaultPhotoStyle ===
 										  "bust" ? (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[8px]"
@@ -367,7 +369,7 @@ export function Profile() {
 							>
 								<div className="pt-2 flex items-center justify-around">
 									<div className="flex items-center">
-										{tenant.defaultPhotoStyle ===
+										{defaultPhotoStyle ===
 										"round" ? (
 											<HygraphImg
 												src={
@@ -385,7 +387,7 @@ export function Profile() {
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
-										) : tenant.defaultPhotoStyle ===
+										) : defaultPhotoStyle ===
 										  "bust" ? (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[8px]"

@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { LiveTv, ArrowForwardIos as MenuArrow } from "@mui/icons-material";
 import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { CountryFlag } from "../utils/CountryFlag";
 import { Link } from "react-router-dom";
@@ -23,6 +24,7 @@ interface CalendarProps {
 }
 
 export function Calendar(props: CalendarProps) {
+	const { defaultPhotoStyle } = useTenantConfig();
 
 	const formattedDate = format(new Date(props.date), "dd '-' MMM", {
 		locale: ptBR,
@@ -162,7 +164,7 @@ export function Calendar(props: CalendarProps) {
 									"var(--color-brand-primary)",
 							}}
 						>
-							{tenant.defaultPhotoStyle === "round" ? (
+							{defaultPhotoStyle === "round" ? (
 								<img
 									src={
 										props.winnerA.photo?.url ||
@@ -171,7 +173,7 @@ export function Calendar(props: CalendarProps) {
 									alt={getFilteredWinnerName(props.winnerA)}
 									className="w-full h-full object-cover scale-123 translate-y-[5px]"
 								/>
-							) : tenant.defaultPhotoStyle === "bust" ? (
+							) : defaultPhotoStyle === "bust" ? (
 								<img
 									src={
 										props.winnerA.photo?.url ||

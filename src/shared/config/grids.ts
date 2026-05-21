@@ -61,6 +61,13 @@ export interface GridConfig {
 	reservesEarnPoints?: boolean;
 	podiumNameBgClass?: string;
 	podiumPointsBgClass?: string;
+	secondaryColor?: string;
+	rowHoverColor?: string;
+	accentHoverColor?: string;
+	countdownBgColor?: string;
+	standingsBgColor?: string;
+	standingsBgEndColor?: string;
+	podiumBgColor?: string;
 }
 
 // Mutable runtime array — starts with tenant defaults, updated by GridsContext when Firebase loads

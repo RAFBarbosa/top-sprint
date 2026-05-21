@@ -4,12 +4,14 @@ import { Partners } from "./Partners";
 import { Link, useLocation } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 import { Socials } from "../utils/Socials";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { tenant } from "../../shared/config/tenants";
 import PoweredBy from "../utils/PoweredBy";
 
 export function Footer() {
 	const location = useLocation();
 	const isAdminPage = location.pathname.includes("/admin/");
+	const { name } = useTenantConfig();
 
 	return (
 		<footer
@@ -27,7 +29,7 @@ export function Footer() {
 							{tenant.poweredBy && <PoweredBy />}
 						</div>
 						<div className="font-light text-sm">
-							{tenant.name} - Todos os direitos reservados
+							{name} - Todos os direitos reservados
 						</div>
 					</div>
 					<Link

@@ -31,6 +31,8 @@ import { PointAdjustmentsAdmin } from "./components/admin/PointAdjustmentsAdmin"
 import { DriverStatsOffsetsAdmin } from "./components/admin/DriverStatsOffsetsAdmin";
 import { UsersAdmin } from "./pages/admin/UsersAdmin";
 import { OwnerOnly } from "./components/auth/OwnerOnly";
+import TenantConfigAdmin from "./pages/admin/TenantConfigAdmin";
+import WinnerCardGenerator from "./components/utils/winner-card-generator";
 import { ElevatedOnly } from "./components/auth/ElevatedOnly";
 
 export function Router() {
@@ -85,6 +87,8 @@ export function Router() {
 					/>
 					<Route path="historico-pilotos" element={<ElevatedOnly><DriverStatsOffsetsAdmin /></ElevatedOnly>} />
 					<Route path="usuarios" element={<ElevatedOnly><UsersAdmin /></ElevatedOnly>} />
+					<Route path="configuracao" element={<OwnerOnly><TenantConfigAdmin /></OwnerOnly>} />
+					<Route path="gerar-imagens" element={<WinnerCardGenerator />} />
 				</Route>
 			</Route>
 		</Routes>

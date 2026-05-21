@@ -1,6 +1,7 @@
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import useNavigateToDriver from "../../../shared/hooks/useNavigateToDriver";
 import { normalizeString } from "../../../shared/utils/normalizeString";
+import { contrastText } from "../../../shared/utils/color";
 import { usePositionDifference } from "../../../shared/hooks/usePositionDifference";
 import {
 	GridId,
@@ -8,6 +9,7 @@ import {
 	getGridColors,
 } from "../../../shared/config/grids";
 import { tenant } from "../../../shared/config/tenants";
+import { useTenantConfig } from "../../../contexts/TenantConfigContext";
 import { HygraphImg } from "../../utils/HygraphImg";
 
 interface StandingCardProps {
@@ -36,6 +38,7 @@ interface StandingCardProps {
 }
 
 export function StandingCard(props: StandingCardProps) {
+	const { defaultPhotoStyle } = useTenantConfig();
 	const [firstName, secondName] = (() => {
 		const nameParts = props.name.split(" ");
 		return [
@@ -117,9 +120,16 @@ export function StandingCard(props: StandingCardProps) {
 	};
 
 	const { colorClass, hoverClass } = getColorClasses();
-	const gridPrimaryColor = getGridConfig(props.activeTab)?.primaryColor ?? "";
-	const pointsHoverClass =
-		getGridConfig(props.activeTab)?.hoverAccentColor ?? "";
+	const gridConfig = getGridConfig(props.activeTab);
+	const gridPrimaryColor = gridConfig?.primaryColor ?? "";
+	const isHex = (c: string) => /^#[0-9a-f]{6}$/i.test(c);
+	const effectivePrimary = isHex(gridPrimaryColor) ? gridPrimaryColor : undefined;
+	const rowHoverColor = gridConfig?.rowHoverColor ?? gridPrimaryColor;
+	const rowHoverText = isHex(rowHoverColor) ? contrastText(rowHoverColor) : "#ffffff";
+	const accentHoverColor = gridConfig?.accentHoverColor ?? effectivePrimary;
+	const accentHoverText = accentHoverColor ? contrastText(accentHoverColor) : undefined;
+	const pointsHoverClass = accentHoverColor ? "" : (gridConfig?.hoverAccentColor ?? "");
+	const secondaryColor = gridConfig?.secondaryColor ?? effectivePrimary;
 
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
@@ -197,11 +207,10 @@ export function StandingCard(props: StandingCardProps) {
 						? "bg-f1-silver text-white h-32 md:h-15 py-4"
 						: "bg-white py-2"
 				} ${isDrivers ? hoverClass : ""}`}
-				style={
-					{
-						"--row-hover-bg": gridPrimaryColor,
-					} as Record<string, string>
-				}
+				style={isDrivers ? {
+					"--row-hover-bg": rowHoverColor,
+					"--row-hover-text": rowHoverText,
+				} as React.CSSProperties : undefined}
 			>
 				<div className="flex items-center flex-grow z-30 h-full md:h-4">
 					<span
@@ -302,10 +311,10 @@ export function StandingCard(props: StandingCardProps) {
 													imgWidth={40}
 													imgHeight={40}
 													className={`w-full h-full object-cover ${
-														tenant.defaultPhotoStyle ===
+														defaultPhotoStyle ===
 														"round"
 															? "scale-125 translate-y-[3px]"
-															: tenant.defaultPhotoStyle ===
+															: defaultPhotoStyle ===
 																  "bust"
 																? "translate-y-[2px]"
 																: "scale-200 translate-y-3"
@@ -346,11 +355,15 @@ export function StandingCard(props: StandingCardProps) {
 				>
 					<div className="pl-2">{renderPositionDifference()}</div>
 					<div
-						className={`font-light rounded-xl px-2 min-w-[70px] ${colorClass} ${
+						className={`tenant-standing-points-badge font-light rounded-xl px-2 min-w-[70px] ${secondaryColor ? "" : colorClass} ${
 							isDrivers
-								? `${pointsHoverClass} transition-colors duration-200`
+								? `${secondaryColor ? "" : pointsHoverClass} transition-colors duration-200`
 								: ""
 						}`}
+						style={{
+							...(secondaryColor ? { backgroundColor: secondaryColor } : {}),
+							...(isDrivers && accentHoverColor ? { "--accent-hover-bg": accentHoverColor, "--accent-hover-text": accentHoverText } as React.CSSProperties : {}),
+						}}
 					>
 						<span className="font-bold inline-block translate-y-[1.5px] md:translate-y-0">
 							{props.valueKey}

@@ -3,6 +3,7 @@ import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { tenant } from "../shared/config/tenants";
+import { useTenantConfig } from "../contexts/TenantConfigContext";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { useFirebaseDrivers } from "../shared/hooks/useFirebaseDrivers";
 import { useActiveSeason } from "../shared/hooks/useActiveSeason";
@@ -11,6 +12,7 @@ import { getGridConfig } from "../shared/config/grids";
 const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
 	const { isInGrid, applyProfile } = useDriverProfiles();
+	const { name: tenantName } = useTenantConfig();
 	const { drivers } = useFirebaseDrivers();
 	const activeSeason = useActiveSeason(activeTab.id);
 
@@ -70,7 +72,7 @@ const Drivers: React.FC = () => {
 				</div>
 				<div className={`tenant-drivers-desc p-3 w-full h-auto rounded-xl tracking-normal ${tenant.id === "topSprint" ? "bg-white/10" : "bg-f1-bg-silver bg-cover bg-opacity-5"}`}>
 					Confira o line-up oficial da temporada. Cards e detalhes
-					completos de todos os pilotos {tenant.name}, com pontuação e
+					completos de todos os pilotos {tenantName}, com pontuação e
 					resultados atualizados.
 				</div>
 			</div>

@@ -27,6 +27,7 @@ import {
 	Description,
 } from "@headlessui/react";
 import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { doc, setDoc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { NATIONALITY_OPTIONS } from "../../shared/constants/nationalities";
@@ -34,6 +35,7 @@ import { useToast } from "../../contexts/ToastContext";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
 export function DriverRegistration() {
+	const { defaultPhotoStyle } = useTenantConfig();
 	// State management
 	const [formData, setFormData] = useState({
 		name: "",
@@ -403,7 +405,7 @@ export function DriverRegistration() {
 												driver.grid &&
 												(getGridConfig(driver.grid)
 													?.photoStyle ??
-													tenant.defaultPhotoStyle) ===
+													defaultPhotoStyle) ===
 													"round"
 													? "rounded-full scale-100"
 													: "scale-100"
@@ -419,13 +421,13 @@ export function DriverRegistration() {
 													driver.grid &&
 													(getGridConfig(driver.grid)
 														?.photoStyle ??
-														tenant.defaultPhotoStyle) ===
+														defaultPhotoStyle) ===
 														"round"
 														? "object-center"
 														: (getGridConfig(
 																	driver.grid,
 															  )?.photoStyle ??
-																	tenant.defaultPhotoStyle) ===
+																	defaultPhotoStyle) ===
 															  "bust"
 															? "scale-200 translate-y-5 object-top"
 															: "scale-300 translate-y-10 object-top"
