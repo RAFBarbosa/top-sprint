@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { normalizeString } from "../../shared/utils/normalizeString";
 import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 
@@ -14,6 +15,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 	gridName,
 	drivers,
 }) => {
+	const { defaultPhotoStyle } = useTenantConfig();
 	return (
 		<div>
 			<div
@@ -64,7 +66,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 										backgroundColor: driver.teamColor,
 									}}
 								>
-									{tenant.defaultPhotoStyle === "round" ? (
+									{defaultPhotoStyle === "round" ? (
 										<HygraphImg
 											src={
 												driver.photo ||
@@ -75,7 +77,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 											imgHeight={64}
 											className="w-16 h-16 rounded-full object-cover transition-all duration-200 group-hover:scale-110"
 										/>
-									) : tenant.defaultPhotoStyle === "bust" ? (
+									) : defaultPhotoStyle === "bust" ? (
 										<div
 											className="w-16 h-16 rounded-full bg-cover transition-all translate-y-[6px] duration-200 group-hover:scale-110"
 											style={{

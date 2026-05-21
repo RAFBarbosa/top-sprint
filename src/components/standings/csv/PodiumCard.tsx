@@ -8,6 +8,7 @@ import {
 	GridId,
 } from "../../../shared/config/grids";
 import { tenant } from "../../../shared/config/tenants";
+import { useTenantConfig } from "../../../contexts/TenantConfigContext";
 import { HygraphImg } from "../../utils/HygraphImg";
 
 interface PodiumCardProps {
@@ -28,6 +29,7 @@ interface PodiumCardProps {
 }
 
 export function PodiumCard(props: PodiumCardProps) {
+	const { defaultPhotoStyle } = useTenantConfig();
 	const cleanName = (name: string) => name.replace(/-[BC]$/, "").trim();
 	const nameParts = props.name.split(" ");
 	const firstName = cleanName(nameParts[0]);
@@ -74,8 +76,10 @@ export function PodiumCard(props: PodiumCardProps) {
 
 	const colorClass = getColorClass();
 	const gridConfig = props.grid ? getGridConfig(props.grid) : undefined;
-	const podiumNameBgClass = gridConfig?.podiumNameBgClass || colorClass;
-	const podiumPointsBgClass = gridConfig?.podiumPointsBgClass || colorClass;
+	const isHex = (c?: string) => !!c && /^#[0-9a-f]{6}$/i.test(c);
+	const podiumBgColor = gridConfig?.podiumBgColor ?? (isHex(gridConfig?.primaryColor) ? gridConfig!.primaryColor : undefined);
+	const podiumNameBgClass = podiumBgColor ? "" : (gridConfig?.podiumNameBgClass || colorClass);
+	const podiumPointsBgClass = podiumBgColor ? "" : (gridConfig?.podiumPointsBgClass || colorClass);
 
 	const renderPositionDifference = () => {
 		if (positionDifference > 0) {
@@ -196,6 +200,7 @@ export function PodiumCard(props: PodiumCardProps) {
 				<div>{renderPositionDifference()}</div>
 				<div
 					className={`rounded-xl px-2 pointer-events-none ${podiumPointsBgClass}`}
+					style={podiumBgColor ? { backgroundColor: podiumBgColor } : undefined}
 				>
 					<span className="font-bold">{props.points}</span>{" "}
 					<span className="text-[9px]">
@@ -325,6 +330,7 @@ export function PodiumCard(props: PodiumCardProps) {
 
 			<div
 				className={`text-white p-4 h-[90px] relative flex flex-col leading-4 tracking-wider pointer-events-none overflow-hidden ${podiumNameBgClass}`}
+				style={podiumBgColor ? { backgroundColor: podiumBgColor } : undefined}
 			>
 				{isTopSprint && (
 					<div
@@ -415,10 +421,10 @@ export function PodiumCard(props: PodiumCardProps) {
 														imgWidth={56}
 														imgHeight={56}
 														className={`w-full h-full object-cover ${
-															tenant.defaultPhotoStyle ===
+															defaultPhotoStyle ===
 															"round"
 																? "scale-125 translate-y-[3px]"
-																: tenant.defaultPhotoStyle ===
+																: defaultPhotoStyle ===
 																	  "bust"
 																	? "translate-y-[2px]"
 																	: "scale-200 translate-y-3"

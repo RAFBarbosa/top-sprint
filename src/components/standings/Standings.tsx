@@ -42,20 +42,22 @@ export function Standings() {
 	if (standingsLoading) return loadingSkeleton();
 	if (!activeSeason || standings.length === 0) return null;
 
+	const isHex = (c?: string) => !!c && /^#[0-9a-f]{6}$/i.test(c);
+	const bgColor = gridConfig?.standingsBgColor ?? (isHex(gridConfig?.primaryColor) ? gridConfig!.primaryColor : undefined);
+	const bgEndColor = gridConfig?.standingsBgEndColor;
+	const bgStyle = bgColor
+		? bgEndColor
+			? { background: `radial-gradient(at 50% 150%, ${bgColor} 0%, ${bgEndColor} 65%)` }
+			: { backgroundColor: bgColor }
+		: !gridConfig?.standingsBgClass
+			? { backgroundColor: gridConfig?.primaryColor ?? "#000000" }
+			: undefined;
+
 	return (
 		<aside className="tenant-section tenant-section-standings pb-10 flex flex-col relative bg-f1-lightSilver overflow-hidden">
 			<div
-				className={`md:h-[356px] h-[280px] w-full absolute left-0 ${
-					gridConfig?.standingsBgClass ?? ""
-				}`}
-				style={
-					!gridConfig?.standingsBgClass
-						? {
-								backgroundColor:
-									gridConfig?.primaryColor ?? "#000000",
-							}
-						: undefined
-				}
+				className={`md:h-[356px] h-[280px] w-full absolute left-0 ${bgColor ? "" : (gridConfig?.standingsBgClass ?? "")}`}
+				style={bgStyle}
 			>
 				<div
 					className="absolute inset-0 rounded-lg z-0 pointer-events-none"

@@ -1,0 +1,30 @@
+.group:hover .tenant-standing-points-badge[style*="--accent-hover-bg"] {
+	background-color: var(--accent-hover-bg) !important;
+	color: var(--accent-hover-text, #ffffff) !important;
+}
+
+:root {
+	--font-f1: 'FutoSans', sans-serif;
+	--font-f1Title: 'Vipnagorgialla', sans-serif;
+	--font-f1Podium: 'Chakra Petch', sans-serif;
+
+	--color-brand-primary: #cd0a2a;
+	--color-brand-nav: #676769;
+	--color-brand-nav-hover: #cd0a2a;
+	--color-brand-accent: #15151e;
+	--color-brand-nav-active: #cd0a2a;
+	--color-brand-nav-dropdown-bg: #15151e;
+	--color-brand-footer: #15151e;
+	--color-grid-menu-bg: #0c0c0c;
+	--color-grid-menu-text: #eeeff1;
+	--color-grid-menu-border: #cd0a2a;
+	--color-countdown-bg: #0c0c0c;
+	--color-news-bg: #111214;
+	--color-calendars-bg: #27292c;
+	--color-standings-bg: #111214;
+	--color-teams-bg: #27292c;
+	--color-drivers-bg: #111214;
+	--color-results-bg: #111214;
+	--color-champions-bg: #111214;
+	--color-profile-bg: #111214;
+}

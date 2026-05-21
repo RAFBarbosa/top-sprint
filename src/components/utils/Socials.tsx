@@ -1,9 +1,8 @@
 import { SocialIcon } from "react-social-icons";
-import { tenant } from "../../shared/config/tenants";
-
-const { socials } = tenant;
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 
 export function Socials() {
+	const { socials } = useTenantConfig();
 	return (
 		<div className="md:self-end space-x-2">
 			{socials.whatsapp && (

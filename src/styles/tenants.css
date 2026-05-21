@@ -229,7 +229,7 @@
 @media (hover: hover) {
 	[data-tenant="topSprint"] .group:hover .tenant-standing-card-clickable {
 		background-color: var(--row-hover-bg, var(--color-crt-primary));
-		color: #ffffff;
+		color: var(--row-hover-text, #ffffff);
 	}
 }
 

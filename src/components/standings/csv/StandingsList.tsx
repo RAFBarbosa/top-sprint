@@ -11,7 +11,7 @@ import {
 	getGridClasses,
 	hasGridClasses,
 } from "../../../shared/config/grids";
-import { tenant } from "../../../shared/config/tenants";
+import { useTenantConfig } from "../../../contexts/TenantConfigContext";
 
 interface StandingsListProps {
 	title: string;
@@ -27,6 +27,7 @@ interface StandingsListProps {
 }
 
 export function StandingsList(props: StandingsListProps) {
+	const { defaultPhotoStyle } = useTenantConfig();
 	const [activeCard, setActiveCard] = useState<number | null>(1);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [activeGrid, setActiveGrid] = useState<"drivers" | "teams">(
@@ -125,7 +126,7 @@ export function StandingsList(props: StandingsListProps) {
 				grid={props.activeTab}
 				class={classId}
 				newData={data}
-				photoStyle={tenant.defaultPhotoStyle}
+				photoStyle={defaultPhotoStyle}
 				oldData={
 					activeGrid === "drivers" ? props.oldData : props.oldTeams
 				}
@@ -164,7 +165,7 @@ export function StandingsList(props: StandingsListProps) {
 					newData={
 						activeGrid === "drivers" ? props.data : props.teams
 					}
-					photoStyle={tenant.defaultPhotoStyle}
+					photoStyle={defaultPhotoStyle}
 					oldData={
 						activeGrid === "drivers"
 							? props.oldData

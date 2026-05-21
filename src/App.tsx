@@ -14,6 +14,7 @@ import { TracksProvider } from "./contexts/TracksContext";
 import { CalendarsProvider } from "./contexts/CalendarsContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { UserRoleProvider } from "./contexts/UserRoleContext";
+import { TenantConfigProvider } from "./contexts/TenantConfigContext";
 import { tenant } from "./shared/config/tenants";
 import { useEffect } from "react";
 
@@ -56,20 +57,17 @@ function AppLayout() {
 }
 
 function App() {
-	const style = Object.fromEntries(
-		Object.entries(tenant.cssVars),
-	) as React.CSSProperties;
-
 	return (
 		<div
 			data-tenant={tenant.id}
-			style={style}
 			className="font-f1 flex flex-col min-h-screen"
 		>
 			<ApolloProvider client={client}>
 				<BrowserRouter>
-					<ScrollToTop />
-					<AppLayout />
+					<TenantConfigProvider>
+						<ScrollToTop />
+						<AppLayout />
+					</TenantConfigProvider>
 				</BrowserRouter>
 			</ApolloProvider>
 		</div>

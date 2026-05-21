@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { HygraphImg } from "./HygraphImg";
 import { Tooltip } from "react-tooltip";
 import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import Flag from "react-world-flags";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 import { getGridConfig } from "../../shared/config/grids";
@@ -88,6 +89,7 @@ function getTextColor(hexColor: string): string {
 
 const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 	({ data }, ref) => {
+		const { defaultPhotoStyle } = useTenantConfig();
 		const splitDriverName = (name: string) => {
 			const nameParts = name.split(" ");
 			const firstName = nameParts[0].replace(/-[BC]$/, "");
@@ -249,7 +251,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					)} */}
 
 					{/* ── Layer 2: Driver photo ── */}
-					{tenant.defaultPhotoStyle === "round" ? (
+					{defaultPhotoStyle === "round" ? (
 						<div
 							className="absolute top-12 right-2 z-[20] overflow-hidden rounded-full border-4 border-white/20"
 							style={{ width: "180px", height: "180px" }}
@@ -262,7 +264,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								imgHeight={120}
 							/>
 						</div>
-					) : tenant.defaultPhotoStyle === "bust" ? (
+					) : defaultPhotoStyle === "bust" ? (
 						<div
 							className="absolute top-4 left-25 z-[20] overflow-hidden"
 							style={{ height: "auto", width: "80%" }}
@@ -296,7 +298,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						style={{
 							top: "18%",
 							left:
-								tenant.defaultPhotoStyle === "round"
+								defaultPhotoStyle === "round"
 									? "5%"
 									: "11%",
 						}}
@@ -484,7 +486,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						/>
 					</div>
 
-					{data.teamName && tenant.defaultPhotoStyle !== "round" && (
+					{data.teamName && defaultPhotoStyle !== "round" && (
 						<div className="tenant-card-team-name text-[6px] absolute z-[20] pointer-events-none right-1 top-32 w-6 overflow-visible">
 							<span className="text-white/85  uppercase tracking-widest font-f1Title -rotate-90 block origin-center whitespace-nowrap">
 								{data.teamName}

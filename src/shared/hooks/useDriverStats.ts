@@ -245,7 +245,7 @@ function calcStatsForCalendars(
 			const racePts =
 				pos <= racePointsArr.length ? racePointsArr[pos - 1] : 0;
 			stats.points += racePts;
-			if (pos === 1) stats.wins += 1;
+			if (raceOrder[0] === driverId) stats.wins += 1;
 			if (pos <= 3) stats.podiums += 1;
 		}
 		if (isNC) stats.ncs += 1;
@@ -282,7 +282,7 @@ function calcStatsForCalendars(
 						? sprintPointsArr[pos - 1]
 						: 0;
 				stats.points += sprintPts;
-				if (pos === 1) stats.sprintWins += 1;
+				if (sprintOrder[0] === driverId) stats.sprintWins += 1;
 				if (pos <= 3) stats.sprintPodiums += 1;
 			}
 		}

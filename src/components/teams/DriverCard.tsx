@@ -4,6 +4,7 @@ import { normalizeString } from "../../shared/utils/normalizeString";
 import { useTab } from "../../contexts/TabContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 
 interface Driver {
@@ -26,6 +27,7 @@ interface DriverCardProps {
 }
 
 export function DriverCard({ driver }: DriverCardProps) {
+	const { defaultPhotoStyle } = useTenantConfig();
 	const [imageLoading, setImageLoading] = useState(true);
 	const navigateToDriver = useNavigateToDriver();
 	const { activeTab, setActiveTab } = useTab();
@@ -44,8 +46,8 @@ export function DriverCard({ driver }: DriverCardProps) {
 	};
 
 	const gridConfig = getGridConfig(driver.grid);
-	const isRound = tenant.defaultPhotoStyle === "round";
-	const isBust = tenant.defaultPhotoStyle === "bust";
+	const isRound = defaultPhotoStyle === "round";
+	const isBust = defaultPhotoStyle === "bust";
 
 	const getGridTitle = () => {
 		return getGridConfig(driver.grid)?.label ?? "Driver";

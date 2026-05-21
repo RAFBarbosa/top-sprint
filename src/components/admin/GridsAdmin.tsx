@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
 import { useGrids } from "../../contexts/GridsContext";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
+import { DEFAULT_POINT_SYSTEM } from "../../shared/config/grids";
 import type { GridConfig } from "../../shared/config/grids";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -94,6 +96,7 @@ type SubView =
 
 export function GridsAdmin() {
 	const { grids, loading, saveGrids } = useGrids();
+	const { defaultPointSystem } = useTenantConfig();
 
 	const [selectedGrid, setSelectedGrid] = useState<GridConfig | null>(null);
 	const [activeSubView, setActiveSubView] = useState<SubView>(null);
@@ -149,7 +152,7 @@ export function GridsAdmin() {
 			standingsBgClass: "",
 			standingsTitle: "",
 			countdownBgClass: "",
-			pointSystem: { race: [], sprint: [], poleBonus: 0 },
+			pointSystem: defaultPointSystem ?? DEFAULT_POINT_SYSTEM,
 			raceAwards: [],
 		};
 		try {
