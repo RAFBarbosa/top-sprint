@@ -7,7 +7,7 @@ import { Divider } from "../components/layout/Divider";
 export function Home() {
 	return (
 		<div id="inicio">
-			<div style={{ backgroundColor: "var(--color-news-bg)" }}>
+			<div style={{ backgroundColor: "var(--color-news-bg)", color: "var(--color-news-text)" }}>
 				<div className="flex flex-col max-w-screen-xl px-3 mx-auto pb-10">
 					<Divider />
 					<Banners />

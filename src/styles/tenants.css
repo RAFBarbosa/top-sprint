@@ -72,7 +72,7 @@
 }
 
 [data-tenant="topSprint"] .tenant-news-secondary {
-	background-color: var(--color-grid-menu-bg);
+	background-color: var(--color-news-secondary-bg);
 	border-color: transparent;
 }
 
@@ -82,22 +82,27 @@
 
 [data-tenant="topSprint"] .tenant-section-calendars {
 	background-color: var(--color-calendars-bg);
+	color: var(--color-calendars-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-standings {
 	background-color: var(--color-standings-bg);
+	color: var(--color-standings-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-teams {
 	background-color: var(--color-teams-bg);
+	color: var(--color-teams-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-drivers {
 	background-color: var(--color-drivers-bg);
+	color: var(--color-drivers-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-drivers .tenant-drivers-inner {
-	background-color: var(--color-crt-secondary);
+	background-color: var(--color-drivers-card-bg);
+	color: var(--color-drivers-card-text);
 }
 
 [data-tenant="topSprint"] .tenant-driver-team-name {
@@ -106,14 +111,17 @@
 
 [data-tenant="topSprint"] .tenant-section-results {
 	background-color: var(--color-results-bg);
+	color: var(--color-results-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-champions {
 	background-color: var(--color-champions-bg);
+	color: var(--color-champions-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-profile {
 	background-color: var(--color-profile-bg);
+	color: var(--color-profile-text);
 }
 
 [data-tenant="topSprint"] .tenant-profile-stats {
@@ -148,7 +156,6 @@
 }
 
 [data-tenant="topSprint"] .tenant-section-title {
-	color: #ffffff;
 	font-family: var(--font-f1Title);
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
@@ -183,7 +190,7 @@
 }
 
 [data-tenant="topSprint"] .tenant-calendar-text {
-	color: #ffffff;
+	color: var(--color-calendars-text);
 }
 
 [data-tenant="topSprint"] .tenant-calendar-flag {
@@ -215,14 +222,14 @@
 }
 
 [data-tenant="topSprint"] .tenant-standing-card {
-	background-color: var(--color-crt-secondary);
-	color: #ffffff;
+	background-color: var(--color-standings-card-bg);
+	color: var(--color-standings-card-text);
 }
 
 @media (min-width: 768px) {
 	[data-tenant="topSprint"] .tenant-standing-card {
-		background-color: var(--color-crt-secondary);
-		color: #ffffff;
+		background-color: var(--color-standings-card-bg);
+		color: var(--color-standings-card-text);
 	}
 }
 
@@ -314,11 +321,13 @@
 }
 
 [data-tenant="topSprint"] .tenant-results-card {
-	background-color: var(--color-crt-secondary);
+	background-color: var(--color-results-card-bg);
+	color: var(--color-results-card-text);
 }
 
 [data-tenant="topSprint"] .tenant-results-tab-bar {
-	background-color: var(--color-crt-secondary);
+	background-color: var(--color-results-card-bg);
+	color: var(--color-results-card-text);
 	border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -326,16 +335,20 @@
 	border-color: rgba(255, 255, 255, 0.1);
 }
 
+[data-tenant="topSprint"] .tenant-results-card thead tr {
+	background-color: var(--color-results-row-odd-bg);
+}
+
 [data-tenant="topSprint"] .tenant-results-subrow {
-	background-color: var(--color-f1-lightCarbon);
+	background-color: var(--color-results-row-odd-bg) !important;
 }
 
 [data-tenant="topSprint"] .tenant-results-row-even {
-	background-color: var(--color-crt-secondary);
+	background-color: var(--color-results-card-bg);
 }
 
 [data-tenant="topSprint"] .tenant-results-row-odd {
-	background-color: #1a1a22;
+	background-color: var(--color-results-row-odd-bg);
 }
 
 [data-tenant="topSprint"] .tenant-section-results {
@@ -343,11 +356,11 @@
 }
 
 [data-tenant="topSprint"] .tenant-section-results .text-f1-lighterCarbon {
-	color: rgba(255, 255, 255, 0.5);
+	color: color-mix(in srgb, var(--color-results-card-text) 50%, transparent);
 }
 
 [data-tenant="topSprint"] .tenant-section-results .text-f1-text {
-	color: #ffffff;
+	color: var(--color-results-card-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-results .border-black\/10 {

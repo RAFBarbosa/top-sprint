@@ -36,6 +36,8 @@ export function Standings() {
 	const {
 		standings,
 		previousStandings,
+		allRows,
+		previousAllRows,
 		loading: standingsLoading,
 	} = useFirebaseStandings(activeTab.id);
 
@@ -79,6 +81,8 @@ export function Standings() {
 						activeTab={activeTab.id}
 						standings={standings}
 						previousStandings={previousStandings}
+						allRows={allRows}
+						previousAllRows={previousAllRows}
 					/>
 				</div>
 				{false && (

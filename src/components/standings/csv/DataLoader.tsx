@@ -8,6 +8,8 @@ interface DataLoaderProps {
 	activeTab: GridId;
 	standings: any[];
 	previousStandings: any[];
+	allRows?: any[];
+	previousAllRows?: any[];
 }
 
 export function DataLoader(props: DataLoaderProps) {
@@ -17,7 +19,7 @@ export function DataLoader(props: DataLoaderProps) {
 	const gridConfig = getGridConfig(props.activeTab);
 	const title = gridConfig?.standingsTitle ?? "";
 
-	const { standings, previousStandings } = props;
+	const { standings, previousStandings, allRows, previousAllRows } = props;
 
 	const buildTeamStandings = (driverRows: typeof standings) => {
 		const map: Record<
@@ -45,8 +47,8 @@ export function DataLoader(props: DataLoaderProps) {
 	};
 
 	// Build team standings: reserve drivers contribute points but are excluded from the drivers list
-	const teamStandings = useMemo(() => buildTeamStandings(standings), [standings]);
-	const previousTeamStandings = useMemo(() => buildTeamStandings(previousStandings), [previousStandings]);
+	const teamStandings = useMemo(() => buildTeamStandings(allRows ?? standings), [allRows, standings]);
+	const previousTeamStandings = useMemo(() => buildTeamStandings(previousAllRows ?? previousStandings), [previousAllRows, previousStandings]);
 
 	return (
 		<div className="w-full mx-auto">

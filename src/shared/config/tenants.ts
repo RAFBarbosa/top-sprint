@@ -20,11 +20,16 @@ export interface CssVars {
 	"--color-grid-menu-border": string;
 	"--color-countdown-bg": string;
 	"--color-news-bg": string;
+	"--color-news-secondary-bg": string;
 	"--color-calendars-bg": string;
 	"--color-standings-bg": string;
+	"--color-standings-card-bg": string;
 	"--color-teams-bg": string;
 	"--color-drivers-bg": string;
+	"--color-drivers-card-bg": string;
 	"--color-results-bg": string;
+	"--color-results-card-bg": string;
+	"--color-results-row-odd-bg": string;
 	"--color-champions-bg": string;
 	"--color-profile-bg": string;
 	"--font-f1"?: string;
@@ -157,11 +162,16 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-grid-menu-border": "#cd0a2a",
 			"--color-countdown-bg": "#0c0c0c",
 			"--color-news-bg": "#111214",
+				"--color-news-secondary-bg": "#0c0c0c",
 			"--color-calendars-bg": "#27292c",
 			"--color-standings-bg": "#111214",
+			"--color-standings-card-bg": "#0c0c0c",
 			"--color-teams-bg": "#27292c",
 			"--color-drivers-bg": "#111214",
+			"--color-drivers-card-bg": "#0c0c0c",
 			"--color-results-bg": "#111214",
+			"--color-results-card-bg": "#0c0c0c",
+			"--color-results-row-odd-bg": "#292929",
 			"--color-champions-bg": "#111214",
 			"--color-profile-bg": "#111214",
 			"--font-f1": "'FutoSans', sans-serif",
@@ -235,11 +245,16 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-grid-menu-border": "transparent",
 			"--color-countdown-bg": "#0c0c0c",
 			"--color-news-bg": "transparent",
+			"--color-news-secondary-bg": "transparent",
 			"--color-calendars-bg": "transparent",
 			"--color-standings-bg": "transparent",
+			"--color-standings-card-bg": "transparent",
 			"--color-teams-bg": "transparent",
 			"--color-drivers-bg": "transparent",
+			"--color-drivers-card-bg": "#ffffff",
 			"--color-results-bg": "transparent",
+			"--color-results-card-bg": "#ffffff",
+			"--color-results-row-odd-bg": "#e0e0e0",
 			"--color-champions-bg": "transparent",
 			"--color-profile-bg": "transparent",
 		},
@@ -380,11 +395,16 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-grid-menu-border": "transparent",
 			"--color-countdown-bg": "#15151e",
 			"--color-news-bg": "transparent",
+			"--color-news-secondary-bg": "transparent",
 			"--color-calendars-bg": "transparent",
 			"--color-standings-bg": "transparent",
+			"--color-standings-card-bg": "transparent",
 			"--color-teams-bg": "transparent",
 			"--color-drivers-bg": "transparent",
+			"--color-drivers-card-bg": "#ffffff",
 			"--color-results-bg": "transparent",
+			"--color-results-card-bg": "#ffffff",
+			"--color-results-row-odd-bg": "#e0e0e0",
 			"--color-champions-bg": "transparent",
 			"--color-profile-bg": "transparent",
 		},

@@ -64,6 +64,7 @@ export function GridMenu() {
 								style={{
 									backgroundColor:
 										"var(--color-brand-nav-dropdown-bg)",
+									color: "var(--color-brand-nav-dropdown-text)",
 								}}
 								className="fixed inset-x-0 top-14 w-full border border-white/30 rounded-b shadow-lg z-50"
 							>

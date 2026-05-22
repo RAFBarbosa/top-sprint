@@ -225,7 +225,7 @@ export function Calendars({
 					</div>
 				)}
 				{!activeSeason ? (
-					<p className="text-f1-lighterCarbon text-sm py-6 text-center px-3">
+					<p className="text-sm py-6 text-center px-3 opacity-60">
 						Nenhuma temporada ativa no momento.
 					</p>
 				) : (

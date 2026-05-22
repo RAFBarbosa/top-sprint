@@ -70,7 +70,10 @@ const Drivers: React.FC = () => {
 						Pilotos
 					</h1>
 				</div>
-				<div className={`tenant-drivers-desc p-3 w-full h-auto rounded-xl tracking-normal ${tenant.id === "topSprint" ? "bg-white/10" : "bg-f1-bg-silver bg-cover bg-opacity-5"}`}>
+				<div
+						className="tenant-drivers-desc p-3 w-full h-auto rounded-xl tracking-normal"
+						style={{ backgroundColor: "color-mix(in srgb, var(--color-drivers-card-bg) 90%, gray 10%)" }}
+					>
 					Confira o line-up oficial da temporada. Cards e detalhes
 					completos de todos os pilotos {tenantName}, com pontuação e
 					resultados atualizados.
