@@ -131,7 +131,7 @@ body {
 .slick-next::before {
 	font-size: 2.7rem;
 	opacity: 100%;
-	color: var(--color-brand-primary);
+	color: var(--color-brand-accent);
 }
 
 /* Hover effect to make arrows 90% opaque */
@@ -177,9 +177,9 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: var(--color-brand-primary);
+	background: var(--color-brand-accent);
 	color: white;
-	border: 1px solid var(--color-brand-primary);
+	border: 1px solid var(--color-brand-accent);
 	border-radius: 4%;
 	width: 100px;
 	height: 50px;
@@ -190,7 +190,7 @@ body {
 .swiper-button-prev:hover,
 .swiper-button-next:hover {
 	background: transparent;
-	color: var(--color-brand-primary);
+	color: var(--color-brand-accent);
 }
 
 .swiper-button-prev {
@@ -327,24 +327,8 @@ body {
 	background-color: var(--color-brand-nav-dropdown-bg);
 }
 
-.pagination-border {
-	border-color: var(--color-brand-accent);
-}
-
-.pagination-border:hover {
-	border-color: var(--color-brand-primary);
-}
-
-.pagination-arrow {
-	color: var(--color-brand-accent);
-}
-
-.group:hover .pagination-arrow {
-	color: var(--color-brand-primary);
-}
-
 .calendar-card-hover:hover {
-	border-color: var(--color-brand-primary);
+	border-color: var(--color-brand-accent);
 }
 
 .footer-admin-btn:hover {

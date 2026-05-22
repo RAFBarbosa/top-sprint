@@ -29,7 +29,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 				rel="noopener noreferrer"
 				className="flex flex-col items-end leading-tight hover:opacity-90"
 			>
-				<span className="text-[10px] md:text-xs uppercase tracking-wider text-white/70">
+				<span className="text-[10px] md:text-xs uppercase tracking-wider opacity-70">
 					Grid {gridLabel} · ao vivo
 				</span>
 				<span className="font-bold text-sm uppercase">
@@ -41,7 +41,7 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 
 	return (
 		<div className="flex flex-col items-end leading-tight gap-1">
-			<span className="text-[10px] md:text-xs uppercase tracking-wider text-white/70">
+			<span className="text-[10px] md:text-xs uppercase tracking-wider opacity-70">
 				Próxima corrida · {gridLabel}
 			</span>
 			<div className="flex items-baseline gap-2">
@@ -76,7 +76,7 @@ function Unit({
 			<span className="font-bold text-sm md:text-base leading-none tabular-nums">
 				{value}
 			</span>
-			<span className="text-[9px] md:text-[10px] text-white/70 tracking-tight">
+			<span className="text-[9px] md:text-[10px] opacity-70 tracking-tight">
 				<span className="md:hidden">{shortLabel}</span>
 				<span className="hidden md:inline">{label}</span>
 			</span>

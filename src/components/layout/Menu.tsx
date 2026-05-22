@@ -100,8 +100,8 @@ export function Menu() {
 
 	return (
 		<nav
-			style={{ backgroundColor: "var(--color-brand-nav)" }}
-			className="text-white h-[56px] md:h-[74px]"
+			style={{ backgroundColor: "var(--color-brand-nav)", color: "var(--color-brand-nav-text)" }}
+			className="h-[56px] md:h-[74px]"
 		>
 			<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10">
 				{/* Logo */}
@@ -232,16 +232,16 @@ export function Menu() {
 									</button>
 
 									{/* Dropdown panel */}
-									<div className="fixed left-0 z-50 hidden group-hover:block w-full py-8 nav-dropdown-bg">
+									<div className="fixed left-0 z-50 hidden group-hover:block w-full py-8 nav-dropdown-bg" style={{ color: "var(--color-brand-nav-dropdown-text)" }}>
 										<div className="flex flex-col max-w-screen-xl mx-auto gap-10">
 											<div className="flex justify-between gap-6">
 												{loading ? (
-													<div className="text-white p-4">
+													<div className="p-4">
 														Carregando pilotos...
 													</div>
 												) : activeGridDrivers.length ===
 												  0 ? (
-													<div className="text-white/60 p-4 text-sm">
+													<div className="p-4 text-sm opacity-60">
 														Nenhum piloto neste
 														grid.
 													</div>

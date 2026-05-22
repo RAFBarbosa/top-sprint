@@ -3,6 +3,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/adminClient";
 import { tenant } from "../shared/config/tenants";
 import type { PointSystem } from "../shared/config/grids";
+import { contrastText } from "../shared/utils/color";
 
 interface TenantConfigShape {
 	name: string;
@@ -42,9 +43,36 @@ const defaults: TenantConfigShape = {
 	cssVars: defaultCssVars,
 };
 
+const AUTO_CONTRAST: Record<string, string> = {
+	"--color-brand-nav": "--color-brand-nav-text",
+	"--color-brand-nav-dropdown-bg": "--color-brand-nav-dropdown-text",
+	"--color-brand-footer": "--color-brand-footer-text",
+	"--color-grid-menu-bg": "--color-grid-menu-text",
+	"--color-countdown-bg": "--color-countdown-text",
+	"--color-news-bg": "--color-news-text",
+	"--color-calendars-bg": "--color-calendars-text",
+	"--color-standings-bg": "--color-standings-text",
+	"--color-standings-card-bg": "--color-standings-card-text",
+	"--color-teams-bg": "--color-teams-text",
+	"--color-drivers-bg": "--color-drivers-text",
+	"--color-drivers-card-bg": "--color-drivers-card-text",
+	"--color-results-bg": "--color-results-text",
+	"--color-results-card-bg": "--color-results-card-text",
+	"--color-champions-bg": "--color-champions-text",
+	"--color-profile-bg": "--color-profile-text",
+};
+
+const isHex = (c: string) => /^#[0-9a-f]{6}$/i.test(c);
+
 function applyCssVars(vars: Record<string, string>) {
 	for (const [key, value] of Object.entries(vars)) {
 		document.documentElement.style.setProperty(key, value);
+	}
+	for (const [bgVar, textVar] of Object.entries(AUTO_CONTRAST)) {
+		const bg = vars[bgVar];
+		if (bg && isHex(bg)) {
+			document.documentElement.style.setProperty(textVar, contrastText(bg));
+		}
 	}
 }
 

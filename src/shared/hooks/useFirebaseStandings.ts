@@ -181,8 +181,7 @@ function calcStandings(
 		};
 	}).filter(Boolean) as any[];
 
-	const visibleRows = reservesEarnPoints ? rows : rows.filter((r) => !r.exDriver);
-	visibleRows.sort((a, b) => {
+	rows.sort((a, b) => {
 		if (b.pts !== a.pts) return b.pts - a.pts;
 		const maxLen = Math.max(a._bestFinishes.length, b._bestFinishes.length);
 		for (let i = 0; i < maxLen; i++) {
@@ -193,7 +192,7 @@ function calcStandings(
 		return 0;
 	});
 
-	return visibleRows;
+	return rows;
 }
 
 export function useFirebaseStandings(gridId: GridId) {
@@ -231,9 +230,9 @@ export function useFirebaseStandings(gridId: GridId) {
 		load();
 	}, []);
 
-	const { standings, previousStandings } = useMemo(() => {
+	const { standings, previousStandings, allRows, previousAllRows } = useMemo(() => {
 		if (calendarsLoading || !driversList.length || loadingResults) {
-			return { standings: [], previousStandings: [] };
+			return { standings: [], previousStandings: [], allRows: [], previousAllRows: [] };
 		}
 
 		// Prefer globally-active season; fall back to most recent season linked to this grid's calendars
@@ -296,10 +295,16 @@ export function useFirebaseStandings(gridId: GridId) {
 		const gridDriverIds = Object.entries(profiles)
 			.filter(([, byGrid]) => !!byGrid?.[gridId])
 			.map(([driverId]) => driverId);
-		const standings = applyAdj(
+		const reservesEarnPoints = getGridConfig(gridId)?.reservesEarnPoints ?? false;
+		const filterExDrivers = (rows: any[]) =>
+			reservesEarnPoints ? rows : rows.filter((r) => !r.exDriver);
+
+		const allRows = applyAdj(
 			calcStandings(relevantCalendars, allResults, gridId, driverLookup, applyProfile, teamLogoByName, gridDriverIds),
 			allCalendarIds,
 		);
+		const standings = filterExDrivers(allRows);
+
 		// Find the most recently raced calendar (by date) that has results
 		const lastRaced = [...relevantCalendars].sort((a, b) => {
 			const da = a.date ? new Date(a.date).getTime() : 0;
@@ -313,10 +318,7 @@ export function useFirebaseStandings(gridId: GridId) {
 			: relevantCalendars;
 		const previousCalendarIds = new Set(previousCalendars.map((c) => c.id));
 
-		// If there's no prior race, return an empty previous so position arrows
-		// don't fire on the first race (every driver would appear to have moved
-		// from a 0-pt baseline).
-		const previousStandings =
+		const previousAllRows =
 			previousCalendars.length === 0
 				? []
 				: applyAdj(
@@ -331,13 +333,16 @@ export function useFirebaseStandings(gridId: GridId) {
 						),
 						previousCalendarIds,
 					);
+		const previousStandings = filterExDrivers(previousAllRows);
 
-		return { standings, previousStandings };
+		return { standings, previousStandings, allRows, previousAllRows };
 	}, [allResults, allAdjustments, allCalendars, calendarsLoading, driversList, teamsData, seasons, mappings, profiles, gridId]);
 
 	return {
 		standings,
 		previousStandings,
+		allRows,
+		previousAllRows,
 		loading: loadingResults,
 	};
 }

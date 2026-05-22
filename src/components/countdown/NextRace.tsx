@@ -28,12 +28,12 @@ export function NextRace(props: NextRaceProps) {
 
 	return (
 		<div
-			style={{ backgroundColor: countdownBg }}
-			className="tenant-countdown-bar text-white"
+			style={{ backgroundColor: countdownBg, color: "var(--color-countdown-text)" }}
+			className="tenant-countdown-bar"
 		>
 			<div className="max-w-screen-xl mx-auto px-3 py-2 flex items-center justify-between gap-3 tracking-wide">
 				<div className="flex flex-col min-w-0 leading-tight">
-					<div className="flex items-center gap-2 text-[10px] md:text-xs text-white/70 uppercase tracking-wider">
+					<div className="flex items-center gap-2 text-[10px] md:text-xs opacity-70 uppercase tracking-wider">
 						{props.round && (
 							<span>
 								{props.round} · {formattedDateCapitalized}

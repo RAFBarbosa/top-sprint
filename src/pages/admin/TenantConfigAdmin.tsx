@@ -13,18 +13,22 @@ const COLOR_GROUPS = [
 		vars: [
 			{ key: "--color-brand-primary", label: "Primária" },
 			{ key: "--color-brand-accent", label: "Secundária" },
-			{ key: "--color-brand-nav", label: "Nav fundo" },
-			{ key: "--color-brand-nav-hover", label: "Nav hover" },
-			{ key: "--color-brand-nav-active", label: "Nav ativo" },
-			{ key: "--color-brand-nav-dropdown-bg", label: "Nav dropdown" },
 			{ key: "--color-brand-footer", label: "Rodapé" },
 		],
 	},
 	{
-		label: "Menu de Grid",
+		label: "Barra de Navegação",
+		vars: [
+			{ key: "--color-brand-nav", label: "Fundo" },
+			{ key: "--color-brand-nav-hover", label: "Link hover" },
+			{ key: "--color-brand-nav-active", label: "Link ativo" },
+			{ key: "--color-brand-nav-dropdown-bg", label: "Dropdown fundo" },
+		],
+	},
+	{
+		label: "Menu dos Grids",
 		vars: [
 			{ key: "--color-grid-menu-bg", label: "Fundo" },
-			{ key: "--color-grid-menu-text", label: "Texto" },
 			{ key: "--color-grid-menu-border", label: "Borda" },
 		],
 	},
@@ -33,11 +37,16 @@ const COLOR_GROUPS = [
 		vars: [
 			{ key: "--color-countdown-bg", label: "Countdown" },
 			{ key: "--color-news-bg", label: "Notícias" },
+			{ key: "--color-news-secondary-bg", label: "Notícias (secundário)" },
 			{ key: "--color-calendars-bg", label: "Calendário" },
 			{ key: "--color-standings-bg", label: "Classificação" },
+			{ key: "--color-standings-card-bg", label: "Classificação (linha)" },
 			{ key: "--color-teams-bg", label: "Equipes" },
 			{ key: "--color-drivers-bg", label: "Pilotos" },
+			{ key: "--color-drivers-card-bg", label: "Pilotos (container)" },
 			{ key: "--color-results-bg", label: "Resultados" },
+			{ key: "--color-results-card-bg", label: "Resultados (container)" },
+			{ key: "--color-results-row-odd-bg", label: "Resultados (detalhes)" },
 			{ key: "--color-champions-bg", label: "Campeões" },
 			{ key: "--color-profile-bg", label: "Perfil" },
 		],
@@ -209,15 +218,23 @@ export default function TenantConfigAdmin() {
 					<label className="text-sm font-medium">{group.label}</label>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 						{group.vars.map(({ key, label }) => (
-							<div key={key} className="flex items-center gap-3">
-								<input
-									type="color"
-									value={cssVars[key] ?? "#000000"}
-									onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
-									className="h-8 w-10 rounded border border-black/20 cursor-pointer p-0.5 shrink-0"
-								/>
-								<span className="text-sm w-28 shrink-0">{label}</span>
-								<span className="text-xs text-f1-lighterCarbon font-mono">{cssVars[key] ?? "—"}</span>
+							<div key={key}>
+								<label className="text-xs text-f1-lighterCarbon block mb-1">{label}</label>
+								<div className="flex gap-2">
+									<input
+										type="color"
+										value={cssVars[key] ?? "#000000"}
+										onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
+										className="h-10 w-12 border rounded cursor-pointer p-0.5 shrink-0"
+									/>
+									<input
+										type="text"
+										value={cssVars[key] ?? ""}
+										onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
+										className="flex-1 p-2 border rounded h-10 text-sm font-mono"
+										placeholder="padrão do tema"
+									/>
+								</div>
 							</div>
 						))}
 					</div>

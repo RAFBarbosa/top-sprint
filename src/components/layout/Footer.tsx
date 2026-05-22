@@ -15,8 +15,8 @@ export function Footer() {
 
 	return (
 		<footer
-			style={{ backgroundColor: "var(--color-brand-footer)" }}
-			className="pb-6 text-white mt-auto"
+			style={{ backgroundColor: "var(--color-brand-footer)", color: "var(--color-brand-footer-text)" }}
+			className="pb-6 mt-auto"
 		>
 			{!isAdminPage && <Partners />}
 			<div className="flex flex-col-reverse md:flex-row justify-between md:max-w-screen-xl mx-auto px-3 pt-6">
