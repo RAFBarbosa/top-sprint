@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGrids } from "../../contexts/GridsContext";
 import { useToast } from "../../contexts/ToastContext";
-import { DEFAULT_POINT_SYSTEM, type GridConfig, type RaceAward } from "../../shared/config/grids";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
+import { type GridConfig, type RaceAward } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 
 export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
@@ -10,11 +11,15 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading, saveGrids } = useGrids();
 	const { showToast } = useToast();
+	const { defaultPointSystem: generalPs, generalRaceAwards } = useTenantConfig();
 
 	const [editGrid, setEditGrid] = useState<GridConfig | null>(null);
 	const [saving, setSaving] = useState(false);
 	const [raceText, setRaceText] = useState("");
 	const [sprintText, setSprintText] = useState("");
+	const [poleBonusText, setPoleBonusText] = useState("");
+	const [presenceBonusText, setPresenceBonusText] = useState("");
+	const [maxRacecraftText, setMaxRacecraftText] = useState("");
 
 	useEffect(() => {
 		if (!loading && gridId) {
@@ -22,21 +27,26 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 			if (found) {
 				const clone: GridConfig = JSON.parse(JSON.stringify(found));
 				const ps = clone.pointSystem;
+				const isOverridden = (val: number | undefined, general: number | undefined) =>
+					val !== undefined && val !== general;
+				const raceOverridden = ps?.race && ps.race.length > 0 && ps.race.join(",") !== (generalPs?.race ?? []).join(",");
+				const sprintOverridden = ps?.sprint && ps.sprint.length > 0 && ps.sprint.join(",") !== (generalPs?.sprint ?? []).join(",");
 				clone.pointSystem = {
-					race: ps?.race && ps.race.length > 0 ? ps.race : [...DEFAULT_POINT_SYSTEM.race],
-					sprint:
-						ps?.sprint && ps.sprint.length > 0
-							? ps.sprint
-							: [...(DEFAULT_POINT_SYSTEM.sprint ?? [])],
-					poleBonus: ps?.poleBonus ?? DEFAULT_POINT_SYSTEM.poleBonus ?? 0,
-					presenceBonus: ps?.presenceBonus ?? DEFAULT_POINT_SYSTEM.presenceBonus ?? 0,
+					race: raceOverridden ? ps!.race : [],
+					sprint: sprintOverridden ? ps!.sprint! : [],
+					poleBonus: isOverridden(ps?.poleBonus, generalPs?.poleBonus) ? ps!.poleBonus : undefined,
+					presenceBonus: isOverridden(ps?.presenceBonus, generalPs?.presenceBonus) ? ps!.presenceBonus : undefined,
+					maxRacecraftPoints: isOverridden(ps?.maxRacecraftPoints, generalPs?.maxRacecraftPoints) ? ps!.maxRacecraftPoints : undefined,
 				};
 				setEditGrid(clone);
-				setRaceText(clone.pointSystem.race.join(", "));
-				setSprintText((clone.pointSystem.sprint ?? []).join(", "));
+				setRaceText(raceOverridden ? ps!.race.join(", ") : "");
+				setSprintText(sprintOverridden ? ps!.sprint!.join(", ") : "");
+				setPoleBonusText(clone.pointSystem.poleBonus !== undefined ? String(clone.pointSystem.poleBonus) : "");
+				setPresenceBonusText(clone.pointSystem.presenceBonus !== undefined ? String(clone.pointSystem.presenceBonus) : "");
+				setMaxRacecraftText(clone.pointSystem.maxRacecraftPoints !== undefined ? String(clone.pointSystem.maxRacecraftPoints) : "");
 			}
 		}
-	}, [loading, grids, gridId]);
+	}, [loading, grids, gridId, generalPs]);
 
 	if (loading || !editGrid) {
 		return (
@@ -270,7 +280,7 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							value={raceText}
 							onChange={(e) => { setRaceText(e.target.value); updatePointSystem("race", parsePointsArray(e.target.value)); }}
 							className="w-full p-2 border rounded h-10 text-sm font-mono"
-							placeholder="25, 22, 20..."
+							placeholder={`padrão geral: ${(generalPs?.race ?? []).join(", ") || "—"}`}
 						/>
 					</div>
 					<div>
@@ -282,7 +292,7 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							value={sprintText}
 							onChange={(e) => { setSprintText(e.target.value); updatePointSystem("sprint", parsePointsArray(e.target.value)); }}
 							className="w-full p-2 border rounded h-10 text-sm font-mono"
-							placeholder="16, 15, 14..."
+							placeholder={`padrão geral: ${(generalPs?.sprint ?? []).join(", ") || "—"}`}
 						/>
 					</div>
 					<div>
@@ -290,16 +300,16 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							Bônus Pole
 						</label>
 						<input
-							type="number"
-							value={editGrid.pointSystem?.poleBonus ?? 0}
-							onChange={(e) =>
-								updatePointSystem(
-									"poleBonus",
-									parseInt(e.target.value) || 0,
-								)
-							}
+							type="text"
+							inputMode="numeric"
+							value={poleBonusText}
+							onChange={(e) => {
+								setPoleBonusText(e.target.value);
+								const n = parseInt(e.target.value);
+								updatePointSystem("poleBonus", isNaN(n) ? undefined : n);
+							}}
 							className="w-full p-2 border rounded h-10 text-sm"
-							min={0}
+							placeholder={`padrão geral: ${generalPs?.poleBonus ?? 0}`}
 						/>
 					</div>
 					<div>
@@ -307,16 +317,33 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							Bônus Presença
 						</label>
 						<input
-							type="number"
-							value={editGrid.pointSystem?.presenceBonus ?? 0}
-							onChange={(e) =>
-								updatePointSystem(
-									"presenceBonus",
-									parseInt(e.target.value) || 0,
-								)
-							}
+							type="text"
+							inputMode="numeric"
+							value={presenceBonusText}
+							onChange={(e) => {
+								setPresenceBonusText(e.target.value);
+								const n = parseInt(e.target.value);
+								updatePointSystem("presenceBonus", isNaN(n) ? undefined : n);
+							}}
 							className="w-full p-2 border rounded h-10 text-sm"
-							min={0}
+							placeholder={`padrão geral: ${generalPs?.presenceBonus ?? 0}`}
+						/>
+					</div>
+					<div>
+						<label className="text-xs text-f1-lighterCarbon block mb-1">
+							Referência Cards
+						</label>
+						<input
+							type="text"
+							inputMode="numeric"
+							value={maxRacecraftText}
+							onChange={(e) => {
+								setMaxRacecraftText(e.target.value);
+								const n = parseInt(e.target.value);
+								updatePointSystem("maxRacecraftPoints", isNaN(n) ? undefined : n);
+							}}
+							className="w-full p-2 border rounded h-10 text-sm"
+							placeholder={`padrão geral: ${generalPs?.maxRacecraftPoints ?? 20}`}
 						/>
 					</div>
 					<div className="flex items-center gap-3">
@@ -340,10 +367,24 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 
 			{/* Race awards */}
 			<div className="border rounded-lg p-4 space-y-3">
+				<p className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
+					Prêmios da Corrida
+				</p>
+
+				{generalRaceAwards.length > 0 && (
+					<div className="space-y-1">
+						<p className="text-xs text-f1-lighterCarbon">Prêmios gerais (configurados nas definições gerais)</p>
+						{generalRaceAwards.map((a) => (
+							<div key={a.id} className="grid grid-cols-[1fr_80px] gap-2 items-center opacity-50">
+								<div className="p-2 border rounded h-9 text-sm bg-gray-50 flex items-center">{a.label}</div>
+								<div className="p-2 border rounded h-9 text-sm text-center bg-gray-50 flex items-center justify-center">{a.points} pts</div>
+							</div>
+						))}
+					</div>
+				)}
+
 				<div className="flex justify-between items-center">
-					<p className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
-						Prêmios da Corrida
-					</p>
+					<p className="text-xs text-f1-lighterCarbon">Prêmios exclusivos deste grid</p>
 					<button
 						type="button"
 						onClick={addAward}
@@ -353,9 +394,7 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 					</button>
 				</div>
 				{(editGrid.raceAwards ?? []).length === 0 && (
-					<p className="text-xs text-f1-lighterCarbon">
-						Nenhum prêmio configurado.
-					</p>
+					<p className="text-xs text-f1-lighterCarbon">Nenhum prêmio exclusivo.</p>
 				)}
 				<div className="space-y-2">
 					{(editGrid.raceAwards ?? []).map((award) => (
@@ -370,7 +409,7 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 									updateAward(award.id, "label", e.target.value)
 								}
 								className="p-2 border rounded h-9 text-sm"
-								placeholder="Ex: Volta Rápida"
+								placeholder="Ex: Melhor Estreante"
 							/>
 							<input
 								type="number"

@@ -5,7 +5,7 @@ import type { PointAdjustment } from "../../components/admin/PointAdjustmentsAdm
 import { useFirebaseTeams } from "./useFirebaseTeams";
 import { useFirebaseDrivers } from "./useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
-import { getGridConfig, getPointSystem, type GridId } from "../config/grids";
+import { getEffectiveRaceAwards, getGridConfig, getPointSystem, type GridId } from "../config/grids";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
@@ -36,7 +36,7 @@ function calcStandings(
 	const sprintPointsArr = ps.sprint ?? [];
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
-	const raceAwards = gridConfig?.raceAwards ?? [];
+	const raceAwards = getEffectiveRaceAwards(gridId);
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 
 	const isReserveForRace = (driverId: string, result: RaceResultDoc): boolean => {

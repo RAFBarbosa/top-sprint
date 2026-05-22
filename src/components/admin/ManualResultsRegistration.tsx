@@ -17,7 +17,7 @@ import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { ChevronUpDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { getGridLabel, getGridConfig } from "../../shared/config/grids";
+import { getEffectiveRaceAwards, getGridLabel, getGridConfig } from "../../shared/config/grids";
 import { tenant } from "../../shared/config/tenants";
 
 import { format } from "date-fns";
@@ -501,7 +501,7 @@ export function ManualResultsRegistration({
 		setSprintRaceQueries(Array(22).fill(""));
 		setSprintQualyQueries(Array(22).fill(""));
 		const emptyAwards = Object.fromEntries(
-			(getGridConfig(calendar.grid)?.raceAwards ?? []).map((a) => [
+			getEffectiveRaceAwards(calendar.grid).map((a) => [
 				a.id,
 				"",
 			]),
@@ -531,16 +531,8 @@ export function ManualResultsRegistration({
 
 	const gridOptions: string[] = (tenant.grids as any[]).map((g: any) => g.id);
 
-	// Resolve raceAwards for a calendar: try the calendar's specific grid first,
-	// fall back to the first tenant grid that has raceAwards configured.
-	const resolveRaceAwards = (gridId: string | null | undefined) => {
-		const explicit = getGridConfig(gridId ?? "")?.raceAwards;
-		if (explicit?.length) return explicit;
-		return (
-			(tenant.grids as any[]).find((g: any) => g.raceAwards?.length)
-				?.raceAwards ?? []
-		);
-	};
+	const resolveRaceAwards = (gridId: string | null | undefined) =>
+		getEffectiveRaceAwards(gridId ?? "");
 
 	const formatDateWithCapitalizedMonth = (dateString: string) => {
 		const date = new Date(dateString);

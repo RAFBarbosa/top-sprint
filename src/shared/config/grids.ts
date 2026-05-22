@@ -13,6 +13,8 @@ export interface PointSystem {
 	sprint?: number[];
 	poleBonus?: number;
 	presenceBonus?: number;
+	reservesScore?: boolean;
+	maxRacecraftPoints?: number;
 }
 
 // Official F1 point system — used as fallback when a grid has no point system configured
@@ -21,6 +23,8 @@ export const DEFAULT_POINT_SYSTEM: PointSystem = {
 	sprint: [8, 7, 6, 5, 4, 3, 2, 1],
 	poleBonus: 0,
 	presenceBonus: 0,
+	reservesScore: false,
+	maxRacecraftPoints: 20,
 };
 
 // Returns the configured point system, or the F1 default if the grid has none or
@@ -33,6 +37,8 @@ export const getPointSystem = (gridId: GridId): PointSystem => {
 		sprint: ps.sprint && ps.sprint.length > 0 ? ps.sprint : DEFAULT_POINT_SYSTEM.sprint,
 		poleBonus: ps.poleBonus ?? DEFAULT_POINT_SYSTEM.poleBonus,
 		presenceBonus: ps.presenceBonus ?? DEFAULT_POINT_SYSTEM.presenceBonus,
+		reservesScore: ps.reservesScore ?? DEFAULT_POINT_SYSTEM.reservesScore,
+		maxRacecraftPoints: ps.maxRacecraftPoints ?? DEFAULT_POINT_SYSTEM.maxRacecraftPoints,
 	};
 };
 
@@ -72,6 +78,19 @@ export interface GridConfig {
 
 // Mutable runtime array — starts with tenant defaults, updated by GridsContext when Firebase loads
 let _runtimeGrids: GridConfig[] = tenant.grids as GridConfig[];
+
+let _generalRaceAwards: RaceAward[] = [];
+
+export const setGeneralRaceAwards = (awards: RaceAward[]) => {
+	_generalRaceAwards = awards;
+};
+
+export const getEffectiveRaceAwards = (gridId: GridId): RaceAward[] => {
+	const gridSpecific = getGridConfig(gridId)?.raceAwards ?? [];
+	const generalIds = new Set(_generalRaceAwards.map((a) => a.id));
+	const extra = gridSpecific.filter((a) => !generalIds.has(a.id));
+	return [..._generalRaceAwards, ...extra];
+};
 
 export const setRuntimeGrids = (grids: GridConfig[]) => {
 	_runtimeGrids = grids;

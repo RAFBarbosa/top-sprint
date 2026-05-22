@@ -11,7 +11,7 @@ import PoweredBy from "../utils/PoweredBy";
 export function Footer() {
 	const location = useLocation();
 	const isAdminPage = location.pathname.includes("/admin/");
-	const { name } = useTenantConfig();
+	const { name, footerCta } = useTenantConfig();
 
 	return (
 		<footer
@@ -44,7 +44,7 @@ export function Footer() {
 				<div className="md:hidden h-[.5px] w-full bg-white/20 my-6" />
 				<div className="flex flex-col justify-between items-center gap-4 md:gap-2">
 					<p className="flex justify-center text-center">
-						Entre em contato e participe da próxima temporada
+						{footerCta}
 					</p>
 					<Socials />
 					<div className="h-[.5px] w-[45px] bg-f1-silver my-2 self-end hidden md:block" />

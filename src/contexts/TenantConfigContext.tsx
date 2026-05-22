@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/adminClient";
 import { tenant } from "../shared/config/tenants";
-import type { PointSystem } from "../shared/config/grids";
+import type { PointSystem, RaceAward } from "../shared/config/grids";
+import { setGeneralRaceAwards } from "../shared/config/grids";
 import { contrastText } from "../shared/utils/color";
 
 interface TenantConfigShape {
@@ -27,6 +28,9 @@ interface TenantConfigShape {
 	};
 	cssVars: Record<string, string>;
 	defaultPointSystem?: PointSystem;
+	generalRaceAwards: RaceAward[];
+	footerCta: string;
+	hallOfFameLegacy: { enabled: boolean; text: string };
 }
 
 const defaultCssVars = Object.fromEntries(
@@ -41,6 +45,9 @@ const defaults: TenantConfigShape = {
 	nav: tenant.nav ?? {},
 	features: tenant.features,
 	cssVars: defaultCssVars,
+	generalRaceAwards: [],
+	footerCta: "Entre em contato e participe da próxima temporada",
+	hallOfFameLegacy: { enabled: false, text: "" },
 };
 
 const AUTO_CONTRAST: Record<string, string> = {
@@ -59,7 +66,12 @@ const AUTO_CONTRAST: Record<string, string> = {
 	"--color-results-bg": "--color-results-text",
 	"--color-results-card-bg": "--color-results-card-text",
 	"--color-champions-bg": "--color-champions-text",
+	"--color-champions-awards-bg": "--color-champions-awards-text",
+	"--color-champions-legacy-bg": "--color-champions-legacy-text",
 	"--color-profile-bg": "--color-profile-text",
+	"--color-profile-nav-bg": "--color-profile-nav-text",
+	"--color-profile-stats-bg": "--color-profile-stats-text",
+	"--color-profile-card-bg": "--color-profile-card-text",
 };
 
 const isHex = (c: string) => /^#[0-9a-f]{6}$/i.test(c);
@@ -89,6 +101,8 @@ export function TenantConfigProvider({ children }: { children: React.ReactNode }
 			document.title = name;
 			const cssVars = { ...defaultCssVars, ...(data.cssVars ?? {}) };
 			applyCssVars(cssVars);
+			const generalRaceAwards: RaceAward[] = data.generalRaceAwards ?? [];
+			setGeneralRaceAwards(generalRaceAwards);
 			setConfig({
 				name,
 				logoUrl: data.logoUrl ?? tenant.logo.url,
@@ -98,6 +112,9 @@ export function TenantConfigProvider({ children }: { children: React.ReactNode }
 				features: data.features ?? tenant.features,
 				cssVars,
 				defaultPointSystem: data.defaultPointSystem,
+				generalRaceAwards,
+				footerCta: data.footerCta ?? "Entre em contato e participe da próxima temporada",
+				hallOfFameLegacy: data.hallOfFameLegacy ?? { enabled: false, text: "" },
 			});
 		});
 	}, []);

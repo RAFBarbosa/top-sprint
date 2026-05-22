@@ -31,7 +31,12 @@ export interface CssVars {
 	"--color-results-card-bg": string;
 	"--color-results-row-odd-bg": string;
 	"--color-champions-bg": string;
+	"--color-champions-awards-bg": string;
+	"--color-champions-legacy-bg": string;
 	"--color-profile-bg": string;
+	"--color-profile-nav-bg": string;
+	"--color-profile-stats-bg": string;
+	"--color-profile-card-bg": string;
 	"--font-f1"?: string;
 	"--font-f1Title"?: string;
 	"--font-f1Podium"?: string;
@@ -173,7 +178,12 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-results-card-bg": "#0c0c0c",
 			"--color-results-row-odd-bg": "#292929",
 			"--color-champions-bg": "#111214",
+			"--color-champions-awards-bg": "#676769",
+			"--color-champions-legacy-bg": "#292929",
 			"--color-profile-bg": "#111214",
+			"--color-profile-nav-bg": "#0c0c0c",
+			"--color-profile-stats-bg": "#0c0c0c",
+			"--color-profile-card-bg": "#1c1c1e",
 			"--font-f1": "'FutoSans', sans-serif",
 			"--font-f1Title": "'Vipnagorgialla', sans-serif",
 			"--font-f1Podium": "'Chakra Petch', sans-serif",
@@ -256,7 +266,12 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-results-card-bg": "#ffffff",
 			"--color-results-row-odd-bg": "#e0e0e0",
 			"--color-champions-bg": "transparent",
+			"--color-champions-awards-bg": "#e8e8e8",
+			"--color-champions-legacy-bg": "#e8e8e8",
 			"--color-profile-bg": "transparent",
+			"--color-profile-nav-bg": "#f0f0f0",
+			"--color-profile-stats-bg": "#ffffff",
+			"--color-profile-card-bg": "#f0f0f0",
 		},
 		socials: { youtube: "https://www.youtube.com/@feliplay_TV" },
 		fallbackDriverPhoto:
@@ -406,7 +421,12 @@ export const TENANTS: Record<TenantId, TenantConfig> = {
 			"--color-results-card-bg": "#ffffff",
 			"--color-results-row-odd-bg": "#e0e0e0",
 			"--color-champions-bg": "transparent",
+			"--color-champions-awards-bg": "#e8e8e8",
+			"--color-champions-legacy-bg": "#e8e8e8",
 			"--color-profile-bg": "transparent",
+			"--color-profile-nav-bg": "#f0f0f0",
+			"--color-profile-stats-bg": "#ffffff",
+			"--color-profile-card-bg": "#f0f0f0",
 		},
 		socials: {
 			instagram: "https://www.instagram.com/brazukaracingleague/",

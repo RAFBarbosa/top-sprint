@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { getGridConfig, getPointSystem } from "../../shared/config/grids";
+import { getEffectiveRaceAwards, getGridConfig, getPointSystem } from "../../shared/config/grids";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import gridAcsv from "../../../public/top-sprint-stats.csv?raw";
@@ -125,7 +125,7 @@ function calcFirebaseStats(
 	const sprintPointsArr = ps.sprint ?? [];
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
-	const raceAwards = gridConfig?.raceAwards ?? [];
+	const raceAwards = getEffectiveRaceAwards(gridId ?? "");
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 

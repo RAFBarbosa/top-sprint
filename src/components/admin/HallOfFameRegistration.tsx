@@ -10,6 +10,7 @@ import {
 	Description,
 } from "@headlessui/react";
 import { AdminDeleteButton } from "./ui/AdminDeleteButton";
+import { Toggle } from "./ui/Toggle";
 import { useToast } from "../../contexts/ToastContext";
 import {
 	collection,
@@ -49,6 +50,7 @@ const normalizeHof = (id: string, data: any) => ({
 
 export function HallOfFameRegistration() {
 	const [season, setSeason] = useState("");
+	const [legacy, setLegacy] = useState(false);
 	const [photos, setPhotos] = useState<PhotoItem[]>([]);
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const { showToast } = useToast();
@@ -124,6 +126,7 @@ export function HallOfFameRegistration() {
 		setSelectedHof(hof);
 		setIsEditing(true);
 		setSeason(hof.season || "");
+		setLegacy(hof.legacy ?? false);
 		setPhotos(
 			(hof.photoUrls ?? []).map((url: string) => ({
 				type: "existing" as const,
@@ -136,6 +139,7 @@ export function HallOfFameRegistration() {
 		setSelectedHof(null);
 		setIsEditing(false);
 		setSeason("");
+		setLegacy(false);
 		setPhotos([]);
 	};
 
@@ -224,6 +228,7 @@ export function HallOfFameRegistration() {
 			if (isEditing && selectedHof) {
 				await updateDoc(doc(db, "hallsOfFame", selectedHof.id), {
 					season,
+					legacy,
 					photoUrls: orderedUrls,
 				});
 				setPhotos(orderedUrls.map((url) => ({ type: "existing" as const, url })));
@@ -232,7 +237,7 @@ export function HallOfFameRegistration() {
 				await addDoc(collection(db, "hallsOfFame"), {
 					season,
 					photoUrls: orderedUrls,
-					legacy: false,
+					legacy,
 					deleted: false,
 					createdAt: serverTimestamp(),
 				});
@@ -425,6 +430,10 @@ export function HallOfFameRegistration() {
 								className="w-full p-2 border rounded h-11"
 								placeholder="Ex: 2024"
 							/>
+						</div>
+
+						<div>
+							<Toggle checked={legacy} onChange={setLegacy} label="Legado (temporada de era anterior)" />
 						</div>
 
 						{photos.length > 0 && (
