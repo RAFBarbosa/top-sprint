@@ -45,6 +45,16 @@
 	--color-results-text: #ffffff;
 	--color-champions-bg: #111214;
 	--color-champions-text: #ffffff;
+	--color-champions-awards-bg: #676769;
+	--color-champions-awards-text: #ffffff;
+	--color-champions-legacy-bg: #292929;
+	--color-champions-legacy-text: #ffffff;
 	--color-profile-bg: #111214;
 	--color-profile-text: #ffffff;
+	--color-profile-nav-bg: #0c0c0c;
+	--color-profile-nav-text: #ffffff;
+	--color-profile-stats-bg: #0c0c0c;
+	--color-profile-stats-text: #ffffff;
+	--color-profile-card-bg: #1c1c1e;
+	--color-profile-card-text: #ffffff;
 }

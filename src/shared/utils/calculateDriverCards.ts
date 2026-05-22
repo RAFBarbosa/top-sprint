@@ -1,6 +1,6 @@
 import { getDocs, collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { getGridConfig, getPointSystem } from "../config/grids";
+import { getEffectiveRaceAwards, getGridConfig, getPointSystem } from "../config/grids";
 import { tenant } from "../config/tenants";
 
 export interface DriverCardStats {
@@ -25,7 +25,7 @@ export interface DriverCardStats {
  * - 2 grids: first 90-99 (range 9), last 70-89 (range 19).
  * - 1 grid: 90-99 (range 9).
  */
-function getGridRange(gridId: string): { min: number; range: number } {
+export function getGridRange(gridId: string): { min: number; range: number } {
 	const grids = tenant.grids ?? [];
 	const idx = grids.findIndex((g: { id: string }) => g.id === gridId);
 	if (idx === -1 || grids.length <= 1) return { min: 90, range: 9 };
@@ -48,7 +48,7 @@ function calcRacecraftRaw(
 	range: number,
 ): number {
 	if (maxAvgPoints === 0) return 0;
-	return Math.round((avgPoints / maxAvgPoints) * range);
+	return Math.floor((avgPoints / maxAvgPoints) * range);
 }
 
 /**
@@ -128,7 +128,7 @@ function computeSeasonData(
 	const sprintPointsArr = ps.sprint ?? [];
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
-	const raceAwards = gridConfig?.raceAwards ?? [];
+	const raceAwards = getEffectiveRaceAwards(gridId);
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 	const driverIsReserve = !reservesEarnPoints && reserveSet.has(driverId);
 
@@ -287,6 +287,7 @@ export async function calculateAndSaveCards(
 	});
 
 	const { min: gridMin, range: gridRange } = getGridRange(gridId);
+	const ps = getPointSystem(gridId);
 
 	// For each driver, find races they participated in and exclude the most recent
 	const getDriverRaces = (
@@ -307,7 +308,10 @@ export async function calculateAndSaveCards(
 				participated.push(calId);
 			}
 		}
-		return { all: participated, prevOnly: participated.slice(0, -1) };
+		const lastPlayedCalId = [...seasonCalendarIds].reverse().find((calId) => !!allResults[calId]);
+		const participatedInLatest = lastPlayedCalId ? participated.includes(lastPlayedCalId) : false;
+		const prevOnly = participatedInLatest ? participated.slice(0, -1) : participated;
+		return { all: participated, prevOnly };
 	};
 
 	// Compute season data for all drivers
@@ -344,9 +348,7 @@ export async function calculateAndSaveCards(
 		(id) => seasonDataMap[id].participations > 0,
 	);
 
-	// Grid-wide maxes for racecraft normalization
-	// const maxAvgPoints = Math.max(1, ...activeDrivers.map((id) => getAvgPoints(seasonDataMap[id])));
-	const maxAvgPoints = 20;
+	const maxAvgPoints = ps.maxRacecraftPoints ?? 20;
 
 	// Grid-wide min/max avgQualyPos for pace normalization
 	const allAvgQualyPos = activeDrivers.map((id) =>
@@ -362,24 +364,9 @@ export async function calculateAndSaveCards(
 	const worstAvgQualy = 20;
 
 	// Same for prevRating
-	const prevActiveDrivers = driverIds.filter(
-		(id) => prevDataMap[id].participations > 0,
-	);
-	const prevMaxAvgPoints = Math.max(
-		1,
-		...prevActiveDrivers.map((id) => getAvgPoints(prevDataMap[id])),
-	);
-	const prevAllAvgQualyPos = prevActiveDrivers.map((id) =>
-		getAvgQualyPos(prevDataMap[id]),
-	);
-	// const prevBestAvgQualy = Math.min(
-	// 	...(prevAllAvgQualyPos.length ? prevAllAvgQualyPos : [1]),
-	// );
-	// const prevWorstAvgQualy = Math.max(
-	// 	...(prevAllAvgQualyPos.length ? prevAllAvgQualyPos : [20]),
-	// );
-	const prevBestAvgQualy = 2;
-	const prevWorstAvgQualy = 20;
+	const prevMaxAvgPoints = maxAvgPoints;
+	const prevBestAvgQualy = bestAvgQualy;
+	const prevWorstAvgQualy = worstAvgQualy;
 
 	// Get existing card data to read bestCard values (for consistency)
 	const existingCards = cardsSnap.exists()

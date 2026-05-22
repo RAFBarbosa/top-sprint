@@ -119,40 +119,66 @@
 	color: var(--color-champions-text);
 }
 
+[data-tenant="topSprint"] .tenant-champions-awards {
+	background-color: var(--color-champions-awards-bg);
+	color: var(--color-champions-awards-text);
+}
+
+[data-tenant="topSprint"] .tenant-champions-legacy-text {
+	background-color: var(--color-champions-legacy-bg);
+	color: var(--color-champions-legacy-text);
+}
+
 [data-tenant="topSprint"] .tenant-section-profile {
 	background-color: var(--color-profile-bg);
 	color: var(--color-profile-text);
 }
 
 [data-tenant="topSprint"] .tenant-profile-stats {
-	background-color: var(--color-crt-secondary);
-	color: #ffffff;
+	background-color: var(--color-profile-stats-bg);
+	color: var(--color-profile-stats-text);
 }
 
 [data-tenant="topSprint"] .tenant-profile-card {
-	background-color: var(--color-f1-lightCarbon);
-	color: #ffffff;
+	background-color: var(--color-profile-card-bg);
+	color: var(--color-profile-card-text);
 }
 
 [data-tenant="topSprint"] .tenant-profile-stats .text-f1-text {
-	color: #ffffff;
+	color: var(--color-profile-stats-text);
 }
 
 [data-tenant="topSprint"] .tenant-profile-stats .tenant-profile-info-label {
-	color: rgba(255, 255, 255, 0.5);
+	color: color-mix(in srgb, var(--color-profile-stats-text) 50%, transparent);
 }
 
 [data-tenant="topSprint"] .tenant-profile-stats .text-f1-lighterCarbon {
-	color: rgba(255, 255, 255, 0.5);
+	color: color-mix(in srgb, var(--color-profile-stats-text) 50%, transparent);
 }
 
 [data-tenant="topSprint"] .tenant-profile-stats .border-black\/10 {
-	border-color: rgba(255, 255, 255, 0.1);
+	border-color: color-mix(in srgb, var(--color-profile-stats-text) 10%, transparent);
+}
+
+[data-tenant="topSprint"] .tenant-profile-card .text-f1-text {
+	color: var(--color-profile-card-text);
+}
+
+[data-tenant="topSprint"] .tenant-profile-card .text-f1-lighterCarbon {
+	color: color-mix(in srgb, var(--color-profile-card-text) 50%, transparent);
+}
+
+[data-tenant="topSprint"] .tenant-profile-card .tenant-profile-info-label {
+	color: color-mix(in srgb, var(--color-profile-card-text) 50%, transparent);
+}
+
+[data-tenant="topSprint"] .tenant-profile-card .border-black\/10 {
+	border-color: color-mix(in srgb, var(--color-profile-card-text) 10%, transparent);
 }
 
 [data-tenant="topSprint"] .tenant-profile-nav {
-	background-color: var(--color-crt-secondary);
-	color: #ffffff;
+	background-color: var(--color-profile-nav-bg);
+	color: var(--color-profile-nav-text);
 }
 
 [data-tenant="topSprint"] .tenant-section-title {

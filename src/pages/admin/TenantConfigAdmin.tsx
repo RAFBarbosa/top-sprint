@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, getDocs, collection, updateDoc, deleteField } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
+import { useGrids } from "../../contexts/GridsContext";
 import { useCreateAssetMutation } from "../../graphql/generated";
 import { useToast } from "../../contexts/ToastContext";
 import { tenant } from "../../shared/config/tenants";
-import type { PointSystem } from "../../shared/config/grids";
+import type { PointSystem, RaceAward } from "../../shared/config/grids";
 import { DEFAULT_POINT_SYSTEM } from "../../shared/config/grids";
+import { Toggle } from "../../components/admin/ui/Toggle";
 
 const COLOR_GROUPS = [
 	{
@@ -33,22 +35,67 @@ const COLOR_GROUPS = [
 		],
 	},
 	{
-		label: "Fundos das Seções",
+		label: "Countdown",
 		vars: [
-			{ key: "--color-countdown-bg", label: "Countdown" },
-			{ key: "--color-news-bg", label: "Notícias" },
-			{ key: "--color-news-secondary-bg", label: "Notícias (secundário)" },
-			{ key: "--color-calendars-bg", label: "Calendário" },
-			{ key: "--color-standings-bg", label: "Classificação" },
-			{ key: "--color-standings-card-bg", label: "Classificação (linha)" },
-			{ key: "--color-teams-bg", label: "Equipes" },
-			{ key: "--color-drivers-bg", label: "Pilotos" },
-			{ key: "--color-drivers-card-bg", label: "Pilotos (container)" },
-			{ key: "--color-results-bg", label: "Resultados" },
-			{ key: "--color-results-card-bg", label: "Resultados (container)" },
-			{ key: "--color-results-row-odd-bg", label: "Resultados (detalhes)" },
-			{ key: "--color-champions-bg", label: "Campeões" },
-			{ key: "--color-profile-bg", label: "Perfil" },
+			{ key: "--color-countdown-bg", label: "Fundo" },
+		],
+	},
+	{
+		label: "Notícias",
+		vars: [
+			{ key: "--color-news-bg", label: "Fundo" },
+			{ key: "--color-news-secondary-bg", label: "Secundário" },
+		],
+	},
+	{
+		label: "Calendário",
+		vars: [
+			{ key: "--color-calendars-bg", label: "Fundo" },
+		],
+	},
+	{
+		label: "Classificação",
+		vars: [
+			{ key: "--color-standings-bg", label: "Fundo" },
+			{ key: "--color-standings-card-bg", label: "Linha" },
+		],
+	},
+	{
+		label: "Equipes",
+		vars: [
+			{ key: "--color-teams-bg", label: "Fundo" },
+		],
+	},
+	{
+		label: "Pilotos",
+		vars: [
+			{ key: "--color-drivers-bg", label: "Fundo" },
+			{ key: "--color-drivers-card-bg", label: "Container" },
+		],
+	},
+	{
+		label: "Resultados",
+		vars: [
+			{ key: "--color-results-bg", label: "Fundo" },
+			{ key: "--color-results-card-bg", label: "Container" },
+			{ key: "--color-results-row-odd-bg", label: "Detalhes" },
+		],
+	},
+	{
+		label: "Campeões",
+		vars: [
+			{ key: "--color-champions-bg", label: "Fundo" },
+			{ key: "--color-champions-awards-bg", label: "Prêmios" },
+			{ key: "--color-champions-legacy-bg", label: "Legado (texto)" },
+		],
+	},
+	{
+		label: "Perfil",
+		vars: [
+			{ key: "--color-profile-bg", label: "Fundo" },
+			{ key: "--color-profile-nav-bg", label: "Navegação" },
+			{ key: "--color-profile-stats-bg", label: "Container" },
+			{ key: "--color-profile-card-bg", label: "Estatísticas" },
 		],
 	},
 ] as const;
@@ -73,7 +120,11 @@ export default function TenantConfigAdmin() {
 	const [socials, setSocials] = useState<Record<string, string>>({});
 	const [nav, setNav] = useState<Record<string, string>>({});
 	const [features, setFeatures] = useState<Record<string, boolean>>({ hallOfFame: true, partners: true, archive: true });
+	const [footerCta, setFooterCta] = useState("Entre em contato e participe da próxima temporada");
+	const [legacyEnabled, setLegacyEnabled] = useState(false);
+	const [legacyText, setLegacyText] = useState("");
 	const [defaultPointSystem, setDefaultPointSystem] = useState<PointSystem>(DEFAULT_POINT_SYSTEM);
+	const [generalRaceAwards, setGeneralRaceAwards] = useState<RaceAward[]>([]);
 	const [dpsRaceText, setDpsRaceText] = useState(DEFAULT_POINT_SYSTEM.race.join(", "));
 	const [dpsSprintText, setDpsSprintText] = useState((DEFAULT_POINT_SYSTEM.sprint ?? []).join(", "));
 	const [loading, setLoading] = useState(true);
@@ -81,6 +132,7 @@ export default function TenantConfigAdmin() {
 
 	const [createAsset] = useCreateAssetMutation();
 	const { showToast } = useToast();
+	const { grids, saveGrids } = useGrids();
 
 	useEffect(() => {
 		getDoc(doc(db, "config", "tenant")).then((snap) => {
@@ -94,11 +146,15 @@ export default function TenantConfigAdmin() {
 				setSocials(data.socials ?? {});
 				setNav(data.nav ?? {});
 				setFeatures(data.features ?? { hallOfFame: true, partners: true, archive: true });
+				setFooterCta(data.footerCta ?? "Entre em contato e participe da próxima temporada");
+				setLegacyEnabled(data.hallOfFameLegacy?.enabled ?? false);
+				setLegacyText(data.hallOfFameLegacy?.text ?? "");
 				if (data.defaultPointSystem) {
 					setDefaultPointSystem(data.defaultPointSystem);
 					setDpsRaceText((data.defaultPointSystem.race ?? []).join(", "));
 					setDpsSprintText((data.defaultPointSystem.sprint ?? []).join(", "));
 				}
+				setGeneralRaceAwards(data.generalRaceAwards ?? []);
 			}
 		}).finally(() => setLoading(false));
 	}, []);
@@ -145,7 +201,7 @@ export default function TenantConfigAdmin() {
 				setLogoFile(null);
 			}
 
-			await setDoc(doc(db, "config", "tenant"), { name: name.trim(), logoUrl: finalLogoUrl, defaultPhotoStyle, cssVars, socials, nav, features, defaultPointSystem }, { merge: true });
+			await setDoc(doc(db, "config", "tenant"), { name: name.trim(), logoUrl: finalLogoUrl, defaultPhotoStyle, cssVars, socials, nav, features, footerCta, hallOfFameLegacy: { enabled: legacyEnabled, text: legacyText }, defaultPointSystem, generalRaceAwards }, { merge: true });
 			showToast("success", "Configuração salva");
 		} catch (err: any) {
 			showToast("error", err.message || "Erro ao salvar");
@@ -284,15 +340,38 @@ export default function TenantConfigAdmin() {
 			<div className="space-y-2">
 				<label className="text-sm font-medium">Funcionalidades</label>
 				{FEATURE_KEYS.map((key) => (
-					<label key={key} className="flex items-center gap-2 cursor-pointer text-sm">
-						<input
-							type="checkbox"
-							checked={features[key] ?? false}
-							onChange={(e) => setFeatures((prev) => ({ ...prev, [key]: e.target.checked }))}
-						/>
-						{FEATURE_LABELS[key]}
-					</label>
+					<Toggle
+						key={key}
+						checked={features[key] ?? false}
+						onChange={(v) => setFeatures((prev) => ({ ...prev, [key]: v }))}
+						label={FEATURE_LABELS[key]}
+					/>
 				))}
+			</div>
+
+			<div className="space-y-1">
+				<label className="text-sm font-medium">Rodapé</label>
+				<input
+					type="text"
+					value={footerCta}
+					onChange={(e) => setFooterCta(e.target.value)}
+					className="w-full border border-black/20 rounded px-3 py-2 text-sm focus:outline-none focus:border-f1-red"
+					placeholder="Ex: Entre em contato e participe da próxima temporada"
+				/>
+			</div>
+
+			<div className="space-y-2">
+				<label className="text-sm font-medium">Hall da Fama — Legado</label>
+				<Toggle checked={legacyEnabled} onChange={setLegacyEnabled} label="Mostrar seção de legado" />
+				{legacyEnabled && (
+					<textarea
+						value={legacyText}
+						onChange={(e) => setLegacyText(e.target.value)}
+						rows={4}
+						className="w-full border border-black/20 rounded px-3 py-2 text-sm focus:outline-none focus:border-f1-red"
+						placeholder="Texto descritivo do legado..."
+					/>
+				)}
 			</div>
 
 			<div className="space-y-2">
@@ -339,6 +418,157 @@ export default function TenantConfigAdmin() {
 							min={0}
 						/>
 					</div>
+					<div>
+						<label className="text-xs text-f1-lighterCarbon block mb-1">Referência Cards</label>
+						<input
+							type="number"
+							value={defaultPointSystem.maxRacecraftPoints ?? 20}
+							onChange={(e) => updateDps("maxRacecraftPoints", parseInt(e.target.value) || 20)}
+							className="w-full border border-black/20 rounded px-3 py-2 text-sm focus:outline-none focus:border-f1-red"
+							min={1}
+						/>
+					</div>
+					<div className="col-span-2">
+						<Toggle
+							checked={defaultPointSystem.reservesScore ?? false}
+							onChange={(v) => updateDps("reservesScore", v)}
+							label="Reservas pontuam"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<div className="space-y-3">
+				<div className="flex justify-between items-center">
+					<label className="text-sm font-medium">Prêmios Gerais (todos os grids)</label>
+					<div className="flex gap-2">
+					{(() => {
+						const labelGroups = new Map<string, RaceAward[]>();
+						generalRaceAwards.forEach((a) => {
+							const key = a.label.trim().toLowerCase();
+							if (!labelGroups.has(key)) labelGroups.set(key, []);
+							labelGroups.get(key)!.push(a);
+						});
+						const hasDupes = Array.from(labelGroups.values()).some((g) => g.length > 1);
+						return hasDupes ? (
+							<button
+								type="button"
+								onClick={async () => {
+									const snap = await getDocs(collection(db, "race_results"));
+									const labelGroups = new Map<string, RaceAward[]>();
+									generalRaceAwards.forEach((a) => {
+										const key = a.label.trim().toLowerCase();
+										if (!labelGroups.has(key)) labelGroups.set(key, []);
+										labelGroups.get(key)!.push(a);
+									});
+									const consolidated: RaceAward[] = [];
+									for (const [, group] of labelGroups) {
+										if (group.length === 1) { consolidated.push(group[0]); continue; }
+										// Pick the first as canonical, merge the rest into it
+										const canonical = group[0];
+										const aliases = group.slice(1).map((a) => a.id);
+										// Update all results: rename alias fields to canonical id
+										for (const resultDoc of snap.docs) {
+											const data = resultDoc.data();
+											const updates: Record<string, any> = {};
+											let changed = false;
+											aliases.forEach((oldId) => {
+												if (data[oldId] !== undefined) {
+													updates[canonical.id] = data[oldId];
+													updates[oldId] = deleteField();
+													changed = true;
+												}
+											});
+											if (changed) await updateDoc(resultDoc.ref, updates);
+										}
+										consolidated.push(canonical);
+									}
+									setGeneralRaceAwards(consolidated);
+									await setDoc(doc(db, "config", "tenant"), { generalRaceAwards: consolidated }, { merge: true });
+									showToast("success", "Prêmios consolidados");
+								}}
+								className="text-xs px-3 py-1 border border-amber-300 text-amber-700 rounded hover:bg-amber-50 cursor-pointer"
+							>
+								Consolidar duplicados
+							</button>
+						) : null;
+					})()}
+					{grids.some((g) => (g.raceAwards ?? []).length > 0) && (
+						<button
+							type="button"
+							onClick={async () => {
+								// Collect unique awards across grids, grouping by label (case-insensitive)
+								const byLabel = new Map<string, RaceAward>();
+								grids.forEach((g) => (g.raceAwards ?? []).forEach((a) => {
+									const key = a.label.trim().toLowerCase();
+									if (!byLabel.has(key)) byLabel.set(key, a);
+								}));
+								const toPromote = Array.from(byLabel.values()).filter(
+									(a) => !generalRaceAwards.some(
+										(g) => g.label.trim().toLowerCase() === a.label.trim().toLowerCase(),
+									),
+								);
+								if (toPromote.length === 0) { showToast("error", "Nenhum prêmio novo para migrar"); return; }
+								const merged = [...generalRaceAwards, ...toPromote];
+								setGeneralRaceAwards(merged);
+								// Strip from all grids, matching by label
+								const promotedLabels = new Set(toPromote.map((p) => p.label.trim().toLowerCase()));
+								const updatedGrids = grids.map((g) => ({
+									...g,
+									raceAwards: (g.raceAwards ?? []).filter(
+										(a) => !promotedLabels.has(a.label.trim().toLowerCase()),
+									),
+								}));
+								await Promise.all([
+									saveGrids(updatedGrids),
+									setDoc(doc(db, "config", "tenant"), { generalRaceAwards: merged }, { merge: true }),
+								]);
+								showToast("success", `${toPromote.length} prêmio(s) migrado(s)`);
+							}}
+							className="text-xs px-3 py-1 border border-amber-300 text-amber-700 rounded hover:bg-amber-50 cursor-pointer"
+						>
+							Migrar dos grids
+						</button>
+					)}
+					<button
+						type="button"
+						onClick={() => setGeneralRaceAwards((prev) => [...prev, { id: `award_${Date.now()}`, label: "", points: 0 }])}
+						className="text-xs px-3 py-1 border rounded hover:bg-f1-red/10 cursor-pointer"
+					>
+						+ Adicionar
+					</button>
+					</div>
+				</div>
+				{generalRaceAwards.length === 0 && (
+					<p className="text-xs text-f1-lighterCarbon">Nenhum prêmio geral configurado.</p>
+				)}
+				<div className="space-y-2">
+					{generalRaceAwards.map((award) => (
+						<div key={award.id} className="grid grid-cols-[1fr_80px_32px] gap-2 items-center">
+							<input
+								type="text"
+								value={award.label}
+								onChange={(e) => setGeneralRaceAwards((prev) => prev.map((a) => a.id === award.id ? { ...a, label: e.target.value } : a))}
+								className="p-2 border rounded h-9 text-sm"
+								placeholder="Ex: Volta Rápida"
+							/>
+							<input
+								type="number"
+								value={award.points}
+								onChange={(e) => setGeneralRaceAwards((prev) => prev.map((a) => a.id === award.id ? { ...a, points: parseInt(e.target.value) || 0 } : a))}
+								className="p-2 border rounded h-9 text-sm text-center"
+								placeholder="Pts"
+								min={0}
+							/>
+							<button
+								type="button"
+								onClick={() => setGeneralRaceAwards((prev) => prev.filter((a) => a.id !== award.id))}
+								className="h-9 w-8 flex items-center justify-center rounded border border-red-200 text-red-400 hover:bg-red-50 cursor-pointer text-sm"
+							>
+								×
+							</button>
+						</div>
+					))}
 				</div>
 			</div>
 

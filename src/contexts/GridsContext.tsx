@@ -113,7 +113,7 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 				...(g.standingsBgColor !== undefined ? { standingsBgColor: g.standingsBgColor } : {}),
 				...(g.standingsBgEndColor !== undefined ? { standingsBgEndColor: g.standingsBgEndColor } : {}),
 				...(g.podiumBgColor !== undefined ? { podiumBgColor: g.podiumBgColor } : {}),
-				pointSystem: g.pointSystem,
+				pointSystem: g.pointSystem ? Object.fromEntries(Object.entries(g.pointSystem).filter(([, v]) => v !== undefined)) : {},
 				raceAwards: g.raceAwards ?? [],
 				reservesEarnPoints: g.reservesEarnPoints ?? false,
 			})),

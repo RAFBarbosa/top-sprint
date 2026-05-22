@@ -4,6 +4,7 @@ import { db } from "../../lib/adminClient";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import type { NormalizedDriver } from "../../types/driver";
 import {
+	getEffectiveRaceAwards,
 	getGridConfig,
 	getPointSystem,
 	type RaceAward,
@@ -17,15 +18,8 @@ import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useTracks } from "../../contexts/TracksContext";
 
-// Resolve raceAwards for any grid, falling back to the first tenant grid
-// that has awards if the specific grid isn't found (cross-tenant admin usage).
 function resolveRaceAwards(gridId: string): RaceAward[] {
-	const explicit = getGridConfig(gridId)?.raceAwards;
-	if (explicit?.length) return explicit;
-	return (
-		(tenant.grids as any[]).find((g: any) => g.raceAwards?.length)
-			?.raceAwards ?? []
-	);
+	return getEffectiveRaceAwards(gridId);
 }
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -169,7 +163,7 @@ function buildRows(
 
 			const gridConfig = getGridConfig(gridId);
 			const ps = getPointSystem(gridId);
-			const gridRaceAwards: RaceAward[] = gridConfig?.raceAwards ?? [];
+			const gridRaceAwards: RaceAward[] = getEffectiveRaceAwards(gridId);
 			const racePointsArr = ps.race;
 			const sprintPointsArr = ps.sprint ?? [];
 			const poleBonus = ps.poleBonus ?? 0;

@@ -3,7 +3,8 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { useFirebaseDrivers } from "./useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
-import { getGridConfig, getPointSystem } from "../config/grids";
+import { getEffectiveRaceAwards, getGridConfig, getPointSystem } from "../config/grids";
+import { getGridRange } from "../utils/calculateDriverCards";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
@@ -83,7 +84,7 @@ function calcSeasonStandings(
 	const sprintPointsArr = ps.sprint ?? [];
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
-	const raceAwards = gridConfig?.raceAwards ?? [];
+	const raceAwards = getEffectiveRaceAwards(gridId);
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 
 	const driverPts: Record<string, number> = {};
@@ -201,7 +202,7 @@ function calcStatsForCalendars(
 	const sprintPointsArr = ps.sprint ?? [];
 	const poleBonus = ps.poleBonus ?? 0;
 	const presenceBonus = ps.presenceBonus ?? 0;
-	const raceAwards = gridConfig?.raceAwards ?? [];
+	const raceAwards = getEffectiveRaceAwards(gridId);
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 
 	let stats = { ...EMPTY_STATS, awards: {} as Record<string, number> };
@@ -350,7 +351,7 @@ export function useDriverStats(
 		load();
 	}, []);
 
-	const { season, career } = useMemo(() => {
+	const { season, career, perRoundCards } = useMemo(() => {
 		if (!driverId || loading) {
 			return { season: EMPTY_STATS, career: EMPTY_STATS };
 		}
@@ -482,7 +483,73 @@ export function useDriverStats(
 			teamChampionships: (historicOffset.teamChampionships ?? 0) + websiteTeamChampionships,
 		});
 
-		return { season: seasonStats, career: careerStats };
+		// Per-round progressive card scores for debug
+		const { min: gridMin, range: gridRange } = getGridRange(gridId);
+		const ps = getPointSystem(gridId);
+		const gridConfig = getGridConfig(gridId);
+		const racePointsArr = ps.race;
+		const sprintPointsArr = ps.sprint ?? [];
+		const poleBonus = ps.poleBonus ?? 0;
+		const presenceBonus = ps.presenceBonus ?? 0;
+		const raceAwards = getEffectiveRaceAwards(gridId);
+		const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
+		const maxAvgPoints = ps.maxRacecraftPoints ?? 20;
+		const isReserve = (id: string) => !reservesEarnPoints && reserveSet.has(id);
+		const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+		let cp = 0, cPts = 0, cQPos = 0, cQCount = 0, cClean = 0, cDiff = 0, cDiffR = 0;
+		const perRoundCards: Array<{ round: number; rating: number; racecraft: number; pace: number; awareness: number; consistency: number }> = [];
+
+		seasonCalendars.forEach((calId, i) => {
+			const result = allResults[calId];
+			if (!result) return;
+			const raceOrder: string[] = (result.results ?? []).filter(Boolean);
+			const qualyOrder: string[] = (result.resultsQualy ?? []).filter(Boolean);
+			const sprintOrder: string[] = (result.sprintResults ?? []).filter(Boolean);
+			const ncSet = new Set<string>(result.ncDriverIds ?? []);
+			const participated = raceOrder.includes(driverId) || qualyOrder.includes(driverId) || sprintOrder.includes(driverId);
+			if (!participated) return;
+			cp += 1;
+			const titularRaceOrder = raceOrder.filter((id) => !isReserve(id));
+			const racePos = titularRaceOrder.indexOf(driverId);
+			const rawRacePos = raceOrder.indexOf(driverId);
+			const isNC = ncSet.has(driverId);
+			if (racePos !== -1 && !isNC) cPts += racePos + 1 <= racePointsArr.length ? racePointsArr[racePos] : 0;
+			if (qualyOrder[0] === driverId) cPts += poleBonus;
+			const qualyPos = qualyOrder.indexOf(driverId);
+			if (qualyPos !== -1) { cQPos += qualyPos + 1; cQCount += 1; }
+			if (qualyPos !== -1 && rawRacePos !== -1 && !isNC) { cDiff += Math.abs(qualyPos - rawRacePos); cDiffR += 1; }
+			raceAwards.forEach((a: any) => { if (result[a.id] === driverId) cPts += a.points; });
+			if (presenceBonus > 0) cPts += presenceBonus;
+			if (result.sprint) {
+				const titularSprint = sprintOrder.filter((id) => !isReserve(id));
+				const sp = titularSprint.indexOf(driverId);
+				if (sp !== -1 && !(result.sprintNcDriverIds ?? []).includes(driverId))
+					cPts += sp + 1 <= sprintPointsArr.length ? sprintPointsArr[sp] : 0;
+			}
+			(allAdjustments[calId] ?? []).filter((a: any) => a.driverId === driverId).forEach((a: any) => { cPts += a.points; });
+			const penalties: any[] = result.penalties ?? [];
+			if (!penalties.some((p: any) => p.driverId === driverId && p.seconds > 0)) cClean += 1;
+
+			const avgPts = cp > 0 ? cPts / cp : 0;
+			const avgQPos = cQCount > 0 ? cQPos / cQCount : 20;
+			const avgDiff = cDiffR > 0 ? cDiff / cDiffR : gridRange + 1;
+			const rcRaw = maxAvgPoints === 0 ? 0 : Math.floor((avgPts / maxAvgPoints) * gridRange);
+			const paceRaw = Math.round(((20 - avgQPos) / (20 - 2)) * gridRange);
+			const awRaw = cp === 0 ? 0 : Math.ceil((cClean / cp) * gridRange);
+			const conRaw = cDiffR > 0 ? clamp(Math.round(gridRange + 1 - avgDiff), 0, gridRange) : 0;
+			const ratingRaw = Math.round(0.65 * rcRaw + 0.1 * conRaw + 0.15 * paceRaw + 0.1 * awRaw);
+			perRoundCards.push({
+				round: i + 1,
+				rating: gridMin + clamp(ratingRaw, 0, gridRange),
+				racecraft: gridMin + clamp(rcRaw, 0, gridRange),
+				pace: gridMin + clamp(paceRaw, 0, gridRange),
+				awareness: gridMin + clamp(awRaw, 0, gridRange),
+				consistency: gridMin + conRaw,
+			});
+		});
+
+		return { season: seasonStats, career: careerStats, perRoundCards };
 	}, [
 		driverId,
 		gridId,
@@ -496,5 +563,5 @@ export function useDriverStats(
 		profiles,
 	]);
 
-	return { season, career, loading };
+	return { season, career, perRoundCards, loading };
 }

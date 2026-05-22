@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import PlayerCard from "../components/utils/PlayerCard";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
@@ -6,7 +6,7 @@ import { normalizeString } from "../shared/utils/normalizeString";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
-import { getGridConfig } from "../shared/config/grids";
+import { getEffectiveRaceAwards, getGridConfig } from "../shared/config/grids";
 import { tenant } from "../shared/config/tenants";
 import { useTenantConfig } from "../contexts/TenantConfigContext";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
@@ -98,7 +98,7 @@ function DriverInfoItem({
 	if (link) {
 		return (
 			<div className="flex flex-col gap-1">
-				<span className="tenant-profile-info-label text-[10px] uppercase tracking-wider text-f1-text font-bold">
+				<span className="tenant-profile-info-label text-[10px] uppercase tracking-wider text-f1-text">
 					{label}
 				</span>
 				<a
@@ -121,7 +121,7 @@ function DriverInfoItem({
 
 	return (
 		<div className="flex flex-col gap-1">
-			<span className="tenant-profile-info-label text-[10px] uppercase tracking-wider text-f1-text font-bold">
+			<span className="tenant-profile-info-label text-[10px] uppercase tracking-wider text-f1-text">
 				{label}
 			</span>
 			<span className="text-sm font-medium">{value}</span>
@@ -167,9 +167,11 @@ export function Profile() {
 	}, [teamsData, driversList]);
 
 	// Get real life team logos and nationalities for drivers in current grid
-	const { logos: realLifeTeamLogos, nationalities, nationalityCodes } = useRealLifeTeamLogos(
-		activeTab.id,
-	);
+	const {
+		logos: realLifeTeamLogos,
+		nationalities,
+		nationalityCodes,
+	} = useRealLifeTeamLogos(activeTab.id);
 
 	const filteredDrivers = useMemo(
 		() =>
@@ -182,7 +184,8 @@ export function Profile() {
 					return {
 						...applied,
 						photo: applied.photo?.url ?? applied.photo ?? "",
-						teamColor: applied.team?.color?.hex ?? applied.teamColor ?? "",
+						teamColor:
+							applied.team?.color?.hex ?? applied.teamColor ?? "",
 						teamName: resolvedTeamName,
 						teamLogo:
 							applied.team?.photo?.url ??
@@ -198,7 +201,16 @@ export function Profile() {
 				})
 				.filter((driver) => !driver.reserve && !driver.exDriver)
 				.sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
-		[driversList, activeTab.id, isInGrid, applyProfile, teamLogoByName, realLifeTeamLogos, nationalities, nationalityCodes],
+		[
+			driversList,
+			activeTab.id,
+			isInGrid,
+			applyProfile,
+			teamLogoByName,
+			realLifeTeamLogos,
+			nationalities,
+			nationalityCodes,
+		],
 	);
 
 	const currentIndex = useMemo(() => {
@@ -232,16 +244,29 @@ export function Profile() {
 	};
 
 	const driverData =
-		currentIndex !== null && currentIndex >= 0 ? filteredDrivers[currentIndex] : null;
+		currentIndex !== null && currentIndex >= 0
+			? filteredDrivers[currentIndex]
+			: null;
 
-	const { season: seasonStats, career: careerStats } = useDriverStats(
-		driverData?.id,
-		activeTab.id,
-	);
+	const {
+		season: seasonStats,
+		career: careerStats,
+		perRoundCards,
+	} = useDriverStats(driverData?.id, activeTab.id);
 
 	const driverCards = useDriverCards(activeTab.id);
 	const cardStats = driverData?.id ? driverCards[driverData.id] : null;
 	const bestSeasonCard = useBestSeasonCard(driverData?.id, activeTab.id);
+
+	// useEffect(() => {
+	// 	if (driverData && perRoundCards.length > 0) {
+	// 		console.group(`[cards] ${driverData.name}`);
+	// 		perRoundCards.forEach((r) =>
+	// 			console.log(`Round ${r.round} | rating:${r.rating} rc:${r.racecraft} pace:${r.pace} aw:${r.awareness} consistency:${r.consistency}`),
+	// 		);
+	// 		console.groupEnd();
+	// 	}
+	// }, [driverData, perRoundCards]);
 
 	if (driverName && filteredDrivers.length > 0 && currentIndex === -1) {
 		return <Navigate to={"/pilotos" + window.location.search} replace />;
@@ -290,7 +315,8 @@ export function Profile() {
 								style={{
 									borderColor:
 										currentIndex > 0
-											? filteredDrivers[currentIndex - 1]?.teamColor ?? ""
+											? (filteredDrivers[currentIndex - 1]
+													?.teamColor ?? "")
 											: "",
 								}}
 							>
@@ -303,26 +329,32 @@ export function Profile() {
 										/>
 									</p>
 									<div className="flex items-center">
-										{defaultPhotoStyle ===
-										"round" ? (
+										{defaultPhotoStyle === "round" ? (
 											<HygraphImg
 												src={
-													filteredDrivers[currentIndex - 1]?.photo ||
+													filteredDrivers[
+														currentIndex - 1
+													]?.photo ||
 													tenant.fallbackDriverPhoto
 												}
-												alt={filteredDrivers[currentIndex - 1]?.name ?? ""}
+												alt={
+													filteredDrivers[
+														currentIndex - 1
+													]?.name ?? ""
+												}
 												imgWidth={80}
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
-										) : defaultPhotoStyle ===
-										  "bust" ? (
+										) : defaultPhotoStyle === "bust" ? (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[8px]"
 												style={{
 													backgroundImage: `url(${resizeHygraphUrl(
-														filteredDrivers[currentIndex - 1]?.photo ||
-														tenant.fallbackDriverPhoto,
+														filteredDrivers[
+															currentIndex - 1
+														]?.photo ||
+															tenant.fallbackDriverPhoto,
 														550,
 													)})`,
 												}}
@@ -332,8 +364,10 @@ export function Profile() {
 												className="w-22 h-22 bg-cover translate-y-[20px] scale-150"
 												style={{
 													backgroundImage: `url(${resizeHygraphUrl(
-														filteredDrivers[currentIndex - 1]?.photo ||
-														tenant.fallbackDriverPhoto,
+														filteredDrivers[
+															currentIndex - 1
+														]?.photo ||
+															tenant.fallbackDriverPhoto,
 														550,
 													)})`,
 												}}
@@ -362,15 +396,16 @@ export function Profile() {
 								}`}
 								style={{
 									borderColor:
-										currentIndex < filteredDrivers.length - 1
-											? filteredDrivers[currentIndex + 1]?.teamColor ?? ""
+										currentIndex <
+										filteredDrivers.length - 1
+											? (filteredDrivers[currentIndex + 1]
+													?.teamColor ?? "")
 											: "",
 								}}
 							>
 								<div className="pt-2 flex items-center justify-around">
 									<div className="flex items-center">
-										{defaultPhotoStyle ===
-										"round" ? (
+										{defaultPhotoStyle === "round" ? (
 											<HygraphImg
 												src={
 													filteredDrivers[
@@ -387,8 +422,7 @@ export function Profile() {
 												imgHeight={80}
 												className="w-20 h-20 rounded-full object-cover border-2 border-f1-text"
 											/>
-										) : defaultPhotoStyle ===
-										  "bust" ? (
+										) : defaultPhotoStyle === "bust" ? (
 											<div
 												className="w-22 h-22 bg-cover translate-y-[8px]"
 												style={{
@@ -447,64 +481,85 @@ export function Profile() {
 								<div className="flex flex-col items-center gap-6 relative z-10 w-full">
 									{bestSeasonCard && (
 										<div className="flex font-f1Title">
-											{(["current", "best"] as const).map((view, i) => (
-												<>
-													{i > 0 && <div key="sep" className="w-px bg-white/50 self-stretch mx-1" />}
-													<button
-														key={view}
-														onClick={() => setCardView(view)}
-														className={`px-5 py-3 uppercase text-xs tracking-widest transition-all duration-200 hover:cursor-pointer border-b-2 ${
-															cardView === view
-																? "text-white border-white"
-																: "text-gray-400 border-transparent hover:text-white/70"
-														}`}
-													>
-														{view === "current" ? "Carta Atual" : "Melhor Carta"}
-													</button>
-												</>
-											))}
+											{(["current", "best"] as const).map(
+												(view, i) => (
+													<>
+														{i > 0 && (
+															<div
+																key="sep"
+																className="w-px bg-white/50 self-stretch mx-1"
+															/>
+														)}
+														<button
+															key={view}
+															onClick={() =>
+																setCardView(
+																	view,
+																)
+															}
+															className={`px-5 py-3 uppercase text-xs tracking-widest transition-all duration-200 hover:cursor-pointer border-b-2 ${
+																cardView ===
+																view
+																	? "text-white border-white"
+																	: "text-gray-400 border-transparent hover:text-white/70"
+															}`}
+														>
+															{view === "current"
+																? "Carta Atual"
+																: "Melhor Carta"}
+														</button>
+													</>
+												),
+											)}
 										</div>
 									)}
-								<div
-									className="flex flex-col"
-									style={{
-										filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
-									}}
-								>
-									{driverData ? (
-										<PlayerCard
-											ref={cardRef}
-											data={{
-												...driverData,
-												rating: (cardView === "best"
-													? bestSeasonCard?.rating
-													: cardStats?.rating
-												)?.toString() ?? "",
-												prevRating: cardView === "best"
-													? ""
-													: cardStats?.prevRating?.toString() ?? "",
-												racecraft: (cardView === "best"
-													? bestSeasonCard?.racecraft
-													: cardStats?.racecraft
-												)?.toString() ?? "",
-												awareness: (cardView === "best"
-													? bestSeasonCard?.awareness
-													: cardStats?.awareness
-												)?.toString() ?? "",
-												pace: (cardView === "best"
-													? bestSeasonCard?.pace
-													: cardStats?.pace
-												)?.toString() ?? "",
-												consistency: (cardView === "best"
-													? bestSeasonCard?.consistency
-													: cardStats?.consistency
-												)?.toString() ?? "",
-											}}
-										/>
-									) : (
-										<p>Driver not found</p>
-									)}
-								</div>
+									<div
+										className="flex flex-col"
+										style={{
+											filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5)) drop-shadow(0 2px 8px rgba(0,0,0,0.4))",
+										}}
+									>
+										{driverData ? (
+											<PlayerCard
+												ref={cardRef}
+												data={{
+													...driverData,
+													rating:
+														(cardView === "best"
+															? bestSeasonCard?.rating
+															: cardStats?.rating
+														)?.toString() ?? "",
+													prevRating:
+														cardView === "best"
+															? ""
+															: (cardStats?.prevRating?.toString() ??
+																""),
+													racecraft:
+														(cardView === "best"
+															? bestSeasonCard?.racecraft
+															: cardStats?.racecraft
+														)?.toString() ?? "",
+													awareness:
+														(cardView === "best"
+															? bestSeasonCard?.awareness
+															: cardStats?.awareness
+														)?.toString() ?? "",
+													pace:
+														(cardView === "best"
+															? bestSeasonCard?.pace
+															: cardStats?.pace
+														)?.toString() ?? "",
+													consistency:
+														(cardView === "best"
+															? bestSeasonCard?.consistency
+															: cardStats?.consistency
+														)?.toString() ?? "",
+												}}
+											/>
+										) : (
+											<p>Driver not found</p>
+										)}
+									</div>
 								</div>
 							</div>
 
@@ -549,7 +604,7 @@ export function Profile() {
 											<StatsBlock
 												label="Temporada Atual"
 												stats={seasonStats}
-												raceAwards={getGridConfig(activeTab.id)?.raceAwards ?? []}
+												raceAwards={getEffectiveRaceAwards(activeTab.id)}
 											/>
 										</div>
 									)}
@@ -563,7 +618,7 @@ export function Profile() {
 											<StatsBlock
 												label="Carreira"
 												stats={careerStats}
-												raceAwards={getGridConfig(activeTab.id)?.raceAwards ?? []}
+												raceAwards={getEffectiveRaceAwards(activeTab.id)}
 											/>
 										</div>
 									)}

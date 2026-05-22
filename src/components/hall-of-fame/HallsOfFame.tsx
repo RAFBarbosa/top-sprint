@@ -5,6 +5,7 @@ import { HallOfFame } from "./HallOfFame";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { Divider } from "../layout/Divider";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 
 type Season = {
 	id: string;
@@ -90,6 +91,7 @@ export function HallsOfFame() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [legacyOpen, setLegacyOpen] = useState(false);
+	const { hallOfFameLegacy } = useTenantConfig();
 
 	useEffect(() => {
 		getDocs(query(collection(db, "hallsOfFame"), where("deleted", "==", false)))
@@ -137,7 +139,7 @@ export function HallsOfFame() {
 						<p>No champions available</p>
 					)}
 
-					{legacy.length > 0 && (
+					{hallOfFameLegacy.enabled && legacy.length > 0 && (
 						<div className="mt-4 mb-12">
 							<Divider />
 							<button
@@ -154,15 +156,11 @@ export function HallsOfFame() {
 
 							{legacyOpen && (
 								<div className="mt-6">
-									<div className="bg-white/10 rounded-xl px-4 py-3 mb-6 text-sm leading-relaxed">
-										Em 2026, a CRT passou a gerir o campeonato,
-										elevando o nível da competição e dando início
-										a uma nova fase. Os títulos abaixo pertencem
-										à história original da Top Sprint, conquistas
-										que ajudaram a construir a comunidade que
-										temos hoje, preservadas aqui com muito
-										orgulho.
-									</div>
+									{hallOfFameLegacy.text && (
+										<div className="tenant-champions-legacy-text bg-white/10 rounded-xl px-4 py-3 mb-6 text-sm leading-relaxed">
+											{hallOfFameLegacy.text}
+										</div>
+									)}
 									<SeasonSwitcher seasons={legacy} />
 								</div>
 							)}
@@ -170,7 +168,7 @@ export function HallsOfFame() {
 					)}
 				</div>
 			</div>
-			<div className="w-full bg-f1-silver text-white py-8">
+			<div className="tenant-champions-awards w-full bg-f1-silver py-8">
 				<div className="max-w-screen-xl mx-auto px-3">
 					<div
 						style={{ borderColor: "var(--color-brand-primary)" }}
