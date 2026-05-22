@@ -29,7 +29,8 @@ const tenantMeta: Record<
 			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, CRT Cup, F1 eSports, campeonatos de simulação, ligas de corrida online, corridas virtuais, F1 simulador",
 		themeColor: "#cd0a2a",
 		url: "https://www.crtcup.com",
-		logoUrl: "https://www.crtcup.com/logos/crt.png",
+		logoUrl:
+			"https://us-west-2.graphassets.com/cmo66v1n000gr02js1cyb6pmx/cmpgqi3md1brl07n2ps55tbx1",
 		gtagId: "G-N82GC0X63T",
 		hasExtendedFavicons: true,
 	},
