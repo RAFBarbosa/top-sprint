@@ -3,7 +3,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/adminClient";
 import { tenant } from "../shared/config/tenants";
 import type { PointSystem, RaceAward } from "../shared/config/grids";
-import { setGeneralRaceAwards } from "../shared/config/grids";
+import { DEFAULT_POINT_SYSTEM, setDefaultPointSystem, setGeneralRaceAwards } from "../shared/config/grids";
 import { contrastText } from "../shared/utils/color";
 
 interface TenantConfigShape {
@@ -103,6 +103,7 @@ export function TenantConfigProvider({ children }: { children: React.ReactNode }
 			applyCssVars(cssVars);
 			const generalRaceAwards: RaceAward[] = data.generalRaceAwards ?? [];
 			setGeneralRaceAwards(generalRaceAwards);
+			setDefaultPointSystem(data.defaultPointSystem ?? DEFAULT_POINT_SYSTEM);
 			setConfig({
 				name,
 				logoUrl: data.logoUrl ?? tenant.logo.url,

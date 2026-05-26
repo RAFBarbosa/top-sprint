@@ -31,14 +31,14 @@ export const DEFAULT_POINT_SYSTEM: PointSystem = {
 // has empty race points (which is the initial state for newly-created grids).
 export const getPointSystem = (gridId: GridId): PointSystem => {
 	const ps = getGridConfig(gridId)?.pointSystem;
-	if (!ps || !ps.race || ps.race.length === 0) return DEFAULT_POINT_SYSTEM;
+	if (!ps || !ps.race || ps.race.length === 0) return _defaultPointSystem;
 	return {
 		race: ps.race,
-		sprint: ps.sprint && ps.sprint.length > 0 ? ps.sprint : DEFAULT_POINT_SYSTEM.sprint,
-		poleBonus: ps.poleBonus ?? DEFAULT_POINT_SYSTEM.poleBonus,
-		presenceBonus: ps.presenceBonus ?? DEFAULT_POINT_SYSTEM.presenceBonus,
-		reservesScore: ps.reservesScore ?? DEFAULT_POINT_SYSTEM.reservesScore,
-		maxRacecraftPoints: ps.maxRacecraftPoints ?? DEFAULT_POINT_SYSTEM.maxRacecraftPoints,
+		sprint: ps.sprint && ps.sprint.length > 0 ? ps.sprint : _defaultPointSystem.sprint,
+		poleBonus: ps.poleBonus ?? _defaultPointSystem.poleBonus,
+		presenceBonus: ps.presenceBonus ?? _defaultPointSystem.presenceBonus,
+		reservesScore: ps.reservesScore ?? _defaultPointSystem.reservesScore,
+		maxRacecraftPoints: ps.maxRacecraftPoints ?? _defaultPointSystem.maxRacecraftPoints,
 	};
 };
 
@@ -78,6 +78,12 @@ export interface GridConfig {
 
 // Mutable runtime array — starts with tenant defaults, updated by GridsContext when Firebase loads
 let _runtimeGrids: GridConfig[] = tenant.grids as GridConfig[];
+
+let _defaultPointSystem: PointSystem = DEFAULT_POINT_SYSTEM;
+
+export const setDefaultPointSystem = (ps: PointSystem) => {
+	_defaultPointSystem = ps;
+};
 
 let _generalRaceAwards: RaceAward[] = [];
 
