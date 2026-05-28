@@ -479,7 +479,7 @@ export function Profile() {
 									}}
 								/>
 								<div className="flex flex-col items-center gap-6 relative z-10 w-full">
-									{bestSeasonCard && (
+									{false && bestSeasonCard && (
 										<div className="flex font-f1Title">
 											{(["current", "best"] as const).map(
 												(view, i) => (
