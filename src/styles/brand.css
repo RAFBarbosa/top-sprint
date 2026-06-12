@@ -1,6 +1,8 @@
-.group:hover .tenant-standing-points-badge[style*="--accent-hover-bg"] {
-	background-color: var(--accent-hover-bg) !important;
-	color: var(--accent-hover-text, #ffffff) !important;
+@media (hover: hover) {
+	.group:hover .tenant-standing-points-badge[style*="--accent-hover-bg"] {
+		background-color: var(--accent-hover-bg) !important;
+		color: var(--accent-hover-text, #ffffff) !important;
+	}
 }
 
 :root {
