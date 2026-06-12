@@ -284,7 +284,7 @@ export function Profile() {
 					<Divider className="px-3 md:px-0" />
 					<div className="mb-8 flex flex-col sm:flex-row justify-between px-3 md:px-0">
 						<h1
-							className="tenant-section-title font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full"
+							className="tenant-section-title font-f1Title uppercase font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full"
 							style={{
 								borderColor:
 									tenant.grids.length > 1

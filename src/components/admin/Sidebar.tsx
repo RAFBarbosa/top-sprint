@@ -69,15 +69,6 @@ export default function Sidebar() {
 							Grids
 						</NavLink>
 					</li>
-					<li>
-						<NavLink
-							to="/admin/painel/gerar-imagens"
-							className={navLink}
-						>
-							Gerar Imagens
-						</NavLink>
-					</li>
-
 					{hasElevatedAccess && (
 						<li>
 							<button
@@ -122,6 +113,14 @@ export default function Sidebar() {
 											className={subNavLink}
 										>
 											Configuração do Site
+										</NavLink>
+									</li>
+									<li>
+										<NavLink
+											to="/admin/painel/gerar-imagens"
+											className={subNavLink}
+										>
+											Gerar Imagens
 										</NavLink>
 									</li>
 								</ul>

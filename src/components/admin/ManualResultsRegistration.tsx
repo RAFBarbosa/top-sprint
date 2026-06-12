@@ -221,7 +221,7 @@ export function ManualResultsRegistration({
 
 				if (docSnap.exists()) {
 					const data = docSnap.data();
-					setLink(data.link || "");
+					setLink(data.link || selectedCalendar.link || "");
 					const rR = mapFirebaseToState(data.results || []);
 					setResults(rR);
 					setQualyResults(
@@ -277,7 +277,7 @@ export function ManualResultsRegistration({
 					setSprintPenaltyValues(Array(22).fill(0));
 					setNcValues(Array(22).fill(false));
 					setSprintNcValues(Array(22).fill(false));
-					setLink("");
+					setLink(selectedCalendar.link || "");
 					const emptyAwards = Object.fromEntries(
 						gridRaceAwards.map((a) => [a.id, ""]),
 					);

@@ -50,7 +50,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 	return (
 		<div className="w-full px-3">
 			<h2
-				className={`font-extrabold text-3xl tracking-wide mb-6 ${
+				className={`font-f1Title uppercase text-3xl tracking-wide mb-6 ${
 					gridName == "Reservas e Ex-Pilotos"
 						? "border-t-1 border-t-white/30 mb-4 pt-2"
 						: "mb-4"
@@ -144,14 +144,14 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 									<span
 										className={
 											secondName
-												? ""
-												: "font-bold uppercase"
+												? "font-f1Title uppercase"
+												: "font-f1Title uppercase font-bold italic"
 										}
 									>
 										{firstName}
 									</span>
 									{secondName && (
-										<span className="font-bold ml-1 uppercase">
+										<span className="font-f1Title uppercase italic font-bold ml-1">
 											{secondName}
 										</span>
 									)}

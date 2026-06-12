@@ -32,6 +32,7 @@ interface SessionResultProps {
 		grid: string;
 		sprint: boolean;
 		trackId?: string | null;
+		link?: string | null;
 	} | null;
 }
 
@@ -251,13 +252,14 @@ function WinnerCard({
 	if (!row) return null;
 	const gridConfig = getGridConfig(gridId);
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
-	const poleBonus = gridConfig?.pointSystem?.poleBonus ?? 0;
-	const presenceBonus = gridConfig?.pointSystem?.presenceBonus ?? 0;
+	const ps = getPointSystem(gridId);
+	const poleBonus = ps.poleBonus ?? 0;
+	const presenceBonus = ps.presenceBonus ?? 0;
 	const reservesEarnPoints = gridConfig?.reservesEarnPoints ?? false;
 	const title = row.sex === "F" ? "Vencedora" : "Vencedor";
 
 	return (
-		<div className="tenant-results-winner-card flex-1 rounded-sm overflow-hidden border border-black/10 flex flex-col min-w-0">
+		<div className="tenant-results-winner-card font-futosans flex-1 rounded-sm overflow-hidden border border-black/10 flex flex-col min-w-0">
 			{/* Grid-colored header */}
 			<div
 				className="px-4 py-2 text-white uppercase text-center"
@@ -306,10 +308,10 @@ function WinnerCard({
 				className="px-4 py-3 text-white -mt-5 relative z-10"
 				style={{ backgroundColor: "#15151e" }}
 			>
-				<p className="font-bold uppercase text-base leading-tight">
+				<p className="font-futosans uppercase font-bold text-base leading-tight">
 					{row.name}
 				</p>
-				<p className="text-xs text-white/80 mt-0.5">{row.teamName}</p>
+				<p className="font-futosans uppercase text-xs tracking-wider text-white/80 mt-0.5">{row.teamName}</p>
 			</div>
 
 			{/* Pole position — race only */}
@@ -357,7 +359,7 @@ function WinnerCard({
 						<p className="text-xs uppercase tracking-wide text-f1-text font-bold">
 							Pole Position
 						</p>
-						<p className="text-xs font-semibold text-f1-text leading-tight">
+						<p className="font-futosans uppercase text-xs font-bold text-f1-text leading-tight">
 							{poleRow.name}
 						</p>
 					</div>
@@ -541,7 +543,7 @@ function ResultsSection({
 	};
 
 	return (
-		<section>
+		<section className="font-futosans">
 			{/* Section header — only shown when label is needed */}
 			{/* {showLabel && (
 				<div className="w-full mx-auto max-w-screen-xl px-3 mb-6">
@@ -592,7 +594,7 @@ function ResultsSection({
 													}}
 												/>
 												<div className="min-w-0">
-													<p className="text-xs font-semibold uppercase">
+													<p className="font-futosans uppercase text-xs font-bold">
 														{driver.name}
 													</p>
 													{p.reason && (
@@ -682,7 +684,7 @@ function ResultsSection({
 														}}
 													/>
 													<div className="flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-2">
-														<span className="text-sm font-semibold uppercase leading-tight md:inline-block md:translate-y-px">
+														<span className="font-futosans uppercase text-sm font-bold leading-tight md:inline-block md:translate-y-px">
 															{row.name}
 														</span>
 														{(row.isNC ||
@@ -798,7 +800,7 @@ function ResultsSection({
 											}}
 										/>
 										<div className="min-w-0">
-											<p className="text-xs font-semibold uppercase">
+											<p className="font-futosans uppercase text-xs font-bold">
 												{driver.name}
 											</p>
 											{p.reason && (
@@ -894,7 +896,7 @@ function RaceHeader({
 		: null;
 
 	return (
-		<div className="tenant-results-bg bg-f1-bg-silver">
+		<div className="tenant-results-bg bg-f1-bg-silver font-futosans">
 			<div className="tenant-results-card mx-auto max-w-[1256px] px-3 bg-white rounded-t p-4">
 				<div
 					className="border-t-8 border-r-8 rounded-tr-3xl pt-3"
@@ -1106,7 +1108,7 @@ export function SessionResult({
 	if (loading) {
 		return (
 			<>
-				<RaceHeader calendarData={calData} calendarId={calendarId} />
+				<RaceHeader calendarData={calData} calendarId={calendarId} link={calData?.link ?? undefined} />
 				<div className="my-12 text-center" role="status">
 					<div className="animate-pulse space-y-3 max-w-xl mx-auto px-3">
 						<div className="h-4 bg-f1-bg-silver rounded w-1/3 mx-auto" />
@@ -1120,7 +1122,7 @@ export function SessionResult({
 	if (error) {
 		return (
 			<>
-				<RaceHeader calendarData={calData} calendarId={calendarId} />
+				<RaceHeader calendarData={calData} calendarId={calendarId} link={calData?.link ?? undefined} />
 				<div className="my-8 text-center px-3">
 					<p className="text-f1-red font-bold text-sm">
 						Erro ao carregar: {error}
@@ -1133,9 +1135,9 @@ export function SessionResult({
 	if (!firebaseData) {
 		return (
 			<>
-				<RaceHeader calendarData={calData} calendarId={calendarId} />
+				<RaceHeader calendarData={calData} calendarId={calendarId} link={calData?.link ?? undefined} />
 				<div className="my-12 text-center px-3">
-					<p className="font-f1Title uppercase tracking-widest text-f1-lighterCarbon text-sm">
+					<p className="font-futosans uppercase tracking-widest text-f1-lighterCarbon text-sm">
 						Nenhum resultado disponível
 					</p>
 				</div>
@@ -1168,10 +1170,10 @@ export function SessionResult({
 			<RaceHeader
 				calendarData={calData}
 				calendarId={calendarId}
-				link={firebaseData.link}
+				link={firebaseData.link || calData?.link || undefined}
 			/>
 
-			<div className="tenant-results-bg bg-f1-bg-silver pb-10">
+			<div className="tenant-results-bg bg-f1-bg-silver pb-10 font-futosans">
 				{hasSprint && (
 					<div className="mx-auto max-w-screen-xl px-0 md:px-3">
 						<div className="tenant-results-tab-bar bg-white border-b border-black/10">

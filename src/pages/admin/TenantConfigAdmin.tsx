@@ -15,6 +15,7 @@ const COLOR_GROUPS = [
 		vars: [
 			{ key: "--color-brand-primary", label: "Primária" },
 			{ key: "--color-brand-accent", label: "Secundária" },
+			{ key: "--color-partners-bg", label: "Parceiros" },
 			{ key: "--color-brand-footer", label: "Rodapé" },
 		],
 	},
@@ -273,26 +274,29 @@ export default function TenantConfigAdmin() {
 				<div key={group.label} className="space-y-2">
 					<label className="text-sm font-medium">{group.label}</label>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-						{group.vars.map(({ key, label }) => (
-							<div key={key}>
-								<label className="text-xs text-f1-lighterCarbon block mb-1">{label}</label>
-								<div className="flex gap-2">
-									<input
-										type="color"
-										value={cssVars[key] ?? "#000000"}
-										onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
-										className="h-10 w-12 border rounded cursor-pointer p-0.5 shrink-0"
-									/>
-									<input
-										type="text"
-										value={cssVars[key] ?? ""}
-										onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
-										className="flex-1 p-2 border rounded h-10 text-sm font-mono"
-										placeholder="padrão do tema"
-									/>
+						{group.vars.map(({ key, label }) => {
+							if (key === "--color-partners-bg" && !features.partners) return null;
+							return (
+								<div key={key}>
+									<label className="text-xs text-f1-lighterCarbon block mb-1">{label}</label>
+									<div className="flex gap-2">
+										<input
+											type="color"
+											value={cssVars[key] ?? "#000000"}
+											onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
+											className="h-10 w-12 border rounded cursor-pointer p-0.5 shrink-0"
+										/>
+										<input
+											type="text"
+											value={cssVars[key] ?? ""}
+											onChange={(e) => setCssVars((prev) => ({ ...prev, [key]: e.target.value }))}
+											className="flex-1 p-2 border rounded h-10 text-sm font-mono"
+											placeholder="padrão do tema"
+										/>
+									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 			))}
@@ -493,43 +497,6 @@ export default function TenantConfigAdmin() {
 							</button>
 						) : null;
 					})()}
-					{grids.some((g) => (g.raceAwards ?? []).length > 0) && (
-						<button
-							type="button"
-							onClick={async () => {
-								// Collect unique awards across grids, grouping by label (case-insensitive)
-								const byLabel = new Map<string, RaceAward>();
-								grids.forEach((g) => (g.raceAwards ?? []).forEach((a) => {
-									const key = a.label.trim().toLowerCase();
-									if (!byLabel.has(key)) byLabel.set(key, a);
-								}));
-								const toPromote = Array.from(byLabel.values()).filter(
-									(a) => !generalRaceAwards.some(
-										(g) => g.label.trim().toLowerCase() === a.label.trim().toLowerCase(),
-									),
-								);
-								if (toPromote.length === 0) { showToast("error", "Nenhum prêmio novo para migrar"); return; }
-								const merged = [...generalRaceAwards, ...toPromote];
-								setGeneralRaceAwards(merged);
-								// Strip from all grids, matching by label
-								const promotedLabels = new Set(toPromote.map((p) => p.label.trim().toLowerCase()));
-								const updatedGrids = grids.map((g) => ({
-									...g,
-									raceAwards: (g.raceAwards ?? []).filter(
-										(a) => !promotedLabels.has(a.label.trim().toLowerCase()),
-									),
-								}));
-								await Promise.all([
-									saveGrids(updatedGrids),
-									setDoc(doc(db, "config", "tenant"), { generalRaceAwards: merged }, { merge: true }),
-								]);
-								showToast("success", `${toPromote.length} prêmio(s) migrado(s)`);
-							}}
-							className="text-xs px-3 py-1 border border-amber-300 text-amber-700 rounded hover:bg-amber-50 cursor-pointer"
-						>
-							Migrar dos grids
-						</button>
-					)}
 					<button
 						type="button"
 						onClick={() => setGeneralRaceAwards((prev) => [...prev, { id: `award_${Date.now()}`, label: "", points: 0 }])}
