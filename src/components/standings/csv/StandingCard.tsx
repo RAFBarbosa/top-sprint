@@ -231,11 +231,9 @@ export function StandingCard(props: StandingCardProps) {
 							>
 								{displayInfo.primaryName}
 							</span>
-							{displayInfo.secondaryName && (
-								<span className={`font-bold md:ml-1 ${props.isActive ? "text-xl md:text-2xl" : "text-xs md:text-sm"} font-f1Title uppercase italic leading-tight`}>
-									{displayInfo.secondaryName}
-								</span>
-							)}
+							<span className={`font-bold md:ml-1 ${props.isActive ? "text-xl md:text-2xl" : "text-xs md:text-sm"} font-f1Title uppercase italic leading-tight ${!displayInfo.secondaryName ? "invisible md:hidden" : ""}`}>
+								{displayInfo.secondaryName || " "}
+							</span>
 						</div>
 
 						<div
