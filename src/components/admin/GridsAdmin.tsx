@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from "react";
 
 import { useGrids } from "../../contexts/GridsContext";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
+import { useSeasons } from "../../contexts/SeasonsContext";
+import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
+import { useCalendars } from "../../contexts/CalendarsContext";
 import { DEFAULT_POINT_SYSTEM } from "../../shared/config/grids";
 import type { GridConfig } from "../../shared/config/grids";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -97,9 +100,13 @@ type SubView =
 export function GridsAdmin() {
 	const { grids, loading, saveGrids } = useGrids();
 	const { defaultPointSystem } = useTenantConfig();
+	const { seasons } = useSeasons();
+	const { mappings } = useCalendarSeasons();
+	const { allCalendars } = useCalendars();
 
 	const [selectedGrid, setSelectedGrid] = useState<GridConfig | null>(null);
 	const [activeSubView, setActiveSubView] = useState<SubView>(null);
+	const [seasonFilter, setSeasonFilter] = useState<string>("all");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [localGrids, setLocalGrids] = useState(grids);
 	const [newGridName, setNewGridName] = useState("");
@@ -115,7 +122,16 @@ export function GridsAdmin() {
 	const handleSelectGrid = (grid: GridConfig) => {
 		setSelectedGrid(grid);
 		setActiveSubView("configurar");
+		const gridCals = allCalendars.filter((c) => c.grid === grid.id);
+		const gridSeasonIds = new Set(gridCals.map((c) => mappings.find((m) => m.calendarId === c.id)?.seasonId).filter(Boolean) as string[]);
+		const activeSeason = seasons.find((s) => s.active && gridSeasonIds.has(s.id));
+		setSeasonFilter(activeSeason?.id || "all");
 	};
+
+	const gridCalendars = allCalendars.filter((c) => c.grid === selectedGrid?.id);
+	const availableSeasons = seasons
+		.filter((s) => gridCalendars.some((c) => mappings.find((m) => m.calendarId === c.id)?.seasonId === s.id))
+		.sort((a, b) => b.name.localeCompare(a.name));
 
 	const handleNewGrid = () => {
 		setSelectedGrid(null);
@@ -307,6 +323,18 @@ export function GridsAdmin() {
 									))}
 								</div>
 								<div className="pt-6 border-t border-black/10">
+									{availableSeasons.length > 0 && activeSubView !== "configurar" && activeSubView !== "pilotos" && (
+										<select
+											value={seasonFilter}
+											onChange={(e) => setSeasonFilter(e.target.value)}
+											className="w-full px-2 border rounded h-9 text-sm bg-white cursor-pointer mb-4"
+										>
+											<option value="all">Todas as temporadas</option>
+											{availableSeasons.map((s) => (
+												<option key={s.id} value={s.id}>{s.name}</option>
+											))}
+										</select>
+									)}
 									{activeSubView === "configurar" && (
 										<GridConfigAdmin
 											gridId={selectedGrid.id}
@@ -315,21 +343,25 @@ export function GridsAdmin() {
 									{activeSubView === "pilotos" && (
 										<GridDriversAdmin
 											gridId={selectedGrid.id}
+											seasonFilter={seasonFilter}
 										/>
 									)}
 									{activeSubView === "ajustes" && (
 										<PointAdjustmentsAdmin
 											gridId={selectedGrid.id}
+											seasonFilter={seasonFilter}
 										/>
 									)}
 									{activeSubView === "calendario" && (
 										<CalendarRegistration
 											gridId={selectedGrid.id}
+											seasonFilter={seasonFilter}
 										/>
 									)}
 									{activeSubView === "resultado-manual" && (
 										<ManualResultsRegistration
 											gridId={selectedGrid.id}
+											seasonFilter={seasonFilter}
 										/>
 									)}
 									{/* activeSubView === "classificacao" && <GridStandings gridId={selectedGrid.id} /> */}

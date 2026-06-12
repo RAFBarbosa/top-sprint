@@ -54,10 +54,12 @@ interface Penalty {
 
 interface ManualResultsRegistrationProps {
 	gridId?: string;
+	seasonFilter?: string;
 }
 
 export function ManualResultsRegistration({
 	gridId,
+	seasonFilter = "all",
 }: ManualResultsRegistrationProps) {
 	const { triggerForGrid } = useCalculateCards();
 	const { mappings, getSeasonForCalendar } = useCalendarSeasons();
@@ -552,13 +554,16 @@ export function ManualResultsRegistration({
 					: activeFilter === "active"
 						? c.active
 						: !c.active;
+			const matchesSeason = seasonFilter === "all"
+				? true
+				: mappings.find((m) => m.calendarId === c.id)?.seasonId === seasonFilter;
 			const matchesSearch = searchTerm
 				? (getTrack(c.trackId)?.name || "")
 						.toLowerCase()
 						.includes(searchTerm.toLowerCase())
 				: true;
 			const matchesGrid = gridFilter ? c.grid === gridFilter : true;
-			return matchesActive && matchesSearch && matchesGrid;
+			return matchesActive && matchesSearch && matchesGrid && matchesSeason;
 		});
 
 	return (

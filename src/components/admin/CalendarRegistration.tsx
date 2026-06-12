@@ -31,13 +31,14 @@ import { db } from "../../lib/adminClient";
 
 interface CalendarRegistrationProps {
 	gridId?: string;
+	seasonFilter?: string;
 }
 
 const NEW_ID = "__new__";
 
-export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
+export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarRegistrationProps) {
 	const { seasons } = useSeasons();
-	const { setCalendarSeason, removeCalendarSeason, getSeasonForCalendar } =
+	const { setCalendarSeason, removeCalendarSeason, getSeasonForCalendar, mappings } =
 		useCalendarSeasons();
 	const { allCalendars, loading: calendarsLoading, refetch } = useCalendars();
 
@@ -203,6 +204,9 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 				activeFilter === "all" ? true :
 				activeFilter === "active" ? calendar.active === true :
 				calendar.active !== true;
+			const matchesSeason = seasonFilter === "all"
+				? true
+				: mappings.find((m) => m.calendarId === calendar.id)?.seasonId === seasonFilter;
 			const matchesSearch = searchTerm
 				? [
 						getTrack(calendar.trackId)?.name || "",
@@ -211,7 +215,7 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 						calendar.date,
 					].some((v) => v.toLowerCase().includes(searchTerm.toLowerCase()))
 				: true;
-			return matchesGrid && matchesSearch && matchesActive;
+			return matchesGrid && matchesSearch && matchesActive && matchesSeason;
 		});
 
 	const renderForm = (calendarId: string | null) => {

@@ -23,7 +23,7 @@ export interface PointAdjustment {
 	reason: string;
 }
 
-export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
+export function PointAdjustmentsAdmin({ gridId: gridIdProp, seasonFilter = "all" }: { gridId?: string; seasonFilter?: string } = {}) {
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
 	const { getTrack } = useTracks();
@@ -47,14 +47,11 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 	);
 	const gridSeasons = seasons.filter((s) => gridSeasonIds.has(s.id));
 
-	const [selectedSeasonId, setSelectedSeasonId] = useState<string>("");
+	const [selectedSeasonId, setSelectedSeasonId] = useState<string>(seasonFilter !== "all" ? seasonFilter : "");
 
-	// Auto-select when exactly one season is linked to this grid
 	useEffect(() => {
-		if (gridSeasons.length === 1 && selectedSeasonId !== gridSeasons[0].id) {
-			setSelectedSeasonId(gridSeasons[0].id);
-		}
-	}, [gridSeasons.map((s) => s.id).join(",")]);
+		setSelectedSeasonId(seasonFilter !== "all" ? seasonFilter : "");
+	}, [seasonFilter]);
 
 	const selectedSeason = gridSeasons.find((s) => s.id === selectedSeasonId) ?? null;
 
@@ -226,26 +223,6 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp }: { gridId?: string 
 				)}
 			</div>
 
-			{/* Season picker — only shown when multiple seasons exist for this grid */}
-			{gridSeasons.length > 1 && (
-				<div>
-					<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-2">
-						Temporada
-					</label>
-					<select
-						value={selectedSeasonId}
-						onChange={(e) => setSelectedSeasonId(e.target.value)}
-						className="w-full max-w-xs px-2 border rounded h-9 text-sm cursor-pointer"
-					>
-						<option value="">— Selecione uma temporada —</option>
-						{gridSeasons.map((s) => (
-							<option key={s.id} value={s.id}>
-								{s.name}
-							</option>
-						))}
-					</select>
-				</div>
-			)}
 
 			{selectedSeason && (
 				<>

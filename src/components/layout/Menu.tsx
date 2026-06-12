@@ -14,6 +14,7 @@ import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { Socials } from "../utils/Socials";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
+import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -41,6 +42,7 @@ export function Menu() {
 	const { activeTab, tabs } = useTab();
 	const { isInGrid, applyProfile } = useDriverProfiles();
 	const { drivers: data, loading } = useFirebaseDrivers();
+	const activeSeason = useActiveSeason(activeTab.id);
 
 	const menuItems = useMemo<NavItem[]>(
 		() =>
@@ -305,23 +307,19 @@ export function Menu() {
 															Carregando
 															pilotos...
 														</div>
-													) : activeGridDrivers.length ===
-													  0 ? (
+													) : !activeSeason ? (
 														<div className="p-4 text-sm opacity-60">
-															Nenhum piloto neste
-															grid.
+															Nenhuma temporada ativa.
+														</div>
+													) : activeGridDrivers.length === 0 ? (
+														<div className="p-4 text-sm opacity-60">
+															Nenhum piloto neste grid.
 														</div>
 													) : (
 														<MenuDriverList
-															drivers={
-																activeGridDrivers
-															}
-															onDriverClick={
-																handleDriverClick
-															}
-															photoStyle={
-																defaultPhotoStyle
-															}
+															drivers={activeGridDrivers}
+															onDriverClick={handleDriverClick}
+															photoStyle={defaultPhotoStyle}
 														/>
 													)}
 												</div>
