@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "./Logo";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import OpenInNew from "@mui/icons-material/OpenInNew";
 import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
@@ -10,6 +11,7 @@ import MenuDriverList from "../drivers/MenuDriverList";
 import { useTab } from "../../contexts/TabContext";
 import { GridMenu } from "./GridMenu";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
+import { Socials } from "../utils/Socials";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
@@ -40,19 +42,41 @@ export function Menu() {
 	const { isInGrid, applyProfile } = useDriverProfiles();
 	const { drivers: data, loading } = useFirebaseDrivers();
 
-	const menuItems = useMemo<NavItem[]>(() => [
-		{ id: "/", label: "Início" },
-		{ id: "/resultados", label: "Resultados" },
-		{ id: "/pilotos", label: "Pilotos", isDropdown: true },
-		{ id: "/campeoes", label: "Mural dos Campeões", hidden: !features.hallOfFame },
-		{ id: "/historico", label: "Histórico", hidden: !features.archive },
-		{ id: nav.ticketUrl ?? "", label: "Abrir Ticket", external: true, hidden: !nav.ticketUrl },
-		{ id: nav.registrationUrl ?? "", label: "Inscrições", external: true, hidden: !nav.registrationUrl },
-	].filter((item) => !item.hidden && item.id !== ""), [features, nav]);
+	const menuItems = useMemo<NavItem[]>(
+		() =>
+			[
+				{ id: "/", label: "Início" },
+				{ id: "/resultados", label: "Resultados" },
+				{ id: "/pilotos", label: "Pilotos", isDropdown: true },
+				{
+					id: "/campeoes",
+					label: "Mural dos Campeões",
+					hidden: !features.hallOfFame,
+				},
+				{
+					id: "/historico",
+					label: "Histórico",
+					hidden: !features.archive,
+				},
+				{
+					id: nav.ticketUrl ?? "",
+					label: "Abrir Ticket",
+					external: true,
+					hidden: !nav.ticketUrl,
+				},
+				{
+					id: nav.registrationUrl ?? "",
+					label: "Inscrições",
+					external: true,
+					hidden: !nav.registrationUrl,
+				},
+			].filter((item) => !item.hidden && item.id !== ""),
+		[features, nav],
+	);
 
 	const teamLogoByName = useMemo(() => {
 		const map: Record<string, string> = {};
-		(data).forEach((d) => {
+		data.forEach((d) => {
 			if (d.team?.name && d.team?.photo?.url) {
 				map[d.team.name] = d.team.photo.url;
 			}
@@ -60,7 +84,7 @@ export function Menu() {
 		return map;
 	}, [data]);
 
-	const activeGridDrivers = (data)
+	const activeGridDrivers = data
 		.filter((driver) => isInGrid(driver.id, activeTab.id))
 		.map((driver) => {
 			const applied = applyProfile(driver, activeTab.id);
@@ -77,6 +101,13 @@ export function Menu() {
 		})
 		.filter((driver) => !driver.reserve && !driver.exDriver)
 		.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+
+	useEffect(() => {
+		document.body.style.overflow = isOpen ? "hidden" : "";
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [isOpen]);
 
 	const handleLinkClick = () => {
 		setIsOpen(false);
@@ -100,186 +131,230 @@ export function Menu() {
 
 	return (
 		<nav
-			style={{ backgroundColor: "var(--color-brand-nav)", color: "var(--color-brand-nav-text)" }}
+			style={{
+				backgroundColor: "var(--color-brand-nav)",
+				color: "var(--color-brand-nav-text)",
+			}}
 			className="h-[56px] md:h-[74px]"
 		>
-			<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10">
-				{/* Logo */}
-				<Link
-					to="/"
-					onClick={handleLinkClick}
-					aria-label="Ir para a página inicial"
-					className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-[60] ml-3 md:ml-0 flex items-center flex-shrink-0 overflow-hidden"
-				>
-					<Logo />
-				</Link>
+			<div className="max-w-screen-xl mx-auto relative h-full px-3">
+				<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10">
+					{/* Logo */}
+					<Link
+						to="/"
+						onClick={handleLinkClick}
+						aria-label="Ir para a página inicial"
+						className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-50 ml-3 flex items-center flex-shrink-0 overflow-hidden md:absolute md:left-3 md:top-1/2 md:-translate-y-1/2 md:ml-0"
+					>
+						<Logo />
+					</Link>
 
-				{/* Mobile — grid switcher + hamburger */}
-				{tabs.length > 1 && (
-					<div className="text-xl absolute left-7 inset-x-0 font-semibold md:hidden z-50 mt-1">
-						<GridMenu />
-					</div>
-				)}
-				<button
-					className="text-3xl md:hidden relative z-[60] w-[40px] h-[50px] mr-3"
-					onClick={() => setIsOpen(!isOpen)}
-					aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
-					aria-expanded={isOpen}
-				>
-					{isOpen ? (
-						<CloseIcon fontSize="large" aria-hidden="true" />
-					) : (
-						<MenuIcon fontSize="large" aria-hidden="true" />
+					{/* Mobile — grid switcher + hamburger */}
+					{tabs.length > 1 && (
+						<div className="text-xl absolute left-7 inset-x-0 font-semibold md:hidden z-50 mt-1">
+							<GridMenu />
+						</div>
 					)}
-				</button>
+					<button
+						className="text-3xl md:hidden relative z-[70] w-[40px] h-[50px] mr-3"
+						onClick={() => setIsOpen(!isOpen)}
+						aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+						aria-expanded={isOpen}
+					>
+						{isOpen ? (
+							<CloseIcon fontSize="large" aria-hidden="true" />
+						) : (
+							<MenuIcon fontSize="large" aria-hidden="true" />
+						)}
+					</button>
 
-				{/* Mobile overlay bg */}
-				<div
-					style={{ backgroundColor: "var(--color-brand-nav)" }}
-					className="md:hidden absolute w-full h-full z-40"
-				/>
+					{/* Mobile overlay bg (keeps nav bar filled) */}
+					<div
+						style={{ backgroundColor: "var(--color-brand-nav)" }}
+						className="md:hidden absolute w-full h-full z-40"
+					/>
 
-				{/* Mobile drawer */}
-				<div
-					style={{ backgroundColor: "var(--color-brand-nav)" }}
-					className={`fixed top-0 right-0 px-2 py-6 transition-transform duration-300 ${
-						isOpen ? "translate-y-[56px]" : "translate-y-[-468px]"
-					} md:hidden w-full z-30`}
-				>
-					<ul className="space-y-2">
-						{menuItems.map((item) => (
-							<li
-								key={item.id}
-								className={`border-b border-r border-white rounded-br-lg py-2 flex justify-between px-2 ${
-									isActive(item.id)
-										? "border-b-2 border-r-2"
-										: ""
-								}`}
+					{/* Mobile full-screen overlay */}
+					<div
+						style={{ backgroundColor: "var(--color-brand-nav)" }}
+						className={`fixed inset-0 z-[65] flex flex-col md:hidden transition-transform duration-300 ease-in-out overflow-y-auto ${
+							isOpen ? "translate-y-0" : "-translate-y-full"
+						}`}
+						aria-hidden={!isOpen}
+					>
+						{/* Top accent bar */}
+						<div
+							className="absolute left-0 right-0 top-0 h-1"
+							style={{
+								backgroundColor: "var(--color-brand-primary)",
+							}}
+						/>
+
+						{/* Centered logo */}
+						<div className="flex justify-center pt-20 pb-2">
+							<div className={`h-20 w-auto flex items-center transition-opacity duration-300 ${isOpen ? "opacity-100 delay-200" : "opacity-0 delay-0"}`}>
+								<Logo />
+							</div>
+						</div>
+
+						{/* Nav links */}
+						<nav className="flex-1 flex flex-col justify-center px-8 pb-6 gap-1">
+							{menuItems.map((item) => (
+								<div
+									key={item.id}
+									className={`border-b border-r border-white/20 rounded-br-lg flex justify-between items-center px-2 ${
+										isActive(item.id)
+											? "border-b-2 border-r-2 border-white/60"
+											: ""
+									}`}
+								>
+									{item.external ? (
+										<a
+											href={item.id}
+											target="_blank"
+											rel="noopener noreferrer"
+											aria-label={`${item.label} (abre em nova janela)`}
+											className="font-futosans uppercase tracking-wide text-4xl w-full flex justify-between items-center py-5"
+											onClick={handleLinkClick}
+										>
+											{item.label}
+											<OpenInNew
+												fontSize="small"
+												aria-hidden="true"
+											/>
+										</a>
+									) : (
+										<Link
+											to={item.id}
+											className="font-futosans uppercase tracking-wide text-xl w-full flex justify-between items-center py-5"
+											onClick={handleLinkClick}
+										>
+											{item.label}
+											<ArrowForwardIos
+												fontSize="small"
+												aria-hidden="true"
+											/>
+										</Link>
+									)}
+								</div>
+							))}
+						</nav>
+
+						{/* Bottom bar */}
+						<div className="px-8 pb-10 pt-4 border-t border-white/10 flex items-center justify-between">
+							<Socials />
+							<Link
+								to="/admin/painel"
+								onClick={handleLinkClick}
+								className="opacity-30 hover:opacity-100 transition-opacity"
 							>
+								<LockOutlinedIcon fontSize="small" />
+							</Link>
+						</div>
+					</div>
+
+					{/* Desktop nav */}
+					<div className="hidden md:flex h-full items-center">
+						{menuItems.map((item) => (
+							<React.Fragment key={item.id}>
 								{item.external ? (
 									<a
 										href={item.id}
 										target="_blank"
 										rel="noopener noreferrer"
 										aria-label={`${item.label} (abre em nova janela)`}
-										className="tenant-menu-item text-lg w-full flex justify-between items-center py-2 px-2"
-										onClick={handleLinkClick}
+										className="tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300"
 									>
 										<span className="tenant-menu-item-label">
 											{item.label}
 										</span>
-										<OpenInNew
-											fontSize="small"
-											aria-hidden="true"
-										/>
 									</a>
-								) : (
-									<Link
-										to={item.id}
-										className="tenant-menu-item text-lg w-full flex justify-between items-center py-2 px-2"
-										onClick={handleLinkClick}
+								) : item.isDropdown ? (
+									<div
+										className={`relative h-full group ${
+											isActive(item.id)
+												? "nav-link-active"
+												: ""
+										}`}
 									>
-										<span className="tenant-menu-item-label">
-											{item.label}
-										</span>
-										<ArrowForwardIos
-											fontSize="small"
-											aria-hidden="true"
-										/>
-									</Link>
-								)}
-							</li>
-						))}
-					</ul>
-				</div>
+										<button
+											onClick={handleAllDriversClick}
+											className="tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 cursor-pointer"
+										>
+											<span className="tenant-menu-item-label">
+												{item.label}
+											</span>
+											<ArrowForwardIos
+												className="ml-2 rotate-90"
+												fontSize="small"
+												aria-hidden="true"
+											/>
+										</button>
 
-				{/* Desktop nav */}
-				<div className="hidden md:flex h-full items-center">
-					{menuItems.map((item) => (
-						<React.Fragment key={item.id}>
-							{item.external ? (
-								<a
-									href={item.id}
-									target="_blank"
-									rel="noopener noreferrer"
-									aria-label={`${item.label} (abre em nova janela)`}
-									className="tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300"
-								>
-									<span className="tenant-menu-item-label">
-										{item.label}
-									</span>
-								</a>
-							) : item.isDropdown ? (
-								<div
-									className={`relative h-full group ${
-										isActive(item.id)
-											? "nav-link-active"
-											: ""
-									}`}
-								>
-									<button
-										onClick={handleAllDriversClick}
-										className="tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 cursor-pointer"
-									>
-										<span className="tenant-menu-item-label">
-											{item.label}
-										</span>
-										<ArrowForwardIos
-											className="ml-2 rotate-90"
-											fontSize="small"
-											aria-hidden="true"
-										/>
-									</button>
-
-									{/* Dropdown panel */}
-									<div className="fixed left-0 z-50 hidden group-hover:block w-full py-8 nav-dropdown-bg" style={{ color: "var(--color-brand-nav-dropdown-text)" }}>
-										<div className="flex flex-col max-w-screen-xl mx-auto gap-10">
-											<div className="flex justify-between gap-6">
-												{loading ? (
-													<div className="p-4">
-														Carregando pilotos...
-													</div>
-												) : activeGridDrivers.length ===
-												  0 ? (
-													<div className="p-4 text-sm opacity-60">
-														Nenhum piloto neste
-														grid.
-													</div>
-												) : (
-													<MenuDriverList
-														drivers={
-															activeGridDrivers
-														}
-														onDriverClick={
-															handleDriverClick
-														}
-														photoStyle={
-															defaultPhotoStyle
-														}
-													/>
-												)}
+										{/* Dropdown panel */}
+										<div
+											className="fixed left-0 z-50 hidden group-hover:block w-full py-8 nav-dropdown-bg"
+											style={{
+												color: "var(--color-brand-nav-dropdown-text)",
+											}}
+										>
+											<div className="flex flex-col max-w-screen-xl mx-auto gap-10">
+												<div className="flex justify-between gap-6">
+													{loading ? (
+														<div className="p-4">
+															Carregando
+															pilotos...
+														</div>
+													) : activeGridDrivers.length ===
+													  0 ? (
+														<div className="p-4 text-sm opacity-60">
+															Nenhum piloto neste
+															grid.
+														</div>
+													) : (
+														<MenuDriverList
+															drivers={
+																activeGridDrivers
+															}
+															onDriverClick={
+																handleDriverClick
+															}
+															photoStyle={
+																defaultPhotoStyle
+															}
+														/>
+													)}
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-							) : (
-								<Link
-									to={item.id}
-									onClick={handleLinkClick}
-									className={`tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 ${
-										isActive(item.id)
-											? "nav-link-active"
-											: ""
-									}`}
-								>
-									<span className="tenant-menu-item-label">
-										{item.label}
-									</span>
-								</Link>
-							)}
-						</React.Fragment>
-					))}
+								) : (
+									<Link
+										to={item.id}
+										onClick={handleLinkClick}
+										className={`tenant-menu-item text-lg h-full flex items-center px-4 nav-link-hover transition-colors duration-300 ${
+											isActive(item.id)
+												? "nav-link-active"
+												: ""
+										}`}
+									>
+										<span className="tenant-menu-item-label">
+											{item.label}
+										</span>
+									</Link>
+								)}
+							</React.Fragment>
+						))}
+					</div>
 				</div>
+				<Link
+					to="/admin/painel"
+					className="hidden md:flex absolute right-3 top-0 h-full items-center opacity-30 hover:opacity-100 transition-opacity"
+					title="Admin"
+					aria-label="Admin"
+				>
+					<LockOutlinedIcon fontSize="small" />
+				</Link>
 			</div>
 		</nav>
 	);

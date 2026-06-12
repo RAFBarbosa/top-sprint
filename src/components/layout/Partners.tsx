@@ -16,7 +16,7 @@ export function Partners() {
 				<h3 className="text-f1-white font-extrabold text-center text-3xl mb-6 tracking-wide">
 					Nossos Parceiros
 				</h3>
-				<div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-6 sm:gap-10">
+				<div className="flex flex-wrap justify-center gap-6 sm:grid sm:grid-cols-[repeat(auto-fit,152px)] sm:justify-center sm:gap-10">
 					{partners.map((partner) => (
 						<a
 							key={partner.id}
