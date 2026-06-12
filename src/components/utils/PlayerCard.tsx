@@ -89,7 +89,7 @@ function getTextColor(hexColor: string): string {
 
 const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 	({ data }, ref) => {
-		const { defaultPhotoStyle } = useTenantConfig();
+		const { defaultPhotoStyle, logoUrl } = useTenantConfig();
 		const splitDriverName = (name: string) => {
 			const nameParts = name.split(" ");
 			const firstName = nameParts[0].replace(/-[BC]$/, "");
@@ -535,7 +535,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 
 							<div className="h-11 ml-2 w-auto">
 								<img
-									src={tenant.logo.url}
+									src={logoUrl}
 									alt={tenant.logo.alt}
 									className="h-full w-auto object-contain"
 								/>
