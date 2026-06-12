@@ -13,18 +13,18 @@
 
 /* ── topSprint ───────────────────────────────────────────────────────────── */
 
-[data-tenant="topSprint"] .tenant-standings-title {
+.tenant-standings-title {
 	font-weight: 500;
 	font-size: 1.5rem;
 }
 
 @media (min-width: 768px) {
-	[data-tenant="topSprint"] .tenant-standings-title {
+	.tenant-standings-title {
 		font-size: 2.5rem;
 	}
 }
 
-[data-tenant="topSprint"] .tenant-standings-tabs button {
+.tenant-standings-tabs button {
 	font-size: 1rem;
 }
 
@@ -48,7 +48,7 @@
 	z-index: 1;
 }
 
-[data-tenant="topSprint"] .tenant-menu-item {
+.tenant-menu-item {
 	text-transform: uppercase;
 	font-size: 0.95rem;
 	font-weight: 500;
@@ -71,117 +71,113 @@
 	text-transform: uppercase;
 }
 
-[data-tenant="topSprint"] .tenant-news-secondary {
-	background-color: var(--color-news-secondary-bg);
+.tenant-news-secondary {
+	background-color: var(--color-news-secondary-bg, transparent);
 	border-color: transparent;
 }
 
-[data-tenant="topSprint"] .tenant-section {
-	color: #ffffff;
+.tenant-section-calendars {
+	background-color: var(--color-calendars-bg, initial);
+	color: var(--color-calendars-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-calendars {
-	background-color: var(--color-calendars-bg);
-	color: var(--color-calendars-text);
+.tenant-section-standings {
+	background-color: var(--color-standings-bg, initial);
+	color: var(--color-standings-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-standings {
-	background-color: var(--color-standings-bg);
-	color: var(--color-standings-text);
+.tenant-section-teams {
+	background-color: var(--color-teams-bg, initial);
+	color: var(--color-teams-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-teams {
-	background-color: var(--color-teams-bg);
-	color: var(--color-teams-text);
+.tenant-section-drivers {
+	background-color: var(--color-drivers-bg, initial);
+	color: var(--color-drivers-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-drivers {
-	background-color: var(--color-drivers-bg);
-	color: var(--color-drivers-text);
+.tenant-section-drivers .tenant-drivers-inner {
+	background-color: var(--color-drivers-card-bg, initial);
+	color: var(--color-drivers-card-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-drivers .tenant-drivers-inner {
-	background-color: var(--color-drivers-card-bg);
-	color: var(--color-drivers-card-text);
-}
-
-[data-tenant="topSprint"] .tenant-driver-team-name {
+.tenant-driver-team-name {
 	color: inherit;
 }
 
-[data-tenant="topSprint"] .tenant-section-results {
-	background-color: var(--color-results-bg);
-	color: var(--color-results-text);
+.tenant-section-results {
+	background-color: var(--color-results-bg, initial);
+	color: var(--color-results-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-champions {
-	background-color: var(--color-champions-bg);
-	color: var(--color-champions-text);
+.tenant-section-champions {
+	background-color: var(--color-champions-bg, initial);
+	color: var(--color-champions-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-champions-awards {
-	background-color: var(--color-champions-awards-bg);
-	color: var(--color-champions-awards-text);
+.tenant-champions-awards {
+	background-color: var(--color-champions-awards-bg, initial);
+	color: var(--color-champions-awards-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-champions-legacy-text {
-	background-color: var(--color-champions-legacy-bg);
-	color: var(--color-champions-legacy-text);
+.tenant-champions-legacy-text {
+	background-color: var(--color-champions-legacy-bg, initial);
+	color: var(--color-champions-legacy-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-profile {
-	background-color: var(--color-profile-bg);
-	color: var(--color-profile-text);
+.tenant-section-profile {
+	background-color: var(--color-profile-bg, initial);
+	color: var(--color-profile-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-profile-stats {
-	background-color: var(--color-profile-stats-bg);
-	color: var(--color-profile-stats-text);
+.tenant-profile-stats {
+	background-color: var(--color-profile-stats-bg, initial);
+	color: var(--color-profile-stats-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-profile-card {
-	background-color: var(--color-profile-card-bg);
-	color: var(--color-profile-card-text);
+.tenant-profile-card {
+	background-color: var(--color-profile-card-bg, initial);
+	color: var(--color-profile-card-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-profile-stats .text-f1-text {
-	color: var(--color-profile-stats-text);
+.tenant-profile-stats .text-f1-text {
+	color: var(--color-profile-stats-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-profile-stats .tenant-profile-info-label {
-	color: color-mix(in srgb, var(--color-profile-stats-text) 50%, transparent);
+.tenant-profile-stats .tenant-profile-info-label {
+	color: color-mix(in srgb, var(--color-profile-stats-text, currentColor) 50%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-profile-stats .text-f1-lighterCarbon {
-	color: color-mix(in srgb, var(--color-profile-stats-text) 50%, transparent);
+.tenant-profile-stats .text-f1-lighterCarbon {
+	color: color-mix(in srgb, var(--color-profile-stats-text, currentColor) 50%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-profile-stats .border-black\/10 {
-	border-color: color-mix(in srgb, var(--color-profile-stats-text) 10%, transparent);
+.tenant-profile-stats .border-black\/10 {
+	border-color: color-mix(in srgb, var(--color-profile-stats-text, currentColor) 10%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-profile-card .text-f1-text {
-	color: var(--color-profile-card-text);
+.tenant-profile-card .text-f1-text {
+	color: var(--color-profile-card-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-profile-card .text-f1-lighterCarbon {
-	color: color-mix(in srgb, var(--color-profile-card-text) 50%, transparent);
+.tenant-profile-card .text-f1-lighterCarbon {
+	color: color-mix(in srgb, var(--color-profile-card-text, currentColor) 50%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-profile-card .tenant-profile-info-label {
-	color: color-mix(in srgb, var(--color-profile-card-text) 50%, transparent);
+.tenant-profile-card .tenant-profile-info-label {
+	color: color-mix(in srgb, var(--color-profile-card-text, currentColor) 50%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-profile-card .border-black\/10 {
-	border-color: color-mix(in srgb, var(--color-profile-card-text) 10%, transparent);
+.tenant-profile-card .border-black\/10 {
+	border-color: color-mix(in srgb, var(--color-profile-card-text, currentColor) 10%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-profile-nav {
-	background-color: var(--color-profile-nav-bg);
-	color: var(--color-profile-nav-text);
+.tenant-profile-nav {
+	background-color: var(--color-profile-nav-bg, initial);
+	color: var(--color-profile-nav-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-title {
+.tenant-section-title {
 	font-family: var(--font-f1Title);
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
@@ -190,33 +186,25 @@
 }
 
 @media (min-width: 768px) {
-	[data-tenant="topSprint"] .tenant-section-title {
+	.tenant-section-title {
 		font-size: 2.25rem;
 	}
 }
 
-[data-tenant="topSprint"] .tenant-section-calendars .tenant-section-fade {
-	background-color: color-mix(
-		in srgb,
-		var(--color-calendars-bg) 88%,
-		transparent
-	);
+.tenant-section-calendars .tenant-section-fade {
+	background-color: color-mix(in srgb, var(--color-calendars-bg, transparent) 88%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-section-teams .tenant-section-fade {
-	background-color: color-mix(
-		in srgb,
-		var(--color-teams-bg) 88%,
-		transparent
-	);
+.tenant-section-teams .tenant-section-fade {
+	background-color: color-mix(in srgb, var(--color-teams-bg, transparent) 88%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-calendar-round-mask {
-	background-color: var(--color-calendars-bg);
+.tenant-calendar-round-mask {
+	background-color: var(--color-calendars-bg, initial);
 }
 
-[data-tenant="topSprint"] .tenant-calendar-text {
-	color: var(--color-calendars-text);
+.tenant-calendar-text {
+	color: var(--color-calendars-text, inherit);
 }
 
 [data-tenant="topSprint"] .tenant-calendar-flag {
@@ -247,20 +235,13 @@
 	translate: 0 -4px;
 }
 
-[data-tenant="topSprint"] .tenant-standing-card {
-	background-color: var(--color-standings-card-bg);
-	color: var(--color-standings-card-text);
-}
-
-@media (min-width: 768px) {
-	[data-tenant="topSprint"] .tenant-standing-card {
-		background-color: var(--color-standings-card-bg);
-		color: var(--color-standings-card-text);
-	}
+.tenant-standing-card {
+	background-color: var(--color-standings-card-bg, white);
+	color: var(--color-standings-card-text, inherit);
 }
 
 @media (hover: hover) {
-	[data-tenant="topSprint"] .group:hover .tenant-standing-card-clickable {
+	.group:hover .tenant-standing-card-clickable {
 		background-color: var(--row-hover-bg, var(--color-crt-primary));
 		color: var(--row-hover-text, #ffffff);
 	}
@@ -270,63 +251,60 @@
 	color: #ffffff;
 }
 
-[data-tenant="topSprint"] .tenant-standing-position {
+.tenant-standing-position {
 	font-family: "Chakra Petch", sans-serif;
 }
 
-[data-tenant="topSprint"] .tenant-standing-color-bar {
-	translate: 0 -2px; /* adjust vertical offset here */
+.tenant-standing-color-bar {
+	translate: 0 -2px;
 }
 
-[data-tenant="topSprint"] .tenant-standing-team-detail {
+.tenant-standing-team-detail {
 	opacity: 0.8;
 	font-family: "Chakra Petch", sans-serif;
 }
 
-[data-tenant="topSprint"] .tenant-position-difference {
+.tenant-position-difference {
 	font-size: 0.8rem;
 }
 
 @media (min-width: 768px) {
-	[data-tenant="topSprint"] .tenant-position-difference {
+	.tenant-position-difference {
 		translate: 0 1px;
 	}
 }
 
-[data-tenant="topSprint"] .tenant-position-difference svg {
-	font-size: 0.9rem; /* adjust arrow size here */
+.tenant-position-difference svg {
+	font-size: 0.9rem;
 }
 
-[data-tenant="topSprint"] .tenant-position-number {
-	translate: 0 1px; /* adjust vertical offset here */
+.tenant-position-number {
+	translate: 0 1px;
 }
 
 /* ── PlayerCard text tweaks ──────────────────────────────────────────────── */
 
-[data-tenant="topSprint"] .tenant-card-name {
+.tenant-card-name {
 	font-size: 34px;
-	/* font-weight: bold; */
 	line-height: 26px;
 }
 
-[data-tenant="topSprint"] .tenant-card-rating-label {
+.tenant-card-rating-label {
 	margin-left: 12px;
 }
-[data-tenant="topSprint"] .tenant-card-rating-value {
+.tenant-card-rating-value {
 	margin-left: 12px;
 	font-size: 50px;
 	margin-top: 2px;
-	/* font-weight: bold; */
 }
 
-[data-tenant="topSprint"] .tenant-card-rating-arrow {
+.tenant-card-rating-arrow {
 	translate: 18px -8px;
 }
-[data-tenant="topSprint"] .tenant-card-team-name {
+.tenant-card-team-name {
 	font-size: 8px;
 }
-/* [data-tenant="topSprint"] .tenant-card-stat-label   { } */
-[data-tenant="topSprint"] .tenant-card-stat-value {
+.tenant-card-stat-value {
 	font-size: 28px;
 }
 
@@ -338,73 +316,60 @@
 
 /* ── Results dark theme ──────────────────────────────────────────────────── */
 
-[data-tenant="topSprint"] .tenant-results-dot {
-	color: rgba(255, 255, 255, 0.2);
+.tenant-results-bg {
+	background-color: var(--color-results-bg, initial);
 }
 
-[data-tenant="topSprint"] .tenant-results-bg {
-	background-color: var(--color-results-bg);
+.tenant-results-card {
+	background-color: var(--color-results-card-bg, initial);
+	color: var(--color-results-card-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-results-card {
-	background-color: var(--color-results-card-bg);
-	color: var(--color-results-card-text);
+.tenant-results-tab-bar {
+	background-color: var(--color-results-card-bg, initial);
+	color: var(--color-results-card-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-results-tab-bar {
-	background-color: var(--color-results-card-bg);
-	color: var(--color-results-card-text);
-	border-color: rgba(255, 255, 255, 0.1);
+.tenant-results-card thead tr {
+	background-color: var(--color-results-row-odd-bg, initial);
 }
 
-[data-tenant="topSprint"] .tenant-results-winner-card {
-	border-color: rgba(255, 255, 255, 0.1);
+.tenant-results-subrow {
+	background-color: var(--color-results-row-odd-bg, initial) !important;
 }
 
-[data-tenant="topSprint"] .tenant-results-card thead tr {
-	background-color: var(--color-results-row-odd-bg);
+.tenant-results-row-even {
+	background-color: var(--color-results-card-bg, initial);
 }
 
-[data-tenant="topSprint"] .tenant-results-subrow {
-	background-color: var(--color-results-row-odd-bg) !important;
+.tenant-results-row-odd {
+	background-color: var(--color-results-row-odd-bg, initial);
 }
 
-[data-tenant="topSprint"] .tenant-results-row-even {
-	background-color: var(--color-results-card-bg);
+.tenant-section-results .text-f1-lighterCarbon {
+	color: color-mix(in srgb, var(--color-results-card-text, currentColor) 50%, transparent);
 }
 
-[data-tenant="topSprint"] .tenant-results-row-odd {
-	background-color: var(--color-results-row-odd-bg);
+.tenant-section-results .text-f1-text {
+	color: var(--color-results-card-text, inherit);
 }
 
-[data-tenant="topSprint"] .tenant-section-results {
-	--color-f1-purple: #9333ea; /* lighter purple for dark bg — adjust here */
-}
-
-[data-tenant="topSprint"] .tenant-section-results .text-f1-lighterCarbon {
-	color: color-mix(in srgb, var(--color-results-card-text) 50%, transparent);
-}
-
-[data-tenant="topSprint"] .tenant-section-results .text-f1-text {
-	color: var(--color-results-card-text);
-}
-
-[data-tenant="topSprint"] .tenant-section-results .border-black\/10 {
-	border-color: rgba(255, 255, 255, 0.1);
+.tenant-section-results .border-black\/10 {
+	border-color: color-mix(in srgb, var(--color-results-card-text, currentColor) 10%, transparent);
 }
 
 /* ── Teams DriverCard name ───────────────────────────────────────────────── */
 
-[data-tenant="topSprint"] .tenant-drivercard-firstname {
+.tenant-drivercard-firstname {
 	font-family: var(--font-f1Title);
-	font-size: 1rem; /* adjust here */
+	font-size: 1rem;
 	font-weight: normal;
 	opacity: 1;
 }
 
-[data-tenant="topSprint"] .tenant-drivercard-lastname {
+.tenant-drivercard-lastname {
 	font-family: var(--font-f1Title);
-	font-size: 1rem; /* adjust here */
+	font-size: 1rem;
 	font-weight: bold;
 	font-style: italic;
 }

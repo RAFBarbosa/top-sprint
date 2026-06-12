@@ -297,10 +297,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						className="absolute z-[30] flex flex-col items-center leading-none"
 						style={{
 							top: "18%",
-							left:
-								defaultPhotoStyle === "round"
-									? "5%"
-									: "11%",
+							left: "11%",
 						}}
 					>
 						<span className="tenant-card-rating-label text-xs uppercase tracking-widest text-f1-bg-silver">

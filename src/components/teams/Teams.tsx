@@ -105,7 +105,7 @@ export function Teams() {
 						}}
 						className="border-t-8 border-r-8 rounded-tr-3xl pt-3 mb-6 px-0 md:max-w-screen-xl flex justify-between items-center"
 					>
-						<h2 className="tenant-section-title font-bold text-3xl md:text-4xl">
+						<h2 className="tenant-section-title font-f1Title uppercase font-bold text-3xl md:text-4xl tracking-wide">
 							Equipes e Pilotos
 						</h2>
 					</div>

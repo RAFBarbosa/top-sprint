@@ -51,7 +51,7 @@ export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 
 	const [activeTabId, setActiveTabId] = useState<GridId>(resolveInitialTab);
 
-	const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
+	const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0] ?? { id: "" as GridId, label: "" };
 
 	// Persist to localStorage on tab change
 	useEffect(() => {

@@ -487,8 +487,8 @@ export function CalendarRegistration({ gridId }: CalendarRegistrationProps) {
 			</div>
 
 			{expandedId === NEW_ID && (
-				<div className="mb-3 bg-white rounded border border-f1-red/30 overflow-hidden">
-					<div className="px-4 py-2 bg-f1-red/10 border-b border-f1-red/20">
+				<div className="mb-3 bg-white rounded border border-f1-red/30">
+					<div className="px-4 py-2 bg-f1-red/10 border-b border-f1-red/20 rounded-t">
 						<h3 className="text-sm font-bold text-f1-red uppercase tracking-wide">Nova Etapa</h3>
 					</div>
 					{renderForm(NEW_ID)}

@@ -22,30 +22,32 @@ interface PodiumProps {
 }
 
 export function Podium(props: PodiumProps) {
-	if (props.topThree.length < 3) return null;
+	if (props.topThree.length === 0) return null;
 
 	return (
 		<div className="mb-1" key={props.activeTab}>
 			{props.activeTab === "drivers" ? (
 				<div className="md:flex md:gap-x-2">
 					{/* Position 2 - Show on ALL screens */}
-					<div className="w-full md:w-[31%] mb-2 md:mb-0">
-						<PodiumCard
-							name={props.topThree[1].name}
-							photo={props.topThree[1].photo}
-							teamColor={props.topThree[1].teamColor}
-							teamName={props.topThree[1].teamName}
-							teamLogo={props.topThree[1].teamLogo}
-							points={props.topThree[1].pts}
-							position={2}
-							photoStyle={props.photoStyle}
-							grid={props.grid}
-							class={props.class}
-							activeTab={props.activeTab}
-							newData={props.newData}
-							oldData={props.oldData || []}
-						/>
-					</div>
+					{props.topThree[1] && (
+						<div className="w-full md:w-[31%] mb-2 md:mb-0">
+							<PodiumCard
+								name={props.topThree[1].name}
+								photo={props.topThree[1].photo}
+								teamColor={props.topThree[1].teamColor}
+								teamName={props.topThree[1].teamName}
+								teamLogo={props.topThree[1].teamLogo}
+								points={props.topThree[1].pts}
+								position={2}
+								photoStyle={props.photoStyle}
+								grid={props.grid}
+								class={props.class}
+								activeTab={props.activeTab}
+								newData={props.newData}
+								oldData={props.oldData || []}
+							/>
+						</div>
+					)}
 					{/* Position 1 */}
 					<div className="w-full md:w-[38%] mb-2 md:mb-0 md:mx-auto">
 						<PodiumCard
@@ -65,23 +67,25 @@ export function Podium(props: PodiumProps) {
 						/>
 					</div>
 					{/* Position 3 - Show on ALL screens */}
-					<div className="w-full md:w-[31%]">
-						<PodiumCard
-							name={props.topThree[2].name}
-							photo={props.topThree[2].photo}
-							teamColor={props.topThree[2].teamColor}
-							teamName={props.topThree[2].teamName}
-							teamLogo={props.topThree[2].teamLogo}
-							photoStyle={props.photoStyle}
-							points={props.topThree[2].pts}
-							position={3}
-							grid={props.grid}
-							class={props.class}
-							activeTab={props.activeTab}
-							newData={props.newData}
-							oldData={props.oldData || []}
-						/>
-					</div>
+					{props.topThree[2] && (
+						<div className="w-full md:w-[31%]">
+							<PodiumCard
+								name={props.topThree[2].name}
+								photo={props.topThree[2].photo}
+								teamColor={props.topThree[2].teamColor}
+								teamName={props.topThree[2].teamName}
+								teamLogo={props.topThree[2].teamLogo}
+								photoStyle={props.photoStyle}
+								points={props.topThree[2].pts}
+								position={3}
+								grid={props.grid}
+								class={props.class}
+								activeTab={props.activeTab}
+								newData={props.newData}
+								oldData={props.oldData || []}
+							/>
+						</div>
+					)}
 				</div>
 			) : (
 				<div className="md:flex md:justify-center">

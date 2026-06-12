@@ -60,13 +60,7 @@ const Drivers: React.FC = () => {
 								: "var(--color-brand-primary)",
 					}}
 				>
-					<h1
-						className={
-							tenant.id === "topSprint"
-								? "font-f1Title uppercase tracking-widest text-4xl"
-								: "font-extrabold tracking-wide text-4xl md:text-6xl"
-						}
-					>
+					<h1 className="font-f1Title uppercase tracking-widest text-4xl">
 						Pilotos
 					</h1>
 				</div>

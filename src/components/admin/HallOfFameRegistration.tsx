@@ -1,7 +1,6 @@
 import { FormEvent, useEffect, useState, useCallback } from "react";
 import {
 	useCreateAssetMutation,
-	GetHallsOfFameFullDocument,
 } from "../../graphql/generated";
 import {
 	Dialog,
@@ -25,7 +24,6 @@ import {
 	Timestamp,
 } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { useApolloClient } from "@apollo/client";
 
 interface ExistingPhoto {
 	type: "existing";
@@ -61,7 +59,6 @@ export function HallOfFameRegistration() {
 	const [hofs, setHofs] = useState<any[]>([]);
 	const [hofsLoading, setHofsLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
-	const [migrating, setMigrating] = useState(false);
 
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState<{
@@ -70,8 +67,6 @@ export function HallOfFameRegistration() {
 	} | null>(null);
 
 	const [createAsset] = useCreateAssetMutation();
-	const apolloClient = useApolloClient();
-
 	const loadHofs = useCallback(async () => {
 		setHofsLoading(true);
 		try {
@@ -256,32 +251,6 @@ export function HallOfFameRegistration() {
 		}
 	};
 
-	const handleMigrateFromHygraph = async () => {
-		setMigrating(true);
-		try {
-			const result = await apolloClient.query({
-				query: GetHallsOfFameFullDocument,
-				fetchPolicy: "network-only",
-			});
-			const hygraphHofs: any[] = result.data?.hallsOfFame ?? [];
-			for (const hof of hygraphHofs) {
-				await setDoc(doc(db, "hallsOfFame", hof.id), {
-					season: hof.season ?? "",
-					photoUrls: (hof.photo ?? []).map((p: any) => p.url),
-					legacy: hof.legacy ?? false,
-					deleted: hof.deleted ?? false,
-					createdAt: serverTimestamp(),
-				});
-			}
-			showToast("success", `${hygraphHofs.length} itens migrados com sucesso!`);
-			await loadHofs();
-		} catch (e: any) {
-			showToast("error", `Erro na migração: ${e.message}`);
-		} finally {
-			setMigrating(false);
-		}
-	};
-
 	const filteredHofs = hofs.filter((hof) =>
 		searchTerm
 			? hof.season?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -310,15 +279,6 @@ export function HallOfFameRegistration() {
 					/>
 				</div>
 
-				{hofs.length === 0 && !hofsLoading && (
-					<button
-						onClick={handleMigrateFromHygraph}
-						disabled={migrating}
-						className="w-full mb-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer text-sm"
-					>
-						{migrating ? "Migrando..." : "Importar do Hygraph"}
-					</button>
-				)}
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
 					{filteredHofs.length > 0 ? (
@@ -355,6 +315,7 @@ export function HallOfFameRegistration() {
 						</li>
 					)}
 				</ul>
+
 			</div>
 
 			{/* Delete Modal */}

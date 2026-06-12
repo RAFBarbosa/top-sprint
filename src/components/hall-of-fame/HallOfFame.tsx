@@ -32,7 +32,7 @@ export function HallOfFame(props: HallOfFameProps) {
 				src={props.photo.url}
 				alt={`${props.season} photo`}
 				imgWidth={600}
-				className={`w-full h-auto object-contain rounded-lg shadow-lg transition-opacity duration-500 ${
+				className={`max-h-[600px] w-auto max-w-full mx-auto object-contain rounded-lg shadow-lg transition-opacity duration-500 ${
 					loading ? "opacity-0" : "opacity-100"
 				}`}
 				onLoad={handleImageLoad}

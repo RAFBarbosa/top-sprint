@@ -400,40 +400,24 @@ export function DriverRegistration() {
 									</div>
 
 									<div className="flex gap-4 items-center">
-										<div
-											className={`w-12 h-12 flex-shrink-0 ${
-												driver.grid &&
-												(getGridConfig(driver.grid)
-													?.photoStyle ??
-													defaultPhotoStyle) ===
-													"round"
-													? "rounded-full scale-100"
-													: "scale-100"
-											}`}
-										>
-											<img
-												src={
-													driver.photo?.url ||
-													tenant.fallbackDriverPhoto
-												}
-												alt={driver.name}
-												className={`w-full h-full object-cover ${
-													driver.grid &&
-													(getGridConfig(driver.grid)
-														?.photoStyle ??
-														defaultPhotoStyle) ===
-														"round"
-														? "object-center"
-														: (getGridConfig(
-																	driver.grid,
-															  )?.photoStyle ??
-																	defaultPhotoStyle) ===
-															  "bust"
-															? "scale-200 translate-y-5 object-top"
-															: "scale-300 translate-y-10 object-top"
-												}`}
-											/>
-										</div>
+										{(() => {
+										const style = getGridConfig(driver.grid)?.photoStyle ?? defaultPhotoStyle;
+										return (
+											<div className={`w-12 h-12 flex-shrink-0 overflow-hidden ${style === "round" ? "rounded-full" : ""}`}>
+												<img
+													src={driver.photo?.url || tenant.fallbackDriverPhoto}
+													alt={driver.name}
+													className={`w-full h-full object-cover ${
+														style === "round"
+															? "object-center"
+															: style === "bust"
+																? "scale-200 translate-y-5 object-top"
+																: "scale-300 translate-y-10 object-top"
+													}`}
+												/>
+											</div>
+										);
+									})()}
 
 										<AdminDeleteButton
 											deleted={driver.deleted}

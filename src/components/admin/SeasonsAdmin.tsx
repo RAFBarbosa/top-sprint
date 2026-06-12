@@ -70,7 +70,7 @@ export function SeasonsAdmin() {
 		}
 	};
 
-	const filteredSeasons = seasons.filter((season) => {
+	const filteredSeasons = [...seasons].reverse().filter((season) => {
 		const matchesActive =
 			activeFilter === "all"
 				? true

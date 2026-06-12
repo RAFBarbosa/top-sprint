@@ -8,7 +8,10 @@ export function Partners() {
 	if (partners.length === 0) return null;
 
 	return (
-		<div className="bg-f1-lightCarbon w-full py-6">
+		<div
+			className="w-full py-6"
+			style={{ backgroundColor: "var(--color-partners-bg, #1f1f27)" }}
+		>
 			<div className="md:max-w-screen-xl mx-auto px-3">
 				<h3 className="text-f1-white font-extrabold text-center text-3xl mb-6 tracking-wide">
 					Nossos Parceiros
@@ -20,7 +23,7 @@ export function Partners() {
 							href={partner.link}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="flex items-center justify-center w-38 h-38 p-2 hover:bg-f1-silver rounded-2xl"
+							className="flex items-center justify-center w-38 h-38 p-2 hover:bg-white/3 rounded-2xl"
 						>
 							<HygraphImg
 								src={
