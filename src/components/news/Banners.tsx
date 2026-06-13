@@ -104,7 +104,7 @@ export function Banners() {
 	if (error) return <div>Erro: {error}</div>;
 
 	const featuredBanners = bannersData
-		.filter((banner) => banner.category === "destaque")
+		.filter((banner) => banner.category === "destaque" && banner.active !== false)
 		.sort(
 			(a, b) =>
 				new Date(b.createdAt).getTime() -
@@ -112,7 +112,7 @@ export function Banners() {
 		);
 
 	const secondaryBanners = bannersData
-		.filter((banner) => banner.category === "secundario")
+		.filter((banner) => banner.category === "secundario" && banner.active !== false)
 		.sort(
 			(a, b) =>
 				new Date(b.createdAt).getTime() -

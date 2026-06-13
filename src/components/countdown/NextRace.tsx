@@ -33,10 +33,12 @@ export function NextRace(props: NextRaceProps) {
 		>
 			<div className="max-w-screen-xl mx-auto px-3 py-2 flex items-center justify-between gap-3 tracking-wide">
 				<div className="flex flex-col min-w-0 leading-tight">
-					<div className="flex items-center gap-2 text-[10px] md:text-xs opacity-70 uppercase tracking-wider">
+					<div className="text-[10px] md:text-xs opacity-70 uppercase tracking-wider">
 						{props.round && (
 							<span>
-								{props.round} · {formattedDateCapitalized}
+								{props.round}<span className="hidden md:inline"> · </span>
+								<br className="md:hidden" />
+								{formattedDateCapitalized}
 							</span>
 						)}
 						{/* {props.round && (
@@ -46,7 +48,7 @@ export function NextRace(props: NextRaceProps) {
 							· {formattedDateCapitalized}
 						</span> */}
 					</div>
-					<div className="flex items-center gap-2 min-w-0">
+					<div className="flex items-center gap-2 min-w-0 mt-1">
 						<CountryFlag
 							code={props.countryCode}
 							className="tenant-nextrace-flag rounded-xs w-[28px] h-[16px] border border-white/50 flex-shrink-0"

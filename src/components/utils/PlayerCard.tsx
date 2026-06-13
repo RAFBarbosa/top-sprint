@@ -403,18 +403,28 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									</div>
 									{data.realLifeTeamLogoUrl && (
 										<div
-											className=""
 											style={{
 												width: "clamp(45px, 15vw, 61px)",
 												height: "clamp(23px, 7.8vw, 32px)",
+												overflow: "hidden",
+												position: "relative",
+												flexShrink: 0,
 											}}
 										>
 											<HygraphImg
-												className="w-full h-full object-contain"
+												style={{
+													position: "absolute",
+													top: "50%",
+													left: "50%",
+													transform: "translate(-50%, -50%)",
+													height: "135%",
+													width: "auto",
+													objectFit: "contain",
+												}}
 												src={data.realLifeTeamLogoUrl}
 												alt="Real life team logo"
-												imgWidth={120}
-												imgHeight={120}
+												imgWidth={300}
+												imgHeight={300}
 												fit="clip"
 											/>
 										</div>

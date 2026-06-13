@@ -74,15 +74,19 @@ const Drivers: React.FC = () => {
 				</div>
 			</div>
 			<div className="tenant-drivers-inner max-w-screen-xl mx-auto bg-white rounded-b p-6 space-y-6">
-				{activeSeason ? (
+				{!activeSeason ? (
+					<p className="text-f1-lighterCarbon text-sm py-6 text-center">
+						Nenhuma temporada ativa no momento.
+					</p>
+				) : activeDrivers.length === 0 ? (
+					<p className="text-f1-lighterCarbon text-sm py-6 text-center">
+						Pilotos serão anunciados em breve.
+					</p>
+				) : (
 					<DriverList
 						gridName={activeTab.label}
 						drivers={activeDrivers}
 					/>
-				) : (
-					<p className="text-f1-lighterCarbon text-sm py-6 text-center">
-						Nenhuma temporada ativa no momento.
-					</p>
 				)}
 			</div>
 		</div>

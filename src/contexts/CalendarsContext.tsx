@@ -12,6 +12,7 @@ export interface FirestoreCalendar {
 	deleted: boolean;
 	active: boolean;
 	date: string;
+	countsForChampionship?: boolean;
 }
 
 interface CalendarsContextType {

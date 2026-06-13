@@ -41,8 +41,10 @@ export function CountdownRenderer(props: CountdownRendererProps) {
 
 	return (
 		<div className="flex flex-col items-end leading-tight gap-1">
-			<span className="text-[10px] md:text-xs uppercase tracking-wider opacity-70">
-				Próxima corrida · {gridLabel}
+			<span className="text-[10px] md:text-xs uppercase tracking-wider opacity-70 text-right">
+				Próxima corrida<span className="hidden md:inline"> · </span>
+				<br className="md:hidden" />
+				{gridLabel}
 			</span>
 			<div className="flex items-baseline gap-2">
 				<Unit

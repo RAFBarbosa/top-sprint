@@ -48,6 +48,7 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 		sprint: false,
 		date: "",
 		active: true,
+		countsForChampionship: true,
 		grid: gridId || "",
 		seasonId: "",
 		link: "",
@@ -87,6 +88,7 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 			sprint: calendar.sprint || false,
 			date: isoToDatetimeLocal(calendar.date),
 			active: calendar.active ?? true,
+			countsForChampionship: calendar.countsForChampionship ?? true,
 			grid: calendar.grid || "",
 			seasonId: seasonId || "",
 			link: calendar.link || "",
@@ -107,6 +109,7 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 			sprint: calendar.sprint || false,
 			date: "",
 			active: true,
+			countsForChampionship: calendar.countsForChampionship ?? true,
 			grid: calendar.grid || gridId || "",
 			seasonId: getSeasonForCalendar(calendar.id) || "",
 			link: "",
@@ -130,6 +133,7 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 				grid: formData.grid || null,
 				date: formattedDate,
 				active: formData.active,
+				countsForChampionship: formData.countsForChampionship,
 				link: formData.link || null,
 				deleted: false,
 			};
@@ -245,6 +249,18 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 									type="checkbox"
 									checked={formData.sprint}
 									onChange={(e) => setFormData({ ...formData, sprint: e.target.checked })}
+									className="sr-only peer"
+								/>
+								<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+							</label>
+						</div>
+						<div className="flex items-center gap-2">
+							<span className="text-sm font-medium">Vale pontos</span>
+							<label className="relative inline-flex items-center cursor-pointer">
+								<input
+									type="checkbox"
+									checked={formData.countsForChampionship}
+									onChange={(e) => setFormData({ ...formData, countsForChampionship: e.target.checked })}
 									className="sr-only peer"
 								/>
 								<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>

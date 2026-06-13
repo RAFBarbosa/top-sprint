@@ -51,6 +51,7 @@ const normalizeBanner = (id: string, data: any) => ({
 	link: (data.link as string) ?? null,
 	category: data.category as string,
 	photo: data.photoUrl ? { url: data.photoUrl as string } : null,
+	active: data.active ?? true,
 	deleted: data.deleted as boolean,
 	createdAt:
 		data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
@@ -98,6 +99,7 @@ export function BannerRegistration() {
 		content: "",
 		link: "",
 		category: "",
+		active: true,
 	});
 
 	const [banners, setBanners] = useState<any[]>([]);
@@ -212,6 +214,7 @@ const { getTrack } = useTracks();
 			content: banner.content,
 			link: banner.link || "",
 			category: banner.category,
+			active: banner.active ?? true,
 		});
 		try {
 			const snap = await getDoc(doc(db, "banner_calendar", banner.id));
@@ -226,7 +229,7 @@ const { getTrack } = useTracks();
 	const resetForm = () => {
 		setSelectedBanner(null);
 		setIsEditing(false);
-		setFormData({ title: "", content: "", link: "", category: "" });
+		setFormData({ title: "", content: "", link: "", category: "", active: true });
 		setPhotoFile(null);
 		setLinkedCalendarId("");
 	};
@@ -255,6 +258,7 @@ const { getTrack } = useTracks();
 					content: formData.content,
 					link: formData.link || null,
 					category: formData.category,
+					active: formData.active,
 					...(photoFile ? { photoUrl } : {}),
 					updatedAt: serverTimestamp(),
 				});
@@ -277,6 +281,7 @@ const { getTrack } = useTracks();
 					content: formData.content,
 					link: formData.link || null,
 					category: formData.category,
+					active: formData.active,
 					photoUrl: photoUrl || null,
 					deleted: false,
 					createdAt: serverTimestamp(),
@@ -514,7 +519,7 @@ const { getTrack } = useTracks();
 					onSubmit={handleBanner}
 					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
 				>
-					<div className="flex justify-between items-center mb-6">
+					<div className="flex justify-between items-center mb-2">
 						<h2 className="text-2xl font-bold">
 							{isEditing
 								? "Editar Notícia"
@@ -529,6 +534,18 @@ const { getTrack } = useTracks();
 								Nova Notícia
 							</button>
 						)}
+					</div>
+					<div className="flex items-center justify-start gap-2 mt-4 mb-6">
+						<span className="text-sm font-medium">Ativo</span>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input
+								type="checkbox"
+								checked={formData.active}
+								onChange={(e) => setFormData((prev) => ({ ...prev, active: e.target.checked }))}
+								className="sr-only peer"
+							/>
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+						</label>
 					</div>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
