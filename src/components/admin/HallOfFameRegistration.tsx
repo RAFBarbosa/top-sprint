@@ -43,12 +43,14 @@ const normalizeHof = (id: string, data: any) => ({
 	season: data.season as string,
 	photoUrls: (data.photoUrls ?? []) as string[],
 	legacy: data.legacy ?? false,
+	active: data.active ?? true,
 	deleted: data.deleted ?? false,
 });
 
 export function HallOfFameRegistration() {
 	const [season, setSeason] = useState("");
 	const [legacy, setLegacy] = useState(false);
+	const [active, setActive] = useState(true);
 	const [photos, setPhotos] = useState<PhotoItem[]>([]);
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const { showToast } = useToast();
@@ -122,6 +124,7 @@ export function HallOfFameRegistration() {
 		setIsEditing(true);
 		setSeason(hof.season || "");
 		setLegacy(hof.legacy ?? false);
+		setActive(hof.active ?? true);
 		setPhotos(
 			(hof.photoUrls ?? []).map((url: string) => ({
 				type: "existing" as const,
@@ -135,6 +138,7 @@ export function HallOfFameRegistration() {
 		setIsEditing(false);
 		setSeason("");
 		setLegacy(false);
+		setActive(true);
 		setPhotos([]);
 	};
 
@@ -224,6 +228,7 @@ export function HallOfFameRegistration() {
 				await updateDoc(doc(db, "hallsOfFame", selectedHof.id), {
 					season,
 					legacy,
+					active,
 					photoUrls: orderedUrls,
 				});
 				setPhotos(orderedUrls.map((url) => ({ type: "existing" as const, url })));
@@ -233,6 +238,7 @@ export function HallOfFameRegistration() {
 					season,
 					photoUrls: orderedUrls,
 					legacy,
+					active,
 					deleted: false,
 					createdAt: serverTimestamp(),
 				});
@@ -299,6 +305,7 @@ export function HallOfFameRegistration() {
 										<span className="text-xs text-gray-500">
 											{hof.photoUrls.length} foto
 											{hof.photoUrls.length !== 1 ? "s" : ""}
+											{hof.active === false && " · inativo"}
 										</span>
 									</div>
 
@@ -364,7 +371,7 @@ export function HallOfFameRegistration() {
 					onSubmit={handleSubmit}
 					className="bg-white border-t border-f1-black/20 mt-6 pt-6 md:mt-0 md:p-6 md:border-0 md:rounded-lg md:shadow-md"
 				>
-					<div className="flex justify-between items-center mb-6">
+					<div className="flex justify-between items-center mb-2">
 						<h2 className="text-2xl font-bold">
 							{isEditing
 								? "Editar Mural dos Campeões"
@@ -379,6 +386,18 @@ export function HallOfFameRegistration() {
 								Novo
 							</button>
 						)}
+					</div>
+					<div className="flex items-center justify-start gap-2 mt-4 mb-6">
+						<span className="text-sm font-medium">Ativo</span>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input
+								type="checkbox"
+								checked={active}
+								onChange={(e) => setActive(e.target.checked)}
+								className="sr-only peer"
+							/>
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-f1-purple"></div>
+						</label>
 					</div>
 
 					<div className="grid grid-cols-1 gap-4">

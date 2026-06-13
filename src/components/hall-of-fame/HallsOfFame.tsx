@@ -103,11 +103,13 @@ export function HallsOfFame() {
 							id: d.id,
 							season: data.season as string,
 							legacy: data.legacy ?? false,
+							active: data.active ?? true,
 							photo: ((data.photoUrls ?? []) as string[]).map(
 								(url) => ({ id: url, url }),
 							),
 						};
 					})
+					.filter((item) => (item as any).active !== false)
 					.sort((a, b) => b.season.localeCompare(a.season));
 				setSeasons(items);
 				setLoading(false);

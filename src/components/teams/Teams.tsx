@@ -116,7 +116,11 @@ export function Teams() {
 					<p className="text-f1-lighterCarbon text-sm py-6 text-center px-3">
 						Nenhuma temporada ativa no momento.
 					</p>
-				) : driverCards.length > 0 && (
+				) : driverCards.length === 0 ? (
+					<p className="text-f1-lighterCarbon text-sm py-6 text-center px-3">
+						Pilotos serão anunciados em breve.
+					</p>
+				) : (
 					<div className="w-full mt-10 cursor-pointer overflow-visible relative px-3">
 						<Swiper
 							modules={[Navigation]}

@@ -254,9 +254,9 @@ export function useFirebaseStandings(gridId: GridId) {
 				.map((m) => m.calendarId),
 		);
 
-		// All calendars for this grid + season that have actual race results
+		// All calendars for this grid + season that have actual race results and count for championship
 		const relevantCalendars = allCalendars.filter(
-			(cal) => cal.grid === gridId && seasonCalendarIds.has(cal.id) && !!allResults[cal.id],
+			(cal) => cal.grid === gridId && seasonCalendarIds.has(cal.id) && !!allResults[cal.id] && cal.countsForChampionship !== false,
 		) as CalendarEntry[];
 
 		const driverLookup = Object.fromEntries(
