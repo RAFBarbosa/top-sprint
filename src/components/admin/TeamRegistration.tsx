@@ -68,7 +68,7 @@ export function TeamRegistration() {
 			await setDoc(doc(db, "teams", id), { deleted: !currentDeleted }, { merge: true });
 			refetch();
 		} catch (error) {
-			console.error("Error toggling delete:", error);
+			showToast("error", "Erro ao excluir");
 		}
 	};
 
@@ -197,7 +197,6 @@ export function TeamRegistration() {
 			}
 			setUploadProgress(null);
 		} catch (error: any) {
-			console.error("Registration error:", error);
 			showToast(
 				"error",
 				error.message || "Erro desconhecido ao cadastrar equipe",

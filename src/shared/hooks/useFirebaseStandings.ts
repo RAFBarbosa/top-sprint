@@ -222,7 +222,7 @@ export function useFirebaseStandings(gridId: GridId) {
 				adjSnap.forEach((d) => { adjMap[d.id] = d.data().adjustments ?? []; });
 				setAllAdjustments(adjMap);
 			} catch (e) {
-				console.error("Failed to load standings data", e);
+				// silent — standings will be empty
 			} finally {
 				setLoadingResults(false);
 			}

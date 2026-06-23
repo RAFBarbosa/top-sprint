@@ -343,7 +343,7 @@ export function useDriverStats(
 				});
 				setOffsets(offsetsMap);
 			} catch (e) {
-				console.error("Failed to load driver stats", e);
+				// silent — stats will be empty
 			} finally {
 				setLoading(false);
 			}

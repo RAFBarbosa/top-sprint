@@ -20,7 +20,7 @@ export const ProtectedRoute = () => {
 
 	useEffect(() => {
 		if (user) {
-			createAdminApolloClient().then(setClient).catch(console.error);
+			createAdminApolloClient().then(setClient).catch(() => {});
 		}
 	}, [user]);
 

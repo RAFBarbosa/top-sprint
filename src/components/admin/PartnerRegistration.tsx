@@ -153,7 +153,7 @@ export function PartnerRegistration() {
 			await setDoc(doc(db, "partners", id), { deleted: !currentDeleted }, { merge: true });
 			refetch();
 		} catch (error) {
-			console.error("Error toggling delete:", error);
+			showToast("error", "Erro ao excluir");
 		}
 	};
 

@@ -1,4 +1,4 @@
-import { FormEvent, useState, useEffect } from "react";
+﻿import { FormEvent, useState, useEffect } from "react";
 import {
 	Combobox,
 	ComboboxInput,
@@ -99,7 +99,7 @@ export function ManualResultsRegistration({
 		Array(22).fill(0),
 	);
 	const [ncValues, setNcValues] = useState<boolean[]>(Array(22).fill(false));
-	// Prêmios Corrida
+	// PrÃªmios Corrida
 	const [awards, setAwards] = useState<Record<string, string>>({});
 
 	// --- ESTADOS SPRINT ---
@@ -124,7 +124,7 @@ export function ManualResultsRegistration({
 		Array(22).fill(false),
 	);
 	const [focusedPenalty, setFocusedPenalty] = useState<string | null>(null);
-	// Prêmios Sprint
+	// PrÃªmios Sprint
 	const [sprintAwards, setSprintAwards] = useState<Record<string, string>>(
 		{},
 	);
@@ -142,7 +142,7 @@ export function ManualResultsRegistration({
 	const [sprintQualyQueries, setSprintQualyQueries] = useState<string[]>(
 		Array(22).fill(""),
 	);
-	// Queries de busca para prêmios
+	// Queries de busca para prÃªmios
 	const [awardQueries, setAwardQueries] = useState<Record<string, string>>(
 		{},
 	);
@@ -174,7 +174,7 @@ export function ManualResultsRegistration({
 				});
 				setAllProfiles(map);
 			} catch (e) {
-				console.error("Failed to load driver profiles", e);
+				showToast("error", "Erro ao carregar perfis");
 			}
 		};
 		loadProfiles();
@@ -287,13 +287,13 @@ export function ManualResultsRegistration({
 					setSprintAwards({ ...emptyAwards });
 				}
 			} catch (error) {
-				console.error(error);
+				showToast("error", "Erro ao carregar resultado");
 			}
 		};
 		loadFromFirebase();
 	}, [selectedCalendar, driversData]);
 
-	// Garantir que a aba Sprint não fique aberta em etapas sem Sprint
+	// Garantir que a aba Sprint nÃ£o fique aberta em etapas sem Sprint
 	useEffect(() => {
 		if (selectedCalendar && !selectedCalendar.sprint && activeTab === "sprint") {
 			setActiveTab("race");
@@ -311,7 +311,7 @@ export function ManualResultsRegistration({
 				const snap = await getDoc(doc(db, "point_adjustments", selectedCalendar.id));
 				setCalendarAdjustments(snap.exists() ? (snap.data().adjustments ?? []) : []);
 			} catch (e) {
-				console.error(e);
+				// silent â€” background load of calendar adjustments
 			}
 		};
 		load();
@@ -376,7 +376,7 @@ export function ManualResultsRegistration({
 		setAdjConfirmDeleteId(null);
 	};
 
-	// --- GRAVAÇÃO ---
+	// --- GRAVAÃ‡ÃƒO ---
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!selectedCalendar?.id) return;
@@ -482,7 +482,7 @@ export function ManualResultsRegistration({
 					if (lastCalendar?.id === selectedCalendar.id) {
 						await saveSeasonCardSnapshot(selectedCalendar.grid, seasonId);
 					}
-				}).catch(console.error);
+				}).catch(() => {});
 			}
 		} catch (error: any) {
 			showToast("error", "Erro: " + error.message);
@@ -655,7 +655,7 @@ export function ManualResultsRegistration({
 									{getTrack(calendar.trackId)?.name ?? calendar.round}
 								</span>
 								<span className={`text-xs text-gray-500 ${selectedCalendar?.id === calendar.id ? "font-bold" : ""}`}>
-									{calendar.round} · {formatDateWithCapitalizedMonth(calendar.date)}
+									{calendar.round} Â· {formatDateWithCapitalizedMonth(calendar.date)}
 									{calendar.sprint && (
 										<span className="ml-1 text-[10px] bg-f1-purple/20 text-f1-purple px-1 rounded font-medium">SPRINT</span>
 									)}
@@ -677,7 +677,7 @@ export function ManualResultsRegistration({
 								</h2>
 								{selectedCalendar && (
 									<p className="text-sm mt-1 text-gray-600">
-										{getTrack(selectedCalendar.trackId)?.name} —{" "}
+										{getTrack(selectedCalendar.trackId)?.name} â€”{" "}
 										{selectedCalendar.round}
 									</p>
 								)}
@@ -769,7 +769,7 @@ export function ManualResultsRegistration({
 										<input
 											type="text"
 											className="w-full px-2 border rounded h-9 text-sm bg-white"
-											placeholder="Ex: Penalidade Comissários"
+											placeholder="Ex: Penalidade ComissÃ¡rios"
 											value={adjReason}
 											onChange={(e) => setAdjReason(e.target.value)}
 										/>
@@ -862,7 +862,7 @@ export function ManualResultsRegistration({
 						/>
 					</div>
 
-					{/* Prêmios da Etapa */}
+					{/* PrÃªmios da Etapa */}
 					{(() => {
 						const gridRaceAwards = selectedCalendar
 							? resolveRaceAwards(selectedCalendar.grid)
@@ -871,7 +871,7 @@ export function ManualResultsRegistration({
 						return (
 							<div className="mb-6 pb-6 border-b border-f1-black/20">
 								<h3 className="font-bold mb-2">
-									Prêmios da{" "}
+									PrÃªmios da{" "}
 									{activeTab === "race"
 										? "Corrida"
 										: "Sprint"}
@@ -978,7 +978,7 @@ export function ManualResultsRegistration({
 
 					<div className="grid grid-cols-[1fr_1fr_72px_40px] gap-x-3 gap-y-1">
 						<label className="block mb-1 font-bold">
-							Qualificação
+							QualificaÃ§Ã£o
 						</label>
 						<label className="block mb-1 font-bold">
 							Resultado Final
@@ -1022,7 +1022,7 @@ export function ManualResultsRegistration({
 									{/* Qualy */}
 									<div className="flex items-center gap-2 mb-1">
 										<span className="w-5 text-right shrink-0 font-bold">
-											{pos}º
+											{pos}Âº
 										</span>
 										<Combobox
 											value={currentQualy[i].driverName}
@@ -1262,7 +1262,7 @@ export function ManualResultsRegistration({
 												});
 											}}
 											className="w-4 h-4 cursor-pointer disabled:opacity-20"
-											title="Não Completou"
+											title="NÃ£o Completou"
 										/>
 									</div>
 								</div>
@@ -1308,3 +1308,4 @@ export function ManualResultsRegistration({
 		</>
 	);
 }
+

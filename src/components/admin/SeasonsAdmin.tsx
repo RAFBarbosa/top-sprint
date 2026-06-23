@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { Season } from "../../contexts/SeasonsContext";
+import { useToast } from "../../contexts/ToastContext";
 
 import {
 	Dialog,
@@ -13,6 +14,7 @@ import { AdminDeleteButton } from "./ui/AdminDeleteButton";
 export function SeasonsAdmin() {
 	const { seasons, loading, saveSeason, updateSeason, deleteSeason } =
 		useSeasons();
+	const { showToast } = useToast();
 	const [editingSeason, setEditingSeason] = useState<Season | null>(null);
 	const [selectedSeason, setSelectedSeason] = useState<Season | null>(null);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -39,7 +41,7 @@ export function SeasonsAdmin() {
 			}
 			resetForm();
 		} catch (error) {
-			console.error("Failed to save season:", error);
+			showToast("error", "Erro ao salvar temporada");
 		}
 	};
 
@@ -64,7 +66,7 @@ export function SeasonsAdmin() {
 		try {
 			await deleteSeason(seasonToDelete.id);
 		} catch (error) {
-			console.error("Failed to delete season:", error);
+			showToast("error", "Erro ao excluir temporada");
 		} finally {
 			setSeasonToDelete(null);
 		}

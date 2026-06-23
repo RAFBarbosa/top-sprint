@@ -157,7 +157,6 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 			}
 			refetch();
 		} catch (error: any) {
-			console.error("Registration error:", error);
 			showToast("error", error.message || "Erro desconhecido ao cadastrar etapa");
 		} finally {
 			setSaving(false);
@@ -169,7 +168,7 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 			await updateDoc(doc(db, "calendars", id), { deleted: !currentDeleted });
 			refetch();
 		} catch (error) {
-			console.error("Error toggling delete:", error);
+			showToast("error", "Erro ao excluir");
 		}
 	};
 

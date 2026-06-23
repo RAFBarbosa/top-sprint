@@ -47,7 +47,7 @@ export function CalendarsProvider({ children }: { children: ReactNode }) {
 				.sort((a, b) => a.date.localeCompare(b.date));
 			setAllCalendars(items);
 		} catch (e) {
-			console.error("Failed to load calendars", e);
+			// silent — calendars will be empty, handled by consuming components
 		} finally {
 			setLoading(false);
 		}

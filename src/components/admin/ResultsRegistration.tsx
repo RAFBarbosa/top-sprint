@@ -183,8 +183,8 @@ export function ResultsRegistration() {
 			}
 
 			if (grid) {
-				triggerForGrid(grid).catch(console.error);
-				triggerCardsForGrid(grid).catch(console.error);
+				triggerForGrid(grid).catch(() => {});
+				triggerCardsForGrid(grid).catch(() => {});
 			}
 		} catch (error: any) {
 			showToast("error", error.message || "Erro ao processar dados");
@@ -216,7 +216,7 @@ export function ResultsRegistration() {
 		try {
 			await updateData({ variables: { where: { id }, data: { deleted: !currentDeleted } } });
 		} catch (error) {
-			console.error("Error toggling delete:", error);
+			showToast("error", "Erro ao excluir");
 		}
 	};
 

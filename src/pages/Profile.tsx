@@ -258,16 +258,6 @@ export function Profile() {
 	const cardStats = driverData?.id ? driverCards[driverData.id] : null;
 	const bestSeasonCard = useBestSeasonCard(driverData?.id, activeTab.id);
 
-	// useEffect(() => {
-	// 	if (driverData && perRoundCards.length > 0) {
-	// 		console.group(`[cards] ${driverData.name}`);
-	// 		perRoundCards.forEach((r) =>
-	// 			console.log(`Round ${r.round} | rating:${r.rating} rc:${r.racecraft} pace:${r.pace} aw:${r.awareness} consistency:${r.consistency}`),
-	// 		);
-	// 		console.groupEnd();
-	// 	}
-	// }, [driverData, perRoundCards]);
-
 	if (driverName && filteredDrivers.length > 0 && currentIndex === -1) {
 		return <Navigate to={"/pilotos" + window.location.search} replace />;
 	}
@@ -604,7 +594,9 @@ export function Profile() {
 											<StatsBlock
 												label="Temporada Atual"
 												stats={seasonStats}
-												raceAwards={getEffectiveRaceAwards(activeTab.id)}
+												raceAwards={getEffectiveRaceAwards(
+													activeTab.id,
+												)}
 											/>
 										</div>
 									)}
@@ -618,7 +610,9 @@ export function Profile() {
 											<StatsBlock
 												label="Carreira"
 												stats={careerStats}
-												raceAwards={getEffectiveRaceAwards(activeTab.id)}
+												raceAwards={getEffectiveRaceAwards(
+													activeTab.id,
+												)}
 											/>
 										</div>
 									)}

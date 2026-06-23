@@ -73,7 +73,7 @@ export function GridDriversAdmin({
 				});
 				setAllProfiles(map);
 			} catch (e) {
-				console.error("Failed to load driver profiles", e);
+				showToast("error", "Erro ao carregar perfis");
 			} finally {
 				setProfilesLoading(false);
 			}
