@@ -172,6 +172,8 @@ body {
 .swiper-button-next {
 	position: absolute;
 	bottom: -50px;
+	top: auto !important; /* Swiper 12 sets top: 50% with .swiper-horizontal specificity */
+	margin-top: 0 !important; /* Swiper 12 sets margin-top: -22px with .swiper-horizontal specificity */
 	z-index: 10;
 	cursor: pointer;
 	display: flex;
@@ -194,28 +196,38 @@ body {
 }
 
 .swiper-button-prev {
-	left: calc(50% - 104px);
+	left: calc(50% - 104px) !important; /* Swiper 12 sets left: 4px with .swiper-horizontal specificity */
+	right: auto !important;
 }
 
 .swiper-button-next {
-	left: calc(50% + 4px);
+	left: calc(50% + 4px) !important; /* Swiper 12 sets right: 4px / left: auto with .swiper-horizontal specificity */
+	right: auto !important;
 }
 
-/* Make arrows smaller */
-.swiper-button-prev:after,
-.swiper-button-next:after {
-	font-size: 20px !important; /* Smaller arrow size */
-	font-weight: bold;
+/* Swiper 12 uses inline SVG for navigation arrows */
+.swiper-button-prev svg,
+.swiper-button-next svg {
+	fill: currentColor;
+	width: auto;
+	height: 20px;
 }
 
-/* Mobile: centered arrows */
+/* Mobile: centered arrows, positioned inside swiper padding-bottom (90px) to avoid
+   overflow-hidden clipping on Teams/Calendars parent containers */
 @media (max-width: 949px) {
+	.swiper-button-prev,
+	.swiper-button-next {
+		bottom: 20px !important;
+		transform: translateY(0) !important;
+	}
+
 	.swiper-button-prev {
-		left: calc(50% - 104px);
+		left: calc(50% - 104px) !important;
 	}
 
 	.swiper-button-next {
-		left: calc(50% + 4px);
+		left: calc(50% + 4px) !important;
 	}
 }
 
@@ -223,19 +235,19 @@ body {
 @media (min-width: 950px) {
 	.swiper-button-prev,
 	.swiper-button-next {
-		transform: translateY(0); /* Reset transform */
-		bottom: 20px; /* Position from bottom */
+		transform: translateY(0);
+		bottom: 20px;
 		top: auto;
 	}
 
 	.swiper-button-prev {
-		left: auto;
-		right: 116px; /* Position from right */
+		left: auto !important;
+		right: 116px !important;
 	}
 
 	.swiper-button-next {
-		left: auto;
-		right: 8px; /* Position from right */
+		left: auto !important;
+		right: 8px !important;
 	}
 }
 
