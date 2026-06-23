@@ -96,7 +96,7 @@ export function DriverRegistration() {
 			await updateDoc(doc(db, "drivers", id), { deleted: !currentDeleted });
 			refetchDrivers();
 		} catch (error) {
-			console.error("Error toggling delete:", error);
+			showToast("error", "Erro ao excluir");
 		}
 	};
 
@@ -268,7 +268,6 @@ export function DriverRegistration() {
 			}
 			setUploadProgress(null);
 		} catch (error) {
-			console.error("Registration error:", error);
 			showToast("error", error.message || "Erro ao cadastrar piloto");
 			setUploadProgress(null);
 		} finally {

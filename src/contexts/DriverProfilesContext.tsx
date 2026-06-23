@@ -47,7 +47,7 @@ export function DriverProfilesProvider({ children }: { children: ReactNode }) {
 				});
 				setProfiles(map);
 			} catch (e) {
-				console.error("Failed to load driver profiles", e);
+				// silent — driver profiles will be empty
 			}
 		};
 		load();

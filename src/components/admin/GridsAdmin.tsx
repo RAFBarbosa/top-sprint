@@ -6,6 +6,7 @@ import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useCalendars } from "../../contexts/CalendarsContext";
 import { DEFAULT_POINT_SYSTEM } from "../../shared/config/grids";
+import { useToast } from "../../contexts/ToastContext";
 import type { GridConfig } from "../../shared/config/grids";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -100,6 +101,7 @@ type SubView =
 export function GridsAdmin() {
 	const { grids, loading, saveGrids } = useGrids();
 	const { defaultPointSystem } = useTenantConfig();
+	const { showToast } = useToast();
 	const { seasons } = useSeasons();
 	const { mappings } = useCalendarSeasons();
 	const { allCalendars } = useCalendars();
@@ -148,7 +150,7 @@ export function GridsAdmin() {
 			await saveGrids(grids.filter((g) => g.id !== gridToDelete.id));
 			if (selectedGrid?.id === gridToDelete.id) setSelectedGrid(null);
 		} catch (error) {
-			console.error("Failed to delete grid:", error);
+			showToast("error", "Erro ao excluir grid");
 		} finally {
 			setGridToDelete(null);
 		}
@@ -177,7 +179,7 @@ export function GridsAdmin() {
 			setActiveSubView("configurar");
 			setNewGridName("");
 		} catch (error) {
-			console.error("Failed to add grid:", error);
+			showToast("error", "Erro ao criar grid");
 		}
 	};
 
@@ -191,7 +193,7 @@ export function GridsAdmin() {
 			try {
 				await saveGrids(newGrids);
 			} catch (e) {
-				console.error(e);
+				// silent — background drag-reorder auto-save
 			}
 		}, 1000);
 	};

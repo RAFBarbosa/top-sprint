@@ -19,11 +19,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 	useEffect(() => {
 		const loadFonts = async () => {
 			try {
-				// This waits for all the fonts to be loaded before proceeding
 				await document.fonts.ready;
-				setFontsLoaded(true); // Mark fonts as loaded
-			} catch (error) {
-				console.error("Error loading fonts:", error);
+				setFontsLoaded(true);
+			} catch {
+				// fonts may not load on all browsers; image generation proceeds anyway
 			}
 		};
 
@@ -35,7 +34,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 		const element = cardRef.current;
 
 		if (!element) {
-			console.error("Card element not found");
 			return "";
 		}
 
@@ -51,8 +49,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 					quality: 1,
 				});
 				i += 1;
-			} catch (error) {
-				console.error("Error generating PNG image:", error);
+			} catch {
 				break;
 			}
 		}
@@ -71,7 +68,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 				const dataUrl = await buildPng();
 
 				if (!dataUrl) {
-					console.error("Failed to generate a valid image");
 					return;
 				}
 
@@ -96,11 +92,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({ cardRef, data }) => {
 						"Web Share API is not supported in this browser.",
 					);
 				}
-			} catch (error) {
-				console.error("Failed to share image:", error);
+			} catch {
+				// share cancelled or failed — no feedback needed
 			}
-		} else {
-			console.error("Fonts are not loaded yet.");
 		}
 	};
 

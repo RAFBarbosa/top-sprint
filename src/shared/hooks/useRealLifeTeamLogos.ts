@@ -35,7 +35,7 @@ export function useRealLifeTeamLogos(gridId: GridId) {
 				});
 				setAllDriversData(map);
 			} catch (e) {
-				console.error("Failed to load driver data from Firebase", e);
+				// silent — logos will be empty
 			} finally {
 				setLoading(false);
 			}

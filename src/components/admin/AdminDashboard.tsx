@@ -5,10 +5,12 @@ import { auth } from "../auth/firebase";
 import Sidebar from "./Sidebar";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
+import { useToast } from "../../contexts/ToastContext";
 
 export function AdminDashboard() {
 	const navigate = useNavigate();
 	const { name } = useTenantConfig();
+	const { showToast } = useToast();
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -25,7 +27,7 @@ export function AdminDashboard() {
 			await auth.signOut();
 			navigate("/admin");
 		} catch (error) {
-			console.error("Logout error:", error);
+			showToast("error", "Erro ao sair");
 		}
 	};
 	const user = auth.currentUser;

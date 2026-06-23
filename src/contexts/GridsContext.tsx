@@ -89,7 +89,6 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 					setRuntimeGrids(tenant.grids as GridConfig[]);
 				}
 			} catch (e) {
-				console.error("Failed to load grids from Firebase", e);
 				setRuntimeGrids(tenant.grids as GridConfig[]);
 			} finally {
 				setLoading(false);

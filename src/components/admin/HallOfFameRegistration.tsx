@@ -115,7 +115,7 @@ export function HallOfFameRegistration() {
 			});
 			await loadHofs();
 		} catch (error) {
-			console.error("Error toggling delete:", error);
+			showToast("error", "Erro ao excluir");
 		}
 	};
 
@@ -249,7 +249,6 @@ export function HallOfFameRegistration() {
 			await loadHofs();
 			setUploadProgress(null);
 		} catch (error: any) {
-			console.error("Error:", error);
 			showToast("error", error.message || "Erro desconhecido");
 			setUploadProgress(null);
 		} finally {

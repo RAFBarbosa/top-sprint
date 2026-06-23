@@ -65,7 +65,7 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 				seasonsData.sort((a, b) => a.name.localeCompare(b.name)),
 			);
 		} catch (e) {
-			console.error("Failed to load seasons", e);
+			// silent — seasons will be empty
 		} finally {
 			setLoading(false);
 		}
@@ -81,7 +81,6 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 			});
 			await loadSeasons();
 		} catch (e) {
-			console.error("Failed to save season", e);
 			throw e;
 		}
 	};
@@ -93,7 +92,6 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 			});
 			await loadSeasons();
 		} catch (e) {
-			console.error("Failed to update season", e);
 			throw e;
 		}
 	};
@@ -103,7 +101,6 @@ export function SeasonsProvider({ children }: { children: ReactNode }) {
 			await deleteDoc(doc(db, FIRESTORE_COLLECTION, id));
 			await loadSeasons();
 		} catch (e) {
-			console.error("Failed to delete season", e);
 			throw e;
 		}
 	};

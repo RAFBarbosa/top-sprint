@@ -60,7 +60,7 @@ export function Calendars({
 				});
 				setRaceResultsMap(map);
 			} catch (e) {
-				console.error("Failed to fetch race results", e);
+				// silent — race results will be empty
 			}
 		};
 		fetchResults();

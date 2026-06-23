@@ -82,7 +82,7 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp, seasonFilter = "all"
 				snap.forEach((d) => { map[d.id] = d.data().adjustments ?? []; });
 				setAllAdjustments(map);
 			} catch (e) {
-				console.error(e);
+				showToast("error", "Erro ao carregar ajustes");
 			} finally {
 				setLoading(false);
 			}
@@ -154,8 +154,8 @@ export function PointAdjustmentsAdmin({ gridId: gridIdProp, seasonFilter = "all"
 			setAllAdjustments((prev) => ({ ...prev, [selectedCalendarId]: next }));
 			showToast("success", "Ajuste salvo!");
 			if (gridId) {
-				triggerCardsForGrid(gridId).catch(console.error);
-				triggerStatsForGrid(gridId).catch(console.error);
+				triggerCardsForGrid(gridId).catch(() => {});
+				triggerStatsForGrid(gridId).catch(() => {});
 			}
 		} catch (e: any) {
 			showToast("error", "Erro: " + e.message);

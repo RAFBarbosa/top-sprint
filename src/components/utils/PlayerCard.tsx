@@ -226,6 +226,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							/>
 							<img
 								src={bgRatingBgShape}
+								alt=""
+								aria-hidden="true"
 								className="absolute inset-0 w-full h-full"
 								style={{
 									mixBlendMode: "overlay",
