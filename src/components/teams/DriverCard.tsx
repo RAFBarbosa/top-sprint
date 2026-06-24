@@ -30,15 +30,14 @@ export function DriverCard({ driver }: DriverCardProps) {
 	const { defaultPhotoStyle } = useTenantConfig();
 	const [imageLoading, setImageLoading] = useState(true);
 	const navigateToDriver = useNavigateToDriver();
-	const { activeTab, setActiveTab } = useTab();
+	const { activeTab, setActiveTab, tabs } = useTab();
 
 	const handleImageLoad = () => {
 		setImageLoading(false);
 	};
 
 	const handleDriverClick = () => {
-		// Set the active tab to the driver's grid if found and different from current
-		if (driver.grid && driver.grid !== activeTab.id) {
+		if (driver.grid && driver.grid !== activeTab.id && tabs.some((t) => t.id === driver.grid)) {
 			setActiveTab(driver.grid);
 		}
 

@@ -24,11 +24,7 @@ const FIRESTORE_DOC = `grids/${tenant.id}`;
 function fromFirebase(firebaseData: any): GridConfig[] {
 	// Firebase stores grids as an array to preserve order
 	if (Array.isArray(firebaseData.grids)) {
-		const staticMap = Object.fromEntries(
-			(tenant.grids as any[]).map((g) => [g.id, g]),
-		);
 		return firebaseData.grids.map((fbGrid: any) => ({
-			...(staticMap[fbGrid.id] ?? {}),
 			id: fbGrid.id,
 			label: fbGrid.label ?? fbGrid.id,
 			active: fbGrid.active ?? true,
@@ -48,11 +44,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 	}
 
 	// Fallback for old object format
-	const staticMap = Object.fromEntries(
-		(tenant.grids as any[]).map((g) => [g.id, g]),
-	);
 	return Object.entries(firebaseData).map(([id, fbGrid]: [string, any]) => ({
-		...(staticMap[id] ?? {}),
 		id,
 		label: fbGrid.label ?? id,
 		active: fbGrid.active ?? true,
@@ -72,9 +64,7 @@ function fromFirebase(firebaseData: any): GridConfig[] {
 }
 
 export function GridsProvider({ children }: { children: ReactNode }) {
-	const [grids, setGrids] = useState<GridConfig[]>(
-		tenant.grids as GridConfig[],
-	);
+	const [grids, setGrids] = useState<GridConfig[]>([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -85,11 +75,8 @@ export function GridsProvider({ children }: { children: ReactNode }) {
 					const merged = fromFirebase(snap.data());
 					setGrids(merged);
 					setRuntimeGrids(merged.filter((g) => g.active !== false));
-				} else {
-					setRuntimeGrids(tenant.grids as GridConfig[]);
 				}
 			} catch (e) {
-				setRuntimeGrids(tenant.grids as GridConfig[]);
 			} finally {
 				setLoading(false);
 			}
