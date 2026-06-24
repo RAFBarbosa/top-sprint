@@ -41,8 +41,10 @@ function AppLayout() {
 						<DriverProfilesProvider>
 							<TabProvider>
 								{!isAdmin && <Header />}
-								<Router />
-								<Analytics />
+								<main className="flex-1 flex flex-col">
+									<Router />
+									<Analytics />
+								</main>
 								{!isAdmin && <Footer />}
 							</TabProvider>
 						</DriverProfilesProvider>

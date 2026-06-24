@@ -72,6 +72,7 @@ const AUTO_CONTRAST: Record<string, string> = {
 	"--color-profile-nav-bg": "--color-profile-nav-text",
 	"--color-profile-stats-bg": "--color-profile-stats-text",
 	"--color-profile-card-bg": "--color-profile-card-text",
+	"--color-archive-bg": "--color-archive-text",
 };
 
 const isHex = (c: string) => /^#[0-9a-f]{6}$/i.test(c);
@@ -87,6 +88,10 @@ function applyCssVars(vars: Record<string, string>) {
 		}
 	}
 }
+
+// Apply tenant-specific vars immediately when module loads — prevents flash of
+// brand.css defaults (topSprint CRT theme) before Firebase onSnapshot fires.
+applyCssVars(defaultCssVars);
 
 const TenantConfigContext = createContext<TenantConfigShape>(defaults);
 

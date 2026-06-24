@@ -47,7 +47,7 @@ const Drivers: React.FC = () => {
 	return (
 		<div
 			id="pilotos"
-			className="tenant-section tenant-section-drivers bg-f1-lightSilver w-full pb-8"
+			className="tenant-section tenant-section-drivers bg-f1-lightSilver w-full pb-8 flex-1"
 		>
 			<Divider className="max-w-screen-xl mx-auto" />
 			<div className="tenant-drivers-inner max-w-screen-xl mx-auto bg-white rounded-t p-6 pb-0 px-3">

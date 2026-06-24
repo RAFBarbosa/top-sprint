@@ -25,9 +25,9 @@ export function PreviousSeason() {
 	if (error) return <div>Erro: {error.message}</div>;
 
 	return (
-		<aside className="mt-8">
+		<aside className="tenant-section tenant-section-archive pt-8" style={{ backgroundColor: "var(--color-archive-bg)", color: "var(--color-archive-text)" }}>
 			<div className="w-full max-w-screen-xl mx-auto px-3">
-				<div className="mb-8">
+				<div className="pb-8">
 					<h1 className="font-extrabold text-4xl md:text-6xl tracking-wide mb-6">
 						Temporadas Anteriores
 					</h1>

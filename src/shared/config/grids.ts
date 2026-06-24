@@ -1,5 +1,3 @@
-import { tenant } from "./tenants";
-
 export type GridId = string;
 
 export interface RaceAward {
@@ -76,8 +74,8 @@ export interface GridConfig {
 	podiumBgColor?: string;
 }
 
-// Mutable runtime array — starts with tenant defaults, updated by GridsContext when Firebase loads
-let _runtimeGrids: GridConfig[] = tenant.grids as GridConfig[];
+// Mutable runtime array — populated by GridsContext when Firebase loads
+let _runtimeGrids: GridConfig[] = [];
 
 let _defaultPointSystem: PointSystem = DEFAULT_POINT_SYSTEM;
 

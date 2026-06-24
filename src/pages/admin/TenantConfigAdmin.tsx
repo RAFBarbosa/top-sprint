@@ -99,6 +99,12 @@ const COLOR_GROUPS = [
 			{ key: "--color-profile-card-bg", label: "Estatísticas" },
 		],
 	},
+	{
+		label: "Histórico",
+		vars: [
+			{ key: "--color-archive-bg", label: "Fundo" },
+		],
+	},
 ] as const;
 
 const SOCIAL_KEYS = ["whatsapp", "instagram", "youtube", "discord", "twitch"] as const;
@@ -270,8 +276,9 @@ export default function TenantConfigAdmin() {
 				</div>
 			</div>
 
-			{COLOR_GROUPS.map((group) => (
-				<div key={group.label} className="space-y-2">
+			{COLOR_GROUPS.map((group) => {
+				if (group.label === "Histórico" && !features.archive) return null;
+				return (<div key={group.label} className="space-y-2">
 					<label className="text-sm font-medium">{group.label}</label>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 						{group.vars.map(({ key, label }) => {
@@ -299,7 +306,8 @@ export default function TenantConfigAdmin() {
 						})}
 					</div>
 				</div>
-			))}
+				);
+			})}
 
 			<div className="space-y-2">
 				<label className="text-sm font-medium">Redes Sociais</label>

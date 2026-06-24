@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import type { GridId } from "../shared/config/grids";
 import { useGrids } from "./GridsContext";
@@ -25,7 +25,10 @@ export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const { activeGrids } = useGrids();
-	const tabs = activeGrids.map(({ id, label }) => ({ id, label }));
+	const tabs = useMemo(
+		() => activeGrids.map(({ id, label }) => ({ id, label })),
+		[activeGrids],
+	);
 
 	const [searchParams, setSearchParams] = useSearchParams();
 	const location = useLocation();
@@ -65,8 +68,9 @@ export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 	useEffect(() => {
 		if (!activeTabId || tabs.length <= 1) return;
 
-		const isFirstGrid = activeTabId === tabs[0].id;
-		const activeSlug = slugify(tabs.find((t) => t.id === activeTabId)?.label ?? activeTabId);
+		const resolved = tabs.find((t) => t.id === activeTabId) ?? tabs[0];
+		const isFirstGrid = resolved.id === tabs[0].id;
+		const activeSlug = slugify(resolved.label);
 		const currentSlug = new URLSearchParams(window.location.search).get("grid");
 
 		if (isFirstGrid) {
@@ -83,6 +87,20 @@ export const TabProvider: React.FC<{ children: React.ReactNode }> = ({
 			setSearchParams(next, { replace: true });
 		}
 	}, [activeTabId, location.key]);
+
+	// When tabs change (Firebase loads real grids after static config), re-resolve from URL param.
+	// The useState initializer runs once with static tabs, so a URL param like ?grid=f2 that only
+	// matches Firebase grids gets missed. This effect corrects that without resetting user-initiated changes.
+	useEffect(() => {
+		if (!tabs.length) return;
+		const urlSlug = new URLSearchParams(window.location.search).get("grid");
+		if (!urlSlug) return;
+		const matched = tabs.find((t) => slugify(t.label) === urlSlug);
+		if (matched && matched.id !== activeTabId) {
+			setActiveTabId(matched.id);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tabs]);
 
 	const value = {
 		activeTab,

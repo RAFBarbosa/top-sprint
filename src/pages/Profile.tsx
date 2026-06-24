@@ -158,13 +158,8 @@ export function Profile() {
 		(teamsData ?? []).forEach((t) => {
 			if (t.name && t.photo?.url) map[t.name] = t.photo.url;
 		});
-		driversList.forEach((d) => {
-			if (d.team?.name && d.team?.photo?.url && !map[d.team.name]) {
-				map[d.team.name] = d.team.photo.url;
-			}
-		});
 		return map;
-	}, [teamsData, driversList]);
+	}, [teamsData]);
 
 	// Get real life team logos and nationalities for drivers in current grid
 	const {
@@ -187,11 +182,7 @@ export function Profile() {
 						teamColor:
 							applied.team?.color?.hex ?? applied.teamColor ?? "",
 						teamName: resolvedTeamName,
-						teamLogo:
-							applied.team?.photo?.url ??
-							applied.teamLogo ??
-							teamLogoByName[resolvedTeamName] ??
-							"",
+						teamLogo: teamLogoByName[resolvedTeamName] ?? "",
 						realLifeTeamLogoUrl: realLifeTeamLogos[driver.id] ?? "",
 						nationality: nationalities[driver.id] ?? "",
 						nationalityCode: nationalityCodes[driver.id] ?? "",
