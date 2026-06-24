@@ -392,21 +392,21 @@ export default function TenantConfigAdmin() {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 					<div>
 						<label className="text-xs text-f1-lighterCarbon block mb-1">Corrida (separado por vírgula)</label>
-						<input
-							type="text"
+						<textarea
+							rows={3}
 							value={dpsRaceText}
 							onChange={(e) => { setDpsRaceText(e.target.value); updateDps("race", parsePointsArray(e.target.value)); }}
-							className="w-full border border-black/20 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-f1-red"
+							className="w-full border border-black/20 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-f1-red resize-none"
 							placeholder="25, 18, 15..."
 						/>
 					</div>
 					<div>
 						<label className="text-xs text-f1-lighterCarbon block mb-1">Sprint (separado por vírgula)</label>
-						<input
-							type="text"
+						<textarea
+							rows={2}
 							value={dpsSprintText}
 							onChange={(e) => { setDpsSprintText(e.target.value); updateDps("sprint", parsePointsArray(e.target.value)); }}
-							className="w-full border border-black/20 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-f1-red"
+							className="w-full border border-black/20 rounded px-3 py-2 text-sm font-mono focus:outline-none focus:border-f1-red resize-none"
 							placeholder="8, 7, 6..."
 						/>
 					</div>
@@ -440,7 +440,7 @@ export default function TenantConfigAdmin() {
 							min={1}
 						/>
 					</div>
-					<div className="col-span-2">
+					<div className="col-span-full">
 						<Toggle
 							checked={defaultPointSystem.reservesScore ?? false}
 							onChange={(v) => updateDps("reservesScore", v)}
