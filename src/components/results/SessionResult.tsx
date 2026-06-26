@@ -83,7 +83,7 @@ type DriverRow = {
 	gridColor: string;
 	points: number;
 	positionChange: number | null;
-	isFastestLap: boolean;
+	isFastestLap: "VR" | "FL" | false;
 	penaltySeconds: number;
 	isNC: boolean;
 	isReserve: boolean;
@@ -221,11 +221,14 @@ function buildRows(
 				gridColor,
 				points,
 				positionChange,
-				isFastestLap: gridRaceAwards.some(
-						(award) =>
-							award.label.trim().toLowerCase() === "volta rápida" &&
-							awardWinners[award.id] === driverId,
-					),
+				isFastestLap: (() => {
+						const match = gridRaceAwards.find((award) => {
+							const l = award.label.trim().toLowerCase();
+							return (l === "volta rápida" || l === "fastest lap") && awardWinners[award.id] === driverId;
+						});
+						if (!match) return false;
+						return match.label.trim().toLowerCase() === "fastest lap" ? "FL" : "VR";
+					})(),
 				penaltySeconds: penalty?.seconds ?? 0,
 				isNC: ncDriverIds?.includes(driverId) ?? false,
 				isReserve: reserveSet?.has(driverId) ?? false,
@@ -707,7 +710,7 @@ function ResultsSection({
 																	sessionType ===
 																		"race" && (
 																		<span className="bg-f1-purple text-white text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded">
-																			<span className="inline-block max-md:translate-x-px max-md:translate-y-px">VR</span>
+																			<span className="inline-block max-md:translate-x-px max-md:translate-y-px">{row.isFastestLap}</span>
 																		</span>
 																	)}
 															</div>
