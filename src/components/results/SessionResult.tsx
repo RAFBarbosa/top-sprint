@@ -1176,7 +1176,7 @@ export function SessionResult({
 			<div className="tenant-results-bg bg-f1-bg-silver pb-10 font-futosans">
 				{hasSprint && (
 					<div className="mx-auto max-w-screen-xl px-0 md:px-3">
-						<div className="tenant-results-tab-bar bg-white border-b border-black/10">
+						<div className="tenant-results-tab-bar bg-white border-b" style={{ borderColor: "color-mix(in srgb, var(--color-results-card-text, #000) 10%, transparent)" }}>
 							<div className="flex gap-0">
 								<button
 									onClick={() => setActiveTab("race")}
@@ -1188,8 +1188,8 @@ export function SessionResult({
 												: "transparent",
 										color:
 											activeTab === "race"
-												? "var(--color-f1-text, #15151e)"
-												: "#9ca3af",
+												? "var(--color-results-card-text, #15151e)"
+												: "color-mix(in srgb, var(--color-results-card-text, #9ca3af) 45%, transparent)",
 									}}
 								>
 									Corrida
@@ -1204,8 +1204,8 @@ export function SessionResult({
 												: "transparent",
 										color:
 											activeTab === "sprint"
-												? "var(--color-f1-text, #15151e)"
-												: "#9ca3af",
+												? "var(--color-results-card-text, #15151e)"
+												: "color-mix(in srgb, var(--color-results-card-text, #9ca3af) 45%, transparent)",
 									}}
 								>
 									Sprint
