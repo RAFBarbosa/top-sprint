@@ -14,7 +14,7 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 	const isInternal = props.link.startsWith("/");
 
 	const inner = (
-		<div className="tenant-news-secondary flex flex-row md:flex-col w-full h-24 md:h-auto rounded-md border border-gray-200 overflow-hidden bg-f1-bg-silver">
+		<div className="tenant-news-secondary flex flex-row md:flex-col w-full h-24 md:h-auto rounded-md border overflow-hidden">
 			{/* Image */}
 			<div className="relative w-24 shrink-0 md:w-full md:aspect-square overflow-hidden">
 				<HygraphImg
@@ -36,7 +36,7 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 					</p>
 				)}
 				<div className="flex-1 flex items-center">
-					<p className="tenant-news-body tenant-news-content text-sm font-semibold leading-none text-f1-text line-clamp-3 group-hover:underline">
+					<p className="tenant-news-body tenant-news-content text-sm font-semibold leading-none line-clamp-3 group-hover:underline">
 						{props.content}
 					</p>
 				</div>
