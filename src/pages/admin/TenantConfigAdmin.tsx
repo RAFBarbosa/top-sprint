@@ -46,6 +46,7 @@ const COLOR_GROUPS = [
 		vars: [
 			{ key: "--color-news-bg", label: "Fundo" },
 			{ key: "--color-news-secondary-bg", label: "Secundário" },
+			{ key: "--color-news-secondary-text", label: "Texto Secundário" },
 		],
 	},
 	{
