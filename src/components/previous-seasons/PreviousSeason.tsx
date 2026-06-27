@@ -50,7 +50,7 @@ export function PreviousSeason() {
 										{data.season}
 									</h2>
 
-									<div className="w-full h-3 bg-f1-carbon my-4"></div>
+									<div className="w-full h-3 my-4" style={{ backgroundColor: "var(--color-brand-primary)" }}></div>
 
 									{/* Carousel */}
 									<Carousel>

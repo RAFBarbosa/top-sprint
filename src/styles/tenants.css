@@ -73,7 +73,8 @@
 
 .tenant-news-secondary {
 	background-color: var(--color-news-secondary-bg, transparent);
-	border-color: transparent;
+	color: var(--color-news-text, inherit);
+	border-color: color-mix(in srgb, var(--color-news-text, #000) 10%, transparent);
 }
 
 .tenant-section-calendars {

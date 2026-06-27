@@ -1272,7 +1272,7 @@ export function SessionResult({
 							<p className="font-semibold text-2xl leading-none md:text-3xl tracking-wide">
 								Notícias
 							</p>
-							<div className="w-full h-2 bg-f1-text mt-4 mb-5"></div>
+							<div className="w-full h-2 mt-4 mb-5" style={{ backgroundColor: "var(--color-brand-primary)" }}></div>
 							<div className="flex flex-col divide-y divide-black/10">
 								{linkedBanners.map((banner) => (
 									<div
