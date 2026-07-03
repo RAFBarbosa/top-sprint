@@ -1,7 +1,6 @@
 import { getDocs, collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
-import { getEffectiveRaceAwards, getGridConfig, getPointSystem } from "../config/grids";
-import { tenant } from "../config/tenants";
+import { getAllGrids, getEffectiveRaceAwards, getGridConfig, getPointSystem } from "../config/grids";
 
 export interface DriverCardStats {
 	rating: number;
@@ -26,8 +25,13 @@ export interface DriverCardStats {
  * - 1 grid: 90-99 (range 9).
  */
 export function getGridRange(gridId: string): { min: number; range: number } {
-	const grids = tenant.grids ?? [];
-	const idx = grids.findIndex((g: { id: string }) => g.id === gridId);
+	const config = getGridConfig(gridId);
+	if (config?.cardMin !== undefined && config?.cardMax !== undefined) {
+		return { min: config.cardMin, range: config.cardMax - config.cardMin };
+	}
+	// Fallback: infer from grid position in runtime list
+	const grids = getAllGrids();
+	const idx = grids.findIndex((g) => g.id === gridId);
 	if (idx === -1 || grids.length <= 1) return { min: 90, range: 9 };
 	if (idx === 0) return { min: 90, range: 9 };
 	if (grids.length === 2) return { min: 70, range: 19 };

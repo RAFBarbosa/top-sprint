@@ -262,8 +262,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								className="w-full h-full object-cover object-center"
 								src={data.photo || tenant.fallbackDriverPhoto}
 								alt={data.name}
-								imgWidth={120}
-								imgHeight={120}
+								imgWidth={190}
+								imgHeight={190}
 							/>
 						</div>
 					) : defaultPhotoStyle === "bust" ? (
@@ -275,8 +275,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 								className="w-full h-full object-cover object-top"
 								src={data.photo || tenant.fallbackDriverPhoto}
 								alt={data.name}
-								imgWidth={120}
-								imgHeight={120}
+								imgWidth={250}
+								imgHeight={250}
 							/>
 						</div>
 					) : (
@@ -425,8 +425,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 												}}
 												src={data.realLifeTeamLogoUrl}
 												alt="Real life team logo"
-												imgWidth={300}
-												imgHeight={300}
+												imgWidth={64}
+												imgHeight={64}
 												fit="clip"
 											/>
 										</div>
@@ -563,8 +563,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 									key={index}
 									src={badge.url}
 									alt={`Badge ${index + 1}`}
-									imgWidth={40}
-									imgHeight={40}
+									imgWidth={48}
+									imgHeight={48}
 									fit="clip"
 									data-tooltip-id="badge-tooltip"
 									data-tooltip-content={formatBadgeTitle(

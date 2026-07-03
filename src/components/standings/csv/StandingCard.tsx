@@ -430,7 +430,7 @@ export function StandingCard(props: StandingCardProps) {
 											tenant.fallbackDriverPhoto
 										}
 										alt={props.name}
-										imgWidth={200}
+										imgWidth={105}
 										style={{
 											objectFit: "cover",
 											width: "auto",
@@ -447,7 +447,7 @@ export function StandingCard(props: StandingCardProps) {
 											tenant.fallbackDriverPhoto
 										}
 										alt={props.name}
-										imgWidth={200}
+										imgWidth={170}
 										style={{
 											objectFit: "cover",
 											width: "auto",

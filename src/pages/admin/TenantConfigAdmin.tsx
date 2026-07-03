@@ -129,6 +129,9 @@ export default function TenantConfigAdmin() {
 	const [nav, setNav] = useState<Record<string, string>>({});
 	const [features, setFeatures] = useState<Record<string, boolean>>({ hallOfFame: true, partners: true, archive: true });
 	const [footerCta, setFooterCta] = useState("Entre em contato e participe da próxima temporada");
+	const [fallbackDriverPhoto, setFallbackDriverPhoto] = useState("");
+	const [fallbackFile, setFallbackFile] = useState<File | null>(null);
+	const [fallbackPreview, setFallbackPreview] = useState("");
 	const [legacyEnabled, setLegacyEnabled] = useState(false);
 	const [legacyText, setLegacyText] = useState("");
 	const [defaultPointSystem, setDefaultPointSystem] = useState<PointSystem>(DEFAULT_POINT_SYSTEM);
@@ -155,6 +158,8 @@ export default function TenantConfigAdmin() {
 				setNav(data.nav ?? {});
 				setFeatures(data.features ?? { hallOfFame: true, partners: true, archive: true });
 				setFooterCta(data.footerCta ?? "Entre em contato e participe da próxima temporada");
+			setFallbackDriverPhoto(data.fallbackDriverPhoto ?? "");
+			setFallbackPreview(data.fallbackDriverPhoto ?? "");
 				setLegacyEnabled(data.hallOfFameLegacy?.enabled ?? false);
 				setLegacyText(data.hallOfFameLegacy?.text ?? "");
 				if (data.defaultPointSystem) {
@@ -172,6 +177,13 @@ export default function TenantConfigAdmin() {
 		if (!file) return;
 		setLogoFile(file);
 		setLogoPreview(URL.createObjectURL(file));
+	};
+
+	const handleFallbackChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		setFallbackFile(file);
+		setFallbackPreview(URL.createObjectURL(file));
 	};
 
 	const handleSave = async () => {
@@ -209,7 +221,33 @@ export default function TenantConfigAdmin() {
 				setLogoFile(null);
 			}
 
-			await setDoc(doc(db, "config", "tenant"), { name: name.trim(), logoUrl: finalLogoUrl, defaultPhotoStyle, cssVars, socials, nav, features, footerCta, hallOfFameLegacy: { enabled: legacyEnabled, text: legacyText }, defaultPointSystem, generalRaceAwards }, { merge: true });
+			let finalFallbackUrl = fallbackDriverPhoto;
+			if (fallbackFile) {
+				const assetResult = await createAsset({ variables: { data: {} } });
+				const asset = assetResult.data?.createAsset;
+				const uploadData = asset?.upload?.requestPostData;
+				if (!asset?.id || !uploadData?.url) throw new Error("Falha ao obter dados de upload da foto de substituição");
+
+				const uploadForm = new FormData();
+				const finalKey = uploadData.key.replace("${filename}", encodeURIComponent(fallbackFile.name));
+				uploadForm.append("key", finalKey);
+				uploadForm.append("policy", uploadData.policy);
+				uploadForm.append("x-amz-algorithm", uploadData.algorithm);
+				uploadForm.append("x-amz-credential", uploadData.credential);
+				uploadForm.append("x-amz-date", uploadData.date);
+				uploadForm.append("x-amz-signature", uploadData.signature);
+				if (uploadData.securityToken) uploadForm.append("x-amz-security-token", uploadData.securityToken);
+				uploadForm.append("file", fallbackFile);
+
+				const uploadResponse = await fetch(uploadData.url, { method: "POST", body: uploadForm });
+				if (!uploadResponse.ok) throw new Error("Upload da foto de substituição falhou");
+
+				finalFallbackUrl = asset.url ?? "";
+				setFallbackDriverPhoto(finalFallbackUrl);
+				setFallbackFile(null);
+			}
+
+			await setDoc(doc(db, "config", "tenant"), { name: name.trim(), logoUrl: finalLogoUrl, defaultPhotoStyle, cssVars, socials, nav, features, footerCta, fallbackDriverPhoto: finalFallbackUrl, hallOfFameLegacy: { enabled: legacyEnabled, text: legacyText }, defaultPointSystem, generalRaceAwards }, { merge: true });
 			showToast("success", "Configuração salva");
 		} catch (err: any) {
 			showToast("error", err.message || "Erro ao salvar");
@@ -253,6 +291,24 @@ export default function TenantConfigAdmin() {
 							type="file"
 							accept="image/*"
 							onChange={handleLogoChange}
+							className="hidden"
+						/>
+					</label>
+				</div>
+			</div>
+
+			<div className="space-y-2">
+				<label className="text-sm font-medium">Foto de substituição de pilotos</label>
+				<div className="flex items-center gap-4">
+					{fallbackPreview && (
+						<img src={fallbackPreview} alt="Foto substituição" className="h-12 w-12 object-cover rounded-full" />
+					)}
+					<label className="px-3 py-2 border border-black/20 rounded text-sm cursor-pointer hover:border-f1-red duration-120">
+						{fallbackFile ? fallbackFile.name : "Escolher imagem"}
+						<input
+							type="file"
+							accept="image/*"
+							onChange={handleFallbackChange}
 							className="hidden"
 						/>
 					</label>
@@ -329,6 +385,16 @@ export default function TenantConfigAdmin() {
 			<div className="space-y-2">
 				<label className="text-sm font-medium">Links de Navegação</label>
 				<div className="flex items-center gap-2">
+					<span className="text-sm w-24">Regulamento</span>
+					<input
+						type="url"
+						value={nav.regulamentoUrl ?? ""}
+						onChange={(e) => setNav((prev) => ({ ...prev, regulamentoUrl: e.target.value }))}
+						className="flex-1 border border-black/20 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-f1-red"
+						placeholder="URL do regulamento"
+					/>
+				</div>
+				<div className="flex items-center gap-2">
 					<span className="text-sm w-24">Ticket</span>
 					<input
 						type="url"
@@ -372,6 +438,7 @@ export default function TenantConfigAdmin() {
 					placeholder="Ex: Entre em contato e participe da próxima temporada"
 				/>
 			</div>
+
 
 			<div className="space-y-2">
 				<label className="text-sm font-medium">Hall da Fama — Legado</label>
