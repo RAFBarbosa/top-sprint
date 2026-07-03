@@ -146,13 +146,13 @@ export function Menu() {
 			className="h-[56px] md:h-[74px]"
 		>
 			<div className="max-w-screen-xl mx-auto relative h-full px-3">
-				<div className="flex items-center justify-between md:justify-center h-full md:gap-x-10">
+				<div className="flex items-center justify-between h-full">
 					{/* Logo */}
 					<Link
 						to="/"
 						onClick={handleLinkClick}
 						aria-label="Ir para a página inicial"
-						className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-[60] ml-3 flex items-center flex-shrink-0 overflow-hidden md:absolute md:left-3 md:top-1/2 md:-translate-y-1/2 md:ml-0"
+						className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-[60] ml-3 flex items-center flex-shrink-0 overflow-hidden"
 					>
 						<Logo />
 					</Link>
@@ -222,7 +222,7 @@ export function Menu() {
 											target="_blank"
 											rel="noopener noreferrer"
 											aria-label={`${item.label} (abre em nova janela)`}
-											className="font-futosans uppercase tracking-wide text-4xl w-full flex justify-between items-center py-5"
+											className="font-futosans uppercase tracking-wide text-xl w-full flex justify-between items-center py-5"
 											onClick={handleLinkClick}
 										>
 											{item.label}
@@ -262,7 +262,7 @@ export function Menu() {
 					</div>
 
 					{/* Desktop nav */}
-					<div className="hidden md:flex h-full items-center">
+					<div className="hidden md:flex flex-1 justify-center h-full items-center">
 						{menuItems.map((item) => (
 							<React.Fragment key={item.id}>
 								{item.external ? (
@@ -324,7 +324,6 @@ export function Menu() {
 													) : (
 														<MenuDriverList
 															drivers={activeGridDrivers}
-															onDriverClick={handleDriverClick}
 															photoStyle={defaultPhotoStyle}
 														/>
 													)}
