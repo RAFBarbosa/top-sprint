@@ -20,8 +20,8 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 				<HygraphImg
 					src={props.photo?.url || tenant.logo.url}
 					alt={props.content}
-					imgWidth={400}
-					imgHeight={533}
+					imgWidth={300}
+					imgHeight={400}
 					className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-150 will-change-transform group-hover:scale-105"
 				/>
 			</div>

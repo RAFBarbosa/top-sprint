@@ -146,8 +146,8 @@ export function DriverCard({ driver }: DriverCardProps) {
 				<HygraphImg
 					src={driver.photo?.url || tenant.fallbackDriverPhoto}
 					alt={driver.name}
-					imgWidth={140}
-					// imgHeight={140}
+					imgWidth={isRound ? 140 : 240}
+					// imgHeight adjusted per style above
 					className={`object-cover md:transition-all md:duration-200 md:group-hover:scale-105 absolute ${
 						isRound
 							? "w-35 h-35 rounded-full top-37 left-1/2 -translate-x-1/2 -translate-y-1/2 border-4 border-white/20"

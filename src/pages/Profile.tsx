@@ -140,7 +140,13 @@ function StatsHeader({ title }: { title: string }) {
 }
 
 export function Profile() {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto: tenantFallback } = useTenantConfig();
+	const STYLE_FALLBACKS: Record<string, string> = {
+		round: "https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84",
+		portrait: "https://us-west-2.graphassets.com/cmo66v1n000gr02js1cyb6pmx/cmo6d8bg6embs07lpjska6fo7",
+		bust: "https://us-west-2.graphassets.com/cmo66v1n000gr02js1cyb6pmx/cmo6d8bg6embs07lpjska6fo7",
+	};
+	const driverFallback = tenantFallback || STYLE_FALLBACKS[defaultPhotoStyle] || tenant.fallbackDriverPhoto;
 	const { driverName } = useParams<{ driverName: string }>();
 	const { activeTab } = useTab();
 
@@ -316,7 +322,7 @@ export function Profile() {
 													filteredDrivers[
 														currentIndex - 1
 													]?.photo ||
-													tenant.fallbackDriverPhoto
+													driverFallback
 												}
 												alt={
 													filteredDrivers[
@@ -335,8 +341,8 @@ export function Profile() {
 														filteredDrivers[
 															currentIndex - 1
 														]?.photo ||
-															tenant.fallbackDriverPhoto,
-														550,
+															driverFallback,
+														defaultPhotoStyle === "bust" ? 200 : 280,
 													)})`,
 												}}
 											/>
@@ -348,8 +354,8 @@ export function Profile() {
 														filteredDrivers[
 															currentIndex - 1
 														]?.photo ||
-															tenant.fallbackDriverPhoto,
-														550,
+															driverFallback,
+														defaultPhotoStyle === "bust" ? 200 : 280,
 													)})`,
 												}}
 											/>
@@ -392,7 +398,7 @@ export function Profile() {
 													filteredDrivers[
 														currentIndex + 1
 													]?.photo ||
-													tenant.fallbackDriverPhoto
+													driverFallback
 												}
 												alt={
 													filteredDrivers[
@@ -411,8 +417,8 @@ export function Profile() {
 														filteredDrivers[
 															currentIndex + 1
 														]?.photo ||
-															tenant.fallbackDriverPhoto,
-														550,
+															driverFallback,
+														defaultPhotoStyle === "bust" ? 200 : 280,
 													)})`,
 												}}
 											/>
@@ -424,8 +430,8 @@ export function Profile() {
 														filteredDrivers[
 															currentIndex + 1
 														]?.photo ||
-															tenant.fallbackDriverPhoto,
-														550,
+															driverFallback,
+														defaultPhotoStyle === "bust" ? 200 : 280,
 													)})`,
 												}}
 											/>

@@ -18,6 +18,7 @@ interface TenantConfigShape {
 		twitch?: string;
 	};
 	nav: {
+		regulamentoUrl?: string;
 		ticketUrl?: string;
 		registrationUrl?: string;
 	};
@@ -31,6 +32,7 @@ interface TenantConfigShape {
 	generalRaceAwards: RaceAward[];
 	footerCta: string;
 	hallOfFameLegacy: { enabled: boolean; text: string };
+	fallbackDriverPhoto: string;
 }
 
 const defaultCssVars = Object.fromEntries(
@@ -48,6 +50,7 @@ const defaults: TenantConfigShape = {
 	generalRaceAwards: [],
 	footerCta: "Entre em contato e participe da próxima temporada",
 	hallOfFameLegacy: { enabled: false, text: "" },
+	fallbackDriverPhoto: "",
 };
 
 const AUTO_CONTRAST: Record<string, string> = {
@@ -121,6 +124,7 @@ export function TenantConfigProvider({ children }: { children: React.ReactNode }
 				generalRaceAwards,
 				footerCta: data.footerCta ?? "Entre em contato e participe da próxima temporada",
 				hallOfFameLegacy: data.hallOfFameLegacy ?? { enabled: false, text: "" },
+				fallbackDriverPhoto: data.fallbackDriverPhoto ?? "",
 			});
 		});
 	}, []);

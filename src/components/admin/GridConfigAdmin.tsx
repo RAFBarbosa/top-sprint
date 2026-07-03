@@ -346,6 +346,33 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 							placeholder={`padrão geral: ${generalPs?.maxRacecraftPoints ?? 20}`}
 						/>
 					</div>
+					<div className="grid grid-cols-2 gap-3">
+						<div>
+							<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-1">Card Mín.</label>
+							<input
+								type="number"
+								min={0}
+								max={99}
+								value={editGrid.cardMin ?? ""}
+								onChange={(e) => update("cardMin", e.target.value === "" ? undefined : Number(e.target.value))}
+								placeholder="ex: 70"
+								className="w-full p-2 border rounded h-10 text-sm"
+							/>
+						</div>
+						<div>
+							<label className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide block mb-1">Card Máx.</label>
+							<input
+								type="number"
+								min={0}
+								max={99}
+								value={editGrid.cardMax ?? ""}
+								onChange={(e) => update("cardMax", e.target.value === "" ? undefined : Number(e.target.value))}
+								placeholder="ex: 89"
+								className="w-full p-2 border rounded h-10 text-sm"
+							/>
+						</div>
+					</div>
+
 					<div className="flex items-center gap-3">
 						<span className="text-xs font-bold text-f1-lighterCarbon uppercase tracking-wide">
 							Reservas pontuam

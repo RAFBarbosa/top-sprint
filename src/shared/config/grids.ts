@@ -63,6 +63,8 @@ export interface GridConfig {
 	pointSystem?: PointSystem;
 	raceAwards?: RaceAward[];
 	reservesEarnPoints?: boolean;
+	cardMin?: number;
+	cardMax?: number;
 	podiumNameBgClass?: string;
 	podiumPointsBgClass?: string;
 	secondaryColor?: string;
@@ -115,6 +117,8 @@ export const getGridColor = (gridId: string) =>
 
 export const getGridConfig = (gridId: GridId) =>
 	_runtimeGrids.find((g) => g.id === gridId);
+
+export const getAllGrids = (): GridConfig[] => [..._runtimeGrids];
 
 export const hasGridClasses = (gridId: GridId): boolean => {
 	const config = getGridConfig(gridId);

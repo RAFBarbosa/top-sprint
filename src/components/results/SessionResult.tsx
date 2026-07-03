@@ -282,24 +282,24 @@ function WinnerCard({
 						<HygraphImg
 							src={row.photo || tenant.fallbackDriverPhoto}
 							alt={row.name}
-							imgWidth={120}
-							imgHeight={120}
+							imgWidth={190}
+							imgHeight={190}
 							className="max-w-full mt-6 mb-11 w-38 h-38 scale-123 object-contain rounded-full border-2 border-f1-carbon"
 						/>
 					) : defaultPhotoStyle === "bust" ? (
 						<HygraphImg
 							src={row.photo || tenant.fallbackDriverPhoto}
 							alt={row.name}
-							imgWidth={120}
-							imgHeight={120}
+							imgWidth={200}
+							imgHeight={200}
 							className="max-w-full object-cover translate-y-2"
 						/>
 					) : (
 						<HygraphImg
 							src={row.photo || tenant.fallbackDriverPhoto}
 							alt={row.name}
-							imgWidth={200}
-							imgHeight={200}
+							imgWidth={270}
+							imgHeight={270}
 							className="max-w-full object-cover scale-120 md:scale-135 translate-y-10"
 						/>
 					)}

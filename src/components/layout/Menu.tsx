@@ -61,6 +61,12 @@ export function Menu() {
 					hidden: !features.archive,
 				},
 				{
+					id: nav.regulamentoUrl ?? "",
+					label: "Regulamento",
+					external: true,
+					hidden: !nav.regulamentoUrl,
+				},
+				{
 					id: nav.ticketUrl ?? "",
 					label: "Abrir Ticket",
 					external: true,
@@ -146,7 +152,7 @@ export function Menu() {
 						to="/"
 						onClick={handleLinkClick}
 						aria-label="Ir para a página inicial"
-						className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-50 ml-3 flex items-center flex-shrink-0 overflow-hidden md:absolute md:left-3 md:top-1/2 md:-translate-y-1/2 md:ml-0"
+						className="h-10 md:h-14 max-w-[5.5rem] md:max-w-40 w-auto relative z-[60] ml-3 flex items-center flex-shrink-0 overflow-hidden md:absolute md:left-3 md:top-1/2 md:-translate-y-1/2 md:ml-0"
 					>
 						<Logo />
 					</Link>
