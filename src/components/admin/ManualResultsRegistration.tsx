@@ -1,4 +1,4 @@
-﻿import { FormEvent, useState, useEffect } from "react";
+﻿import { FormEvent, useState, useEffect, useRef } from "react";
 import {
 	Combobox,
 	ComboboxInput,
@@ -66,6 +66,7 @@ export function ManualResultsRegistration({
 	const { showToast } = useToast();
 	const gameIdMap = useDriverGameIds();
 	const { getTrack } = useTracks();
+	const csvInputRef = useRef<HTMLInputElement>(null);
 
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
@@ -491,6 +492,77 @@ export function ManualResultsRegistration({
 		}
 	};
 
+	const handleCsvImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file || !selectedCalendar) return;
+		const reader = new FileReader();
+		reader.onload = (ev) => {
+			const text = ev.target?.result as string;
+			const lines = text.split(/\r?\n/).filter((l) => l.trim());
+			const dataLines = lines.slice(1); // skip header
+
+			const matchDriver = (csvName: string) => {
+				if (!csvName?.trim()) return null;
+				const q = csvName.trim().toLowerCase();
+				const grid = selectedCalendar.grid;
+				const eligible = driversData.filter((d) => {
+					if (d.deleted) return false;
+					if (!grid) return true;
+					return allProfiles[d.id]?.[grid] !== undefined || d.grid === grid;
+				});
+				return (
+					eligible.find((d) => d.name?.toLowerCase() === q) ??
+					eligible.find((d) => gameIdMap[d.id]?.toLowerCase() === q) ??
+					eligible.find((d) => d.name?.toLowerCase().includes(q) || q.includes(d.name?.toLowerCase() ?? "")) ??
+					eligible.find((d) => (gameIdMap[d.id] ?? "").toLowerCase().includes(q) || q.includes((gameIdMap[d.id] ?? "").toLowerCase())) ??
+					null
+				);
+			};
+
+			const newQualy: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
+			const newResults: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
+			const newPenalties = Array(22).fill(0);
+			const newNc = Array(22).fill(false);
+
+			dataLines.slice(0, 22).forEach((line, i) => {
+				const [qualyName, raceName, penStr, ncVal] = line.split(";");
+				const qualyDriver = matchDriver(qualyName);
+				newQualy[i] = {
+					position: i + 1,
+					driverId: qualyDriver?.id ?? "",
+					driverName: qualyDriver?.name ?? qualyName?.trim() ?? "",
+				};
+				const raceDriver = matchDriver(raceName);
+				newResults[i] = {
+					position: i + 1,
+					driverId: raceDriver?.id ?? "",
+					driverName: raceDriver?.name ?? raceName?.trim() ?? "",
+				};
+				newPenalties[i] = parseInt(penStr) || 0;
+				newNc[i] = !!ncVal?.trim();
+			});
+
+			const isRace = activeTab === "race";
+			if (isRace) {
+				setQualyResults(newQualy);
+				setResults(newResults);
+				setPenaltyValues(newPenalties);
+				setNcValues(newNc);
+				setRaceQueries(Array(22).fill(""));
+				setQualyQueries(Array(22).fill(""));
+			} else {
+				setSprintQualy(newQualy);
+				setSprintResults(newResults);
+				setSprintPenaltyValues(newPenalties);
+				setSprintNcValues(newNc);
+				setSprintRaceQueries(Array(22).fill(""));
+				setSprintQualyQueries(Array(22).fill(""));
+			}
+		};
+		reader.readAsText(file);
+		e.target.value = "";
+	};
+
 	const handleSelectCalendar = (calendar: any) => {
 		if (selectedCalendar?.id === calendar.id) {
 			setSelectedCalendar(null);
@@ -682,14 +754,34 @@ export function ManualResultsRegistration({
 									</p>
 								)}
 							</div>
-							<button
-								type="button"
-								onClick={handleSubmit}
-								disabled={!selectedCalendar || saving}
-								className="bg-f1-carbon border border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
-							>
-								{saving ? "Gravando..." : "Gravar Dados"}
-							</button>
+							<div className="flex items-center gap-2">
+								{activeTab !== "adjustments" && (
+									<>
+										<input
+											ref={csvInputRef}
+											type="file"
+											accept=".csv"
+											className="hidden"
+											onChange={handleCsvImport}
+										/>
+										<button
+											type="button"
+											onClick={() => csvInputRef.current?.click()}
+											className="border border-f1-carbon text-f1-carbon px-4 py-2 rounded cursor-pointer duration-120 hover:bg-f1-carbon hover:text-white text-sm"
+										>
+											Importar CSV
+										</button>
+									</>
+								)}
+								<button
+									type="button"
+									onClick={handleSubmit}
+									disabled={!selectedCalendar || saving}
+									className="bg-f1-carbon border border-f1-carbon text-white px-6 py-2 rounded cursor-pointer duration-120 disabled:opacity-50 hover:bg-transparent hover:text-f1-carbon"
+								>
+									{saving ? "Gravando..." : "Gravar Dados"}
+								</button>
+							</div>
 						</div>
 						{selectedCalendar && (
 							<div className="flex rounded border overflow-hidden text-sm w-fit">
