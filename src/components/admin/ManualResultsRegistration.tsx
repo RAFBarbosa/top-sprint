@@ -742,7 +742,7 @@ export function ManualResultsRegistration({
 									className="p-4"
 								>
 					<div className="mb-6">
-						<div className="flex justify-between items-start mb-3">
+						<div className="flex flex-col md:flex-row md:justify-between md:items-start mb-3 gap-2">
 							<div>
 								<h2 className="text-2xl font-bold">
 									{activeTab === "race" ? "Resultados Corrida" : activeTab === "sprint" ? "Resultados Sprint" : "Ajustes de Pontos"}
@@ -774,7 +774,7 @@ export function ManualResultsRegistration({
 										{csvDropdownOpen && (
 											<>
 												<div className="fixed inset-0 z-30" onClick={() => setCsvDropdownOpen(false)} />
-												<div className="absolute right-0 top-full mt-1 z-40 bg-white border border-black/10 rounded-lg shadow-xl w-80 p-3 space-y-3">
+												<div className="fixed md:absolute inset-x-0 md:inset-x-auto bottom-0 md:bottom-auto md:right-0 md:top-full md:mt-1 z-40 bg-white border-t md:border border-black/10 rounded-t-xl md:rounded-lg shadow-xl md:w-80 p-4 md:p-3 space-y-3">
 													<p className="text-xs font-semibold uppercase tracking-wide text-f1-lighterCarbon">Importar Resultados</p>
 
 													{/* Paste */}
@@ -1016,32 +1016,50 @@ export function ManualResultsRegistration({
 										? "Corrida"
 										: "Sprint"}
 								</h3>
-								<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-									{gridRaceAwards.map((award) => {
-										const isRace = activeTab === "race";
-										const currentAwards = isRace
-											? awards
-											: sprintAwards;
-										const driverId =
-											currentAwards[award.id] || "";
-										const driverName =
-											driversData.find(
-												(d) => d.id === driverId,
-											)?.name || "";
+								<div className="space-y-4">
+									{Array.from({ length: Math.ceil(gridRaceAwards.length / 4) }, (_, gi) => {
+										const group = gridRaceAwards.slice(gi * 4, gi * 4 + 4);
 										return (
-											<div
-												key={award.id}
-												className="flex flex-col gap-1"
-											>
-												<label className="block mb-1">
-													{award.label}
-													{award.points > 0 && (
-														<span className="text-f1-lighterCarbon font-normal ml-1">
-															(+{award.points} pt)
-														</span>
-													)}
-												</label>
-												<Combobox
+											<div key={gi}>
+												{/* Desktop: labels row */}
+												<div className="hidden md:grid md:grid-cols-4 gap-x-4 mb-1">
+													{group.map((award) => (
+														<label key={award.id} className="block text-sm">
+															{award.label}
+															{award.points > 0 && (
+																<span className="text-f1-lighterCarbon font-normal ml-1">(+{award.points} pt)</span>
+															)}
+														</label>
+													))}
+												</div>
+												{/* Inputs grid */}
+												<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+													{group.map((award) => {
+											const isRace = activeTab === "race";
+											const currentAwards = isRace
+												? awards
+												: sprintAwards;
+											const driverId =
+												currentAwards[award.id] || "";
+											const driverName =
+												driversData.find(
+													(d) => d.id === driverId,
+												)?.name || "";
+											return (
+												<div
+													key={award.id}
+													className="flex flex-col gap-1"
+												>
+													{/* Mobile-only label */}
+													<label className="block mb-1 md:hidden">
+														{award.label}
+														{award.points > 0 && (
+															<span className="text-f1-lighterCarbon font-normal ml-1">
+																(+{award.points} pt)
+															</span>
+														)}
+													</label>
+													<Combobox
 													value={driverName}
 													onChange={(val) => {
 														const d =
@@ -1114,7 +1132,11 @@ export function ManualResultsRegistration({
 								</div>
 							</div>
 						);
-					})()}
+					})}
+					</div>
+					</div>
+				);
+			})()}
 
 					<div className="grid grid-cols-[1fr_1fr_72px_40px] gap-x-3 gap-y-1">
 						<label className="block mb-1 font-bold">
