@@ -67,6 +67,8 @@ export function ManualResultsRegistration({
 	const gameIdMap = useDriverGameIds();
 	const { getTrack } = useTracks();
 	const csvInputRef = useRef<HTMLInputElement>(null);
+	const [csvDropdownOpen, setCsvDropdownOpen] = useState(false);
+	const [csvPasteText, setCsvPasteText] = useState("");
 
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
@@ -492,73 +494,71 @@ export function ManualResultsRegistration({
 		}
 	};
 
+	const processCsvText = (text: string) => {
+		if (!selectedCalendar) return;
+		const lines = text.split(/\r?\n/).filter((l) => l.trim());
+		const firstCols = lines[0]?.split(";").slice(0, 2).join(" ") ?? "";
+		const isHeader = /quali|race|result|penalt/i.test(firstCols);
+		const dataLines = isHeader ? lines.slice(1) : lines;
+
+		const matchDriver = (csvName: string) => {
+			if (!csvName?.trim()) return null;
+			const q = csvName.trim().toLowerCase();
+			const grid = selectedCalendar.grid;
+			const eligible = driversData.filter((d) => {
+				if (d.deleted) return false;
+				if (!grid) return true;
+				return allProfiles[d.id]?.[grid] !== undefined || d.grid === grid;
+			});
+			return (
+				eligible.find((d) => d.name?.toLowerCase() === q) ??
+				eligible.find((d) => gameIdMap[d.id]?.toLowerCase() === q) ??
+				eligible.find((d) => { const n = d.name?.toLowerCase() ?? ""; return n.length >= 3 && (n.includes(q) || q.includes(n)); }) ??
+				eligible.find((d) => { const g = (gameIdMap[d.id] ?? "").toLowerCase(); return g.length >= 3 && (g.includes(q) || q.includes(g)); }) ??
+				null
+			);
+		};
+
+		const newQualy: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
+		const newResults: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
+		const newPenalties = Array(22).fill(0);
+		const newNc = Array(22).fill(false);
+
+		dataLines.slice(0, 22).forEach((line, i) => {
+			const [qualyName, raceName, penStr, ncVal] = line.split(";");
+			const qualyDriver = matchDriver(qualyName);
+			newQualy[i] = { position: i + 1, driverId: qualyDriver?.id ?? "", driverName: qualyDriver?.name ?? "" };
+			const raceDriver = matchDriver(raceName);
+			newResults[i] = { position: i + 1, driverId: raceDriver?.id ?? "", driverName: raceDriver?.name ?? "" };
+			newPenalties[i] = parseInt(penStr) || 0;
+			newNc[i] = !!ncVal?.trim();
+		});
+
+		const isRace = activeTab === "race";
+		if (isRace) {
+			setQualyResults(newQualy);
+			setResults(newResults);
+			setPenaltyValues(newPenalties);
+			setNcValues(newNc);
+			setRaceQueries(Array(22).fill(""));
+			setQualyQueries(Array(22).fill(""));
+		} else {
+			setSprintQualy(newQualy);
+			setSprintResults(newResults);
+			setSprintPenaltyValues(newPenalties);
+			setSprintNcValues(newNc);
+			setSprintRaceQueries(Array(22).fill(""));
+			setSprintQualyQueries(Array(22).fill(""));
+		}
+		setCsvDropdownOpen(false);
+		setCsvPasteText("");
+	};
+
 	const handleCsvImport = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (!file || !selectedCalendar) return;
+		if (!file) return;
 		const reader = new FileReader();
-		reader.onload = (ev) => {
-			const text = ev.target?.result as string;
-			const lines = text.split(/\r?\n/).filter((l) => l.trim());
-			const dataLines = lines.slice(1); // skip header
-
-			const matchDriver = (csvName: string) => {
-				if (!csvName?.trim()) return null;
-				const q = csvName.trim().toLowerCase();
-				const grid = selectedCalendar.grid;
-				const eligible = driversData.filter((d) => {
-					if (d.deleted) return false;
-					if (!grid) return true;
-					return allProfiles[d.id]?.[grid] !== undefined || d.grid === grid;
-				});
-				return (
-					eligible.find((d) => d.name?.toLowerCase() === q) ??
-					eligible.find((d) => gameIdMap[d.id]?.toLowerCase() === q) ??
-					eligible.find((d) => d.name?.toLowerCase().includes(q) || q.includes(d.name?.toLowerCase() ?? "")) ??
-					eligible.find((d) => (gameIdMap[d.id] ?? "").toLowerCase().includes(q) || q.includes((gameIdMap[d.id] ?? "").toLowerCase())) ??
-					null
-				);
-			};
-
-			const newQualy: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
-			const newResults: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
-			const newPenalties = Array(22).fill(0);
-			const newNc = Array(22).fill(false);
-
-			dataLines.slice(0, 22).forEach((line, i) => {
-				const [qualyName, raceName, penStr, ncVal] = line.split(";");
-				const qualyDriver = matchDriver(qualyName);
-				newQualy[i] = {
-					position: i + 1,
-					driverId: qualyDriver?.id ?? "",
-					driverName: qualyDriver?.name ?? qualyName?.trim() ?? "",
-				};
-				const raceDriver = matchDriver(raceName);
-				newResults[i] = {
-					position: i + 1,
-					driverId: raceDriver?.id ?? "",
-					driverName: raceDriver?.name ?? raceName?.trim() ?? "",
-				};
-				newPenalties[i] = parseInt(penStr) || 0;
-				newNc[i] = !!ncVal?.trim();
-			});
-
-			const isRace = activeTab === "race";
-			if (isRace) {
-				setQualyResults(newQualy);
-				setResults(newResults);
-				setPenaltyValues(newPenalties);
-				setNcValues(newNc);
-				setRaceQueries(Array(22).fill(""));
-				setQualyQueries(Array(22).fill(""));
-			} else {
-				setSprintQualy(newQualy);
-				setSprintResults(newResults);
-				setSprintPenaltyValues(newPenalties);
-				setSprintNcValues(newNc);
-				setSprintRaceQueries(Array(22).fill(""));
-				setSprintQualyQueries(Array(22).fill(""));
-			}
-		};
+		reader.onload = (ev) => processCsvText(ev.target?.result as string);
 		reader.readAsText(file);
 		e.target.value = "";
 	};
@@ -756,7 +756,7 @@ export function ManualResultsRegistration({
 							</div>
 							<div className="flex items-center gap-2">
 								{activeTab !== "adjustments" && (
-									<>
+									<div className="relative">
 										<input
 											ref={csvInputRef}
 											type="file"
@@ -766,12 +766,60 @@ export function ManualResultsRegistration({
 										/>
 										<button
 											type="button"
-											onClick={() => csvInputRef.current?.click()}
+											onClick={() => setCsvDropdownOpen((o) => !o)}
 											className="border border-f1-carbon text-f1-carbon px-4 py-2 rounded cursor-pointer duration-120 hover:bg-f1-carbon hover:text-white text-sm"
 										>
-											Importar CSV
+											Importar ▾
 										</button>
-									</>
+										{csvDropdownOpen && (
+											<>
+												<div className="fixed inset-0 z-30" onClick={() => setCsvDropdownOpen(false)} />
+												<div className="absolute right-0 top-full mt-1 z-40 bg-white border border-black/10 rounded-lg shadow-xl w-80 p-3 space-y-3">
+													<p className="text-xs font-semibold uppercase tracking-wide text-f1-lighterCarbon">Importar Resultados</p>
+
+													{/* Paste */}
+													<div className="space-y-1">
+														<label className="text-xs text-f1-lighterCarbon">Colar CSV</label>
+														<textarea
+															rows={5}
+															className="w-full px-2 py-1.5 border rounded text-xs font-mono resize-none focus:outline-none focus:border-f1-carbon"
+															placeholder={"Quali;Race;Penalty;NC\nTSRDanilo;Morente;3;\nRafaelMQ;TSRDanilo;0;"}
+															value={csvPasteText}
+															onChange={(e) => setCsvPasteText(e.target.value)}
+														/>
+														<button
+															type="button"
+															disabled={!csvPasteText.trim()}
+															onClick={() => processCsvText(csvPasteText)}
+															className="w-full bg-f1-carbon text-white text-xs py-1.5 rounded hover:bg-f1-carbon/80 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+														>
+															Confirmar
+														</button>
+													</div>
+
+													<div className="border-t border-black/10" />
+
+													{/* File upload */}
+													<button
+														type="button"
+														onClick={() => csvInputRef.current?.click()}
+														className="w-full border border-f1-carbon text-f1-carbon text-xs py-1.5 rounded hover:bg-f1-carbon hover:text-white cursor-pointer duration-120"
+													>
+														Carregar arquivo .csv
+													</button>
+
+													{/* Future: image */}
+													<button
+														type="button"
+														disabled
+														className="w-full border border-black/10 text-black/30 text-xs py-1.5 rounded cursor-not-allowed"
+													>
+														Imagem (em breve)
+													</button>
+												</div>
+											</>
+										)}
+									</div>
 								)}
 								<button
 									type="button"
