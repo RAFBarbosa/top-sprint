@@ -69,6 +69,11 @@ export function ManualResultsRegistration({
 	const csvInputRef = useRef<HTMLInputElement>(null);
 	const [csvDropdownOpen, setCsvDropdownOpen] = useState(false);
 	const [csvPasteText, setCsvPasteText] = useState("");
+	const [imgLoading, setImgLoading] = useState<string | null>(null);
+	const imgQualyRef = useRef<HTMLInputElement>(null);
+	const imgRaceRef = useRef<HTMLInputElement>(null);
+	const imgSprintQualyRef = useRef<HTMLInputElement>(null);
+	const imgSprintRaceRef = useRef<HTMLInputElement>(null);
 
 	// Aba Ativa
 	const [activeTab, setActiveTab] = useState<"sprint" | "race" | "adjustments">("race");
@@ -494,30 +499,30 @@ export function ManualResultsRegistration({
 		}
 	};
 
+	const matchDriver = (name: string) => {
+		if (!name?.trim() || !selectedCalendar) return null;
+		const q = name.trim().toLowerCase();
+		const grid = selectedCalendar.grid;
+		const eligible = driversData.filter((d) => {
+			if (d.deleted) return false;
+			if (!grid) return true;
+			return allProfiles[d.id]?.[grid] !== undefined || d.grid === grid;
+		});
+		return (
+			eligible.find((d) => d.name?.toLowerCase() === q) ??
+			eligible.find((d) => gameIdMap[d.id]?.toLowerCase() === q) ??
+			eligible.find((d) => { const n = d.name?.toLowerCase() ?? ""; return n.length >= 3 && (n.includes(q) || q.includes(n)); }) ??
+			eligible.find((d) => { const g = (gameIdMap[d.id] ?? "").toLowerCase(); return g.length >= 3 && (g.includes(q) || q.includes(g)); }) ??
+			null
+		);
+	};
+
 	const processCsvText = (text: string) => {
 		if (!selectedCalendar) return;
 		const lines = text.split(/\r?\n/).filter((l) => l.trim());
 		const firstCols = lines[0]?.split(";").slice(0, 2).join(" ") ?? "";
 		const isHeader = /quali|race|result|penalt/i.test(firstCols);
 		const dataLines = isHeader ? lines.slice(1) : lines;
-
-		const matchDriver = (csvName: string) => {
-			if (!csvName?.trim()) return null;
-			const q = csvName.trim().toLowerCase();
-			const grid = selectedCalendar.grid;
-			const eligible = driversData.filter((d) => {
-				if (d.deleted) return false;
-				if (!grid) return true;
-				return allProfiles[d.id]?.[grid] !== undefined || d.grid === grid;
-			});
-			return (
-				eligible.find((d) => d.name?.toLowerCase() === q) ??
-				eligible.find((d) => gameIdMap[d.id]?.toLowerCase() === q) ??
-				eligible.find((d) => { const n = d.name?.toLowerCase() ?? ""; return n.length >= 3 && (n.includes(q) || q.includes(n)); }) ??
-				eligible.find((d) => { const g = (gameIdMap[d.id] ?? "").toLowerCase(); return g.length >= 3 && (g.includes(q) || q.includes(g)); }) ??
-				null
-			);
-		};
 
 		const newQualy: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
 		const newResults: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({ position: i + 1, driverId: "", driverName: "" }));
@@ -561,6 +566,96 @@ export function ManualResultsRegistration({
 		reader.onload = (ev) => processCsvText(ev.target?.result as string);
 		reader.readAsText(file);
 		e.target.value = "";
+	};
+
+	const processImageForColumn = async (
+		file: File,
+		column: "quali" | "race" | "sprint-quali" | "sprint-race",
+		inputRef: React.RefObject<HTMLInputElement | null>,
+	) => {
+		if (!selectedCalendar) return;
+		setImgLoading(column);
+		try {
+			const base64 = await new Promise<string>((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				const result = e.target?.result as string;
+				resolve(result.split(",")[1]);
+			};
+			reader.onerror = reject;
+			reader.readAsDataURL(file);
+		});
+
+			const res = await fetch("/api/vision", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({
+					model: "claude-haiku-4-5-20251001",
+					max_tokens: 512,
+					messages: [{
+						role: "user",
+						content: [
+							{
+								type: "image",
+								source: { type: "base64", media_type: file.type || "image/png", data: base64 },
+							},
+							{
+								type: "text",
+								text: 'This is a racing game results screenshot. List ALL visible driver gamertags/names in finishing order from 1st to last, exactly as shown. Return ONLY a JSON array: ["name1","name2",...]',
+							},
+						],
+					}],
+				}),
+			});
+
+			if (!res.ok) {
+				const err = await res.json().catch(() => ({}));
+				throw new Error((err as any)?.error?.message ?? `HTTP ${res.status}`);
+			}
+
+			const data = await res.json();
+			const text: string = data.content?.[0]?.text ?? "";
+			const arrayMatch = text.match(/\[[\s\S]*?\]/);
+			if (!arrayMatch) throw new Error("Resposta inesperada da IA");
+			const names: string[] = JSON.parse(arrayMatch[0]);
+
+			const matched: RaceResult[] = Array.from({ length: 22 }, (_, i) => ({
+				position: i + 1,
+				driverId: "",
+				driverName: "",
+			}));
+			names.slice(0, 22).forEach((name, i) => {
+				const driver = matchDriver(name);
+				matched[i] = { position: i + 1, driverId: driver?.id ?? "", driverName: driver?.name ?? "" };
+			});
+
+			switch (column) {
+				case "quali":
+					setQualyResults(matched);
+					setQualyQueries(Array(22).fill(""));
+					break;
+				case "race":
+					setResults(matched);
+					setRaceQueries(Array(22).fill(""));
+					break;
+				case "sprint-quali":
+					setSprintQualy(matched);
+					setSprintQualyQueries(Array(22).fill(""));
+					break;
+				case "sprint-race":
+					setSprintResults(matched);
+					setSprintRaceQueries(Array(22).fill(""));
+					break;
+			}
+
+			setCsvDropdownOpen(false);
+			showToast("success", `${names.length} pilotos importados da imagem`);
+		} catch (e: any) {
+			showToast("error", "Erro ao ler imagem: " + e.message);
+		} finally {
+			setImgLoading(null);
+			if (inputRef.current) inputRef.current.value = "";
+		}
 	};
 
 	const handleSelectCalendar = (calendar: any) => {
@@ -757,13 +852,11 @@ export function ManualResultsRegistration({
 							<div className="flex items-center gap-2">
 								{activeTab !== "adjustments" && (
 									<div className="relative">
-										<input
-											ref={csvInputRef}
-											type="file"
-											accept=".csv"
-											className="hidden"
-											onChange={handleCsvImport}
-										/>
+										<input ref={csvInputRef} type="file" accept=".csv" className="hidden" onChange={handleCsvImport} />
+										<input ref={imgQualyRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) processImageForColumn(f, "quali", imgQualyRef); }} />
+										<input ref={imgRaceRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) processImageForColumn(f, "race", imgRaceRef); }} />
+										<input ref={imgSprintQualyRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) processImageForColumn(f, "sprint-quali", imgSprintQualyRef); }} />
+										<input ref={imgSprintRaceRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) processImageForColumn(f, "sprint-race", imgSprintRaceRef); }} />
 										<button
 											type="button"
 											onClick={() => setCsvDropdownOpen((o) => !o)}
@@ -808,14 +901,32 @@ export function ManualResultsRegistration({
 														Carregar arquivo .csv
 													</button>
 
-													{/* Future: image */}
-													<button
-														type="button"
-														disabled
-														className="w-full border border-black/10 text-black/30 text-xs py-1.5 rounded cursor-not-allowed"
-													>
-														Imagem (em breve)
-													</button>
+													<div className="border-t border-black/10" />
+													<p className="text-xs font-semibold uppercase tracking-wide text-f1-lighterCarbon">Por Imagem</p>
+													<div className="grid grid-cols-2 gap-2">
+														{(["quali", "race"] as const).map((col) => (
+															<button
+																key={col}
+																type="button"
+																disabled={!!imgLoading}
+																onClick={() => (col === "quali" ? imgQualyRef : imgRaceRef).current?.click()}
+																className="border border-f1-carbon text-f1-carbon text-xs py-1.5 rounded hover:bg-f1-carbon hover:text-white cursor-pointer duration-120 disabled:opacity-40 disabled:cursor-not-allowed"
+															>
+																{imgLoading === col ? "Lendo..." : `📷 ${col === "quali" ? "Quali" : "Corrida"}`}
+															</button>
+														))}
+														{selectedCalendar?.sprint && (["sprint-quali", "sprint-race"] as const).map((col) => (
+															<button
+																key={col}
+																type="button"
+																disabled={!!imgLoading}
+																onClick={() => (col === "sprint-quali" ? imgSprintQualyRef : imgSprintRaceRef).current?.click()}
+																className="border border-f1-carbon text-f1-carbon text-xs py-1.5 rounded hover:bg-f1-carbon hover:text-white cursor-pointer duration-120 disabled:opacity-40 disabled:cursor-not-allowed"
+															>
+																{imgLoading === col ? "Lendo..." : `📷 Sprint ${col === "sprint-quali" ? "Quali" : "Corrida"}`}
+															</button>
+														))}
+													</div>
 												</div>
 											</>
 										)}
