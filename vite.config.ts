@@ -62,6 +62,20 @@ const tenantMeta: Record<
 		gtagId: "G-N82GC0X63T",
 		hasExtendedFavicons: false,
 	},
+	brasilF1: {
+		name: "Brasil F1 E-Sports Series",
+		title: "Brasil F1 E-Sports Series",
+		ogTitle: "Brasil F1 E-Sports Series - Fórmula 1 Virtual",
+		description:
+			"Brasil F1 E-Sports Series: Competição de Fórmula 1 virtual, simulando corridas intensas com pilotos de todo o Brasil.",
+		keywords:
+			"Fórmula 1 virtual, automobilismo virtual, simulação de corridas, Brasil F1 E-Sports Series, F1 eSports, corridas virtuais",
+		themeColor: "#064c24",
+		url: "https://brasil-f1.vercel.app/",
+		logoUrl: "https://brasil-f1.vercel.app/logos/brasil-f1.png",
+		gtagId: "G-356KPCQPSJ",
+		hasExtendedFavicons: false,
+	},
 };
 
 export default defineConfig(({ mode }) => {
