@@ -4,8 +4,6 @@ import { useGrids } from "../../contexts/GridsContext";
 import { useToast } from "../../contexts/ToastContext";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { type GridConfig, type RaceAward } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
-
 export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}) {
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
@@ -193,7 +191,7 @@ export function GridConfigAdmin({ gridId: gridIdProp }: { gridId?: string } = {}
 						{ field: "secondaryColor", label: "Secundária (pontos)" },
 						{ field: "rowHoverColor", label: "Hover classificação" },
 						{ field: "accentHoverColor", label: "Hover pontos" },
-						...(tenant.id !== "topSprint" ? [{ field: "countdownBgColor" as const, label: "Countdown" }] : []),
+						{ field: "countdownBgColor" as const, label: "Countdown" },
 						{ field: "podiumBgColor", label: "Cor pódio" },
 					] as const).map(({ field, label }) => {
 						const val = editGrid[field] as string | undefined;

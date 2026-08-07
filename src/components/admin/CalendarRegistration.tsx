@@ -17,7 +17,7 @@ import { ChevronUpDownIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import ptBR from "date-fns/locale/pt-BR";
 import { getGridLabel } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
+import { useGrids } from "../../contexts/GridsContext";
 import { useSeasons } from "../../contexts/SeasonsContext";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useToast } from "../../contexts/ToastContext";
@@ -37,6 +37,7 @@ interface CalendarRegistrationProps {
 const NEW_ID = "__new__";
 
 export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarRegistrationProps) {
+	const { grids } = useGrids();
 	const { seasons } = useSeasons();
 	const { setCalendarSeason, removeCalendarSeason, getSeasonForCalendar, mappings } =
 		useCalendarSeasons();
@@ -373,7 +374,7 @@ export function CalendarRegistration({ gridId, seasonFilter = "all" }: CalendarR
 											>
 												Todos os grids
 											</ListboxOption>
-											{(tenant.grids as any[]).map((g: any) => (
+											{grids.map((g) => (
 												<ListboxOption
 													key={g.id}
 													value={g.id}

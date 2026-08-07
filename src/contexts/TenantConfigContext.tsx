@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/adminClient";
-import { tenant } from "../shared/config/tenants";
 import type { PointSystem, RaceAward } from "../shared/config/grids";
 import { DEFAULT_POINT_SYSTEM, setDefaultPointSystem, setGeneralRaceAwards } from "../shared/config/grids";
 import { contrastText } from "../shared/utils/color";
@@ -33,24 +32,22 @@ interface TenantConfigShape {
 	footerCta: string;
 	hallOfFameLegacy: { enabled: boolean; text: string };
 	fallbackDriverPhoto: string;
+	poweredBy: boolean;
 }
 
-const defaultCssVars = Object.fromEntries(
-	Object.entries(tenant.cssVars).filter(([k]) => k.startsWith("--color-brand") || k.startsWith("--color-grid") || k.startsWith("--color-countdown") || k.startsWith("--color-news") || k.startsWith("--color-calendars") || k.startsWith("--color-standings") || k.startsWith("--color-teams") || k.startsWith("--color-drivers") || k.startsWith("--color-results") || k.startsWith("--color-champions") || k.startsWith("--color-profile")),
-);
-
 const defaults: TenantConfigShape = {
-	name: tenant.name,
-	logoUrl: tenant.logo.url,
-	defaultPhotoStyle: tenant.defaultPhotoStyle ?? "portrait",
-	socials: tenant.socials ?? {},
-	nav: tenant.nav ?? {},
-	features: tenant.features,
-	cssVars: defaultCssVars,
+	name: "",
+	logoUrl: "",
+	defaultPhotoStyle: "portrait",
+	socials: {},
+	nav: {},
+	features: { hallOfFame: false, partners: false, archive: false },
+	cssVars: {},
 	generalRaceAwards: [],
 	footerCta: "Entre em contato e participe da próxima temporada",
 	hallOfFameLegacy: { enabled: false, text: "" },
 	fallbackDriverPhoto: "",
+	poweredBy: false,
 };
 
 const AUTO_CONTRAST: Record<string, string> = {
@@ -92,10 +89,6 @@ function applyCssVars(vars: Record<string, string>) {
 	}
 }
 
-// Apply tenant-specific vars immediately when module loads — prevents flash of
-// brand.css defaults (topSprint CRT theme) before Firebase onSnapshot fires.
-applyCssVars(defaultCssVars);
-
 const TenantConfigContext = createContext<TenantConfigShape>(defaults);
 
 export function TenantConfigProvider({ children }: { children: React.ReactNode }) {
@@ -105,26 +98,27 @@ export function TenantConfigProvider({ children }: { children: React.ReactNode }
 		return onSnapshot(doc(db, "config", "tenant"), (snap) => {
 			if (!snap.exists()) return;
 			const data = snap.data();
-			const name = data.name ?? tenant.name;
+			const name = data.name ?? "";
 			document.title = name;
-			const cssVars = { ...defaultCssVars, ...(data.cssVars ?? {}) };
+			const cssVars = data.cssVars ?? {};
 			applyCssVars(cssVars);
 			const generalRaceAwards: RaceAward[] = data.generalRaceAwards ?? [];
 			setGeneralRaceAwards(generalRaceAwards);
 			setDefaultPointSystem(data.defaultPointSystem ?? DEFAULT_POINT_SYSTEM);
 			setConfig({
 				name,
-				logoUrl: data.logoUrl ?? tenant.logo.url,
-				defaultPhotoStyle: data.defaultPhotoStyle ?? tenant.defaultPhotoStyle ?? "portrait",
-				socials: data.socials ?? tenant.socials ?? {},
-				nav: data.nav ?? tenant.nav ?? {},
-				features: data.features ?? tenant.features,
+				logoUrl: data.logoUrl ?? "",
+				defaultPhotoStyle: data.defaultPhotoStyle ?? "portrait",
+				socials: data.socials ?? {},
+				nav: data.nav ?? {},
+				features: data.features ?? { hallOfFame: false, partners: false, archive: false },
 				cssVars,
 				defaultPointSystem: data.defaultPointSystem,
 				generalRaceAwards,
 				footerCta: data.footerCta ?? "Entre em contato e participe da próxima temporada",
 				hallOfFameLegacy: data.hallOfFameLegacy ?? { enabled: false, text: "" },
 				fallbackDriverPhoto: data.fallbackDriverPhoto ?? "",
+				poweredBy: data.poweredBy ?? false,
 			});
 		});
 	}, []);

@@ -1,3 +1,4 @@
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/Home";
 import { Profile } from "./pages/Profile";
@@ -18,7 +19,6 @@ import { TopSprintRules } from "./pages/rules/TopSprintRules";
 import { FeliplayRules } from "./pages/rules/FeliplayRules";
 import { BrazukaRules } from "./pages/rules/BrazukaRules";
 import { Archive } from "./pages/Archive";
-import { tenant } from "./shared/config/tenants";
 import { ManualResultsRegistration } from "./components/admin/ManualResultsRegistration";
 import { GridsAdmin } from "./components/admin/GridsAdmin";
 import TracksAdmin from "./pages/admin/TracksAdmin";
@@ -34,17 +34,19 @@ import TenantConfigAdmin from "./pages/admin/TenantConfigAdmin";
 import WinnerCardGenerator from "./components/utils/winner-card-generator";
 import { ElevatedOnly } from "./components/auth/ElevatedOnly";
 
+const RULES_PAGES: Record<string, React.ComponentType> = {
+	topSprint: TopSprintRules,
+	feliplay: FeliplayRules,
+	brazuka: BrazukaRules,
+};
+
 export function Router() {
-	const RulesPage = {
-		topSprint: TopSprintRules,
-		feliplay: FeliplayRules,
-		brazuka: BrazukaRules,
-	}[tenant.id];
+	const RulesPage = RULES_PAGES[import.meta.env.VITE_TENANT as string];
 
 	return (
 		<Routes>
 			<Route path="/" element={<Home />} />
-			<Route path="/regras" element={<RulesPage />} />
+			{RulesPage && <Route path="/regras" element={<RulesPage />} />}
 			<Route path="/campeoes" element={<Champions />} />
 			<Route path="/pilotos" element={<Drivers />} />
 			<Route path="/pilotos/:driverName" element={<Profile />} />

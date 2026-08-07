@@ -18,7 +18,7 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
-import { tenant } from "../../shared";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { getGridLabel } from "../../shared/config/grids";
 import { useToast } from "../../contexts/ToastContext";
 
@@ -32,6 +32,7 @@ export function TeamRegistration() {
 	const [logoFile, setLogoFile] = useState<File | null>(null);
 	const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 	const { showToast } = useToast();
+	const { fallbackDriverPhoto } = useTenantConfig();
 	const [selectedTeam, setSelectedTeam] = useState<any>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -521,7 +522,7 @@ export function TeamRegistration() {
 																src={
 																	d.photo
 																		?.url ||
-																	tenant.fallbackDriverPhoto
+																	fallbackDriverPhoto
 																}
 																alt={
 																	d.name ?? ""

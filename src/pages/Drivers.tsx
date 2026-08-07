@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import DriverList from "../components/drivers/DriverList";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
-import { tenant } from "../shared/config/tenants";
+import { useGrids } from "../contexts/GridsContext";
 import { useTenantConfig } from "../contexts/TenantConfigContext";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { useFirebaseDrivers } from "../shared/hooks/useFirebaseDrivers";
@@ -13,6 +13,7 @@ const Drivers: React.FC = () => {
 	const { activeTab } = useTab();
 	const { isInGrid, applyProfile } = useDriverProfiles();
 	const { name: tenantName } = useTenantConfig();
+	const { grids } = useGrids();
 	const { drivers } = useFirebaseDrivers();
 	const activeSeason = useActiveSeason(activeTab.id);
 
@@ -55,7 +56,7 @@ const Drivers: React.FC = () => {
 					className="border-t-8 border-r-8 rounded-tr-3xl pt-3 relative mb-8"
 					style={{
 						borderColor:
-							tenant.grids.length > 1
+							grids.length > 1
 								? (getGridConfig(activeTab.id)?.primaryColor ?? "var(--color-brand-primary)")
 								: "var(--color-brand-primary)",
 					}}

@@ -2,7 +2,7 @@ import React from "react";
 import ArrowForwardIos from "@mui/icons-material/ArrowForwardIos";
 import { normalizeString } from "../../shared/utils/normalizeString";
 import { useLocation } from "react-router-dom";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
 import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
@@ -28,6 +28,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 }) => {
 	const location = useLocation();
 	const navigateToDriver = useNavigateToDriver();
+	const { fallbackDriverPhoto } = useTenantConfig();
 
 	const splitDriverName = (name: string) => {
 		const nameParts = name.split(" ");
@@ -117,7 +118,7 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 										<HygraphImg
 											src={
 												driver.photo ||
-												tenant.fallbackDriverPhoto
+												fallbackDriverPhoto
 											}
 											alt={driver.name}
 											imgWidth={32}
@@ -128,14 +129,14 @@ const MenuDriverList: React.FC<MenuDriverListProps> = ({
 										<div
 											className="w-8 h-8 bg-cover transition-all scale-120 translate-y-[5px]"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 70)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || fallbackDriverPhoto, 70)})`,
 											}}
 										/>
 									) : (
 										<div
 											className="w-8 h-8 bg-cover transition-all scale-210 translate-y-[17px]"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 70)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || fallbackDriverPhoto, 70)})`,
 											}}
 										/>
 									)}

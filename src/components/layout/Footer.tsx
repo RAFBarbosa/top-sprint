@@ -4,13 +4,12 @@ import { Partners } from "./Partners";
 import { Link, useLocation } from "react-router-dom";
 import { Socials } from "../utils/Socials";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
-import { tenant } from "../../shared/config/tenants";
 import PoweredBy from "../utils/PoweredBy";
 
 export function Footer() {
 	const location = useLocation();
 	const isAdminPage = location.pathname.includes("/admin/");
-	const { name, footerCta, features, nav } = useTenantConfig();
+	const { name, footerCta, features, nav, poweredBy } = useTenantConfig();
 	const year = new Date().getFullYear();
 
 	const navLinks: { label: string; to: string; external?: boolean }[] = [
@@ -47,7 +46,7 @@ export function Footer() {
 							<div className="h-[45px] w-auto flex items-center">
 								<Logo />
 							</div>
-							{tenant.poweredBy && <PoweredBy />}
+							{poweredBy && <PoweredBy />}
 						</div>
 						{footerCta && (
 							<p className="text-sm opacity-60 leading-relaxed">

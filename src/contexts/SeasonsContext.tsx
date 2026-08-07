@@ -13,8 +13,6 @@ import {
 	deleteDoc,
 } from "firebase/firestore";
 import { db } from "../lib/adminClient";
-import { tenant } from "../shared/config/tenants";
-
 export interface Season {
 	id: string;
 	name: string;
@@ -31,7 +29,7 @@ interface SeasonsContextType {
 
 const SeasonsContext = createContext<SeasonsContextType | undefined>(undefined);
 
-const FIRESTORE_COLLECTION = `seasons/${tenant.id}/seasons`;
+const FIRESTORE_COLLECTION = `seasons/${import.meta.env.VITE_TENANT as string}/seasons`;
 
 function nameToId(name: string): string {
 	return name

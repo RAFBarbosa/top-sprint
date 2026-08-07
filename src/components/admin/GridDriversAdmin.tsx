@@ -13,7 +13,7 @@ import { useFirebaseTeams } from "../../shared/hooks/useFirebaseTeams";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useGrids } from "../../contexts/GridsContext";
 import { getGridConfig } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import {
 	Dialog,
 	DialogTitle,
@@ -39,6 +39,7 @@ export function GridDriversAdmin({
 	const { gridId: gridIdParam } = useParams<{ gridId: string }>();
 	const gridId = gridIdProp ?? gridIdParam;
 	const { grids, loading: gridsLoading } = useGrids();
+	const { fallbackDriverPhoto } = useTenantConfig();
 
 	const { drivers: driversData } = useFirebaseDrivers();
 	const { teams: teamsData } = useFirebaseTeams();
@@ -246,7 +247,7 @@ export function GridDriversAdmin({
 							src={
 								profile?.photoUrl ||
 								driver?.photo?.url ||
-								tenant.fallbackDriverPhoto
+								fallbackDriverPhoto
 							}
 							alt={driver?.name ?? ""}
 							className="w-8 h-8 rounded-full object-cover shrink-0 border border-black/10"
@@ -446,7 +447,7 @@ export function GridDriversAdmin({
 								<img
 									src={
 										d.photo?.url ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={d.name ?? ""}
 									className="w-8 h-8 rounded-full object-cover shrink-0"

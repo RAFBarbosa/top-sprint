@@ -5,7 +5,7 @@ import { useCalendars } from "../../contexts/CalendarsContext";
 import { Banner } from "./Banner";
 import { SecondaryBanners } from "./SecondaryBanners";
 import { Skeleton } from "@mui/material";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { useCalendarSeasons } from "../../contexts/CalendarSeasonsContext";
 import { useTracks } from "../../contexts/TracksContext";
@@ -37,6 +37,7 @@ const loadingSkeleton = () => {
 };
 
 export function Banners() {
+	const { logoUrl } = useTenantConfig();
 	const [bannersData, setBannersData] = useState<any[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -151,7 +152,7 @@ export function Banners() {
 							content={latestFeaturedBanner.content || ""}
 							photo={
 								latestFeaturedBanner.photo || {
-									url: tenant.logo.url,
+									url: logoUrl,
 								}
 							}
 						/>

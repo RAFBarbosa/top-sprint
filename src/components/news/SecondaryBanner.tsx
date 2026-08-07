@@ -1,5 +1,5 @@
 import { HygraphImg } from "../utils/HygraphImg";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { Link } from "react-router-dom";
 
 interface SecondaryBannerProps {
@@ -11,6 +11,7 @@ interface SecondaryBannerProps {
 }
 
 export function SecondaryBanner(props: SecondaryBannerProps) {
+	const { logoUrl } = useTenantConfig();
 	const isInternal = props.link.startsWith("/");
 
 	const inner = (
@@ -18,7 +19,7 @@ export function SecondaryBanner(props: SecondaryBannerProps) {
 			{/* Image */}
 			<div className="relative w-24 shrink-0 md:w-full md:aspect-square overflow-hidden">
 				<HygraphImg
-					src={props.photo?.url || tenant.logo.url}
+					src={props.photo?.url || logoUrl}
 					alt={props.content}
 					imgWidth={300}
 					imgHeight={400}

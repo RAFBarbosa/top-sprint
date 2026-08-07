@@ -4,7 +4,6 @@ import { db } from "../../lib/adminClient";
 import { useGrids } from "../../contexts/GridsContext";
 import { useCreateAssetMutation } from "../../graphql/generated";
 import { useToast } from "../../contexts/ToastContext";
-import { tenant } from "../../shared/config/tenants";
 import type { PointSystem, RaceAward } from "../../shared/config/grids";
 import { DEFAULT_POINT_SYSTEM } from "../../shared/config/grids";
 import { Toggle } from "../../components/admin/ui/Toggle";
@@ -123,7 +122,7 @@ export default function TenantConfigAdmin() {
 	const [logoPreview, setLogoPreview] = useState("");
 	const [defaultPhotoStyle, setDefaultPhotoStyle] = useState<"portrait" | "round" | "bust">("portrait");
 	const [cssVars, setCssVars] = useState<Record<string, string>>(
-		Object.fromEntries(Object.entries(tenant.cssVars).filter(([k]) => k.startsWith("--color-")))
+		{}
 	);
 	const [socials, setSocials] = useState<Record<string, string>>({});
 	const [nav, setNav] = useState<Record<string, string>>({});

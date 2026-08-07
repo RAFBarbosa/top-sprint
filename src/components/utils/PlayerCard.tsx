@@ -1,7 +1,6 @@
-import { forwardRef } from "react";
+import { forwardRef, useState, useEffect } from "react";
 import { HygraphImg } from "./HygraphImg";
 import { Tooltip } from "react-tooltip";
-import { tenant } from "../../shared/config/tenants";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import Flag from "react-world-flags";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
@@ -89,7 +88,11 @@ function getTextColor(hexColor: string): string {
 
 const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 	({ data }, ref) => {
-		const { defaultPhotoStyle, logoUrl } = useTenantConfig();
+		const { defaultPhotoStyle, logoUrl, name: tenantName, cssVars, fallbackDriverPhoto } = useTenantConfig();
+		const [isMobile, setIsMobile] = useState(false);
+		useEffect(() => {
+			setIsMobile(window.matchMedia("(hover: none)").matches);
+		}, []);
 		const splitDriverName = (name: string) => {
 			const nameParts = name.split(" ");
 			const firstName = nameParts[0].replace(/-[BC]$/, "");
@@ -157,7 +160,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 		const { activeTab } = useTab();
 		const gridColor =
 			(activeTab?.id && getGridConfig(activeTab.id)?.primaryColor) ||
-			tenant.cssVars["--color-brand-primary"];
+			cssVars["--color-brand-primary"];
 
 		const statsTextColor = getTextColor(gridColor);
 
@@ -260,7 +263,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						>
 							<HygraphImg
 								className="w-full h-full object-cover object-center"
-								src={data.photo || tenant.fallbackDriverPhoto}
+								src={data.photo || fallbackDriverPhoto}
 								alt={data.name}
 								imgWidth={190}
 								imgHeight={190}
@@ -273,7 +276,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						>
 							<HygraphImg
 								className="w-full h-full object-cover object-top"
-								src={data.photo || tenant.fallbackDriverPhoto}
+								src={data.photo || fallbackDriverPhoto}
 								alt={data.name}
 								imgWidth={250}
 								imgHeight={250}
@@ -286,7 +289,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 						>
 							<HygraphImg
 								className="w-full h-full object-cover object-top"
-								src={data.photo || tenant.fallbackDriverPhoto}
+								src={data.photo || fallbackDriverPhoto}
 								alt={data.name}
 								imgWidth={300}
 								imgHeight={300}
@@ -390,6 +393,8 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 											width: "clamp(45px, 15vw, 61px)",
 											height: "clamp(23px, 7.8vw, 32px)",
 										}}
+										title={!isMobile ? (data.nationality || "Brasil") : undefined}
+										{...(isMobile ? { "data-tooltip-id": "flag-tooltip", "data-tooltip-content": data.nationality || "Brasil" } : {})}
 									>
 										<Flag
 											code={
@@ -504,7 +509,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					)}
 
 					{/* ── Layer 4: Stats bar (stats + team logo) ── */}
-					<div className="absolute inset-0 z-[40]">
+					<div className="absolute inset-0 z-[40] pointer-events-none">
 						<div
 							className="absolute inset-0 w-full h-full"
 							style={{
@@ -548,7 +553,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 							<div className="h-11 ml-2 w-auto">
 								<img
 									src={logoUrl}
-									alt={tenant.logo.alt}
+									alt={tenantName}
 									className="h-full w-auto object-contain"
 								/>
 							</div>
@@ -585,6 +590,7 @@ const PlayerCard = forwardRef<HTMLDivElement, PlayerCardProps>(
 					/>
 				)}
 				<Tooltip id="stat-tooltip" place="top" className="!z-[80]" />
+			{isMobile && <Tooltip id="flag-tooltip" place="top" className="!z-[80]" openOnClick />}
 			</div>
 		);
 	},

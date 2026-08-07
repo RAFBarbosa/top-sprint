@@ -15,7 +15,6 @@ import { CalendarsProvider } from "./contexts/CalendarsContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { UserRoleProvider } from "./contexts/UserRoleContext";
 import { TenantConfigProvider } from "./contexts/TenantConfigContext";
-import { tenant } from "./shared/config/tenants";
 import { useEffect } from "react";
 
 function ScrollToTop() {
@@ -61,7 +60,7 @@ function AppLayout() {
 function App() {
 	return (
 		<div
-			data-tenant={tenant.id}
+			data-tenant={import.meta.env.VITE_TENANT}
 			className="font-f1 flex flex-col min-h-screen"
 		>
 			<ApolloProvider client={client}>
