@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { LiveTv, ArrowForwardIos as MenuArrow } from "@mui/icons-material";
-import { tenant } from "../../shared/config/tenants";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { CountryFlag } from "../utils/CountryFlag";
@@ -24,7 +23,7 @@ interface CalendarProps {
 }
 
 export function Calendar(props: CalendarProps) {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto } = useTenantConfig();
 
 	const formattedDate = format(new Date(props.date), "dd '-' MMM", {
 		locale: ptBR,
@@ -168,7 +167,7 @@ export function Calendar(props: CalendarProps) {
 								<img
 									src={
 										props.winnerA.photo?.url ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={getFilteredWinnerName(props.winnerA)}
 									className="w-full h-full object-cover scale-123 translate-y-[5px]"
@@ -177,7 +176,7 @@ export function Calendar(props: CalendarProps) {
 								<img
 									src={
 										props.winnerA.photo?.url ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={getFilteredWinnerName(props.winnerA)}
 									className="object-cover translate-y-[6px]"
@@ -186,7 +185,7 @@ export function Calendar(props: CalendarProps) {
 								<img
 									src={
 										props.winnerA.photo?.url ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={getFilteredWinnerName(props.winnerA)}
 									className="w-full h-full object-cover scale-200 translate-y-[24px]"

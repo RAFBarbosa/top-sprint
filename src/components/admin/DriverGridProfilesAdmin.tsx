@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { useFirebaseTeams } from "../../shared/hooks/useFirebaseTeams";
-import { tenant } from "../../shared/config/tenants";
+import { useGrids } from "../../contexts/GridsContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { useToast } from "../../contexts/ToastContext";
 import { useDriverGameIds } from "../../shared/hooks/useDriverGameIds";
@@ -31,7 +31,7 @@ export function DriverGridProfilesAdmin() {
 	const { showToast } = useToast();
 	const gameIdMap = useDriverGameIds();
 
-	const grids = tenant.grids as any[];
+	const { grids } = useGrids();
 
 	useEffect(() => {
 		const load = async () => {

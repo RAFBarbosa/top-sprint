@@ -1,12 +1,11 @@
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
-import { tenant } from "../../shared/config/tenants";
 
 export function Logo() {
-	const { logoUrl } = useTenantConfig();
+	const { logoUrl, name } = useTenantConfig();
 	return (
 		<img
 			src={logoUrl}
-			alt={tenant.logo.alt}
+			alt={name}
 			className="max-h-full w-auto"
 		/>
 	);

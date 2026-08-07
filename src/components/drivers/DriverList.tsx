@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { normalizeString } from "../../shared/utils/normalizeString";
-import { tenant } from "../../shared/config/tenants";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 import { resizeHygraphUrl } from "../../shared/utils/hygraphImage";
@@ -15,7 +14,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 	gridName,
 	drivers,
 }) => {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto } = useTenantConfig();
 	return (
 		<div>
 			<div
@@ -70,7 +69,7 @@ export const DriverList: React.FC<DriverListProps> = ({
 										<HygraphImg
 											src={
 												driver.photo ||
-												tenant.fallbackDriverPhoto
+												fallbackDriverPhoto
 											}
 											alt={driver.name}
 											imgWidth={64}
@@ -81,14 +80,14 @@ export const DriverList: React.FC<DriverListProps> = ({
 										<div
 											className="w-16 h-16 rounded-full bg-cover transition-all translate-y-[6px] duration-200 group-hover:scale-110"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 650)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || fallbackDriverPhoto, 650)})`,
 											}}
 										/>
 									) : (
 										<div
 											className="w-16 h-16 scale-160 rounded-full bg-cover transition-all translate-y-[25px] duration-200 group-hover:scale-170"
 											style={{
-												backgroundImage: `url(${resizeHygraphUrl(driver.photo || tenant.fallbackDriverPhoto, 650)})`,
+												backgroundImage: `url(${resizeHygraphUrl(driver.photo || fallbackDriverPhoto, 650)})`,
 											}}
 										/>
 									)}

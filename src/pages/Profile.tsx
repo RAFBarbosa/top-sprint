@@ -7,7 +7,7 @@ import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { Divider } from "../components/layout/Divider";
 import { useTab } from "../contexts/TabContext";
 import { getEffectiveRaceAwards, getGridConfig } from "../shared/config/grids";
-import { tenant } from "../shared/config/tenants";
+import { useGrids } from "../contexts/GridsContext";
 import { useTenantConfig } from "../contexts/TenantConfigContext";
 import { useDriverProfiles } from "../contexts/DriverProfilesContext";
 import { HygraphImg } from "../components/utils/HygraphImg";
@@ -141,12 +141,13 @@ function StatsHeader({ title }: { title: string }) {
 
 export function Profile() {
 	const { defaultPhotoStyle, fallbackDriverPhoto: tenantFallback } = useTenantConfig();
+	const { grids } = useGrids();
 	const STYLE_FALLBACKS: Record<string, string> = {
 		round: "https://us-west-2.graphassets.com/cm9gqv6wb00c308jm0yap9zb6/cmam4ddx7kgoc08n61eyqeq84",
 		portrait: "https://us-west-2.graphassets.com/cmo66v1n000gr02js1cyb6pmx/cmo6d8bg6embs07lpjska6fo7",
 		bust: "https://us-west-2.graphassets.com/cmo66v1n000gr02js1cyb6pmx/cmo6d8bg6embs07lpjska6fo7",
 	};
-	const driverFallback = tenantFallback || STYLE_FALLBACKS[defaultPhotoStyle] || tenant.fallbackDriverPhoto;
+	const driverFallback = tenantFallback || STYLE_FALLBACKS[defaultPhotoStyle];
 	const { driverName } = useParams<{ driverName: string }>();
 	const { activeTab } = useTab();
 
@@ -274,7 +275,7 @@ export function Profile() {
 							className="tenant-section-title font-f1Title uppercase font-extrabold text-4xl md:text-6xl tracking-wide md:self-end border-b-10 w-full"
 							style={{
 								borderColor:
-									tenant.grids.length > 1
+									grids.length > 1
 										? (getGridConfig(activeTab.id)
 												?.primaryColor ??
 											"var(--color-brand-primary)")

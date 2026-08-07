@@ -7,7 +7,6 @@ import {
 	getGridColors,
 	GridId,
 } from "../../../shared/config/grids";
-import { tenant } from "../../../shared/config/tenants";
 import { useTenantConfig } from "../../../contexts/TenantConfigContext";
 import { HygraphImg } from "../../utils/HygraphImg";
 
@@ -29,7 +28,7 @@ interface PodiumCardProps {
 }
 
 export function PodiumCard(props: PodiumCardProps) {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto, logoUrl } = useTenantConfig();
 	const cleanName = (name: string) => name.replace(/-[BC]$/, "").trim();
 	const nameParts = props.name.split(" ");
 	const firstName = cleanName(nameParts[0]);
@@ -215,7 +214,7 @@ export function PodiumCard(props: PodiumCardProps) {
 					}`}
 				>
 					<HygraphImg
-						src={props.photo || tenant.fallbackDriverPhoto}
+						src={props.photo || fallbackDriverPhoto}
 						alt={`${props.name}`}
 						imgWidth={props.position === 1 ? 160 : 134}
 						imgHeight={props.position === 1 ? 160 : 134}
@@ -231,7 +230,7 @@ export function PodiumCard(props: PodiumCardProps) {
 					}`}
 				>
 					<HygraphImg
-						src={props.photo || tenant.fallbackDriverPhoto}
+						src={props.photo || fallbackDriverPhoto}
 						alt={`${props.name}`}
 						imgWidth={props.position === 1 ? 200 : 180}
 						className="w-full h-full object-cover object-top"
@@ -246,7 +245,7 @@ export function PodiumCard(props: PodiumCardProps) {
 					}`}
 				>
 					<HygraphImg
-						src={props.photo || tenant.fallbackDriverPhoto}
+						src={props.photo || fallbackDriverPhoto}
 						alt={`${props.name}`}
 						imgWidth={props.position === 1 ? 230 : 210}
 						imgHeight={props.position === 1 ? 300 : 268}
@@ -256,7 +255,7 @@ export function PodiumCard(props: PodiumCardProps) {
 			) : (
 				<div className="absolute top-0 left-0 right-0 bottom-[90px] flex items-center justify-center">
 					<HygraphImg
-						src={props.teamLogo || props.photo || tenant.logo.url}
+						src={props.teamLogo || props.photo || logoUrl}
 						alt={`${props.name} logo`}
 						imgWidth={150}
 						imgHeight={150}
@@ -332,7 +331,7 @@ export function PodiumCard(props: PodiumCardProps) {
 												style={{ backgroundColor: props.teamColor }}
 											>
 												<HygraphImg
-													src={d.photo || tenant.fallbackDriverPhoto}
+													src={d.photo || fallbackDriverPhoto}
 													alt={d.name}
 													imgWidth={56}
 													imgHeight={56}

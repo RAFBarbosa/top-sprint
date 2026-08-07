@@ -7,8 +7,9 @@ import {
 } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../lib/adminClient";
-import { tenant } from "../shared/config/tenants";
 import { setRuntimeGrids, type GridConfig } from "../shared/config/grids";
+
+const TENANT_ID = import.meta.env.VITE_TENANT as string;
 
 interface GridsContextType {
 	grids: GridConfig[];
@@ -19,7 +20,7 @@ interface GridsContextType {
 
 const GridsContext = createContext<GridsContextType | undefined>(undefined);
 
-const FIRESTORE_DOC = `grids/${tenant.id}`;
+const FIRESTORE_DOC = `grids/${TENANT_ID}`;
 
 function fromFirebase(firebaseData: any): GridConfig[] {
 	// Firebase stores grids as an array to preserve order

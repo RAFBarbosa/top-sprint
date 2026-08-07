@@ -3,7 +3,7 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useCalendars } from "../../contexts/CalendarsContext";
-import { tenant } from "../../shared/config/tenants";
+import { useGrids } from "../../contexts/GridsContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useTracks } from "../../contexts/TracksContext";
@@ -41,6 +41,7 @@ export function Calendars({
 	const { calendars, loading } = useCalendars();
 	const { drivers: driversList } = useFirebaseDrivers();
 	const { activeTab } = useTab();
+	const { grids } = useGrids();
 	const { applyProfile } = useDriverProfiles();
 	const { seasons } = useSeasons();
 	const { getSeasonForCalendar } = useCalendarSeasons();
@@ -209,7 +210,7 @@ export function Calendars({
 						<div
 							style={{
 								borderColor:
-									tenant.grids.length > 1
+									grids.length > 1
 										? (getGridConfig(activeTab.id)
 												?.primaryColor ??
 											"var(--color-brand-primary)")

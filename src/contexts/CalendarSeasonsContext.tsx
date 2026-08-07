@@ -13,8 +13,6 @@ import {
 	deleteDoc,
 } from "firebase/firestore";
 import { db } from "../lib/adminClient";
-import { tenant } from "../shared/config/tenants";
-
 export interface CalendarSeasonMapping {
 	calendarId: string;
 	seasonId: string;
@@ -32,7 +30,7 @@ const CalendarSeasonsContext = createContext<
 	CalendarSeasonsContextType | undefined
 >(undefined);
 
-const FIRESTORE_COLLECTION = `calendar-seasons/${tenant.id}/mappings`;
+const FIRESTORE_COLLECTION = `calendar-seasons/${import.meta.env.VITE_TENANT as string}/mappings`;
 
 export function CalendarSeasonsProvider({ children }: { children: ReactNode }) {
 	const [mappings, setMappings] = useState<CalendarSeasonMapping[]>([]);

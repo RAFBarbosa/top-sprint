@@ -3,7 +3,7 @@ import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { DriverCard } from "./DriverCard";
 import { Skeleton } from "@mui/material";
 import { useTab } from "../../contexts/TabContext";
-import { tenant } from "../../shared/config/tenants";
+import { useGrids } from "../../contexts/GridsContext";
 import { getGridConfig } from "../../shared/config/grids";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useActiveSeason } from "../../shared/hooks/useActiveSeason";
@@ -31,6 +31,7 @@ export function Teams() {
 	const { teams: teamsData, loading } = useFirebaseTeams();
 	const { drivers: driversData } = useFirebaseDrivers();
 	const { activeTab } = useTab();
+	const { grids } = useGrids();
 	const { isInGrid, applyProfile, profiles } = useDriverProfiles();
 	const gridId = activeTab.id;
 	const activeSeason = useActiveSeason(gridId);
@@ -97,7 +98,7 @@ export function Teams() {
 					<div
 						style={{
 							borderColor:
-								tenant.grids.length > 1
+								grids.length > 1
 									? (getGridConfig(activeTab.id)
 											?.primaryColor ??
 										"var(--color-brand-primary)")

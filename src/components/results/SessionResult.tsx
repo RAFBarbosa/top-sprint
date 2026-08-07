@@ -9,7 +9,6 @@ import {
 	getPointSystem,
 	type RaceAward,
 } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 import { CountryFlag } from "../utils/CountryFlag";
@@ -251,7 +250,7 @@ function WinnerCard({
 	poleRow?: DriverRow;
 	awardRows?: Array<{ award: RaceAward; driver: DriverRow }>;
 }) {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto } = useTenantConfig();
 	if (!row) return null;
 	const gridConfig = getGridConfig(gridId);
 	const gridColor = gridConfig?.primaryColor ?? "#eb1c24";
@@ -276,11 +275,11 @@ function WinnerCard({
 			</div>
 
 			{/* Photo — fixed crop matching OG */}
-			{(row.photo || tenant.fallbackDriverPhoto) && (
+			{(row.photo || fallbackDriverPhoto) && (
 				<div className="flex items-center justify-center w-9/10 mx-auto overflow-hidden">
 					{defaultPhotoStyle === "round" ? (
 						<HygraphImg
-							src={row.photo || tenant.fallbackDriverPhoto}
+							src={row.photo || fallbackDriverPhoto}
 							alt={row.name}
 							imgWidth={190}
 							imgHeight={190}
@@ -288,7 +287,7 @@ function WinnerCard({
 						/>
 					) : defaultPhotoStyle === "bust" ? (
 						<HygraphImg
-							src={row.photo || tenant.fallbackDriverPhoto}
+							src={row.photo || fallbackDriverPhoto}
 							alt={row.name}
 							imgWidth={200}
 							imgHeight={200}
@@ -296,7 +295,7 @@ function WinnerCard({
 						/>
 					) : (
 						<HygraphImg
-							src={row.photo || tenant.fallbackDriverPhoto}
+							src={row.photo || fallbackDriverPhoto}
 							alt={row.name}
 							imgWidth={270}
 							imgHeight={270}
@@ -329,7 +328,7 @@ function WinnerCard({
 						{defaultPhotoStyle === "round" ? (
 							<HygraphImg
 								src={
-									poleRow.photo || tenant.fallbackDriverPhoto
+									poleRow.photo || fallbackDriverPhoto
 								}
 								alt={poleRow.name}
 								imgWidth={48}
@@ -339,7 +338,7 @@ function WinnerCard({
 						) : defaultPhotoStyle === "bust" ? (
 							<HygraphImg
 								src={
-									poleRow.photo || tenant.fallbackDriverPhoto
+									poleRow.photo || fallbackDriverPhoto
 								}
 								alt={poleRow.name}
 								imgWidth={48}
@@ -349,7 +348,7 @@ function WinnerCard({
 						) : (
 							<HygraphImg
 								src={
-									poleRow.photo || tenant.fallbackDriverPhoto
+									poleRow.photo || fallbackDriverPhoto
 								}
 								alt={poleRow.name}
 								imgWidth={48}
@@ -392,7 +391,7 @@ function WinnerCard({
 								<HygraphImg
 									src={
 										driver.photo ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={driver.name}
 									imgWidth={48}
@@ -403,7 +402,7 @@ function WinnerCard({
 								<HygraphImg
 									src={
 										driver.photo ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={driver.name}
 									imgWidth={48}
@@ -414,7 +413,7 @@ function WinnerCard({
 								<HygraphImg
 									src={
 										driver.photo ||
-										tenant.fallbackDriverPhoto
+										fallbackDriverPhoto
 									}
 									alt={driver.name}
 									imgWidth={48}

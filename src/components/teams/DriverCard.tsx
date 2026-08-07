@@ -3,7 +3,6 @@ import useNavigateToDriver from "../../shared/hooks/useNavigateToDriver";
 import { normalizeString } from "../../shared/utils/normalizeString";
 import { useTab } from "../../contexts/TabContext";
 import { getGridConfig } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { HygraphImg } from "../utils/HygraphImg";
 
@@ -27,7 +26,7 @@ interface DriverCardProps {
 }
 
 export function DriverCard({ driver }: DriverCardProps) {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, logoUrl, fallbackDriverPhoto } = useTenantConfig();
 	const [imageLoading, setImageLoading] = useState(true);
 	const navigateToDriver = useNavigateToDriver();
 	const { activeTab, setActiveTab, tabs } = useTab();
@@ -117,7 +116,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 						? "md:transition-all md:duration-200 md:group-hover:scale-95 md:group-hover:-translate-y-1"
 						: ""
 				}`}
-				src={driver.team?.photo?.url || tenant.logo.url}
+				src={driver.team?.photo?.url || logoUrl}
 				alt={driver.team?.name ?? ""}
 				imgWidth={180}
 				fit="clip"
@@ -144,7 +143,7 @@ export function DriverCard({ driver }: DriverCardProps) {
 			{/* Foto do piloto */}
 			<div className="flex-1 flex items-center justify-center p-4 relative z-10">
 				<HygraphImg
-					src={driver.photo?.url || tenant.fallbackDriverPhoto}
+					src={driver.photo?.url || fallbackDriverPhoto}
 					alt={driver.name}
 					imgWidth={isRound ? 140 : 240}
 					// imgHeight adjusted per style above

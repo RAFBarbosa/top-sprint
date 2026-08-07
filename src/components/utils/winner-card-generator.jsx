@@ -4,7 +4,7 @@ import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 import { useDriverProfiles } from "../../contexts/DriverProfilesContext";
 import { useTracks } from "../../contexts/TracksContext";
 import { getGridLabel } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 
@@ -26,6 +26,7 @@ export default function WinnerCardGenerator() {
   const { drivers: driversData } = useFirebaseDrivers();
   const { isInGrid, applyProfile } = useDriverProfiles();
   const { getTrack } = useTracks();
+  const { name: configTenantName } = useTenantConfig();
 
   const [selectedCalendarId, setSelectedCalendarId] = useState("");
   const [selectedDriverId, setSelectedDriverId] = useState("");
@@ -53,7 +54,7 @@ export default function WinnerCardGenerator() {
   const selectedCalendar = allCalendars.find(c => c.id === selectedCalendarId) ?? null;
   const calendarGrid = selectedCalendar?.grid ?? "";
 
-  const tenantName = (tenant.name ?? "TOP SPRINT").toUpperCase();
+  const tenantName = (configTenantName || "TOP SPRINT").toUpperCase();
   const primaryColor = typeof document !== "undefined"
     ? (getComputedStyle(document.documentElement).getPropertyValue("--color-brand-primary").trim() || "#DC0000")
     : "#DC0000";

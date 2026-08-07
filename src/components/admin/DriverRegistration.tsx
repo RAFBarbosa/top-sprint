@@ -26,7 +26,6 @@ import {
 	DialogPanel,
 	Description,
 } from "@headlessui/react";
-import { tenant } from "../../shared/config/tenants";
 import { useTenantConfig } from "../../contexts/TenantConfigContext";
 import { doc, setDoc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
@@ -35,7 +34,7 @@ import { useToast } from "../../contexts/ToastContext";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
 
 export function DriverRegistration() {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto } = useTenantConfig();
 	// State management
 	const [formData, setFormData] = useState({
 		name: "",
@@ -404,7 +403,7 @@ export function DriverRegistration() {
 										return (
 											<div className={`w-12 h-12 flex-shrink-0 overflow-hidden ${style === "round" ? "rounded-full" : ""}`}>
 												<img
-													src={driver.photo?.url || tenant.fallbackDriverPhoto}
+													src={driver.photo?.url || fallbackDriverPhoto}
 													alt={driver.name}
 													className={`w-full h-full object-cover ${
 														style === "round"

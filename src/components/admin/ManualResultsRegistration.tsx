@@ -18,7 +18,7 @@ import { useCalendars } from "../../contexts/CalendarsContext";
 import { ChevronUpDownIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { getEffectiveRaceAwards, getGridLabel, getGridConfig } from "../../shared/config/grids";
-import { tenant } from "../../shared/config/tenants";
+import { useGrids } from "../../contexts/GridsContext";
 
 import { format } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
@@ -171,6 +171,7 @@ export function ManualResultsRegistration({
 
 	const { allCalendars } = useCalendars();
 	const { drivers: driversData } = useFirebaseDrivers();
+	const { grids } = useGrids();
 
 	useEffect(() => {
 		const loadProfiles = async () => {
@@ -698,7 +699,7 @@ export function ManualResultsRegistration({
 			.sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
 	};
 
-	const gridOptions: string[] = (tenant.grids as any[]).map((g: any) => g.id);
+	const gridOptions: string[] = grids.map((g) => g.id);
 
 	const resolveRaceAwards = (gridId: string | null | undefined) =>
 		getEffectiveRaceAwards(gridId ?? "");

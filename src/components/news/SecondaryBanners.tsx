@@ -1,5 +1,5 @@
 import { SecondaryBanner } from "./SecondaryBanner";
-import { tenant } from "../../shared/config/tenants";
+import { useTenantConfig } from "../../contexts/TenantConfigContext";
 
 interface BannerData {
 	id: string;
@@ -16,6 +16,7 @@ interface SecondaryBannersProps {
 }
 
 export function SecondaryBanners({ banners }: SecondaryBannersProps) {
+	const { logoUrl } = useTenantConfig();
 	if (!banners || banners.length === 0) {
 		return (
 			<div className="h-full flex flex-col justify-center items-center text-gray-500">
@@ -35,7 +36,7 @@ export function SecondaryBanners({ banners }: SecondaryBannersProps) {
 					category={banner.category || ""}
 					title={banner.title || ""}
 					content={banner.content || ""}
-					photo={banner.photo || { url: tenant.logo.url }}
+					photo={banner.photo || { url: logoUrl }}
 				/>
 			))}
 		</div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getDocs, setDoc, doc, collection } from "firebase/firestore";
 import { db } from "../../lib/adminClient";
 import { useFirebaseDrivers } from "../../shared/hooks/useFirebaseDrivers";
-import { tenant } from "../../shared/config/tenants";
+import { useGrids } from "../../contexts/GridsContext";
 import type { DriverStatsShape } from "../../shared/hooks/useDriverStats";
 import { useCalculateCards } from "../../shared/hooks/useCalculateCards";
 import { useToast } from "../../contexts/ToastContext";
@@ -50,7 +50,7 @@ export function DriverStatsOffsetsAdmin() {
 	const { triggerForGrid } = useCalculateCards();
 	const { showToast } = useToast();
 	const gameIdMap = useDriverGameIds();
-	const grids = tenant.grids as any[];
+	const { grids } = useGrids();
 
 	useEffect(() => {
 		getDocs(collection(db, "driver_stats_offsets")).then((snap) => {

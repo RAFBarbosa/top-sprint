@@ -1,6 +1,5 @@
 // Barrel file for shared utilities, hooks, and config
 
-export * from "./config/tenants";
 export * from "./config/grids";
 export * from "./hooks/useEnhancedCards";
 export * from "./hooks/useStandings";

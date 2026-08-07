@@ -8,7 +8,6 @@ import {
 	getGridConfig,
 	getGridColors,
 } from "../../../shared/config/grids";
-import { tenant } from "../../../shared/config/tenants";
 import { useTenantConfig } from "../../../contexts/TenantConfigContext";
 import { HygraphImg } from "../../utils/HygraphImg";
 
@@ -38,7 +37,7 @@ interface StandingCardProps {
 }
 
 export function StandingCard(props: StandingCardProps) {
-	const { defaultPhotoStyle } = useTenantConfig();
+	const { defaultPhotoStyle, fallbackDriverPhoto, logoUrl } = useTenantConfig();
 	const [firstName, secondName] = (() => {
 		const nameParts = props.name.split(" ");
 		return [
@@ -258,7 +257,7 @@ export function StandingCard(props: StandingCardProps) {
 												<HygraphImg
 													src={
 														d.photo ||
-														tenant.fallbackDriverPhoto
+														fallbackDriverPhoto
 													}
 													alt={d.name}
 													imgWidth={40}
@@ -339,7 +338,7 @@ export function StandingCard(props: StandingCardProps) {
 									<HygraphImg
 										src={
 											props.photo ||
-											tenant.fallbackDriverPhoto
+											fallbackDriverPhoto
 										}
 										alt={props.name}
 										imgWidth={120}
@@ -352,8 +351,8 @@ export function StandingCard(props: StandingCardProps) {
 									src={
 										isDrivers
 											? props.photo ||
-												tenant.fallbackDriverPhoto
-											: props.teamLogo || tenant.logo.url
+												fallbackDriverPhoto
+											: props.teamLogo || logoUrl
 									}
 									alt={
 										isDrivers
@@ -380,8 +379,8 @@ export function StandingCard(props: StandingCardProps) {
 									src={
 										isDrivers
 											? props.photo ||
-												tenant.fallbackDriverPhoto
-											: props.teamLogo || tenant.logo.url
+												fallbackDriverPhoto
+											: props.teamLogo || logoUrl
 									}
 									alt={
 										isDrivers
@@ -415,7 +414,7 @@ export function StandingCard(props: StandingCardProps) {
 										<HygraphImg
 											src={
 												props.photo ||
-												tenant.fallbackDriverPhoto
+												fallbackDriverPhoto
 											}
 											alt={props.name}
 											imgWidth={50}
@@ -427,7 +426,7 @@ export function StandingCard(props: StandingCardProps) {
 									<HygraphImg
 										src={
 											props.photo ||
-											tenant.fallbackDriverPhoto
+											fallbackDriverPhoto
 										}
 										alt={props.name}
 										imgWidth={105}
@@ -444,7 +443,7 @@ export function StandingCard(props: StandingCardProps) {
 									<HygraphImg
 										src={
 											props.photo ||
-											tenant.fallbackDriverPhoto
+											fallbackDriverPhoto
 										}
 										alt={props.name}
 										imgWidth={170}
