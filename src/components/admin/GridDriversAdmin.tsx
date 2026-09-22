@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { exportDriversCSV } from "../../shared/utils/exportDriversCSV";
 import { useParams } from "react-router-dom";
 import {
 	getDocs,
@@ -478,25 +479,53 @@ export function GridDriversAdmin({
 				)}
 			</div>
 
-			{/* Sort toggle */}
-			<div className="flex items-center gap-2">
-				<span className="text-xs text-f1-lighterCarbon">
-					Ordenar por:
-				</span>
-				{(["name", "team"] as const).map((opt) => (
-					<button
-						key={opt}
-						type="button"
-						onClick={() => setSortBy(opt)}
-						className={`text-xs px-3 py-1 rounded border cursor-pointer transition-colors ${
-							sortBy === opt
-								? "bg-f1-red text-white border-f1-red"
-								: "border-black/20 hover:bg-f1-red/10"
-						}`}
-					>
-						{opt === "name" ? "Piloto A-Z" : "Equipe A-Z"}
-					</button>
-				))}
+			{/* Sort toggle + export */}
+			<div className="flex items-center justify-between gap-2">
+				<div className="flex items-center gap-2">
+					<span className="text-xs text-f1-lighterCarbon">
+						Ordenar por:
+					</span>
+					{(["name", "team"] as const).map((opt) => (
+						<button
+							key={opt}
+							type="button"
+							onClick={() => setSortBy(opt)}
+							className={`text-xs px-3 py-1 rounded border cursor-pointer transition-colors ${
+								sortBy === opt
+									? "bg-f1-red text-white border-f1-red"
+									: "border-black/20 hover:bg-f1-red/10"
+							}`}
+						>
+							{opt === "name" ? "Piloto A-Z" : "Equipe A-Z"}
+						</button>
+					))}
+				</div>
+				<button
+					type="button"
+					onClick={() => {
+						const today = new Date().toISOString().slice(0, 10);
+						const tenant = import.meta.env.VITE_TENANT as string;
+						const rows = assignedDriverIds.map((dId) => {
+							const d = driversData.find((x) => x.id === dId);
+							const profile = allProfiles[dId]?.[gridId ?? ""];
+							return {
+								name: d?.name ?? dId,
+								number: profile?.number ?? d?.number ?? null,
+								gameId: d?.gameId ?? null,
+								birthDate: d?.birthDate ?? null,
+								nationality: d?.nationality ?? null,
+								realLifeTeamName: teamsData?.find((t) => t.id === d?.realLifeTeamId)?.name ?? null,
+								stream: d?.stream ?? null,
+								city: d?.city ?? null,
+								equipment: d?.equipment ?? null,
+							};
+						});
+						exportDriversCSV(rows, `pilotos-${gridLabel}-${tenant}-${today}.csv`);
+					}}
+					className="text-xs px-3 py-1 rounded border border-black/20 hover:bg-f1-red/10 cursor-pointer"
+				>
+					Exportar Pilotos
+				</button>
 			</div>
 
 			{/* Titular drivers */}

@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { exportDriversCSV } from "../../shared/utils/exportDriversCSV";
 import {
 	Listbox,
 	ListboxButton,
@@ -62,6 +63,7 @@ export function DriverRegistration() {
 	const [isEditing, setIsEditing] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [gridFilter, setGridFilter] = useState("");
+	const [exportSelectedIds, setExportSelectedIds] = useState<Set<string>>(new Set());
 
 	const [createAsset] = useCreateAssetMutation();
 	const { drivers: allDrivers, loading: driversLoading, refetch: refetchDrivers } = useFirebaseDrivers();
@@ -299,6 +301,10 @@ export function DriverRegistration() {
 		return matchesSearch && matchesGrid;
 	});
 
+	useEffect(() => {
+		setExportSelectedIds(new Set(filteredDrivers.map((d) => d.id)));
+	}, [searchTerm, gridFilter, allDrivers]);
+
 	if (teamsLoading || gridLoading || driversLoading || classLoading) {
 		return (
 			<div className="bg-f1-lightSilver py-10 flex justify-center">
@@ -377,6 +383,46 @@ export function DriverRegistration() {
 							</ListboxOptions>
 						</div>
 					</Listbox>
+				<div className="flex gap-2">
+					<button
+						type="button"
+						onClick={() => {
+							if (exportSelectedIds.size === filteredDrivers.length) {
+								setExportSelectedIds(new Set());
+							} else {
+								setExportSelectedIds(new Set(filteredDrivers.map((d) => d.id)));
+							}
+						}}
+						className="flex-1 h-9 border rounded text-xs text-f1-lighterCarbon hover:bg-f1-red/10 cursor-pointer"
+					>
+						{exportSelectedIds.size === filteredDrivers.length ? "Desmarcar todos" : "Marcar todos"}
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							const today = new Date().toISOString().slice(0, 10);
+							const tenant = import.meta.env.VITE_TENANT as string;
+							const toExport = filteredDrivers.filter((d) => exportSelectedIds.has(d.id));
+							exportDriversCSV(
+								toExport.map((d) => ({
+									name: d.name,
+									number: d.number,
+									gameId: d.gameId,
+									birthDate: d.birthDate,
+									nationality: d.nationality,
+									realLifeTeamName: teamsData?.find((t) => t.id === d.realLifeTeamId)?.name ?? null,
+									stream: d.stream,
+									city: d.city,
+									equipment: d.equipment,
+								})),
+								`pilotos${gridFilter ? `-${getGridLabel(gridFilter)}` : ""}-${tenant}-${today}.csv`,
+							);
+						}}
+						className="flex-1 h-9 border rounded text-xs text-f1-lighterCarbon hover:bg-f1-red/10 cursor-pointer"
+					>
+						Exportar Pilotos ({exportSelectedIds.size})
+					</button>
+				</div>
 				</div>
 
 				<ul className="custom-scrollbar space-y-2 max-h-[calc(100vh-600px)] md:max-h-[calc(100vh-750px)] min-h-60 min-w-70 md:min-h-110 overflow-y-auto pr-2">
@@ -391,10 +437,25 @@ export function DriverRegistration() {
 											: ""
 									}`}
 								>
-									<div className="flex flex-col items-start">
-										<span className="truncate max-w-40">
-											{driver.name}
-										</span>
+									<div className="flex items-center gap-2">
+										<input
+											type="checkbox"
+											checked={exportSelectedIds.has(driver.id)}
+											onClick={(e) => e.stopPropagation()}
+											onChange={(e) => {
+												setExportSelectedIds((prev) => {
+													const next = new Set(prev);
+													e.target.checked ? next.add(driver.id) : next.delete(driver.id);
+													return next;
+												});
+											}}
+											className="w-3.5 h-3.5 shrink-0 cursor-pointer accent-f1-red"
+										/>
+										<div className="flex flex-col items-start">
+											<span className="truncate max-w-40">
+												{driver.name}
+											</span>
+										</div>
 									</div>
 
 									<div className="flex gap-4 items-center">
